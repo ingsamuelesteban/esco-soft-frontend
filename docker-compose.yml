@@ -1,0 +1,16 @@
+services:
+  nuxt:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: esco-soft-frontend-nuxt
+    ports:
+      - "3000:3000"
+    environment:
+      - NITRO_HOST=0.0.0.0
+      - NITRO_PORT=3000
+      - NUXT_PUBLIC_API_BASE=http://localhost:8010
+    volumes:
+      - .:/app
+      - /app/node_modules
+    restart: unless-stopped

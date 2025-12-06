@@ -1,0 +1,5 @@
+[
+  {"id":1,"materiaId":1,"aulaId":1,"profesor":"Juan García","dia":"Lunes","hora_inicio":"08:00","hora_fin":"09:00","grupo":"6A"},
+  {"id":2,"materiaId":2,"aulaId":2,"profesor":"Ana López","dia":"Lunes","hora_inicio":"09:00","hora_fin":"10:00","grupo":"6A"},
+  {"id":3,"materiaId":3,"aulaId":3,"profesor":"Carla Méndez","dia":"Martes","hora_inicio":"10:00","hora_fin":"11:30","grupo":"9B"}
+]

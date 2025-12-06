@@ -1,0 +1,5 @@
+[
+  {"id":1,"nombre":"Aula 101","capacidad":30,"ubicacion":"Pabellón A - Piso 1","recursos":["Proyector","Aire acondicionado"]},
+  {"id":2,"nombre":"Aula 102","capacidad":28,"ubicacion":"Pabellón A - Piso 1","recursos":["TV","Ventilación"]},
+  {"id":3,"nombre":"Laboratorio Química","capacidad":24,"ubicacion":"Pabellón B - Piso 2","recursos":["Mesadas","Campana extracción","Proyector"]}
+]

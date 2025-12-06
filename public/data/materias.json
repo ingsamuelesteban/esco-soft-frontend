@@ -1,0 +1,5 @@
+[
+  {"id":1,"codigo":"MAT-601","nombre":"Matemática 6°","grado":"6","horas_semanales":5},
+  {"id":2,"codigo":"LEN-601","nombre":"Lengua 6°","grado":"6","horas_semanales":4},
+  {"id":3,"codigo":"QUI-901","nombre":"Química 9°","grado":"9","horas_semanales":3}
+]
