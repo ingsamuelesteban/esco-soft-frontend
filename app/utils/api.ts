@@ -7,8 +7,12 @@ export async function apiCall<T = any>(url: string, options: Parameters<typeof $
   // Preparar headers
   const headers: Record<string, string> = {
     'Accept': 'application/json',
-    'Content-Type': 'application/json',
     ...(options.headers as Record<string, string> || {})
+  }
+
+  // Solo agregar Content-Type json si NO es FormData
+  if (!(options.body instanceof FormData)) {
+    headers['Content-Type'] = 'application/json'
   }
 
   // Añadir token si está disponible (solo en client-side)

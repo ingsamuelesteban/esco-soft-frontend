@@ -11,6 +11,7 @@
         </button>
         <!-- Nombre de la Institución -->
         <div class="flex items-center text-gray-800 font-bold text-lg">
+          <img v-if="tenantLogo" :src="tenantLogo" alt="Logo" class="h-8 w-auto mr-3 object-contain" />
           <span v-if="tenantName" class="hidden sm:block">{{ tenantName }}</span>
           <span v-if="tenantName" class="sm:hidden text-base truncate max-w-[150px]">{{ tenantName }}</span>
         </div>
@@ -110,6 +111,21 @@ const userInitials = computed(() => {
 const tenantName = computed(() => {
   if (!process.client) return ''
   return authStore.tenant?.name || 'EscoSoft'
+})
+
+const tenantLogo = computed(() => {
+  if (!process.client || !authStore.tenant?.logo_url) return null
+  // Si ya es una URL absoluta, devolverla
+  if (authStore.tenant.logo_url.startsWith('http')) return authStore.tenant.logo_url
+  
+  // Si es relativa, prepender la URL base de la API
+  const config = useRuntimeConfig()
+  const apiBase = config.public.apiBase
+  // Asegurar que no haya doble slash
+  const baseUrl = apiBase.endsWith('/') ? apiBase.slice(0, -1) : apiBase
+  const path = authStore.tenant.logo_url.startsWith('/') ? authStore.tenant.logo_url : `/${authStore.tenant.logo_url}`
+  
+  return `${baseUrl}${path}`
 })
 
 // Funciones

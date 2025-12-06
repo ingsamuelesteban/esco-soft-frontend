@@ -8,7 +8,9 @@
     <div class="bg-white shadow rounded-lg">
       <div class="border-b border-gray-200">
         <nav class="flex -mb-px">
-          <button v-for="tab in tabs" :key="tab.id" @click="activeTab = tab.id" :class="[
+          <button v-for="tab in tabs" :key="tab.id" 
+            @click="tab.id === 'tenants' ? navigateTo('/settings/tenants') : activeTab = tab.id" 
+            :class="[
             'py-2 px-4 text-sm font-medium border-b-2',
             activeTab === tab.id
               ? 'border-primary-500 text-primary-600'
@@ -103,8 +105,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive } from 'vue'
-import { useAuthStore } from '../stores/auth'
+import { ref, reactive, computed } from 'vue'
+import { useAuthStore } from '../../stores/auth'
 
 // Definir el meta para la página
 definePageMeta({
@@ -113,11 +115,19 @@ definePageMeta({
 })
 
 // Configuración de las pestañas
-const tabs = [
-  { id: 'profile', name: 'Perfil' },
-  { id: 'password', name: 'Contraseña' },
-  { id: 'preferences', name: 'Preferencias' }
-]
+const tabs = computed(() => {
+  const baseTabs = [
+    { id: 'profile', name: 'Perfil' },
+    { id: 'password', name: 'Contraseña' },
+    { id: 'preferences', name: 'Preferencias' }
+  ]
+  
+  if (authStore.isMaster) {
+    baseTabs.push({ id: 'tenants', name: 'Instituciones' })
+  }
+  
+  return baseTabs
+})
 
 const activeTab = ref('profile')
 const authStore = useAuthStore()

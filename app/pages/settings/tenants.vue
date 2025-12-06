@@ -131,6 +131,22 @@
                                 <input v-model="form.website" type="url"
                                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                             </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Logo</label>
+                                <div class="mt-1 flex items-center">
+                                    <span v-if="logoPreview || form.logo_url" class="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100 mr-4">
+                                         <img :src="logoPreview || form.logo_url" alt="Logo" class="h-full w-full object-cover">
+                                    </span>
+                                    <input type="file" @change="onLogoChange" accept="image/*"
+                                        class="block w-full text-sm text-gray-500
+                                          file:mr-4 file:py-2 file:px-4
+                                          file:rounded-full file:border-0
+                                          file:text-sm file:font-semibold
+                                          file:bg-primary-50 file:text-primary-700
+                                          hover:file:bg-primary-100
+                                        "/>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
@@ -203,6 +219,8 @@ const openCreateModal = () => {
         website: '',
         logo_url: ''
     })
+    logoFile.value = null
+    logoPreview.value = null
     showModal.value = true
 }
 
@@ -218,11 +236,24 @@ const editTenant = (tenant: Tenant) => {
         website: tenant.website || '',
         logo_url: tenant.logo_url || ''
     })
+    logoFile.value = null
+    logoPreview.value = null
     showModal.value = true
 }
 
 const closeModal = () => {
     showModal.value = false
+}
+
+const logoFile = ref<File | null>(null)
+const logoPreview = ref<string | null>(null)
+
+const onLogoChange = (event: Event) => {
+    const input = event.target as HTMLInputElement
+    if (input.files && input.files[0]) {
+        logoFile.value = input.files[0]
+        logoPreview.value = URL.createObjectURL(input.files[0])
+    }
 }
 
 const saveTenant = async () => {
@@ -231,9 +262,39 @@ const saveTenant = async () => {
     saving.value = true
     try {
         if (isEditing.value && editingId.value) {
-            await api.put(`/api/tenants/${editingId.value}`, form)
+            if (logoFile.value) {
+                // Si hay archivo, usar POST con spoofing para multipart
+                const formData = new FormData()
+                formData.append('name', form.name)
+                if (form.domain) formData.append('domain', form.domain)
+                if (form.address) formData.append('address', form.address)
+                if (form.phone) formData.append('phone', form.phone)
+                if (form.email) formData.append('email', form.email)
+                if (form.website) formData.append('website', form.website)
+                formData.append('logo', logoFile.value)
+                formData.append('_method', 'PUT')
+                
+                await api.post(`/api/tenants/${editingId.value}`, formData)
+            } else {
+                // Si no hay archivo, usar PUT directo con JSON (más limpio)
+                await api.put(`/api/tenants/${editingId.value}`, form)
+            }
         } else {
-            await api.post('/api/tenants', form)
+            // Crear: usar FormData si hay logo, JSON si no
+            if (logoFile.value) {
+                const formData = new FormData()
+                formData.append('name', form.name)
+                if (form.domain) formData.append('domain', form.domain)
+                if (form.address) formData.append('address', form.address)
+                if (form.phone) formData.append('phone', form.phone)
+                if (form.email) formData.append('email', form.email)
+                if (form.website) formData.append('website', form.website)
+                formData.append('logo', logoFile.value)
+                
+                await api.post('/api/tenants', formData)
+            } else {
+                await api.post('/api/tenants', form)
+            }
         }
         await fetchTenants()
         closeModal()
