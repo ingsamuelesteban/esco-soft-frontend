@@ -30,9 +30,9 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: "dist/*"
+          source: ".output/public/*"
           target: ${{ secrets.DEPLOY_PATH }}
-          strip_components: 1
+          strip_components: 2
 
       # Opcional: Si necesitas reiniciar algún servidor (aunque con static dist no suele hacer falta)
       # - name: Restart Server (Optional)
