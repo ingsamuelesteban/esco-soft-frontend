@@ -182,8 +182,15 @@
                   <tbody class="bg-white divide-y divide-gray-200">
                     <tr v-for="estudiante in estudiantes" :key="estudiante.id" class="hover:bg-gray-50">
                       <td class="px-6 py-4 whitespace-nowrap sticky left-0 bg-white z-10">
-                        <div class="flex items-center">
-                          <div>
+                        <div class="flex items-center space-x-3">
+                          <div class="flex-shrink-0">
+                             <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                              <span class="text-xs font-bold text-blue-800">
+                                {{ estudiante.numero_orden || '?' }}
+                              </span>
+                            </div>
+                          </div>
+                          <div class="hidden sm:block">
                             <div class="text-sm font-medium text-gray-900">
                               {{ estudiante.nombres }} {{ estudiante.apellidos }}
                             </div>
@@ -301,8 +308,15 @@
                   <tbody class="bg-white divide-y divide-gray-200">
                     <tr v-for="estudiante in estudiantes" :key="estudiante.id" class="hover:bg-gray-50">
                       <td class="px-6 py-4 whitespace-nowrap sticky left-0 bg-white">
-                        <div class="flex items-center">
-                          <div>
+                        <div class="flex items-center space-x-3">
+                          <div class="flex-shrink-0">
+                            <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                              <span class="text-xs font-bold text-blue-800">
+                                {{ estudiante.numero_orden || '?' }}
+                              </span>
+                            </div>
+                          </div>
+                          <div class="hidden sm:block">
                             <div class="text-sm font-medium text-gray-900">
                               {{ estudiante.nombres }} {{ estudiante.apellidos }}
                             </div>
