@@ -1,4 +1,10 @@
-// Middleware de autenticación desactivado temporalmente para pruebas de CORS/login
+import { useAuthStore } from '../stores/auth'
+
 export default defineNuxtRouteMiddleware((to, from) => {
-  // No hacer nada, permitir acceso a todas las rutas
+  const authStore = useAuthStore()
+
+  // Si no estÃ¡ autenticado, redirigir al login
+  if (!authStore.isAuthenticated) {
+    return navigateTo('/login')
+  }
 })
