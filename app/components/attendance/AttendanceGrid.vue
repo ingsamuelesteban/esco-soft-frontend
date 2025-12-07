@@ -67,11 +67,11 @@
                   </span>
                 </div>
               </div>
-              <div class="flex-1 min-w-0">
+              <div class="flex-1 min-w-0 hidden sm:block">
                 <p class="text-sm font-medium text-gray-900 truncate">
                   {{ record.estudiante.apellidos }}, {{ record.estudiante.nombres }}
                 </p>
-                <p class="text-sm text-gray-500">
+                <p class="text-sm text-gray-500 hidden sm:block">
                   Cédula: {{ record.estudiante.cedula }}
                 </p>
               </div>
