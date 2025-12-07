@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { useAuthStore } from './auth'
-import { api } from '../app/utils/api'
+import { api } from '../utils/api'
 
 export interface Estudiante {
   id: number

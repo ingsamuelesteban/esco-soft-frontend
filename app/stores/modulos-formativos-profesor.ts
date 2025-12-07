@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed, readonly } from 'vue'
 import { useAuthStore } from './auth'
-import { api } from '../app/utils/api'
+import { api } from '../utils/api'
 
 // Tipos específicos para materias
 interface MateriaQueImparte {
@@ -29,7 +29,7 @@ export const useMateriasProfesorStore = defineStore('materiasProfesor', () => {
   // Cargar materias que imparte el profesor autenticado
   const cargarMaterias = async () => {
     const authStore = useAuthStore()
-    
+
     if (!authStore.isAuthenticated || !authStore.user?.personal_id) {
       console.warn('Usuario no autenticado o sin personal_id')
       return
@@ -60,15 +60,15 @@ export const useMateriasProfesorStore = defineStore('materiasProfesor', () => {
   const puedeCalificarMateria = async (materiaId: string | number): Promise<boolean> => {
     try {
       const authStore = useAuthStore()
-      
+
       // Los admins pueden calificar cualquier materia
       if (authStore.isAdmin) return true
-      
+
       // Solo profesores pueden calificar
       if (!authStore.isProfesor) return false
-      
+
       // Verificar si la materia está en la lista del profesor
-      return materiasQueImparte.value.some(item => 
+      return materiasQueImparte.value.some(item =>
         item.materia?.id === parseInt(materiaId.toString())
       )
     } catch (error) {
@@ -79,7 +79,7 @@ export const useMateriasProfesorStore = defineStore('materiasProfesor', () => {
 
   // Buscar una materia específica que imparte
   const getMateriaById = (materiaId: string | number): MateriaQueImparte | undefined => {
-    return materiasQueImparte.value.find(item => 
+    return materiasQueImparte.value.find(item =>
       item.materia?.id === parseInt(materiaId.toString())
     )
   }
@@ -96,11 +96,11 @@ export const useMateriasProfesorStore = defineStore('materiasProfesor', () => {
     materiasQueImparte: readonly(materiasQueImparte),
     isLoading: readonly(isLoading),
     error: readonly(error),
-    
+
     // Getters
     materiasCount,
     hasMateriasActivas,
-    
+
     // Acciones
     cargarMaterias,
     puedeCalificarMateria,

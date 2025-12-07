@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { api } from '../app/utils/api'
+import { api } from '../utils/api'
 import { startLoading, finishLoading } from '../utils/loading'
 import type { Period } from './periods'
 import type { ClassAssignment } from './class_assignments'

@@ -107,7 +107,7 @@
                 </div>
 
                 <!-- Error message -->
-                <div v-if="error" class="mt-4 text-sm text-red-600">
+                <div v-if="error" class="mt-4 text-sm text-red-600 whitespace-pre-line">
                   {{ error }}
                 </div>
               </div>
@@ -207,7 +207,17 @@ const handleSubmit = async () => {
     }
     emit('saved')
   } catch (e: any) {
-    const errorMsg = e.data?.message || 'Error al guardar el registro'
+    let errorMsg = e.data?.message || 'Error al guardar el registro'
+
+    // Si hay errores de validación específicos, mostrarlos
+    if (e.data?.errors) {
+      const detailedErrors = Object.values(e.data.errors).flat()
+      if (detailedErrors.length > 0) {
+        // Mostrar el primer error o todos unidos
+        errorMsg = detailedErrors.join('\n')
+      }
+    }
+
     error.value = errorMsg
     showError(errorMsg)
   } finally {

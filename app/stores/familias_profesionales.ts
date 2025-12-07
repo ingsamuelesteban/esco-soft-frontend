@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { startLoading, finishLoading } from '../utils/loading'
-import { api } from '../app/utils/api'
+import { api } from '../utils/api'
 
 export interface FamiliaProfesional {
   id: number

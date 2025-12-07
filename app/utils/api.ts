@@ -30,7 +30,29 @@ export async function apiCall<T = any>(url: string, options: Parameters<typeof $
     ...options,
     headers,
     // Forzar que $fetch siempre parsee como JSON
-    responseType: 'json'
+    responseType: 'json',
+    onResponse({ response }) {
+      // Verificar si hay errores en el cuerpo, incluso si el status es 200
+      if (response._data && (response._data.errors || response._data.error)) {
+        const error = new Error(response._data.message || 'Error en la petición')
+        // Forzar status 422 si es 200 para que el catch lo procese como error de validación
+        const status = response.status >= 200 && response.status < 300 ? 422 : response.status
+        Object.assign(error, { data: response._data, statusCode: status })
+        throw error
+      }
+
+      if (!response.ok) {
+        // Fallback por si no entró en el if anterior
+        // En Nuxt 3/OhMyFetch, esto usualmente ya lanza error, 
+        // pero podemos asegurarnos o formatear el error aquí si es necesario.
+      }
+    },
+    onResponseError({ response }) {
+      // Asegurar que el error se lance con la data correcta
+      const error = new Error(response._data?.message || 'Error en la petición')
+      Object.assign(error, { data: response._data, statusCode: response.status })
+      throw error
+    }
   })
 }
 

@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia'
-import { api } from '../app/utils/api'
+import { api } from '../utils/api'
 
 export interface User {
   id: number
@@ -283,7 +283,7 @@ export const useAuthStore = defineStore('auth', {
 
       try {
         if (process.client) {
-          const { useMenu } = await import('../app/composables/useMenu')
+          const { useMenu } = await import('../composables/useMenu')
           const { loadMenu } = useMenu()
           await loadMenu()
         }

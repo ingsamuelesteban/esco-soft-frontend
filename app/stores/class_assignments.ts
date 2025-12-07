@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { startLoading, finishLoading } from '../utils/loading'
-import { api } from '../app/utils/api'
+import { api } from '../utils/api'
 import type { Aula } from './aulas'
 import type { Personal } from './personal'
 

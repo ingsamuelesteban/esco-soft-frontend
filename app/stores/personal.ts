@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import type { Cargo } from './cargos'
 import { startLoading, finishLoading } from '../utils/loading'
-import { api } from '../app/utils/api'
+import { api } from '../utils/api'
 
 export interface Personal {
   id: number
@@ -120,6 +120,16 @@ export const usePersonalStore = defineStore('personal', {
       } finally {
         this.loading = false
         finishLoading()
+      }
+    },
+
+    async createAccess(id: number, role: 'admin' | 'profesor' = 'profesor') {
+      try {
+        // No loading global para no bloquear la UI entera por una acción modal
+        const response = await api.post<{ success: boolean; data: { user: any; credenciales_temporales: any }; message: string }>(`/api/personal/${id}/crear-acceso`, { role })
+        return response.data
+      } catch (e: any) {
+        throw e
       }
     }
   }
