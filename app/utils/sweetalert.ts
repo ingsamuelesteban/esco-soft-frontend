@@ -30,7 +30,7 @@ export const showError = (message: string, title: string = 'Error') => {
  * Muestra una confirmación
  */
 export const showConfirm = async (
-  message: string, 
+  message: string,
   title: string = '¿Estás seguro?',
   icon: 'warning' | 'question' | 'info' = 'warning',
   confirmButtonText: string = 'Sí, continuar',
@@ -82,4 +82,26 @@ export const showToast = (message: string, icon: 'success' | 'error' | 'info' | 
     icon,
     title: message
   })
+}
+
+/**
+ * Muestra un loading que bloquea la pantalla
+ */
+export const showLoading = (message: string = 'Procesando...') => {
+  Swal.fire({
+    title: message,
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false,
+    didOpen: () => {
+      Swal.showLoading()
+    }
+  })
+}
+
+/**
+ * Cierra el mensaje de loading actual
+ */
+export const closeLoading = () => {
+  Swal.close()
 }

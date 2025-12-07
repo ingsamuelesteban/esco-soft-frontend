@@ -8,6 +8,11 @@
           <option :value="undefined">Todos los cargos</option>
           <option v-for="c in cargosStore.items" :key="c.id" :value="c.id">{{ c.nombre }}</option>
         </select>
+        <select v-model="filterUserStatus" class="rounded-md border-gray-300 text-sm">
+          <option value="all">Todos los estados</option>
+          <option value="with_user">Con Usuario</option>
+          <option value="without_user">Sin Usuario</option>
+        </select>
         <div class="ml-auto text-sm text-gray-500" v-if="!loading">Total: {{ filtered.length }}</div>
       </div>
     </div>
@@ -38,7 +43,8 @@
             <td class="px-4 py-3 whitespace-nowrap text-sm space-x-1">
               <!-- Botones para registros activos -->
               <template v-if="props.statusFilter === 'active'">
-                <button @click="handleCreateAccess(p)"
+                <!-- Si NO tiene usuario: Mostrar solo botón de crear acceso -->
+                <button v-if="!p.user" @click="handleCreateAccess(p)"
                   class="inline-flex items-center justify-center p-1.5 text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50 rounded-md transition-colors"
                   title="Generar Acceso">
                   <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -46,6 +52,32 @@
                       d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                   </svg>
                 </button>
+
+                <!-- Si TIENE usuario: Mostrar acciones extendidas -->
+                <div v-else class="relative inline-block text-left" data-menu-container>
+                  <button @click="toggleMenu(p.id)"
+                    class="inline-flex items-center justify-center p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                    title="Opciones de usuario">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
+                    </svg>
+                  </button>
+
+                  <div v-if="menuActive === p.id"
+                    class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
+                    <div class="py-1">
+                      <button @click="handleResetAccess(p); toggleMenu(null)"
+                        class="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <svg class="mr-3 h-4 w-4 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 7a2 2 0 012 2m0 0a2 2 0 01-2 2m2-2h-1V7h.01M7 20l4-16m2 16l4-16" />
+                        </svg>
+                        Resetear Contraseña
+                      </button>
+                    </div>
+                  </div>
+                </div>
                 <button @click="$emit('edit', p)"
                   class="inline-flex items-center justify-center p-1.5 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded-md transition-colors"
                   title="Editar">
@@ -108,11 +140,8 @@
     </div>
 
     <!-- Modal de Credenciales -->
-    <CredentialsModal 
-      :show="showCredentialsModal" 
-      :credentials="generatedCredentials" 
-      @close="showCredentialsModal = false" 
-    />
+    <CredentialsModal :show="showCredentialsModal" :credentials="generatedCredentials"
+      @close="showCredentialsModal = false" />
   </div>
 </template>
 
@@ -121,6 +150,51 @@ import { computed, onMounted, ref } from 'vue'
 import { usePersonalStore, type Personal } from '../../stores/personal'
 import { useCargosStore } from '../../stores/cargos'
 import { useTelefono } from '../../composables/useTelefono'
+import { showConfirm, showError, showToast, showLoading, closeLoading } from '../../utils/sweetalert'
+
+// ... existing code ...
+
+const handleResetAccess = async (personal: Personal) => {
+  const result = await showConfirm(
+    `¿Estás seguro de resetear la contraseña de ${personal.nombre}?`,
+    'Resetear Contraseña',
+    'warning',
+    'Sí, resetear',
+    'Cancelar'
+  )
+
+  if (!result.isConfirmed) return
+
+  creatingAccess.value = true
+  showLoading('Reseteando contraseña...')
+  try {
+    const response = await store.resetPassword(personal.id)
+    if (response && response.nueva_password) {
+      closeLoading()
+      generatedCredentials.value = {
+        username: personal.user?.username || '',
+        email: personal.user?.email || '',
+        password: response.nueva_password
+      }
+      showCredentialsModal.value = true
+      showToast('Contraseña reseteada correctamente', 'success')
+    }
+  } catch (e: any) {
+    closeLoading()
+    showError('Error al resetear contraseña: ' + (e.data?.message || e.message))
+  } finally {
+    creatingAccess.value = false
+    // closeLoading() is called in try/catch blocks to ensure it closes before modal opens or error shows
+    // but just in case of other paths or to be safe if no modal follows:
+    // actually, if we put closeLoading() here, it might close the SUCCESS modal if it uses Swal too?
+    // CredentialsModal is a Vue component, so it's fine.
+    // showToast uses Swal.mixin, which might be affected if we call Swal.close() immediately after?
+    // Swal.close() closes the currently open modal.
+    // If showToast is fired, it's a separate instance usually, but let's be careful.
+    // Ideally we close loading BEFORE showing success/toast.
+    // As done in the try block above.
+  }
+}
 
 defineEmits<{
   edit: [personal: Personal]
@@ -140,13 +214,8 @@ const store = usePersonalStore()
 const cargosStore = useCargosStore()
 const query = ref('')
 const filterCargo = ref<number | undefined>(undefined)
+const filterUserStatus = ref<'all' | 'with_user' | 'without_user'>('all')
 
-onMounted(() => {
-  if (store.items.length === 0) {
-    store.fetchAll()
-  }
-  cargosStore.fetchAll()
-})
 
 const loading = computed(() => store.loading)
 
@@ -160,7 +229,11 @@ const filtered = computed<Personal[]>(() => {
 
     const matchesCargo = filterCargo.value === undefined || p.cargo_id === filterCargo.value
 
-    return matchesQuery && matchesCargo
+    const matchesUserStatus = filterUserStatus.value === 'all' ||
+      (filterUserStatus.value === 'with_user' && p.user) ||
+      (filterUserStatus.value === 'without_user' && !p.user)
+
+    return matchesQuery && matchesCargo && matchesUserStatus
   })
 })
 
@@ -195,21 +268,59 @@ const generatedCredentials = ref({ username: '', email: '', password: '' })
 const creatingAccess = ref(false)
 
 const handleCreateAccess = async (personal: Personal) => {
-  if (!confirm(`¿Generar acceso al sistema para ${personal.nombre} ${personal.apellido}?`)) return
-  
+  const result = await showConfirm(
+    `¿Generar acceso al sistema para ${personal.nombre} ${personal.apellido}?`,
+    'Crear usuario',
+    'info',
+    'Sí, generar',
+    'Cancelar'
+  )
+
+  if (!result.isConfirmed) return
+
   creatingAccess.value = true
   try {
     const response = await store.createAccess(personal.id, 'profesor') // Default rol profesor por ahora
-    if (response.success && response.data.credenciales_temporales) {
-      generatedCredentials.value = response.data.credenciales_temporales
+    if (response && response.credenciales_temporales) {
+      generatedCredentials.value = response.credenciales_temporales
       showCredentialsModal.value = true
+      showToast('Acceso generado correctamente', 'success')
     }
-  } catch (e) {
-    alert('Error al generar acceso: ' + (e as any).message)
+  } catch (e: any) {
+    showError('Error al generar acceso: ' + (e.data?.message || e.message))
   } finally {
     creatingAccess.value = false
   }
 }
+
+// Lógica de menús y reset password
+const menuActive = ref<number | null>(null)
+
+const toggleMenu = (id: number | null) => {
+  menuActive.value = menuActive.value === id ? null : id
+}
+
+
+
+const initialMountedSetup = () => {
+  if (store.items.length === 0) store.fetchAll()
+  cargosStore.fetchAll()
+}
+
+const handleClickOutside = (event: Event) => {
+  const target = event.target as HTMLElement
+  if (!target.closest('[data-menu-container]')) {
+    menuActive.value = null
+  }
+}
+
+onMounted(() => {
+  initialMountedSetup()
+  document.addEventListener('click', handleClickOutside)
+})
+
+import { onUnmounted } from 'vue'
+onUnmounted(() => {
+  document.removeEventListener('click', handleClickOutside)
+})
 </script>
-
-

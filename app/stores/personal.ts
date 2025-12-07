@@ -17,6 +17,7 @@ export interface Personal {
   formacion_academica: string | null
   otros_titulos: string | null
   telefono: string | null
+  user?: any | null
 }
 
 export const usePersonalStore = defineStore('personal', {
@@ -127,6 +128,23 @@ export const usePersonalStore = defineStore('personal', {
       try {
         // No loading global para no bloquear la UI entera por una acción modal
         const response = await api.post<{ success: boolean; data: { user: any; credenciales_temporales: any }; message: string }>(`/api/personal/${id}/crear-acceso`, { role })
+
+        if (response.data && response.data.user) {
+          const item = this.items.find(p => p.id === id)
+          if (item) {
+            item.user = response.data.user
+          }
+        }
+
+        return response.data
+      } catch (e: any) {
+        throw e
+      }
+    },
+
+    async resetPassword(id: number) {
+      try {
+        const response = await api.post<{ success: boolean; data: { nueva_password: string }; message: string }>(`/api/personal/${id}/resetear-password`)
         return response.data
       } catch (e: any) {
         throw e

@@ -15,7 +15,6 @@ export async function apiCall<T = any>(url: string, options: Parameters<typeof $
     headers['Content-Type'] = 'application/json'
   }
 
-  // Añadir token si está disponible (solo en client-side)
   if (process.client) {
     const token = localStorage.getItem('auth_token')
     if (token) {
