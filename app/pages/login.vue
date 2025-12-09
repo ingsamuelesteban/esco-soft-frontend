@@ -4,7 +4,7 @@
       <div>
         <!-- Logo -->
         <div class="flex justify-center mb-8">
-          <img src="/images/logo.png" alt="EscoSoft Logo" class="h-32 w-auto" @error="logoError = true" />
+          <img src="/images/logo.png?v=2" alt="EscoSoft Logo" class="h-32 w-auto" @error="logoError = true" />
           <!-- Fallback si hay error cargando el logo -->
           <div v-if="logoError" class="h-32 w-32 bg-blue-600 rounded-lg flex items-center justify-center">
             <span class="text-white text-4xl font-bold">ES</span>
