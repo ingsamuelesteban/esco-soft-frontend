@@ -32,7 +32,9 @@ export async function apiCall<T = any>(url: string, options: Parameters<typeof $
       '/logout-all',
       '/profile',
       '/sanctum/csrf-cookie',
-      '/tenants'
+      '/sanctum/csrf-cookie',
+      '/tenants',
+      '/api/tenants'
     ]
 
     // Check if URL matches any global route (exact or start)
