@@ -182,6 +182,8 @@ export const useAuthStore = defineStore('auth', {
     async initializeAuth() {
       if (process.client && !this.isAuthenticated) {
         const savedToken = localStorage.getItem('auth_token')
+        const savedTenantId = localStorage.getItem('selected_tenant_id')
+
         if (savedToken) {
           this.token = savedToken
           try {
@@ -193,6 +195,15 @@ export const useAuthStore = defineStore('auth', {
               this.user = response.data.user
               this.tenant = response.data.tenant || null
               this.isAuthenticated = true
+
+              // Si tenemos un tenant ID guardado pero la API no devolvió tenant (ej: global user), podríamos intentar restaurarlo
+              if (!this.tenant && savedTenantId && this.availableTenants.length > 0) {
+                const found = this.availableTenants.find(t => t.id === Number(savedTenantId))
+                if (found) {
+                  this.tenant = found
+                }
+              }
+
               await this.loadUserMenu()
             } else {
               this.clearTokens()

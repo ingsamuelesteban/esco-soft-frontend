@@ -20,6 +20,52 @@ export async function apiCall<T = any>(url: string, options: Parameters<typeof $
     if (token) {
       headers.Authorization = `Bearer ${token}`
     }
+
+    // Tenencia por URL: Inyectar tenant ID si existe y la ruta no es global
+    const tenantId = localStorage.getItem('selected_tenant_id')
+    const globalRoutes = [
+      '/login',
+      '/change-required-password',
+      '/estudiantes',
+      '/me',
+      '/logout',
+      '/logout-all',
+      '/profile',
+      '/sanctum/csrf-cookie',
+      '/tenants'
+    ]
+
+    // Check if URL matches any global route (exact or start)
+    const isGlobal = globalRoutes.some(route => url === route || url.startsWith(route + '/'))
+
+    if (tenantId && !isGlobal) {
+      if (url.startsWith('/api/')) {
+        // Ejemplo: /api/menu -> /api/2/menu
+        url = `/api/${tenantId}${url.substring(4)}`
+      } else if (url.startsWith('api/')) {
+        // Ejemplo: api/menu -> api/2/menu
+        url = `api/${tenantId}${url.substring(3)}`
+      } else if (!url.startsWith('http')) {
+        // Si no tiene prefijo api, lo inyectamos al principio si asumimos que va a la API
+        // Ejemplo: /menu -> /2/menu (esto estaba causando el error)
+        // Pero si el backend espera /api/2/menu, el baseURL debe manejar el api prefix
+        // O debemos inyectarlo.
+        // Asumiendo que las llamadas relativas son recursos API:
+        // url = `/${tenantId}${url.startsWith('/') ? url : '/' + url}`
+
+        // CORRECCIÓN: Si el baseURL ya tiene /api, entonces /2/menu resulta en .../api/2/menu
+        // El error previo fue "The route 2/api/menu could not be found". 
+        // Eso significa que la URL final fue .../2/api/menu.
+
+        // Si url era '/api/menu', mi código anterior hizo '/2/api/menu'.
+        // Con este cambio de arriba (startsWith /api/), eso se arregla.
+
+        // Si url NO empieza con api... dejemos la lógica simple de prepender,
+        // asumiendo que el baseURL se encarga del resto o que la ruta es relativa al root.
+        const cleanUrl = url.startsWith('/') ? url.substring(1) : url
+        url = `/${tenantId}/${cleanUrl}`
+      }
+    }
   }
 
   // Usar baseURL del config si URL es relativa

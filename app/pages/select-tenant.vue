@@ -11,15 +11,28 @@
 
         <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
             <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
-                <div class="space-y-6">
+                <div class="space-y-6 relative">
+                    <!-- Overlay de carga -->
+                    <div v-if="isLoading"
+                        class="absolute inset-0 bg-white bg-opacity-75 flex items-center justify-center z-10 rounded-lg">
+                        <svg class="animate-spin h-8 w-8 text-primary-600" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                    </div>
+
                     <div v-if="authStore.availableTenants.length === 0" class="text-center text-gray-500">
                         No hay instituciones disponibles.
                     </div>
 
                     <div v-else class="space-y-4">
                         <button v-for="tenant in authStore.availableTenants" :key="tenant.id"
-                            @click="selectTenant(tenant)"
-                            class="w-full flex items-center justify-between p-4 border border-gray-300 rounded-lg hover:border-primary-500 hover:ring-1 hover:ring-primary-500 transition-all group bg-white">
+                            @click="selectTenant(tenant)" :disabled="isLoading"
+                            class="w-full flex items-center justify-between p-4 border border-gray-300 rounded-lg hover:border-primary-500 hover:ring-1 hover:ring-primary-500 transition-all group bg-white disabled:opacity-50 disabled:cursor-not-allowed">
                             <div class="flex items-center space-x-3">
                                 <div
                                     class="flex-shrink-0 h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center text-primary-600 font-bold">
@@ -43,8 +56,8 @@
                     </div>
 
                     <div class="mt-6">
-                        <button @click="logout"
-                            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                        <button @click="logout" :disabled="isLoading"
+                            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50">
                             Cerrar Sesión
                         </button>
                     </div>
@@ -55,6 +68,7 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import type { Tenant } from '../stores/auth'
 
@@ -64,12 +78,24 @@ definePageMeta({
 })
 
 const authStore = useAuthStore()
+const isLoading = ref(false)
 
 const selectTenant = async (tenant: Tenant) => {
-    await authStore.selectTenant(tenant)
+    try {
+        isLoading.value = true
+        await authStore.selectTenant(tenant)
+    } catch (error) {
+        console.error('Error selecting tenant:', error)
+        isLoading.value = false
+    }
 }
 
 const logout = async () => {
-    await authStore.logout()
+    try {
+        isLoading.value = true
+        await authStore.logout()
+    } finally {
+        isLoading.value = false
+    }
 }
 </script>
