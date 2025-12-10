@@ -18,7 +18,7 @@
     </header>
 
     <!-- Controles de depuración de tiempo -->
-     <!-- <div class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+    <div v-if="false" class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
       <div class="flex flex-wrap items-end gap-4">
         <div>
           <label class="block text-xs font-medium text-gray-700 mb-1">Simular Fecha</label>
@@ -35,7 +35,7 @@
           Restablecer a Ahora
         </button>
       </div>
-    </div> -->
+    </div>
 
     <div class="mt-6">
       <div class="flex items-center gap-3 text-sm text-gray-600">
