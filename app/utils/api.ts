@@ -26,7 +26,7 @@ export async function apiCall<T = any>(url: string, options: Parameters<typeof $
     const globalRoutes = [
       '/login',
       '/change-required-password',
-      '/estudiantes',
+
       '/me',
       '/logout',
       '/logout-all',
