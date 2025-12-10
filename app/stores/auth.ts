@@ -108,6 +108,12 @@ export const useAuthStore = defineStore('auth', {
 
           if (process.client) {
             localStorage.setItem('auth_token', data.data.token)
+
+            // Fix: Asegurar que el ID del tenant esté en localStorage para que api.ts pueda construir la URL correcta
+            if (this.tenant) {
+              localStorage.setItem('selected_tenant_id', this.tenant.id.toString())
+            }
+
             if (credentials.remember) {
               localStorage.setItem('remember_me', 'true')
               localStorage.setItem('remembered_username', credentials.username)
@@ -195,6 +201,11 @@ export const useAuthStore = defineStore('auth', {
               this.user = response.data.user
               this.tenant = response.data.tenant || null
               this.isAuthenticated = true
+
+              // Fix: Asegurar que se restaure el tenant ID en localStorage
+              if (this.tenant && process.client) {
+                localStorage.setItem('selected_tenant_id', this.tenant.id.toString())
+              }
 
               // Si tenemos un tenant ID guardado pero la API no devolvió tenant (ej: global user), podríamos intentar restaurarlo
               if (!this.tenant && savedTenantId && this.availableTenants.length > 0) {
