@@ -70,12 +70,27 @@ const closeModal = () => {
 const onSaved = async () => {
   closeModal()
 
+  const { default: Swal } = await import('sweetalert2')
+  
+  // Mostrar loading mientras se actualiza la lista
+  Swal.fire({
+    title: 'Actualizando lista...',
+    text: 'Por favor espere',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading()
+    }
+  })
+
   try {
-    // Recargar datos y reordenar automáticamente
-    await store.fetchAll(statusFilter.value)
+    // Recargar datos (el reordenamiento ya se hizo automáticamente en el backend, pero forzamos por seguridad)
     await store.reordenarNumeros()
+    await store.fetchAll(statusFilter.value)
+    
+    Swal.close()
     showToast('Estudiante guardado correctamente', 'success')
   } catch (error) {
+    Swal.close()
     showError('Error al guardar el estudiante')
   }
 }
