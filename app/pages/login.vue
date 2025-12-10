@@ -19,10 +19,10 @@
       <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
         <div class="rounded-md shadow-sm -space-y-px">
           <div>
-            <label for="email" class="sr-only">Email</label>
-            <input id="email" v-model="form.email" name="email" type="email" autocomplete="email" required
+            <label for="username" class="sr-only">Usuario</label>
+            <input id="username" v-model="form.username" name="username" type="text" autocomplete="username" required
               class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-              placeholder="Correo electrónico" :disabled="isLoading" />
+              placeholder="Usuario" :disabled="isLoading" />
           </div>
           <div>
             <label for="password" class="sr-only">Contraseña</label>
@@ -205,7 +205,7 @@ definePageMeta({
 
 // Estado reactivo
 const form = reactive({
-  email: '',
+  username: '',
   password: '',
   remember: false
 })
@@ -235,10 +235,10 @@ const getErrorMessage = (error) => {
 
   // Priorizar errores de credenciales primero (más específicos)
   if (lowerError.includes('credenciales') || lowerError.includes('credentials') ||
-    lowerError.includes('email') || lowerError.includes('password') ||
+    lowerError.includes('username') || lowerError.includes('password') ||
     lowerError.includes('contraseña') || lowerError.includes('incorrectas') ||
     lowerError.includes('invalid') || lowerError.includes('wrong')) {
-    return 'Email o contraseña incorrectos. Por favor, verifica tus datos.'
+    return 'Usuario o contraseña incorrectos. Por favor, verifica tus datos.'
   }
 
   // Errores de validación 422 (credenciales incorrectas)
@@ -299,7 +299,7 @@ const handleLogin = async () => {
 
   try {
     const result = await authStore.login({
-      email: form.email,
+      username: form.username,
       password: form.password,
       remember: form.remember
     })
@@ -419,8 +419,8 @@ onMounted(() => {
   } else {
     // Cargar datos recordados si existen
     const remembered = authStore.getRememberedCredentials()
-    if (remembered.remember && remembered.email) {
-      form.email = remembered.email
+    if (remembered.remember && remembered.username) {
+      form.username = remembered.username
       form.remember = true
     }
   }

@@ -11,7 +11,7 @@ export interface User {
 }
 
 export interface LoginCredentials {
-  email: string
+  username: string
   password: string
   remember?: boolean
 }
@@ -110,10 +110,10 @@ export const useAuthStore = defineStore('auth', {
             localStorage.setItem('auth_token', data.data.token)
             if (credentials.remember) {
               localStorage.setItem('remember_me', 'true')
-              localStorage.setItem('remembered_email', credentials.email)
+              localStorage.setItem('remembered_username', credentials.username)
             } else {
               localStorage.removeItem('remember_me')
-              localStorage.removeItem('remembered_email')
+              localStorage.removeItem('remembered_username')
             }
           }
 
@@ -227,22 +227,22 @@ export const useAuthStore = defineStore('auth', {
     getRememberedCredentials() {
       if (process.client) {
         const rememberMe = localStorage.getItem('remember_me') === 'true'
-        const rememberedEmail = localStorage.getItem('remembered_email') || ''
+        const rememberedUsername = localStorage.getItem('remembered_username') || ''
         return {
           remember: rememberMe,
-          email: rememberedEmail
+          username: rememberedUsername
         }
       }
       return {
         remember: false,
-        email: ''
+        username: ''
       }
     },
 
     clearRememberedCredentials() {
       if (process.client) {
         localStorage.removeItem('remember_me')
-        localStorage.removeItem('remembered_email')
+        localStorage.removeItem('remembered_username')
       }
     },
 
