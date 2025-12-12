@@ -55,6 +55,7 @@ export const useAniosLectivosStore = defineStore('anios_lectivos', {
         },
 
         async create(payload: Omit<AnioLectivo, 'id'>) {
+            this.loading = true
             startLoading()
             try {
                 const created = await api.post<AnioLectivo>('/api/anios-lectivos', payload)
@@ -64,11 +65,13 @@ export const useAniosLectivosStore = defineStore('anios_lectivos', {
                 console.error(e)
                 throw e
             } finally {
+                this.loading = false
                 finishLoading()
             }
         },
 
         async update(id: number, payload: Partial<AnioLectivo>) {
+            this.loading = true
             startLoading()
             try {
                 const updated = await api.put<AnioLectivo>(`/api/anios-lectivos/${id}`, payload)
@@ -79,11 +82,13 @@ export const useAniosLectivosStore = defineStore('anios_lectivos', {
                 console.error(e)
                 throw e
             } finally {
+                this.loading = false
                 finishLoading()
             }
         },
 
         async delete(id: number) {
+            this.loading = true
             startLoading()
             try {
                 await api.delete(`/api/anios-lectivos/${id}`)
@@ -93,6 +98,7 @@ export const useAniosLectivosStore = defineStore('anios_lectivos', {
                 console.error(e)
                 throw e
             } finally {
+                this.loading = false
                 finishLoading()
             }
         }

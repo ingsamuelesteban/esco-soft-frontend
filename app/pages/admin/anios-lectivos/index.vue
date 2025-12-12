@@ -53,7 +53,7 @@
             <div class="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden">
                 <div class="px-6 py-4 border-b flex justify-between items-center">
                     <h3 class="text-lg font-medium text-gray-900">{{ isEdit ? 'Editar Año Lectivo' : 'Nuevo Año Lectivo'
-                        }}</h3>
+                    }}</h3>
                     <button @click="closeModal" class="text-gray-400 hover:text-gray-500">
                         <span class="sr-only">Cerrar</span>
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -82,10 +82,22 @@
                         <div v-if="formError" class="text-red-600 text-sm">{{ formError }}</div>
                     </div>
                     <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3">
-                        <button type="button" @click="closeModal"
-                            class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50">Cancelar</button>
-                        <button type="submit"
-                            class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700">Guardar</button>
+                        <button type="button" @click="closeModal" :disabled="loading"
+                            class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                            Cancelar
+                        </button>
+                        <button type="submit" :disabled="loading"
+                            class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center">
+                            <svg v-if="loading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none"
+                                viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
+                                    stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                                </path>
+                            </svg>
+                            {{ loading ? 'Guardando...' : 'Guardar' }}
+                        </button>
                     </div>
                 </form>
             </div>
