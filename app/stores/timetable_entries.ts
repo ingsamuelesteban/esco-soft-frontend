@@ -36,7 +36,7 @@ export const useTimetableEntriesStore = defineStore('timetableEntries', {
     },
   },
   actions: {
-    async fetchAll(params: { aula_id?: number; profesor_id?: number; dia?: number; anio_lectivo?: string; include_attendance?: boolean; date?: string } = {}) {
+    async fetchAll(params: { aula_id?: number; profesor_id?: number; dia?: number; anio_lectivo_id?: number; include_attendance?: boolean; date?: string } = {}) {
       this.loading = true
       this.error = null
       startLoading()

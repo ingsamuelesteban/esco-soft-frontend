@@ -3,6 +3,7 @@ import { startLoading, finishLoading } from '../utils/loading'
 import { api } from '../utils/api'
 import type { Aula } from './aulas'
 import type { Personal } from './personal'
+import type { AnioLectivo } from './anios_lectivos'
 
 export interface MateriaRef {
   id: number
@@ -15,13 +16,14 @@ export interface ClassAssignment {
   materia_id: number
   profesor_id: number
   aula_id: number
-  anio_lectivo: string
+  anio_lectivo_id: number
   horas_semanales: number | null
   activo: boolean
   periodos_programados?: number
   materia?: MateriaRef
   profesor?: Personal
   aula?: Aula
+  anio_lectivo?: AnioLectivo
 }
 
 export const useClassAssignmentsStore = defineStore('classAssignments', {
@@ -29,14 +31,14 @@ export const useClassAssignmentsStore = defineStore('classAssignments', {
     items: [] as ClassAssignment[],
     loading: false as boolean,
     error: null as string | null,
-    anioLectivo: '2025-2' as string,
+    anioLectivoId: null as number | null,
   }),
   getters: {
     byAula: (s) => (aulaId: number) => s.items.filter(a => a.aula_id === aulaId),
     active: (s) => s.items.filter(a => a.activo),
   },
   actions: {
-    async fetchAll(params: { aula_id?: number; profesor_id?: number; materia_id?: number; anio_lectivo?: string; only_active?: boolean } = {}) {
+    async fetchAll(params: { aula_id?: number; profesor_id?: number; materia_id?: number; anio_lectivo_id?: number; only_active?: boolean } = {}) {
       this.loading = true
       this.error = null
       startLoading()
@@ -46,7 +48,10 @@ export const useClassAssignmentsStore = defineStore('classAssignments', {
         if (params.profesor_id) query.profesor_id = params.profesor_id
         if (params.materia_id) query.materia_id = params.materia_id
         query.only_active = params.only_active ?? true
-        query.anio_lectivo = params.anio_lectivo ?? this.anioLectivo
+        query.anio_lectivo_id = params.anio_lectivo_id ?? this.anioLectivoId
+
+        // Don't fetch if no year selected (optional guard, or let backend return empty)
+        // if (!query.anio_lectivo_id) ... 
 
         const data = await api.get<any>('/api/class-assignments', {
           params: query
@@ -59,7 +64,6 @@ export const useClassAssignmentsStore = defineStore('classAssignments', {
           } else if (Array.isArray(data)) {
             this.items = data
           } else if ('success' in data && data.success === false) {
-            // Handle error response (e.g., permission denied)
             console.warn('API returned error:', data.message)
             this.items = []
             this.error = data.message || 'No se pudieron cargar las asignaciones'
@@ -80,7 +84,7 @@ export const useClassAssignmentsStore = defineStore('classAssignments', {
       }
     },
 
-    async create(payload: Omit<ClassAssignment, 'id' | 'materia' | 'profesor' | 'aula' | 'activo'> & { activo?: boolean }) {
+    async create(payload: Omit<ClassAssignment, 'id' | 'materia' | 'profesor' | 'aula' | 'anio_lectivo' | 'activo'> & { activo?: boolean }) {
       startLoading()
       try {
         const created = await api.post<ClassAssignment>('/api/class-assignments', payload)
@@ -94,7 +98,7 @@ export const useClassAssignmentsStore = defineStore('classAssignments', {
       }
     },
 
-    async update(id: number, payload: Partial<Omit<ClassAssignment, 'id' | 'materia' | 'profesor' | 'aula'>>) {
+    async update(id: number, payload: Partial<Omit<ClassAssignment, 'id' | 'materia' | 'profesor' | 'aula' | 'anio_lectivo'>>) {
       startLoading()
       try {
         const updated = await api.put<ClassAssignment>(`/api/class-assignments/${id}`, payload)

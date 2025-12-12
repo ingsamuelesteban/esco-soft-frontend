@@ -16,9 +16,11 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm text-gray-600 mb-1">Año lectivo</label>
-              <input v-model="form.anio_lectivo" type="text" class="border rounded px-2 py-2 w-full"
-                placeholder="2025-2" />
-              <p v-if="errors.anio_lectivo" class="text-sm text-red-600 mt-1">{{ errors.anio_lectivo }}</p>
+              <select v-model.number="form.anio_lectivo_id" class="border rounded px-2 py-2 w-full">
+                <option :value="undefined">Seleccionar...</option>
+                <option v-for="a in anios" :key="a.id" :value="a.id">{{ a.nombre }}</option>
+              </select>
+              <p v-if="errors.anio_lectivo_id" class="text-sm text-red-600 mt-1">{{ errors.anio_lectivo_id }}</p>
             </div>
             <div>
               <label class="block text-sm text-gray-600 mb-1">Horas semanales</label>
@@ -72,6 +74,7 @@ import { useModulosFormativosApiStore } from '../../stores/modulos-formativos-ap
 import { usePersonalStore } from '../../stores/personal'
 import { useAulasStore, type Aula } from '../../stores/aulas'
 import { useClassAssignmentsStore, type ClassAssignment } from '../../stores/class_assignments'
+import { useAniosLectivosStore } from '../../stores/anios_lectivos'
 
 const props = defineProps<{ open: boolean; model?: ClassAssignment | null }>()
 const emit = defineEmits<{ close: []; saved: [item: ClassAssignment] }>()
@@ -80,9 +83,10 @@ const modulosFormativosStore = useModulosFormativosApiStore()
 const personalStore = usePersonalStore()
 const aulasStore = useAulasStore()
 const assignments = useClassAssignmentsStore()
+const aniosStore = useAniosLectivosStore()
 
-const form = reactive<{ anio_lectivo: string; horas_semanales: number | null; materia_id?: number; profesor_id?: number; aula_id?: number }>({
-  anio_lectivo: assignments.anioLectivo,
+const form = reactive<{ anio_lectivo_id?: number; horas_semanales: number | null; materia_id?: number; profesor_id?: number; aula_id?: number }>({
+  anio_lectivo_id: assignments.anioLectivoId || undefined,
   horas_semanales: null,
 })
 const errors = reactive<Record<string, string | null>>({})
@@ -94,15 +98,19 @@ onMounted(async () => {
   if (modulosFormativosStore.items.length === 0) await modulosFormativosStore.fetchAll()
   if (personalStore.items.length === 0) await personalStore.fetchAll()
   if (aulasStore.items.length === 0) await aulasStore.fetchAll()
+  if (aniosStore.items.length === 0) await aniosStore.fetchAll({ activo: true })
 })
 
 function resetForm() {
-  form.anio_lectivo = assignments.anioLectivo
+  form.anio_lectivo_id = assignments.anioLectivoId || undefined
+  if (!form.anio_lectivo_id && aniosStore.items.length > 0) {
+    form.anio_lectivo_id = aniosStore.items[0]?.id
+  }
   form.horas_semanales = null
   form.materia_id = undefined
   form.profesor_id = undefined
   form.aula_id = undefined
-  errors.anio_lectivo = null
+  errors.anio_lectivo_id = null
   errors.materia_id = null
   errors.profesor_id = null
   errors.aula_id = null
@@ -111,7 +119,7 @@ function resetForm() {
 
 watch(() => props.model, (m) => {
   if (m) {
-    form.anio_lectivo = m.anio_lectivo
+    form.anio_lectivo_id = m.anio_lectivo_id
     form.horas_semanales = m.horas_semanales ?? null
     form.materia_id = m.materia_id
     form.profesor_id = m.profesor_id
@@ -124,6 +132,7 @@ watch(() => props.model, (m) => {
 const modulosFormativos = computed(() => modulosFormativosStore.active)
 const profesores = computed(() => personalStore.items.filter(p => p.cargo?.nombre === 'Profesor'))
 const aulas = computed(() => aulasStore.items)
+const anios = computed(() => aniosStore.items)
 
 const aulaName = (a: Aula) => {
   const grado = a.grado_cardinal ? `${a.grado_cardinal}º` : ''
@@ -133,24 +142,26 @@ const aulaName = (a: Aula) => {
 }
 
 const onSubmit = async () => {
-  errors.anio_lectivo = null
+  errors.anio_lectivo = null // Removed but safe to leave or key logic change
+  errors.anio_lectivo_id = null
   errors.materia_id = null
   errors.profesor_id = null
   errors.aula_id = null
   formError.value = null
   try {
     // Basic required checks for TS and UX
+    if (!form.anio_lectivo_id) errors.anio_lectivo_id = 'Requerido'
     if (!form.materia_id) errors.materia_id = 'Requerido'
     if (!form.profesor_id) errors.profesor_id = 'Requerido'
     if (!form.aula_id) errors.aula_id = 'Requerido'
-    if (errors.materia_id || errors.profesor_id || errors.aula_id) return
+    if (errors.materia_id || errors.profesor_id || errors.aula_id || errors.anio_lectivo_id) return
 
     if (isEdit.value && props.model) {
       const updated = await assignments.update(props.model.id, { ...form })
       emit('saved', updated)
     } else {
       const created = await assignments.create({
-        anio_lectivo: form.anio_lectivo,
+        anio_lectivo_id: form.anio_lectivo_id!,
         horas_semanales: form.horas_semanales,
         materia_id: form.materia_id!,
         profesor_id: form.profesor_id!,

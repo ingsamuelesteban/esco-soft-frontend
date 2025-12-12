@@ -179,7 +179,7 @@ const reload = async () => {
 
   await entries.fetchAll({
     dia: d >= 1 ? d : undefined,
-    anio_lectivo: assignments.anioLectivo,
+    anio_lectivo_id: assignments.anioLectivoId || undefined,
     include_attendance: true,
     date: dateStr
   })
@@ -195,7 +195,7 @@ onMounted(async () => {
       const dateStr = effectiveNow.value.toLocaleDateString('en-CA')
       await entries.fetchAll({
         dia: d >= 1 ? d : undefined,
-        anio_lectivo: assignments.anioLectivo,
+        anio_lectivo_id: assignments.anioLectivoId || undefined,
         include_attendance: true,
         date: dateStr
       })

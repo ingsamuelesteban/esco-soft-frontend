@@ -9,12 +9,21 @@
           <option value="Masculino">Masculino</option>
           <option value="Femenino">Femenino</option>
         </select>
+        <select v-model="filterAula" class="rounded-md border-gray-300 text-sm w-48">
+          <option :value="undefined">Todas las aulas</option>
+          <option v-for="a in aulasStore.items" :key="a.id" :value="a.id">
+            {{ a.grado_cardinal }}° {{ a.seccion }}
+          </option>
+        </select>
         <button @click="reordenarNumeros" :disabled="loading"
           class="px-3 py-2 text-sm bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center"
           title="Reordenar números de orden alfabéticamente">
-          <svg v-if="loading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <svg v-if="loading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg"
+            fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
           </svg>
           <svg v-else class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7" />
@@ -48,8 +57,8 @@
             </td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">{{ e.nombres }}</td>
             <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">{{ e.apellidos }}</td>
-            <td class="px-4 py-3 whitespace-nowrap text-sm">{{ e.cedula }}</td>
-            <td class="px-4 py-3 whitespace-nowrap text-sm font-mono">{{ e.rne }}</td>
+            <td class="px-4 py-3 whitespace-nowrap text-sm">{{ e.cedula || '—' }}</td>
+            <td class="px-4 py-3 whitespace-nowrap text-sm font-mono">{{ e.rne || '—' }}</td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">{{ formatDate(e.fecha_nacimiento) }}</td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">{{ e.edad }} años</td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">
@@ -134,6 +143,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useEstudiantesStore, type Estudiante } from '../../stores/estudiantes'
+import { useAulasStore } from '../../stores/aulas'
 
 defineEmits<{
   edit: [estudiante: Estudiante]
@@ -150,12 +160,17 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const store = useEstudiantesStore()
+const aulasStore = useAulasStore()
 const query = ref('')
 const filterSexo = ref<'Masculino' | 'Femenino' | undefined>(undefined)
+const filterAula = ref<number | undefined>(undefined)
 
 onMounted(() => {
   if (store.items.length === 0) {
     store.fetchAll()
+  }
+  if (aulasStore.items.length === 0) {
+    aulasStore.fetchAll()
   }
 })
 
@@ -208,8 +223,9 @@ const filtered = computed<Estudiante[]>(() => {
       e.rne.toLowerCase().includes(q)
 
     const matchesSexo = filterSexo.value === undefined || e.sexo === filterSexo.value
+    const matchesAula = filterAula.value === undefined || e.aula_id === filterAula.value
 
-    return matchesQuery && matchesSexo
+    return matchesQuery && matchesSexo && matchesAula
   })
 })
 

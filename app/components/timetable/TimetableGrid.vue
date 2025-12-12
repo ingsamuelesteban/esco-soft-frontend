@@ -3,7 +3,12 @@
     <div class="p-4 flex items-center gap-3 flex-wrap">
       <div class="flex items-center gap-2">
         <label class="text-sm text-gray-600">Año lectivo</label>
-        <input v-model="anio" type="text" class="border rounded px-2 py-1 text-sm h-8 w-28" placeholder="2025-2" />
+        <select v-model.number="anioId" class="border rounded px-2 py-1 text-sm h-8">
+          <option :value="undefined">Seleccionar...</option>
+          <option v-for="a in aniosLectivosStore.activos" :key="a.id" :value="a.id">
+            {{ a.nombre }}
+          </option>
+        </select>
       </div>
       <div class="flex items-center gap-2">
         <label class="text-sm text-gray-600">Aula</label>
@@ -15,7 +20,7 @@
       <div class="flex items-center gap-2">
         <label class="text-sm text-gray-600">Asignación</label>
         <select v-model.number="selectedAssignmentId" class="border rounded px-2 py-1 text-sm h-8 min-w-[220px]"
-          :disabled="!aulaId">
+          :disabled="!aulaId || !anioId">
           <option :value="undefined">Seleccionar asignación…</option>
           <option v-for="a in assignmentsForAula" :key="a.id" :value="a.id">
             {{ a.materia?.nombre }} — {{ teacherName(a) }} ({{ getAssignmentHours(a) }})
@@ -38,7 +43,8 @@
       <table class="min-w-full table-fixed divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
-            <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-44">Período</th>
+            <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-44">Período
+            </th>
             <th v-for="d in days" :key="d.value"
               class="px-2 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ d.label }}
             </th>
@@ -54,8 +60,9 @@
               <div class="h-20 border rounded p-1 text-xs relative group min-w-0">
                 <template v-if="entryAt(d.value, p.id)">
                   <div class="h-full w-full min-w-0 flex flex-col justify-between">
-                    <div class="font-semibold truncate" :title="entryAt(d.value, p.id)?.assignment?.materia?.nombre">{{
-                      entryAt(d.value, p.id)?.assignment?.materia?.nombre }}</div>
+                    <div class="font-semibold truncate" :title="entryAt(d.value, p.id)?.assignment?.materia?.nombre">
+                      {{
+                        entryAt(d.value, p.id)?.assignment?.materia?.nombre }}</div>
                     <div class="text-gray-500 truncate" :title="teacherName(entryAt(d.value, p.id)?.assignment)">{{
                       teacherName(entryAt(d.value, p.id)?.assignment) }}</div>
                   </div>
@@ -80,7 +87,8 @@
             </td>
           </tr>
           <tr v-if="!aulaId">
-            <td colspan="7" class="px-4 py-6 text-center text-sm text-gray-500">Selecciona un aula para ver y editar el
+            <td colspan="7" class="px-4 py-6 text-center text-sm text-gray-500">Selecciona un aula para ver y editar
+              el
               horario
             </td>
           </tr>
@@ -96,6 +104,7 @@ import { useAulasStore, type Aula } from '~/stores/aulas'
 import { usePeriodsStore } from '~/stores/periods'
 import { useClassAssignmentsStore, type ClassAssignment } from '~/stores/class_assignments'
 import { useTimetableEntriesStore } from '~/stores/timetable_entries'
+import { useAniosLectivosStore } from '~/stores/anios_lectivos'
 import { formatTime12h } from '~/utils/timeFormat'
 import Swal from 'sweetalert2'
 
@@ -110,8 +119,9 @@ const aulasStore = useAulasStore()
 const periodsStore = usePeriodsStore()
 const assignments = useClassAssignmentsStore()
 const entries = useTimetableEntriesStore()
+const aniosLectivosStore = useAniosLectivosStore()
 
-const anio = ref(assignments.anioLectivo)
+const anioId = ref<number | undefined>(undefined)
 const aulaId = ref<number | undefined>(undefined)
 const selectedAssignmentId = ref<number | undefined>(undefined)
 
@@ -128,17 +138,21 @@ const keyOf = (dia: number, periodId: number, aula?: number) => `${dia}-${period
 onMounted(async () => {
   if (aulasStore.items.length === 0) await aulasStore.fetchAll()
   if (periodsStore.items.length === 0) await periodsStore.fetchAll()
+  if (aniosLectivosStore.items.length === 0) await aniosLectivosStore.fetchAll()
 })
 
-watch([anio, aulaId], async () => {
-  if (!aulaId.value) return
-  await assignments.fetchAll({ aula_id: aulaId.value, anio_lectivo: anio.value })
-  await entries.fetchAll({ aula_id: aulaId.value, anio_lectivo: anio.value })
+watch([anioId, aulaId], async () => {
+  if (!aulaId.value || !anioId.value) return
+  await assignments.fetchAll({ aula_id: aulaId.value, anio_lectivo_id: anioId.value })
+  await entries.fetchAll({ aula_id: aulaId.value, anio_lectivo_id: anioId.value })
 })
 
 const classPeriods = computed(() => periodsStore.clases)
 const aulas = computed(() => aulasStore.items)
-const assignmentsForAula = computed(() => assignments.byAula(aulaId.value || -1))
+const assignmentsForAula = computed(() => {
+  if (!aulaId.value) return []
+  return assignments.items.filter(a => a.aula_id === aulaId.value)
+})
 const entryMap = computed(() => entries.byKey)
 
 const entryAt = (dia: number, periodId: number) => entryMap.value.get(keyOf(dia, periodId, aulaId.value))
@@ -157,9 +171,9 @@ const getAssignmentHours = (assignment: ClassAssignment) => {
 }
 
 const reload = async () => {
-  if (!aulaId.value) return
-  await assignments.fetchAll({ aula_id: aulaId.value, anio_lectivo: anio.value })
-  await entries.fetchAll({ aula_id: aulaId.value, anio_lectivo: anio.value })
+  if (!aulaId.value || !anioId.value) return
+  await assignments.fetchAll({ aula_id: aulaId.value, anio_lectivo_id: anioId.value })
+  await entries.fetchAll({ aula_id: aulaId.value, anio_lectivo_id: anioId.value })
 }
 
 const assignHere = async (dia: number, periodId: number) => {
@@ -171,7 +185,7 @@ const assignHere = async (dia: number, periodId: number) => {
     await entries.create({ assignment_id: selectedAssignmentId.value, dia, period_id: periodId })
 
     // Actualizar las asignaciones para reflejar los nuevos períodos programados
-    await assignments.fetchAll({ aula_id: aulaId.value, anio_lectivo: anio.value })
+    await assignments.fetchAll({ aula_id: aulaId.value, anio_lectivo_id: anioId.value })
 
     // Mantener la selección actual si la asignación aún existe
     const stillExists = assignmentsForAula.value.find(a => a.id === currentSelectedId)
@@ -215,8 +229,8 @@ const remove = async (id: number) => {
   await entries.remove(id)
 
   // Actualizar las asignaciones para reflejar los cambios en períodos programados
-  if (aulaId.value) {
-    await assignments.fetchAll({ aula_id: aulaId.value, anio_lectivo: anio.value })
+  if (aulaId.value && anioId.value) {
+    await assignments.fetchAll({ aula_id: aulaId.value, anio_lectivo_id: anioId.value })
 
     // Mantener la selección actual si la asignación aún existe
     const stillExists = assignmentsForAula.value.find(a => a.id === currentSelectedId)

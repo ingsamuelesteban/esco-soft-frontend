@@ -3,7 +3,10 @@
     <div class="p-4 flex items-center gap-3 flex-wrap">
       <div class="flex items-center gap-2">
         <label class="text-sm text-gray-600">Año lectivo</label>
-        <input v-model="anio" type="text" class="border rounded px-2 py-1 text-sm h-8 w-28" placeholder="2025-2" />
+        <select v-model="anioId" class="border rounded px-2 py-1 text-sm h-8 min-w-[120px]">
+          <option :value="undefined">Seleccionar...</option>
+          <option v-for="a in anios" :key="a.id" :value="a.id">{{ a.nombre }}</option>
+        </select>
       </div>
       <div class="flex items-center gap-2">
         <label class="text-sm text-gray-600">Profesor</label>
@@ -119,6 +122,7 @@ import { usePeriodsStore } from '../../stores/periods'
 import { useTimetableEntriesStore } from '../../stores/timetable_entries'
 import { formatTime12h } from '../../utils/timeFormat'
 import { useAuthStore } from '../../stores/auth'
+import { useAniosLectivosStore } from '../../stores/anios_lectivos'
 
 interface Profesor {
   id: number
@@ -165,10 +169,12 @@ const props = defineProps<{
 
 const authStore = useAuthStore()
 const periodsStore = usePeriodsStore()
+const aniosStore = useAniosLectivosStore()
 const entries = useTimetableEntriesStore()
 
 const config = useRuntimeConfig()
-const anio = ref(new Date().getFullYear().toString())
+const anioId = ref<number | undefined>(undefined)
+const anios = computed(() => aniosStore.items)
 const profesorId = ref<number | undefined>(undefined)
 const profesores = ref<Profesor[]>([])
 const loading = ref(false)
@@ -188,6 +194,15 @@ const keyOf = (dia: number, periodId: number) => `${dia}-${periodId}`
 
 onMounted(async () => {
   if (periodsStore.items.length === 0) await periodsStore.fetchAll()
+  if (aniosStore.items.length === 0) await aniosStore.fetchAll()
+
+  // Seleccionar el año activo por defecto si no hay uno seleccionado
+  if (!anioId.value && aniosStore.items.length > 0) {
+    const activo = aniosStore.items.find(a => a.activo)
+    if (activo) anioId.value = activo.id
+    else anioId.value = aniosStore.items[0].id
+  }
+
   await loadProfesores()
 })
 
@@ -212,7 +227,7 @@ const loadProfesores = async () => {
 }
 
 const loadTeacherSchedule = async () => {
-  if (!profesorId.value || !anio.value) {
+  if (!profesorId.value || !anioId.value) {
     teacherEntries.value = []
     profesorAssignments.value = []
     return
@@ -225,7 +240,7 @@ const loadTeacherSchedule = async () => {
     const entriesResponse = await api.get('/api/timetable-entries', {
       params: {
         profesor_id: profesorId.value,
-        anio_lectivo: anio.value,
+        anio_lectivo_id: anioId.value,
         per_page: 1000
       }
     })
@@ -238,7 +253,7 @@ const loadTeacherSchedule = async () => {
     const assignmentsResponse = await api.get('/api/class-assignments', {
       params: {
         profesor_id: profesorId.value,
-        anio_lectivo: anio.value,
+        anio_lectivo_id: anioId.value,
         per_page: 1000
       }
     })
@@ -255,7 +270,7 @@ const loadTeacherSchedule = async () => {
   }
 }
 
-watch([anio, profesorId], async () => {
+watch([anioId, profesorId], async () => {
   await loadTeacherSchedule()
 })
 

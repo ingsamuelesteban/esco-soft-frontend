@@ -3,7 +3,12 @@
     <div class="p-4 flex items-center justify-between gap-4 flex-wrap">
       <div class="flex items-center gap-2">
         <label class="text-sm text-gray-600">Año lectivo</label>
-        <input v-model="anio" type="text" class="border rounded px-2 py-1 text-sm h-8 w-28" placeholder="2025-2" />
+        <select v-model="anioId" class="border rounded px-2 py-1 text-sm h-8 w-40">
+           <option :value="null">Seleccione...</option>
+           <option v-for="a in anios" :key="a.id" :value="a.id">
+             {{ a.nombre }}
+           </option>
+        </select>
       </div>
       <div class="flex items-center gap-2">
         <label class="text-sm text-gray-600">Aula</label>
@@ -90,29 +95,54 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { useClassAssignmentsStore, type ClassAssignment } from '../../stores/class_assignments'
 import { useAulasStore, type Aula } from '../../stores/aulas'
+import { useAniosLectivosStore } from '../../stores/anios_lectivos'
 
 defineEmits<{
   new: []
   edit: [assignment: ClassAssignment]
   deactivate: [id: number]
+  viewStudents: [assignment: ClassAssignment] // Potentially useful
 }>()
 
 const assignments = useClassAssignmentsStore()
 const aulasStore = useAulasStore()
+const aniosStore = useAniosLectivosStore()
 
-const anio = ref(assignments.anioLectivo)
+const anioId = ref<number | null>(assignments.anioLectivoId)
 const aulaId = ref<number | undefined>(undefined)
 
 onMounted(async () => {
+  if (aniosStore.items.length === 0) await aniosStore.fetchAll({ activo: true })
+  
+  // Set default if not set
+  if (!anioId.value && aniosStore.items.length > 0) {
+      anioId.value = aniosStore.items[0]?.id || null
+      // Update global store default
+      assignments.anioLectivoId = anioId.value
+  }
+
   if (aulasStore.items.length === 0) await aulasStore.fetchAll()
-  await assignments.fetchAll({ anio_lectivo: anio.value, aula_id: aulaId.value })
+  
+  await fetch()
 })
 
-watch([anio, aulaId], () => {
-  assignments.fetchAll({ anio_lectivo: anio.value, aula_id: aulaId.value })
+watch([anioId, aulaId], () => {
+  if (anioId.value) {
+      assignments.anioLectivoId = anioId.value // Keep global sync
+      fetch()
+  }
 })
+
+const fetch = () => {
+    if (anioId.value) {
+        assignments.fetchAll({ anio_lectivo_id: anioId.value, aula_id: aulaId.value })
+    } else {
+        assignments.items = [] // Clear if no year selected
+    }
+}
 
 const aulas = computed(() => aulasStore.items || [])
+const anios = computed(() => aniosStore.items || [])
 const loading = computed(() => assignments.loading)
 const filtered = computed(() => assignments.items || [])
 
@@ -125,7 +155,7 @@ const aulaName = (a?: Aula) => {
   return `${grado}${seccion}${titulo}`.trim() || `Aula ${a.id}`
 }
 
-const onRefresh = () => assignments.fetchAll({ anio_lectivo: anio.value, aula_id: aulaId.value })
+const onRefresh = () => fetch()
 </script>
 
 <style scoped></style>

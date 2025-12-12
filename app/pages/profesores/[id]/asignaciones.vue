@@ -195,7 +195,7 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="text-sm text-gray-900">
-                        {{ asignacion.anio_lectivo }}
+                        {{ asignacion.anioLectivo?.nombre || '—' }}
                       </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -294,9 +294,11 @@
             <!-- Año Lectivo -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Año Lectivo</label>
-              <input v-model="nuevaAsignacion.anio_lectivo" type="text" required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="2024" />
+              <select v-model.number="nuevaAsignacion.anio_lectivo_id" required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option :value="undefined">Seleccionar...</option>
+                <option v-for="a in anios" :key="a.id" :value="a.id">{{ a.nombre }}</option>
+              </select>
             </div>
 
             <!-- Horas Semanales -->
@@ -348,8 +350,11 @@
             <!-- Año Lectivo -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Año Lectivo</label>
-              <input v-model="opcionesDuplicacion.anio_lectivo" type="text" required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <select v-model.number="opcionesDuplicacion.anio_lectivo_id" required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option :value="undefined">Seleccionar...</option>
+                <option v-for="a in anios" :key="a.id" :value="a.id">{{ a.nombre }}</option>
+              </select>
             </div>
 
             <!-- Horas Semanales -->
@@ -412,9 +417,11 @@
             <!-- Año Lectivo -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Año Lectivo</label>
-              <input v-model="datosEdicion.anio_lectivo" type="text" required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                placeholder="2024" />
+              <select v-model.number="datosEdicion.anio_lectivo_id" required
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <option :value="undefined">Seleccionar...</option>
+                <option v-for="a in anios" :key="a.id" :value="a.id">{{ a.nombre }}</option>
+              </select>
             </div>
 
             <!-- Horas Semanales -->
@@ -452,7 +459,7 @@
 </template>
 
 <script setup lang="ts">
-import { useAuthStore } from '../../../stores/auth'
+
 
 interface Profesor {
   id: number
@@ -478,17 +485,29 @@ interface Aula {
   estudiantes_count?: number
 }
 
+interface AnioLectivo {
+  id: number
+  nombre: string
+}
+
 interface Asignacion {
   id: number
   materia_id: number
   profesor_id: number
   aula_id: number
-  anio_lectivo: string
+  anio_lectivo_id: number
   horas_semanales: number | null
   activo: boolean
   materia?: ModuloFormativo
   aula?: Aula
+  anioLectivo?: AnioLectivo
 }
+
+
+
+// Store
+import { useAuthStore } from '../../../stores/auth'
+import { useAniosLectivosStore } from '../../../stores/anios_lectivos'
 
 // Composables
 const route = useRoute()
@@ -496,6 +515,7 @@ const config = useRuntimeConfig()
 
 // Store
 const authStore = useAuthStore()
+const aniosStore = useAniosLectivosStore()
 
 // Estado reactivo
 const loading = ref(true)
@@ -515,14 +535,14 @@ const procesandoAccion = ref(false)
 const nuevaAsignacion = ref({
   materia_id: '',
   aula_id: '',
-  anio_lectivo: new Date().getFullYear().toString(),
+  anio_lectivo_id: undefined as number | undefined,
   horas_semanales: 1,
   activo: true
 })
 
 const opcionesDuplicacion = ref({
   aulas_ids: [] as number[],
-  anio_lectivo: new Date().getFullYear().toString(),
+  anio_lectivo_id: undefined as number | undefined,
   horas_semanales: 1
 })
 
@@ -530,7 +550,7 @@ const datosEdicion = ref({
   id: 0,
   materia_id: '',
   aula_id: '',
-  anio_lectivo: '',
+  anio_lectivo_id: undefined as number | undefined,
   horas_semanales: 1,
   activo: true
 })
@@ -538,6 +558,7 @@ const datosEdicion = ref({
 // Datos para dropdowns
 const modulosFormativos = ref<ModuloFormativo[]>([])
 const aulas = ref<Aula[]>([])
+const anios = computed(() => aniosStore.items);
 
 // Computed
 const profesorId = computed(() => Number(route.params.id))
@@ -594,7 +615,8 @@ const asignacionesPorAula = computed(() => {
         sorted[key] = grupo.sort((a, b) => {
           const materiaCompare = (a.materia?.nombre || '').localeCompare(b.materia?.nombre || '')
           if (materiaCompare !== 0) return materiaCompare
-          return b.anio_lectivo.localeCompare(a.anio_lectivo) // Año más reciente primero
+
+          return (b.anioLectivo?.nombre || '').localeCompare(a.anioLectivo?.nombre || '') // Año más reciente primero
         })
       }
     })
@@ -609,7 +631,7 @@ const editarAsignacion = (asignacion: Asignacion) => {
     id: asignacion.id,
     materia_id: asignacion.materia_id.toString(),
     aula_id: asignacion.aula_id.toString(),
-    anio_lectivo: asignacion.anio_lectivo,
+    anio_lectivo_id: asignacion.anio_lectivo_id,
     horas_semanales: asignacion.horas_semanales || 1,
     activo: asignacion.activo
   }
@@ -618,7 +640,8 @@ const editarAsignacion = (asignacion: Asignacion) => {
 
 const duplicarAsignacion = (asignacion: Asignacion) => {
   asignacionADuplicar.value = asignacion
-  opcionesDuplicacion.value.anio_lectivo = asignacion.anio_lectivo
+
+  opcionesDuplicacion.value.anio_lectivo_id = asignacion.anio_lectivo_id
   opcionesDuplicacion.value.horas_semanales = asignacion.horas_semanales || 1
   opcionesDuplicacion.value.aulas_ids = []
   mostrarModalDuplicar.value = true
@@ -632,7 +655,8 @@ const crearNuevaAsignacion = async () => {
       ...nuevaAsignacion.value,
       profesor_id: profesorId.value,
       materia_id: Number(nuevaAsignacion.value.materia_id),
-      aula_id: Number(nuevaAsignacion.value.aula_id)
+      aula_id: Number(nuevaAsignacion.value.aula_id),
+      anio_lectivo_id: nuevaAsignacion.value.anio_lectivo_id!
     }
 
     await api.post('/api/class-assignments', payload)
@@ -665,7 +689,8 @@ const ejecutarDuplicacion = async () => {
         materia_id: asignacionADuplicar.value!.materia_id,
         profesor_id: profesorId.value,
         aula_id: aulaId,
-        anio_lectivo: opcionesDuplicacion.value.anio_lectivo,
+
+        anio_lectivo_id: opcionesDuplicacion.value.anio_lectivo_id!,
         horas_semanales: opcionesDuplicacion.value.horas_semanales,
         activo: true
       }
@@ -697,7 +722,7 @@ const actualizarAsignacion = async () => {
     const payload = {
       materia_id: Number(datosEdicion.value.materia_id),
       aula_id: Number(datosEdicion.value.aula_id),
-      anio_lectivo: datosEdicion.value.anio_lectivo,
+      anio_lectivo_id: datosEdicion.value.anio_lectivo_id!,
       horas_semanales: datosEdicion.value.horas_semanales,
       activo: datosEdicion.value.activo
     }
@@ -721,7 +746,7 @@ const resetearFormulario = () => {
   nuevaAsignacion.value = {
     materia_id: '',
     aula_id: '',
-    anio_lectivo: new Date().getFullYear().toString(),
+    anio_lectivo_id: aniosStore.items.length > 0 ? aniosStore.items[0].id : undefined,
     horas_semanales: 1,
     activo: true
   }
@@ -779,9 +804,19 @@ const cargarDatos = async () => {
   }
 }
 
+const cargarAnios = async () => {
+  if (aniosStore.items.length === 0) await aniosStore.fetchAll({ activo: true })
+  if (aniosStore.items.length > 0 && !nuevaAsignacion.value.anio_lectivo_id) {
+    nuevaAsignacion.value.anio_lectivo_id = aniosStore.items[0].id
+  }
+}
+
 // Lifecycle
 onMounted(() => {
-  cargarDatos()
+  onMounted(() => {
+    cargarAnios()
+    cargarDatos()
+  })
 })
 
 // Meta - título dinámico
