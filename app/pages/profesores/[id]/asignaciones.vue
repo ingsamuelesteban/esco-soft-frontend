@@ -337,7 +337,7 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Seleccionar Aulas</label>
               <div class="max-h-40 overflow-y-auto border border-gray-300 rounded-md p-2">
-                <div v-for="aula in aulas" :key="aula.id" class="flex items-center mb-2">
+                <div v-for="aula in aulasDisponiblesParaDuplicacion" :key="aula.id" class="flex items-center mb-2">
                   <input :id="`aula-${aula.id}`" v-model="opcionesDuplicacion.aulas_ids" :value="aula.id"
                     type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
                   <label :for="`aula-${aula.id}`" class="ml-2 text-sm text-gray-700">
@@ -624,6 +624,15 @@ const asignacionesPorAula = computed(() => {
   return sorted
 })
 
+const aulasDisponiblesParaDuplicacion = computed(() => {
+  if (!asignacionADuplicar.value) return aulas.value
+
+  return aulas.value.filter(aula =>
+    aula.id !== asignacionADuplicar.value?.aula_id
+  )
+})
+
+
 // Métodos
 const editarAsignacion = (asignacion: Asignacion) => {
   asignacionAEditar.value = asignacion
@@ -746,7 +755,7 @@ const resetearFormulario = () => {
   nuevaAsignacion.value = {
     materia_id: '',
     aula_id: '',
-    anio_lectivo_id: aniosStore.items.length > 0 ? aniosStore.items[0].id : undefined,
+    anio_lectivo_id: aniosStore.items.length > 0 ? aniosStore.items[0]?.id : undefined,
     horas_semanales: 1,
     activo: true
   }
@@ -807,16 +816,14 @@ const cargarDatos = async () => {
 const cargarAnios = async () => {
   if (aniosStore.items.length === 0) await aniosStore.fetchAll({ activo: true })
   if (aniosStore.items.length > 0 && !nuevaAsignacion.value.anio_lectivo_id) {
-    nuevaAsignacion.value.anio_lectivo_id = aniosStore.items[0].id
+    nuevaAsignacion.value.anio_lectivo_id = aniosStore.items[0]?.id
   }
 }
 
 // Lifecycle
 onMounted(() => {
-  onMounted(() => {
-    cargarAnios()
-    cargarDatos()
-  })
+  cargarAnios()
+  cargarDatos()
 })
 
 // Meta - título dinámico
