@@ -200,7 +200,8 @@ const assignHere = async (dia: number, periodId: number) => {
     let message = 'No se pudo completar la asignación'
     let icon: 'error' | 'warning' = 'error'
 
-    if (e.status === 422) {
+    const status = e.statusCode || e.status
+    if (status === 422) {
       if (e.data?.message) {
         message = e.data.message
         icon = 'warning'

@@ -84,7 +84,7 @@ export async function apiCall<T = any>(url: string, options: Parameters<typeof $
         const error = new Error(response._data.message || 'Error en la petición')
         // Forzar status 422 si es 200 para que el catch lo procese como error de validación
         const status = response.status >= 200 && response.status < 300 ? 422 : response.status
-        Object.assign(error, { data: response._data, statusCode: status })
+        Object.assign(error, { data: response._data, statusCode: status, status: status })
         throw error
       }
 
@@ -97,7 +97,7 @@ export async function apiCall<T = any>(url: string, options: Parameters<typeof $
     onResponseError({ response }) {
       // Asegurar que el error se lance con la data correcta
       const error = new Error(response._data?.message || 'Error en la petición')
-      Object.assign(error, { data: response._data, statusCode: response.status })
+      Object.assign(error, { data: response._data, statusCode: response.status, status: response.status })
       throw error
     }
   })
