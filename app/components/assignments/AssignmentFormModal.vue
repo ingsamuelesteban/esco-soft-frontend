@@ -54,6 +54,12 @@
               <p v-if="errors.aula_id" class="text-sm text-red-600 mt-1">{{ errors.aula_id }}</p>
             </div>
           </div>
+          <div class="mt-2">
+            <label class="inline-flex items-center">
+              <input type="checkbox" v-model="form.compartido" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+              <span class="ml-2 text-sm text-gray-600">Asignación Compartida (Permitir múltiples profesores)</span>
+            </label>
+          </div>
           <div v-if="formError" class="p-3 bg-red-50 text-red-700 rounded">{{ formError }}</div>
         </div>
         <div class="px-4 py-3 border-t flex items-center justify-end gap-2">
@@ -85,9 +91,10 @@ const aulasStore = useAulasStore()
 const assignments = useClassAssignmentsStore()
 const aniosStore = useAniosLectivosStore()
 
-const form = reactive<{ anio_lectivo_id?: number; horas_semanales: number | null; materia_id?: number; profesor_id?: number; aula_id?: number }>({
+const form = reactive<{ anio_lectivo_id?: number; horas_semanales: number | null; materia_id?: number; profesor_id?: number; aula_id?: number; compartido: boolean }>({
   anio_lectivo_id: assignments.anioLectivoId || undefined,
   horas_semanales: null,
+  compartido: false,
 })
 const errors = reactive<Record<string, string | null>>({})
 const formError = ref<string | null>(null)
@@ -110,6 +117,7 @@ function resetForm() {
   form.materia_id = undefined
   form.profesor_id = undefined
   form.aula_id = undefined
+  form.compartido = false
   errors.anio_lectivo_id = null
   errors.materia_id = null
   errors.profesor_id = null
@@ -124,6 +132,7 @@ watch(() => props.model, (m) => {
     form.materia_id = m.materia_id
     form.profesor_id = m.profesor_id
     form.aula_id = m.aula_id
+    form.compartido = !!m.compartido
   } else {
     resetForm()
   }
@@ -167,6 +176,7 @@ const onSubmit = async () => {
         profesor_id: form.profesor_id!,
         aula_id: form.aula_id!,
         activo: true,
+        compartido: form.compartido,
       })
       emit('saved', created)
       resetForm()

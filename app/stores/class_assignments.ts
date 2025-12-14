@@ -19,6 +19,7 @@ export interface ClassAssignment {
   anio_lectivo_id: number
   horas_semanales: number | null
   activo: boolean
+  compartido?: boolean
   periodos_programados?: number
   materia?: MateriaRef
   profesor?: Personal
@@ -84,7 +85,7 @@ export const useClassAssignmentsStore = defineStore('classAssignments', {
       }
     },
 
-    async create(payload: Omit<ClassAssignment, 'id' | 'materia' | 'profesor' | 'aula' | 'anio_lectivo' | 'activo'> & { activo?: boolean }) {
+    async create(payload: Omit<ClassAssignment, 'id' | 'materia' | 'profesor' | 'aula' | 'anio_lectivo' | 'activo'> & { activo?: boolean, compartido?: boolean }) {
       startLoading()
       try {
         const created = await api.post<ClassAssignment>('/api/class-assignments', payload)
