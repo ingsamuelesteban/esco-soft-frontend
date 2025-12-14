@@ -76,9 +76,7 @@ const store = useFamiliasProfesionalesStore()
 const query = ref('')
 
 onMounted(() => {
-  if (store.items.length === 0) {
-    store.fetchAll()
-  }
+  store.fetchAll()
 })
 
 const loading = computed(() => store.loading)

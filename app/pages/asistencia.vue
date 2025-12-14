@@ -283,9 +283,7 @@ onMounted(async () => {
   await attendanceStore.getTeacherAssignments()
 
   // Cargar aulas al montar el componente (para administradores)
-  if (aulasStore.items.length === 0) {
-    await aulasStore.fetchAll()
-  }
+  await aulasStore.fetchAll()
 
   // Intentar cargar la clase actual si estamos en periodo activo
   if (isInPeriod.value) {

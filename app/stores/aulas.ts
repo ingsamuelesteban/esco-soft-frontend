@@ -9,6 +9,7 @@ export interface Aula {
   seccion: string
   capacidad: number | null
   activo: boolean
+  estudiantes_count?: number
   titulo?: { id: number; nombre: string; familia?: { id: number; nombre: string } }
 }
 

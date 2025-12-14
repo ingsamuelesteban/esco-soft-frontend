@@ -270,8 +270,8 @@ const cargarEstudiantesAsignados = async () => {
 
   loading.value = true
   try {
-    const response = await api.get(`/api/aulas/${props.aula.id}/estudiantes`)
-    estudiantesAsignados.value = response as Estudiante[]
+    const response = await api.get<{ success: boolean; data: Estudiante[] }>(`/api/aulas/${props.aula.id}/estudiantes`)
+    estudiantesAsignados.value = response.data
   } catch (error) {
     console.error('Error al cargar estudiantes asignados:', error)
     showError('Error al cargar estudiantes asignados')

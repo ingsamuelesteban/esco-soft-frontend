@@ -36,7 +36,7 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                   </svg>
-                  <span class="font-medium text-gray-900">{{ getEstudiantesCount(a.id) }}</span>
+                  <span class="font-medium text-gray-900">{{ getEstudiantesCount(a) }}</span>
                 </div>
                 <div v-if="a.capacidad" class="flex items-center">
                   <span class="text-gray-400">/</span>
@@ -44,10 +44,10 @@
                 </div>
                 <div v-if="a.capacidad" class="ml-2">
                   <div class="w-16 h-2 bg-gray-200 rounded-full overflow-hidden"
-                    :title="`${Math.round((getEstudiantesCount(a.id) / a.capacidad) * 100)}% ocupado`">
+                    :title="`${Math.round((getEstudiantesCount(a) / a.capacidad) * 100)}% ocupado`">
                     <div class="h-full transition-all duration-300"
-                      :class="getOccupancyColor(getEstudiantesCount(a.id), a.capacidad)"
-                      :style="{ width: `${Math.min((getEstudiantesCount(a.id) / a.capacidad) * 100, 100)}%` }"></div>
+                      :class="getOccupancyColor(getEstudiantesCount(a), a.capacidad)"
+                      :style="{ width: `${Math.min((getEstudiantesCount(a) / a.capacidad) * 100, 100)}%` }"></div>
                   </div>
                 </div>
               </div>
@@ -158,8 +158,8 @@ const filtered = computed<Aula[]>(() => {
   )
 })
 
-const getEstudiantesCount = (aulaId: number): number => {
-  return estudiantesStore.items.filter(estudiante => estudiante.aula_id === aulaId).length
+const getEstudiantesCount = (aula: Aula): number => {
+  return aula.estudiantes_count || 0
 }
 
 const getOccupancyColor = (current: number, capacity: number): string => {

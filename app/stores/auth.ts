@@ -91,29 +91,10 @@ export const useAuthStore = defineStore('auth', {
           this.user = data.data.user
           this.token = data.data.token
 
-          if (data.data.requires_tenant_selection) {
-            this.availableTenants = data.data.tenants || []
-            this.isAuthenticated = true // Autenticado pero sin tenant seleccionado aún
-
-            if (process.client) {
-              localStorage.setItem('auth_token', data.data.token)
-            }
-
-            return { success: true, requiresTenantSelection: true }
-          }
-
-          console.log('Login successful, tenant:', data.data.tenant)
-          this.tenant = data.data.tenant || null
-          this.isAuthenticated = true
-
           if (process.client) {
             localStorage.setItem('auth_token', data.data.token)
 
-            // Fix: Asegurar que el ID del tenant esté en localStorage para que api.ts pueda construir la URL correcta
-            if (this.tenant) {
-              localStorage.setItem('selected_tenant_id', this.tenant.id.toString())
-            }
-
+            // Save Remember Me preference immediately after successful login
             if (credentials.remember) {
               localStorage.setItem('remember_me', 'true')
               localStorage.setItem('remembered_username', credentials.username)
@@ -123,9 +104,28 @@ export const useAuthStore = defineStore('auth', {
             }
           }
 
+          if (data.data.requires_tenant_selection) {
+            this.availableTenants = data.data.tenants || []
+            this.isAuthenticated = true // Autenticado pero sin tenant seleccionado aún
+            return { success: true, requiresTenantSelection: true }
+          }
+
+          console.log('Login successful, tenant:', data.data.tenant)
+          this.tenant = data.data.tenant || null
+          this.isAuthenticated = true
+
+          if (process.client) {
+            // Fix: Asegurar que el ID del tenant esté en localStorage para que api.ts pueda construir la URL correcta
+            if (this.tenant) {
+              localStorage.setItem('selected_tenant_id', this.tenant.id.toString())
+            }
+          }
+
           await this.loadUserMenu()
           return { success: true }
         }
+
+
 
         if (data.requires_password_change) {
           return {
@@ -236,8 +236,14 @@ export const useAuthStore = defineStore('auth', {
             } else {
               this.clearTokens()
             }
-          } catch (error) {
-            this.clearTokens()
+          } catch (error: any) {
+            console.error('Error in initializeAuth:', error)
+            // Only clear tokens if unauthorized (401) or forbidden (403)
+            // Do not clear on network errors or 500s
+            if (error.status === 401 || error.statusCode === 401 ||
+              error.status === 403 || error.statusCode === 403) {
+              this.clearTokens()
+            }
           }
         }
       }

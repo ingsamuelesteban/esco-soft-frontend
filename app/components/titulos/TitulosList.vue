@@ -76,7 +76,7 @@ const familias = useFamiliasProfesionalesStore()
 const query = ref('')
 
 onMounted(async () => {
-  if (familias.items.length === 0) await familias.fetchAll()
+  await familias.fetchAll()
   await titulos.fetchAll()
 })
 
