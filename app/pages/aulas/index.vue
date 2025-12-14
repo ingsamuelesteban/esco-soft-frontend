@@ -55,9 +55,19 @@ const store = useAulasStore()
 const refresh = () => { store.fetchAll() }
 
 const statusFilter = ref<'active' | 'inactive' | 'all'>('active')
-
 const showModal = ref(false)
 const current = ref<any>(null)
+
+// Forzar carga de datos al entrar y al cambiar filtro
+import { watch } from 'vue'
+watch(statusFilter, () => {
+  store.fetchAll({ tituloId: undefined, search: undefined }) // O pasar el status si la API de aulas lo soportara, pero por ahora fetchAll no toma filtro de status en parametros?
+  // Espera, fetchAll en el store NO toma status. El filtrado es en el cliente (computed en AulasList).
+  // Pero necesitamos cargar los datos de todas formas.
+  // El problema original es que AulasList NO cargaba si ya había datos.
+  // Aquí forzamos la carga siempre.
+  store.fetchAll()
+}, { immediate: true })
 
 const showStudentsModal = ref(false)
 const selectedAula = ref<Aula | null>(null)

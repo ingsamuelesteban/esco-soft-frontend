@@ -203,8 +203,25 @@ export const useAuthStore = defineStore('auth', {
               this.isAuthenticated = true
 
               // Fix: Asegurar que se restaure el tenant ID en localStorage
+              // PERO: Si ya hay uno seleccionado y somos master, no lo sobrescribamos con el default del backend (que suele ser localhost=tenant1)
               if (this.tenant && process.client) {
-                localStorage.setItem('selected_tenant_id', this.tenant.id.toString())
+                // Si no hay nada guardado, guardamos lo que llega
+                if (!savedTenantId) {
+                  localStorage.setItem('selected_tenant_id', this.tenant.id.toString())
+                }
+                // Si hay algo guardado
+                else if (savedTenantId !== this.tenant.id.toString()) {
+                  // Si somos master, DAMOS PRIORIDAD al guardado (el backend devuelve tenant1 por defecto en localhost)
+                  if (this.isMaster) {
+                    console.log('Manteniendo tenant seleccionado manualmente (Master):', savedTenantId);
+                    // Intentar recuperar el objeto tenant correcto si es posible (pendiente)
+                    // Por ahora dejamos el tenant del backend en el estado, pero NO tocamos localStorage 
+                    // para que las peticiones API sigan yendo al tenant correcto.
+                  } else {
+                    // Si no somos master, forzamos el tenant que dice el backend
+                    localStorage.setItem('selected_tenant_id', this.tenant.id.toString())
+                  }
+                }
               }
 
               // Si tenemos un tenant ID guardado pero la API no devolvió tenant (ej: global user), podríamos intentar restaurarlo

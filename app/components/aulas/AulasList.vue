@@ -125,14 +125,15 @@ const store = useAulasStore()
 const estudiantesStore = useEstudiantesStore()
 const query = ref('')
 
-onMounted(() => {
-  if (store.items.length === 0) {
-    store.fetchAll()
-  }
-  if (estudiantesStore.items.length === 0) {
-    estudiantesStore.fetchAll('active')
-  }
-})
+// onMounted removed - data fetching is handled by the parent page
+// onMounted(() => {
+//   if (store.items.length === 0) {
+//     store.fetchAll()
+//   }
+//   if (estudiantesStore.items.length === 0) {
+//     estudiantesStore.fetchAll('active')
+//   }
+// })
 
 const loading = computed(() => store.loading)
 

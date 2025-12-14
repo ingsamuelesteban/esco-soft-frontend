@@ -50,10 +50,13 @@ const assignments = useClassAssignmentsStore()
 const timetable = useTimetableEntriesStore()
 
 onMounted(async () => {
-  if ((aulas.items || []).length === 0) await aulas.fetchAll()
-  if ((modulosFormativosApi.items || []).length === 0) await modulosFormativosApi.fetchAll()
-  if ((assignments.items || []).length === 0) await assignments.fetchAll({ only_active: true })
-  if ((timetable.items || []).length === 0) await timetable.fetchAll()
+  // Always fetch fresh data to ensure tenant consistency
+  await Promise.all([
+    aulas.fetchAll(),
+    modulosFormativosApi.fetchAll(),
+    assignments.fetchAll({ only_active: true }),
+    timetable.fetchAll()
+  ])
 })
 
 const aulasCount = computed(() => aulas.total)
