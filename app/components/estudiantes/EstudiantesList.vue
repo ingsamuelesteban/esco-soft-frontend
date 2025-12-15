@@ -219,8 +219,8 @@ const filtered = computed<Estudiante[]>(() => {
   return store.ordenados.filter((e: Estudiante) => {
     const matchesQuery = e.nombres.toLowerCase().includes(q) ||
       e.apellidos.toLowerCase().includes(q) ||
-      e.cedula.toLowerCase().includes(q) ||
-      e.rne.toLowerCase().includes(q)
+      (e.cedula && e.cedula.toLowerCase().includes(q)) ||
+      (e.rne && e.rne.toLowerCase().includes(q))
 
     const matchesSexo = filterSexo.value === undefined || e.sexo === filterSexo.value
     const matchesAula = filterAula.value === undefined || e.aula_id === filterAula.value
