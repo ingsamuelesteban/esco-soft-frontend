@@ -236,7 +236,7 @@ const onSubmit = async () => {
         errors[k] = msg
       }
     }
-    formError.value = err?.message || 'Error al enviar el formulario'
+    formError.value = err?.error || err?.message || 'Error al enviar el formulario'
   } finally {
     loading.value = false
   }
