@@ -204,11 +204,18 @@ const onSubmit = async () => {
 
   loading.value = true
   try {
+    const payload = {
+      ...form,
+      cedula: form.cedula.trim() || null,
+      rne: form.rne.trim() || null,
+      aula_id: form.aula_id || null
+    }
+
     if (isEdit.value && props.model) {
-      const updated = await store.update(props.model.id, { ...form } as any)
+      const updated = await store.update(props.model.id, payload as any)
       emit('saved', updated)
     } else {
-      const created = await store.create({ ...form } as any)
+      const created = await store.create(payload as any)
       emit('saved', created)
       resetForm()
     }
