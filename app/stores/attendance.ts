@@ -57,6 +57,8 @@ export const useAttendanceStore = defineStore('attendance', {
     currentClass: null as CurrentClass | null,
     loadingCurrentClass: false,
     loadingAssignments: false,
+    dailyClasses: [] as any[],
+    loadingDailyClasses: false,
   }),
 
   getters: {
@@ -250,6 +252,45 @@ export const useAttendanceStore = defineStore('attendance', {
         throw error
       } finally {
         this.loadingAssignments = false
+      }
+    },
+
+    async fetchDailyClasses(filters: { aulaId?: number, professorId?: number, date: string }) {
+      this.loadingDailyClasses = true
+      this.dailyClasses = []
+
+      try {
+        // Convert date string (YYYY-MM-DD) to day of week (0-6)
+        // Create date object treating input as local time components to avoid timezone shift
+        const parts = filters.date.split('-').map(Number)
+        if (parts.length < 3) {
+          this.loadingDailyClasses = false
+          return
+        }
+        const year = parts[0]!
+        const month = parts[1]!
+        const day = parts[2]!
+        const dateObj = new Date(year, month - 1, day)
+        const dia = dateObj.getDay()
+
+        const params: any = {
+          dia: dia,
+          include_attendance: true, // Bonus: fetch attendance summary if backend supports it
+          date: filters.date
+        }
+
+        if (filters.aulaId) params.aula_id = filters.aulaId
+        if (filters.professorId) params.profesor_id = filters.professorId
+
+        const response = await api.get<any[]>('/api/timetable-entries', {
+          params
+        })
+        this.dailyClasses = response || []
+      } catch (error) {
+        console.error('Error fetching daily classes:', error)
+        // No blocking error, just empty list
+      } finally {
+        this.loadingDailyClasses = false
       }
     }
   }

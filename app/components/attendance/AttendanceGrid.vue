@@ -169,22 +169,8 @@ const estados = [
 const hasUnsavedChanges = computed(() => pendingChanges.value.size > 0)
 
 
-const loadAttendance = async () => {
-  await attendanceStore.fetchAttendance(props.fecha, props.aulaId, props.assignmentId)
-}
-
-// Cargar asistencia cuando cambien los props
-
-// Cargar asistencia cuando cambien los props relevantes
-watch([
-  () => props.fecha,
-  () => props.aulaId,
-  () => props.assignmentId
-], async ([nuevaFecha, nuevoAulaId, nuevoAssignmentId]) => {
-  if (nuevaFecha && nuevoAulaId && nuevoAssignmentId) {
-    await loadAttendance()
-  }
-}, { immediate: true })
+// La carga de datos se maneja en el componente padre (asistencia.vue)
+// para evitar bucles infinitos de montaje/desmontaje
 
 // Inicializar observaciones locales cuando cambien los records  
 watch(() => attendanceStore.records, (records) => {

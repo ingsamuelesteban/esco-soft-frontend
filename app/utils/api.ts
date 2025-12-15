@@ -25,13 +25,18 @@ export async function apiCall<T = any>(url: string, options: Parameters<typeof $
     const tenantId = localStorage.getItem('selected_tenant_id')
     const globalRoutes = [
       '/login',
+      '/api/login',
       '/change-required-password',
+      '/api/change-required-password',
 
       '/me',
+      '/api/me',
       '/logout',
+      '/api/logout',
       '/logout-all',
+      '/api/logout-all',
       '/profile',
-      '/sanctum/csrf-cookie',
+      '/api/profile',
       '/sanctum/csrf-cookie',
       '/tenants',
       '/api/tenants'

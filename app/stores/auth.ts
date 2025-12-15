@@ -300,10 +300,20 @@ export const useAuthStore = defineStore('auth', {
           this.user = response.data.user
           this.token = response.data.token
           this.isAuthenticated = true
+          this.tenant = response.data.tenant || null
 
           if (process.client) {
             localStorage.setItem('auth_token', response.data.token)
+
+            if (this.tenant) {
+              localStorage.setItem('selected_tenant_id', this.tenant.id.toString())
+            }
           }
+
+          // If tenant selection is required, we shouldn't load the menu yet?
+          // But usually change-password logs you fully in. 
+          // If requires_tenant_selection is true, we should probably handle that, 
+          // but for now let's fix the missing tenant case.
 
           await this.loadUserMenu()
           return { success: true, message: response.message || 'Contraseña cambiada exitosamente' }

@@ -123,12 +123,21 @@
         <!-- Content when not loading -->
         <div v-if="!loadingCalificaciones">
           <div class="px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-medium text-gray-900">
+            <h3 class="text-lg font-medium text-gray-900 flex items-center gap-2">
               Estudiantes - {{ moduloData?.nombre }}
-              <span v-if="moduloData?.tipo === 'Academico'" class="text-sm text-green-600">(Académico)</span>
-              <span v-if="moduloData?.tipo === 'Tecnico'" class="text-sm text-blue-600">(Técnico - {{
+              <span v-if="moduloData?.tipo === 'Academico'" class="text-sm text-green-600 font-normal">(Académico)</span>
+              <span v-if="moduloData?.tipo === 'Tecnico'" class="text-sm text-blue-600 font-normal">(Técnico - {{
                 moduloData.cantidad_ra
               }} RAs)</span>
+              
+              <!-- Indicador de actualización en segundo plano -->
+              <span v-if="isRefreshing && !loadingCalificaciones" class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700">
+                <svg class="animate-spin -ml-0.5 mr-1.5 h-3 w-3 text-blue-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Actualizando...
+              </span>
             </h3>
           </div>
 
@@ -204,9 +213,9 @@
                           <div class="flex flex-col items-center space-y-1">
                             <div class="flex space-x-1">
                               <div v-for="p in 4" :key="p" class="flex flex-col space-y-1">
-                                <button
+                                <button :disabled="isRefreshing"
                                   @click="abrirModalCompetencia(estudiante, getCompetenciasPorBloque(bloque)[0], bloque, `P${p}`)"
-                                  class="w-8 h-8 rounded flex items-center justify-center text-sm font-medium transition-colors border"
+                                  class="w-8 h-8 rounded flex items-center justify-center text-sm font-medium transition-colors border disabled:opacity-50 disabled:cursor-wait"
                                   :class="getCompetenciaButtonClass(estudiante.id, getCompetenciasPorBloque(bloque)[0], bloque, `P${p}`)"
                                   :title="`Calificar Bloque ${bloque} - P${p}`">
                                   {{ getNotaCompetencia(estudiante.id, getCompetenciasPorBloque(bloque)[0], bloque,
@@ -216,8 +225,9 @@
                                 <!-- Botón de Recuperación (RP) Condicional -->
                                 <button
                                   v-if="shouldShowRecovery(estudiante.id, getCompetenciasPorBloque(bloque)[0], bloque, `P${p}`)"
+                                  :disabled="isRefreshing"
                                   @click="abrirModalCompetencia(estudiante, getCompetenciasPorBloque(bloque)[0], bloque, `RP${p}`)"
-                                  class="w-8 h-8 rounded flex items-center justify-center text-sm font-medium transition-colors border border-orange-300 bg-orange-50 text-orange-700 hover:bg-orange-100"
+                                  class="w-8 h-8 rounded flex items-center justify-center text-sm font-medium transition-colors border border-orange-300 bg-orange-50 text-orange-700 hover:bg-orange-100 disabled:opacity-50 disabled:cursor-wait"
                                   :class="getCompetenciaButtonClass(estudiante.id, getCompetenciasPorBloque(bloque)[0], bloque, `RP${p}`)"
                                   :title="`Recuperación Bloque ${bloque} - RP${p}`">
                                   {{ getNotaCompetencia(estudiante.id, getCompetenciasPorBloque(bloque)[0], bloque,
@@ -328,8 +338,9 @@
                         class="px-2 py-4 text-center">
                         <div class="flex justify-center space-x-1">
                           <button v-for="oportunidad in 4" :key="`${estudiante.id}-ra${ra}-op${oportunidad}`"
+                            :disabled="isRefreshing"
                             @click="abrirModalCalificarOportunidad(estudiante, ra, oportunidad)"
-                            class="w-5 h-5 border border-gray-300 rounded-sm flex items-center justify-center text-xs font-bold hover:shadow-md transition-all"
+                            class="w-5 h-5 border border-gray-300 rounded-sm flex items-center justify-center text-xs font-bold hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-wait disabled:hover:shadow-none"
                             :class="getCasillaOportunidadClass(estudiante.id, ra, oportunidad)"
                             :title="getTitleCasilla(estudiante.id, ra, oportunidad)">
                             <span v-if="tieneCalificacionEnOportunidad(estudiante.id, ra, oportunidad)">
@@ -536,6 +547,7 @@ const loading = ref(false)
 const loadingAulas = ref(false)
 const loadingModulosYEstudiantes = ref(false)
 const loadingCalificaciones = ref(false)
+const isRefreshing = ref(false)
 const aulas = ref([])
 const estudiantes = ref([])
 const modulosDisponibles = ref([])
@@ -672,10 +684,14 @@ const cargarModulosYEstudiantes = async () => {
   }
 }
 
-const cargarCalificaciones = async () => {
+const cargarCalificaciones = async (background = false) => {
   if (!moduloSeleccionado.value) return
 
-  loadingCalificaciones.value = true
+  isRefreshing.value = true
+  if (!background) {
+    loadingCalificaciones.value = true
+  }
+  
   try {
     // Encontrar datos del módulo seleccionado
     moduloData.value = modulosDisponibles.value.find(m => m.id == moduloSeleccionado.value)
@@ -694,7 +710,10 @@ const cargarCalificaciones = async () => {
     calificacionesRA.value = []
     calificacionesCompetencias.value = []
   } finally {
-    loadingCalificaciones.value = false
+    isRefreshing.value = false
+    if (!background) {
+      loadingCalificaciones.value = false
+    }
   }
 }
 
@@ -830,7 +849,7 @@ const guardarCalificacion = async () => {
     })
 
     // Actualizar los datos locales
-    await cargarCalificaciones()
+    await cargarCalificaciones(true)
 
     cerrarModalCalificarOportunidad()
 
@@ -1186,7 +1205,7 @@ const cerrarModalCompetencia = () => {
 
 const guardarCalificacionCompetencia = async (payload) => {
   // Actualizar localmente
-  await cargarCalificaciones()
+  await cargarCalificaciones(true)
   cerrarModalCompetencia()
   mostrarMensajeExito('Calificación guardada correctamente')
 }

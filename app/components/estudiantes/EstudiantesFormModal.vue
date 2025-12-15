@@ -217,7 +217,16 @@ const onSubmit = async () => {
     const err = e?.data
     if (err?.errors) {
       for (const k of Object.keys(err.errors)) {
-        errors[k] = Array.isArray(err.errors[k]) ? err.errors[k][0] : String(err.errors[k])
+        let msg = Array.isArray(err.errors[k]) ? err.errors[k][0] : String(err.errors[k])
+        
+        // Traducir mensajes de error comunes del backend (Laravel defaults)
+        if (msg.toLowerCase().includes('already been taken')) {
+          if (k === 'rne') msg = 'Este RNE ya está registrado.'
+          else if (k === 'cedula') msg = 'Esta cédula ya está registrada.'
+          else msg = 'Este valor ya está registrado.'
+        }
+        
+        errors[k] = msg
       }
     }
     formError.value = err?.message || 'Error al enviar el formulario'

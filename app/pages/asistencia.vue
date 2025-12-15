@@ -32,17 +32,60 @@
         </div>
 
         <!-- Selector de asignación/aula -->
+        <!-- Selector de asignación/aula -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Materia y Aula</label>
-          <select v-model="selectedAssignmentId" @change="onAssignmentChange"
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            {{ (authStore.isAdmin || authStore.isMaster) ? 'Aula' : 'Materia y Aula' }}
+          </label>
+          
+          <!-- Para Administradores/Masters: Selector directo de Aulas -->
+          <select v-if="authStore.isAdmin || authStore.isMaster" 
+            v-model="selectedAulaId"
+            @change="selectedAssignmentId = null"
             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
-            :disabled="attendanceStore.loadingAssignments">
-            <option value="">{{ assignmentSelectLabel }}</option>
-            <option v-for="assignment in attendanceStore.teacherAssignments" :key="assignment.id"
-              :value="assignment.id">
-              {{ assignment.materia }} - {{ assignment.aula_nombre }}
+            :disabled="aulasStore.loading">
+            <option :value="null">Seleccionar aula...</option>
+            <option v-for="option in aulasStore.paraSelect" :key="option.value" :value="option.value">
+              {{ option.label }}
             </option>
           </select>
+          
+          <!-- Para Administradores/Masters: Selector de Clase/Asignatura del día -->
+          <div v-if="(authStore.isAdmin || authStore.isMaster) && selectedAulaId" class="mt-4">
+             <label class="block text-sm font-medium text-gray-700 mb-2">Clase / Asignatura</label>
+             <select v-model="selectedAssignmentId"
+               @change="loadAttendance"
+               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
+               :disabled="attendanceStore.loadingDailyClasses">
+               <option :value="null">
+                  {{ attendanceStore.loadingDailyClasses ? 'Cargando horario...' : (attendanceStore.dailyClasses.length ? 'Seleccionar clase...' : 'No hay clases programadas hoy') }}
+               </option>
+               <option v-for="entry in attendanceStore.dailyClasses" :key="entry.id" :value="entry.assignment_id">
+                 {{ entry.period?.start_time?.slice(0,5) }} - {{ entry.period?.end_time?.slice(0,5) }} | 
+                 {{ entry.assignment?.materia?.nombre }} 
+                 <span v-if="entry.assignment?.profesor">({{ entry.assignment.profesor.nombres }} {{ entry.assignment.profesor.apellidos }})</span>
+                 <span v-if="entry.attendance_summary?.attendance_taken" class="ml-2 text-green-600 font-bold">✓</span>
+               </option>
+             </select>
+          </div>
+
+          <!-- Para Profesores: Selector de Asignaciones (Filtrado por día) -->
+          <div v-else-if="!(authStore.isAdmin || authStore.isMaster)">
+             <select v-model="selectedAssignmentId" 
+               @change="onAssignmentChange"
+               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
+               :disabled="attendanceStore.loadingDailyClasses">
+               <option :value="null">
+                   {{ attendanceStore.loadingDailyClasses ? 'Cargando horario...' : (attendanceStore.dailyClasses.length ? 'Seleccionar clase...' : 'No hay clases programadas hoy') }}
+               </option>
+               <option v-for="entry in attendanceStore.dailyClasses" :key="entry.id"
+                 :value="entry.assignment_id">
+                 {{ entry.period?.start_time?.slice(0,5) }} - {{ entry.period?.end_time?.slice(0,5) }} | 
+                 {{ entry.assignment?.materia?.nombre }} - {{ entry.assignment?.aula?.grado_cardinal }}-{{ entry.assignment?.aula?.seccion }}
+                 <span v-if="entry.attendance_summary?.attendance_taken" class="ml-2 text-green-600 font-bold">✓</span>
+               </option>
+             </select>
+          </div>
         </div>
 
         <!-- Botón para clase actual (Solo visible en horario escolar activo) -->
@@ -64,20 +107,7 @@
           </button>
         </div>
 
-        <!-- Botón de cargar -->
-        <div class="flex items-end">
-          <button @click="loadAttendance" :disabled="!selectedDate || !selectedAulaId || attendanceStore.loading"
-            class="w-full inline-flex justify-center items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed">
-            <svg v-if="attendanceStore.loading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none"
-              viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-              </path>
-            </svg>
-            {{ attendanceStore.loading ? 'Cargando...' : 'Cargar Lista' }}
-          </button>
-        </div>
+
       </div>
     </div>
 
@@ -144,8 +174,20 @@
       </div>
     </div>
 
+    <!-- Loading State -->
+    <div v-if="attendanceStore.loading" class="bg-white shadow-sm rounded-lg p-12 flex justify-center items-center">
+      <svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+        viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor"
+          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+        </path>
+      </svg>
+      <span class="text-gray-700 font-medium">Cargando lista de estudiantes...</span>
+    </div>
+
     <!-- Componente de lista de asistencia -->
-    <AttendanceGrid v-if="hasData && selectedDate && selectedAulaId && selectedAssignmentId" :fecha="selectedDate"
+    <AttendanceGrid v-else-if="hasData && selectedDate && selectedAulaId && selectedAssignmentId" :fecha="selectedDate"
       :aula-id="selectedAulaId" :aula-name="selectedAulaName" :assignment-id="selectedAssignmentId" />
 
     <!-- Estado inicial -->
@@ -164,6 +206,7 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useAttendanceStore } from '../stores/attendance'
 import { useAulasStore } from '../stores/aulas'
+import { useAuthStore } from '../stores/auth' // Import auth store
 import { useLiveSchedule } from '../composables/useLiveSchedule'
 import AttendanceGrid from '../components/attendance/AttendanceGrid.vue'
 
@@ -180,12 +223,13 @@ definePageMeta({
 // Stores
 const attendanceStore = useAttendanceStore()
 const aulasStore = useAulasStore()
+const authStore = useAuthStore() // Initialize auth store
 
 // Composable de horario en vivo
 const { isInPeriod } = useLiveSchedule()
 
 // Estado reactivo
-const selectedDate = ref(new Date().toISOString().split('T')[0])
+const selectedDate = ref(new Date().toISOString().split('T')[0]!)
 const selectedAulaId = ref<number | null>(null)
 const selectedAssignmentId = ref<number | null>(null)
 const showStatistics = ref(true)
@@ -251,11 +295,14 @@ const useCurrentClass = () => {
 
 const onAssignmentChange = () => {
   if (selectedAssignmentId.value) {
-    const assignment = attendanceStore.teacherAssignments.find(
-      a => a.id === selectedAssignmentId.value
+    // Buscar la entrada en dailyClasses en lugar de teacherAssignments
+    const entry = attendanceStore.dailyClasses.find(
+      e => e.assignment_id === selectedAssignmentId.value
     )
-    if (assignment) {
-      selectedAulaId.value = assignment.aula_id
+    if (entry && entry.assignment) {
+      selectedAulaId.value = entry.assignment.aula_id
+      // Cargar lista automáticamente
+      loadAttendance()
     }
   } else {
     selectedAulaId.value = null
@@ -270,17 +317,51 @@ const aulaName = (aula: any) => {
 }
 
 // Watchers
-watch([selectedDate, selectedAulaId], ([newDate, newAulaId]) => {
-  // Limpiar registros cuando cambien los filtros
-  if (newDate && newAulaId) {
+// Watchers
+watch(selectedDate, (newDate) => {
+  if (newDate) {
     attendanceStore.resetRecords()
+    selectedAssignmentId.value = null
+    
+    // Si es admin/master, cargar el horario del día para el aula si está seleccionada
+    if ((authStore.isAdmin || authStore.isMaster) && selectedAulaId.value) {
+       attendanceStore.fetchDailyClasses({ aulaId: selectedAulaId.value, date: newDate })
+    }
+    // Si es profesor, cargar su horario del día
+    else if (authStore.user?.personal_id) {
+       attendanceStore.fetchDailyClasses({ professorId: authStore.user.personal_id, date: newDate })
+    }
+  }
+})
+
+watch(selectedAulaId, (newAulaId) => {
+  // Solo reaccionar a cambios de aula si es Admin/Master (que seleccionan aula manualmente)
+  // Para profesores, el cambio de aula es consecuencia del cambio de asignación, así que no reseteamos
+  if (authStore.isAdmin || authStore.isMaster) {
+    attendanceStore.resetRecords()
+    selectedAssignmentId.value = null
+    
+    if (newAulaId && selectedDate.value) {
+       attendanceStore.fetchDailyClasses({ aulaId: newAulaId, date: selectedDate.value })
+    }
+  } else {
+    // Para profesores, solo reseteamos si el aula pasa a null (ej: limpieza manual)
+    // Pero si tiene valor, es porque se seleccionó una asignación. No hacemos nada.
+    if (!newAulaId) {
+        attendanceStore.resetRecords()
+    }
   }
 })
 
 // Lifecycle
 onMounted(async () => {
-  // Cargar asignaciones del profesor
-  await attendanceStore.getTeacherAssignments()
+  // Cargar asignaciones del profesor (ya no es prioritario, usamos fetchDailyClasses)
+  // await attendanceStore.getTeacherAssignments() // Comentado o eliminado si ya no se usa
+
+  // Si es profesor, cargar horario inicial
+  if (!(authStore.isAdmin || authStore.isMaster) && authStore.user?.personal_id) {
+     attendanceStore.fetchDailyClasses({ professorId: authStore.user.personal_id, date: selectedDate.value })
+  }
 
   // Cargar aulas al montar el componente (para administradores)
   await aulasStore.fetchAll()
