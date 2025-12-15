@@ -243,8 +243,8 @@
                       <td class="px-3 py-4 text-center border-l-2 border-gray-300 bg-gray-50">
                         <div class="flex justify-center space-x-4">
                           <div v-for="b in 4" :key="`pc${b}`" class="w-8 flex items-center justify-center font-medium"
-                            :class="getPromedioClass(calcularPromedioBloque(estudiante.id, b))">
-                            {{ calcularPromedioBloque(estudiante.id, b) ?? '-' }}
+                            :class="getPromedioClass(calcularPromedioPeriodo(estudiante.id, b))">
+                            {{ calcularPromedioPeriodo(estudiante.id, b) ?? '-' }}
                           </div>
                         </div>
                       </td>
@@ -1141,18 +1141,40 @@ const calcularPromedioCompetencia = (estudianteId, competencia, bloque) => {
   return cantidad > 0 ? Math.round(suma / cantidad) : null
 }
 
-const calcularPromedioBloque = (estudianteId, bloque) => {
-  const competencias = getCompetenciasPorBloque(bloque)
+
+
+const getAllCompetencias = () => {
+  let todas = []
+  for (let b = 1; b <= 4; b++) {
+    todas = [...todas, ...getCompetenciasPorBloque(b)]
+  }
+  return todas
+}
+
+const calcularPromedioPeriodo = (estudianteId, periodoIndex) => {
+  const competencias = getAllCompetencias()
   if (competencias.length === 0) return null
 
   let suma = 0
   let cantidad = 0
 
   competencias.forEach(comp => {
-    const promedioComp = calcularPromedioCompetencia(estudianteId, comp, bloque)
-    if (promedioComp !== null) {
-      suma += promedioComp
-      cantidad++
+    // Necesitamos saber a qué bloque pertenece esta competencia para usar getNotaDefinitivaPeriodo
+    // Esto es un poco ineficiente pero seguro: buscar en qué bloque está
+    let bloque = null
+    for (let b = 1; b <= 4; b++) {
+      if (getCompetenciasPorBloque(b).includes(comp)) {
+        bloque = b
+        break
+      }
+    }
+
+    if (bloque) {
+      const nota = getNotaDefinitivaPeriodo(estudianteId, comp, bloque, periodoIndex)
+      if (nota !== null) {
+        suma += nota
+        cantidad++
+      }
     }
   })
 
@@ -1163,10 +1185,10 @@ const calcularCalificacionFinal = (estudianteId) => {
   let suma = 0
   let cantidad = 0
 
-  for (let b = 1; b <= 4; b++) {
-    const promedioBloque = calcularPromedioBloque(estudianteId, b)
-    if (promedioBloque !== null) {
-      suma += promedioBloque
+  for (let p = 1; p <= 4; p++) {
+    const promedioPeriodo = calcularPromedioPeriodo(estudianteId, p)
+    if (promedioPeriodo !== null) {
+      suma += promedioPeriodo
       cantidad++
     }
   }
