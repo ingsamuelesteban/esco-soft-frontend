@@ -168,13 +168,13 @@ const edadCalculada = computed(() => {
 
 watch(() => props.model, (m) => {
   if (m) {
-    form.nombres = m.nombres
-    form.apellidos = m.apellidos
+    form.nombres = m.nombres || ''
+    form.apellidos = m.apellidos || ''
     // Convertir fecha ISO a formato yyyy-MM-dd para input date
     form.fecha_nacimiento = (m.fecha_nacimiento || '').split('T')[0] || ''
-    form.cedula = m.cedula
-    form.sexo = m.sexo
-    form.rne = m.rne
+    form.cedula = m.cedula || ''
+    form.sexo = m.sexo || ''
+    form.rne = m.rne || ''
     form.aula_id = m.aula_id || null
   } else {
     resetForm()
