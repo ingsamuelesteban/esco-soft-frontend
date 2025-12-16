@@ -18,7 +18,7 @@
     </header>
 
     <!-- Controles de depuración de tiempo -->
-    <div v-if="true" class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+    <div v-if="false" class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
       <div class="flex flex-wrap items-end gap-4">
         <div>
           <label class="block text-xs font-medium text-gray-700 mb-1">Simular Fecha</label>
@@ -175,7 +175,7 @@ const currentEntries = computed(() => {
 const reload = async () => {
   if (periods.items.length === 0) await periods.fetchAll()
   if (aulasStore.items.length === 0) await aulasStore.fetchAll()
-  
+
   // Ensure anio_lectivo is set
   if (!assignments.anioLectivoId) {
     // Try to find the active year from the store if loaded
@@ -209,18 +209,18 @@ onMounted(async () => {
   timer = window.setInterval(async () => {
     // Only update 'now' if not overridden
     if (!isOverridden.value) {
-        now.value = new Date()
+      now.value = new Date()
     }
-    
+
     // Refresh every minute (checking seconds to align closest to 00 is overkill, just 1 min interval)
     // Removed the % 5 check to update every minute
     const d = diaActual.value
     const dateStr = effectiveNow.value.toLocaleDateString('en-CA')
     await entries.fetchAll({
-        dia: d >= 1 ? d : undefined,
-        anio_lectivo_id: assignments.anioLectivoId || undefined,
-        include_attendance: true,
-        date: dateStr
+      dia: d >= 1 ? d : undefined,
+      anio_lectivo_id: assignments.anioLectivoId || undefined,
+      include_attendance: true,
+      date: dateStr
     })
   }, 60 * 1000) // 1 minute
 })
