@@ -18,7 +18,7 @@
     </header>
 
     <!-- Controles de depuración de tiempo -->
-    <div v-if="false" class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+    <div v-if="true" class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
       <div class="flex flex-wrap items-end gap-4">
         <div>
           <label class="block text-xs font-medium text-gray-700 mb-1">Simular Fecha</label>
@@ -85,12 +85,14 @@ import { useTimetableEntriesStore } from '../../stores/timetable_entries'
 import { usePeriodsStore, type Period } from '../../stores/periods'
 import { useClassAssignmentsStore, type ClassAssignment } from '../../stores/class_assignments'
 import { useAulasStore, type Aula } from '../../stores/aulas'
+import { useAniosLectivosStore } from '../../stores/anios_lectivos'
 import { formatTime12h } from '../../utils/timeFormat'
 
 const entries = useTimetableEntriesStore()
 const periods = usePeriodsStore()
 const assignments = useClassAssignmentsStore()
 const aulasStore = useAulasStore()
+const aniosStore = useAniosLectivosStore()
 
 const now = ref<Date>(new Date())
 const overrideDate = ref('')
@@ -173,6 +175,23 @@ const currentEntries = computed(() => {
 const reload = async () => {
   if (periods.items.length === 0) await periods.fetchAll()
   if (aulasStore.items.length === 0) await aulasStore.fetchAll()
+  
+  // Ensure anio_lectivo is set
+  if (!assignments.anioLectivoId) {
+    // Try to find the active year from the store if loaded
+    const activeYear = aniosStore.items.find(a => a.activo)
+    if (activeYear) {
+      assignments.anioLectivoId = activeYear.id
+    } else {
+      // If store empty or no active year found locally, try fetching
+      await aniosStore.fetchAll({ activo: true })
+      const fetchedActive = aniosStore.items.find(a => a.activo) || aniosStore.items[0]
+      if (fetchedActive) {
+        assignments.anioLectivoId = fetchedActive.id
+      }
+    }
+  }
+
   const d = diaActual.value
   // Formato YYYY-MM-DD local
   const dateStr = effectiveNow.value.toLocaleDateString('en-CA')
@@ -188,19 +207,22 @@ const reload = async () => {
 onMounted(async () => {
   await reload()
   timer = window.setInterval(async () => {
-    now.value = new Date()
-    // Refresca entradas cada 5 minutos para captar cambios del backend
-    if (now.value.getMinutes() % 5 === 0) {
-      const d = diaActual.value
-      const dateStr = effectiveNow.value.toLocaleDateString('en-CA')
-      await entries.fetchAll({
+    // Only update 'now' if not overridden
+    if (!isOverridden.value) {
+        now.value = new Date()
+    }
+    
+    // Refresh every minute (checking seconds to align closest to 00 is overkill, just 1 min interval)
+    // Removed the % 5 check to update every minute
+    const d = diaActual.value
+    const dateStr = effectiveNow.value.toLocaleDateString('en-CA')
+    await entries.fetchAll({
         dia: d >= 1 ? d : undefined,
         anio_lectivo_id: assignments.anioLectivoId || undefined,
         include_attendance: true,
         date: dateStr
-      })
-    }
-  }, 60 * 1000)
+    })
+  }, 60 * 1000) // 1 minute
 })
 
 watch([overrideDate, overrideTime], async () => {

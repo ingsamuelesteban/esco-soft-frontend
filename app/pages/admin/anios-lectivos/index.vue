@@ -31,10 +31,18 @@
                             <div class="text-sm text-gray-500">{{ anio.descripcion || 'Sin descripción' }}</div>
                         </div>
                         <div class="flex items-center gap-4">
-                            <span class="inline-flex px-2 text-xs leading-5 font-semibold rounded-full"
-                                :class="anio.activo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'">
-                                {{ anio.activo ? 'Activo' : 'Inactivo' }}
-                            </span>
+                            <!-- Toggle Activo -->
+                            <button @click="toggleActive(anio)" 
+                                class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                :class="anio.activo ? 'bg-blue-600' : 'bg-gray-200'"
+                                :title="anio.activo ? 'Año activo actualmente' : 'Click para activar este año'">
+                                <span class="sr-only">Usar configuración</span>
+                                <span aria-hidden="true" 
+                                    class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"
+                                    :class="anio.activo ? 'translate-x-5' : 'translate-x-0'">
+                                </span>
+                            </button>
+                            
                             <button @click="openModal(anio)"
                                 class="text-blue-600 hover:text-blue-900 text-sm font-medium">Editar</button>
                             <button @click="confirmDelete(anio)"
@@ -172,6 +180,34 @@ async function confirmDelete(item: AnioLectivo) {
         } catch (e: any) {
             alert(e.response?.data?.message || 'Error al eliminar')
         }
+    }
+}
+
+async function toggleActive(item: AnioLectivo) {
+    // Removed guard to allow re-activating an item which triggers the backend cleanup
+    // if (item.activo) return 
+    
+    // Optimistic UI Update:
+    // 1. Snapshot current state in case we need to revert
+    const previousState = items.value.map(i => ({ id: i.id, activo: i.activo }))
+    
+    // 2. Update local state immediately
+    store.items.forEach(i => {
+        i.activo = (i.id === item.id)
+    })
+    
+    try {
+        // 3. Call backend
+        await store.update(item.id, { activo: true })
+        // 4. Reload to be sure (optional if optimistic worked perfect, but good for consistency)
+        await store.fetchAll()
+    } catch (e: any) {
+        // Revert on error
+        store.items.forEach(i => {
+            const prev = previousState.find(p => p.id === i.id)
+            if (prev) i.activo = prev.activo
+        })
+        alert(e.response?.data?.message || 'Error al actualizar estado')
     }
 }
 </script>
