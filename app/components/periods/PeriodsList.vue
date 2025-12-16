@@ -97,9 +97,7 @@ const store = usePeriodsStore()
 const draggedIndex = ref<number | null>(null)
 
 onMounted(() => {
-  if (store.items.length === 0) {
-    store.fetchAll()
-  }
+  store.fetchAll()
 })
 
 const loading = computed(() => store.loading)
