@@ -97,15 +97,22 @@ const reset = () => {
   for (const k of Object.keys(errors)) errors[k] = null
 }
 
-watch(() => props.period, (p) => {
+// Re-init on open OR on period change while open
+const init = () => {
   reset()
-  if (p) {
-    form.label = p.label
-    form.start_time = p.start_time
-    form.end_time = p.end_time
-    form.type = p.type
-    form.period_number = p.period_number
-    form.is_active = p.is_active
+  if (props.period) {
+    form.label = props.period.label
+    form.start_time = props.period.start_time
+    form.end_time = props.period.end_time
+    form.type = props.period.type
+    form.period_number = props.period.period_number
+    form.is_active = props.period.is_active
+  }
+}
+
+watch(() => [props.modelValue, props.period], ([isOpen, p]) => {
+  if (isOpen) {
+    init()
   }
 }, { immediate: true })
 
