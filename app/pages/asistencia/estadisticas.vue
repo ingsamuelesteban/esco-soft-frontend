@@ -1,0 +1,166 @@
+<template>
+    <div class="space-y-8">
+        <!-- Header & Filters -->
+        <div class="bg-white shadow-sm rounded-lg p-6">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <button @click="navigateTo('/asistencia')" class="text-gray-400 hover:text-gray-600">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                            </svg>
+                        </button>
+                        <h1 class="text-2xl font-bold text-gray-900">Estadísticas de Asistencia</h1>
+                    </div>
+                    <p class="text-sm text-gray-600 mt-1">
+                        {{ filters.date }} | {{ selectedAulaName }}
+                    </p>
+                </div>
+
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <!-- Filtro Fecha -->
+                    <div class="w-full sm:w-48">
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Fecha</label>
+                        <input v-model="filters.date" type="date"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
+                    </div>
+
+                    <!-- Filtro Aula -->
+                    <div class="w-full sm:w-64">
+                        <label class="block text-xs font-medium text-gray-700 mb-1">Aula</label>
+                        <select v-model="filters.aulaId"
+                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                            <option :value="null">Seleccionar aula...</option>
+                            <option v-for="aula in aulasStore.paraSelect" :key="aula.value" :value="aula.value">
+                                {{ aula.label }}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div v-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4">
+            <div class="flex">
+                <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd"
+                            d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                            clip-rule="evenodd" />
+                    </svg>
+                </div>
+                <div class="ml-3">
+                    <h3 class="text-sm font-medium text-red-800">Error al cargar estadísticas</h3>
+                    <p class="text-sm text-red-700 mt-1">{{ error }}</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading -->
+        <div v-if="loading" class="flex justify-center p-12">
+            <svg class="animate-spin h-8 w-8 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none"
+                viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                </path>
+            </svg>
+        </div>
+
+        <!-- Content -->
+        <template v-else-if="stats && filters.aulaId">
+
+            <!-- 1. Stats Globales (Eliminado) -->
+            <!-- 
+            <div class="mb-8 border-b-2 border-gray-200 pb-8">
+                <StatsBoard title="Resumen Global"
+                    :subtitle="`${stats.meta?.total_inscritos || 0} Estudiantes Inscritos`" :stats="stats.global"
+                    :attendanceTaken="true" />
+            </div>
+            -->
+
+            <!-- 2. Lista de Asignaturas -->
+            <div class="space-y-8">
+                <div v-for="subject in stats.asignaturas" :key="subject.assignment_id">
+                    <StatsBoard :title="subject.materia" :subtitle="`${subject.horario} • Prof. ${subject.profesor}`"
+                        :stats="subject.stats" :attendanceTaken="subject.attendance_taken" />
+                </div>
+            </div>
+
+        </template>
+
+        <!-- Empty State -->
+        <div v-if="!filters.aulaId" class="bg-white shadow-sm rounded-lg p-12 text-center text-gray-500">
+            Selecciona un aula para ver las estadísticas.
+        </div>
+    </div>
+</template>
+
+<script setup lang="ts">
+// Imports
+import { ref, reactive, watch, onMounted, computed } from 'vue'
+import { useAulasStore } from '~/stores/aulas'
+import { api } from '~/utils/api'
+import StatsBoard from '~/components/attendance/StatsBoard.vue'
+
+// Stores
+const aulasStore = useAulasStore()
+
+// State
+const loading = ref(false)
+const error = ref('')
+const stats = ref<any>(null)
+
+const filters = reactive({
+    date: new Date().toISOString().split('T')[0],
+    aulaId: null as number | null
+})
+
+// Computed
+const selectedAulaName = computed(() => {
+    if (!filters.aulaId) return ''
+    const aula = aulasStore.paraSelect.find((a: any) => a.value === filters.aulaId)
+    return aula ? aula.label : ''
+})
+
+
+// Methods
+const fetchStats = async () => {
+    if (!filters.date || !filters.aulaId) return
+
+    loading.value = true
+    error.value = ''
+    stats.value = null
+
+    try {
+        const response = await api.get('/api/attendance/statistics', {
+            params: {
+                fecha: filters.date,
+                aula_id: filters.aulaId
+            }
+        })
+        stats.value = response
+    } catch (e: any) {
+        console.error('Error fetching statistics:', e)
+        error.value = 'No se pudieron cargar los datos.'
+    } finally {
+        loading.value = false
+    }
+}
+
+// Watchers
+watch(() => [filters.date, filters.aulaId], () => {
+    if (filters.aulaId) {
+        fetchStats()
+    } else {
+        stats.value = null
+    }
+}, { immediate: true })
+
+// Lifecycle
+onMounted(() => {
+    aulasStore.fetchAll()
+})
+</script>
