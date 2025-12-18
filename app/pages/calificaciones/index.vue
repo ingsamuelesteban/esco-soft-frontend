@@ -125,16 +125,21 @@
           <div class="px-6 py-4 border-b border-gray-200">
             <h3 class="text-lg font-medium text-gray-900 flex items-center gap-2">
               Estudiantes - {{ moduloData?.nombre }}
-              <span v-if="moduloData?.tipo === 'Academico'" class="text-sm text-green-600 font-normal">(Académico)</span>
+              <span v-if="moduloData?.tipo === 'Academico'"
+                class="text-sm text-green-600 font-normal">(Académico)</span>
               <span v-if="moduloData?.tipo === 'Tecnico'" class="text-sm text-blue-600 font-normal">(Técnico - {{
                 moduloData.cantidad_ra
               }} RAs)</span>
-              
+
               <!-- Indicador de actualización en segundo plano -->
-              <span v-if="isRefreshing && !loadingCalificaciones" class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700">
-                <svg class="animate-spin -ml-0.5 mr-1.5 h-3 w-3 text-blue-700" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <span v-if="isRefreshing && !loadingCalificaciones"
+                class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-50 text-blue-700">
+                <svg class="animate-spin -ml-0.5 mr-1.5 h-3 w-3 text-blue-700" xmlns="http://www.w3.org/2000/svg"
+                  fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                  </path>
                 </svg>
                 Actualizando...
               </span>
@@ -193,7 +198,7 @@
                       <td class="px-6 py-4 whitespace-nowrap sticky left-0 bg-white z-10">
                         <div class="flex items-center space-x-3">
                           <div class="flex-shrink-0">
-                             <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
+                            <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
                               <span class="text-xs font-bold text-blue-800">
                                 {{ estudiante.numero_orden || '?' }}
                               </span>
@@ -451,88 +456,18 @@
       </div>
     </div>
 
-    <!-- Modal para calificar oportunidad -->
-    <div v-if="mostrarModalCalificarOportunidad"
-      class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
-        <div class="mt-3">
-          <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-medium text-gray-900">
-              Calificar RA {{ raParaCalificar }} - Oportunidad {{ oportunidadParaCalificar }}
-            </h3>
-            <button @click="cerrarModalCalificarOportunidad" :disabled="guardandoCalificacion"
-              class="text-gray-400 hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-          </div>
-
-          <div class="mb-4">
-            <div class="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md">
-              <div class="text-sm">
-                <div class="font-medium text-blue-700">{{ estudianteParaCalificar?.nombres }} {{
-                  estudianteParaCalificar?.apellidos }}</div>
-                <div class="text-blue-600 mt-1">RNE: {{ estudianteParaCalificar?.rne }}</div>
-                <div class="text-blue-600 mt-1">
-                  Valor del RA: {{ moduloData?.valores_ra?.[`ra_${raParaCalificar}`] || 20 }} puntos
-                </div>
-                <div class="text-blue-600">
-                  Nota mínima: {{ (moduloData?.valores_ra?.[`ra_${raParaCalificar}`] || 20) * 0.7 }} (70%)
-                </div>
-              </div>
-            </div>
-
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Calificación obtenida
-            </label>
-            <input v-model="calificacionActual" type="number" min="0"
-              :max="moduloData?.valores_ra?.[`ra_${raParaCalificar}`] || 20" step="0.1"
-              :disabled="guardandoCalificacion"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
-              placeholder="Ingresa la calificación" />
-            <p class="text-xs text-gray-500 mt-1">
-              Ingresa la calificación numérica obtenida por el estudiante
-            </p>
-          </div>
-
-          <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">
-              Observaciones (opcional)
-            </label>
-            <textarea v-model="observacionesActual" :disabled="guardandoCalificacion" rows="3"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed resize-none"
-              placeholder="Ingresa observaciones sobre el desempeño del estudiante (opcional)"></textarea>
-            <p class="text-xs text-gray-500 mt-1">
-              Puedes agregar comentarios sobre el desempeño o aspectos a mejorar
-            </p>
-          </div>
-
-          <div class="flex justify-end space-x-3">
-            <button @click="cerrarModalCalificarOportunidad" :disabled="guardandoCalificacion"
-              class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed">
-              Cancelar
-            </button>
-            <button @click="guardarCalificacion"
-              :disabled="guardandoCalificacion || !calificacionActual || calificacionActual < 0"
-              class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center">
-              <svg v-if="guardandoCalificacion" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
-                xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor"
-                  d="m15.99 4.99c.96.38 1.87.89 2.68 1.5l-2.83 2.83-.01-.01c-.39-.39-.9-.67-1.49-.83l1.65-3.49z"></path>
-              </svg>
-              {{ guardandoCalificacion ? 'Guardando...' : 'Guardar Calificación' }}
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+    <!-- Modal para calificar oportunidad (NUEVO COMPONENTE) -->
+    <CalificacionOportunidadModal v-if="mostrarModalCalificarOportunidad" :estudiante="estudianteParaCalificar"
+      :ra-numero="raParaCalificar" :oportunidad="oportunidadParaCalificar"
+      :valor-ra="moduloData?.valores_ra?.[`ra_${raParaCalificar}`] || 20" :nota-actual="calificacionActual"
+      :observaciones-actuales="observacionesActual" :loading="guardandoCalificacion"
+      @close="cerrarModalCalificarOportunidad" @save="guardarCalificacion" />
   </div>
 </template>
 
 <script setup>
 import CalificacionCompetenciaModal from '~/components/calificaciones/CalificacionCompetenciaModal.vue'
+import CalificacionOportunidadModal from '~/components/calificaciones/CalificacionOportunidadModal.vue'
 import { ref, computed, onMounted } from 'vue'
 import { api } from '~/utils/api'
 import { useAuthStore } from '../../stores/auth'
@@ -691,7 +626,7 @@ const cargarCalificaciones = async (background = false) => {
   if (!background) {
     loadingCalificaciones.value = true
   }
-  
+
   try {
     // Encontrar datos del módulo seleccionado
     moduloData.value = modulosDisponibles.value.find(m => m.id == moduloSeleccionado.value)
@@ -836,7 +771,7 @@ const cerrarModalCalificarOportunidad = () => {
   guardandoCalificacion.value = false
 }
 
-const guardarCalificacion = async () => {
+const guardarCalificacion = async (payload) => {
   guardandoCalificacion.value = true
   try {
     const response = await api.post('/api/calificaciones-ra', {
@@ -844,8 +779,8 @@ const guardarCalificacion = async () => {
       materia_id: moduloSeleccionado.value,
       ra_numero: raParaCalificar.value,
       oportunidad: oportunidadParaCalificar.value,
-      nota: parseFloat(calificacionActual.value),
-      observaciones: observacionesActual.value || null
+      nota: parseFloat(payload.nota),
+      observaciones: payload.observaciones || null
     })
 
     // Actualizar los datos locales
