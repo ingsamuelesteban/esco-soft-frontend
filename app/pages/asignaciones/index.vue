@@ -40,7 +40,7 @@ const onDeactivate = async (id: number) => {
 }
 </script>
 
-<style scoped>
+<style scoped lang="postcss">
 .icon-btn {
   @apply inline-flex items-center justify-center p-1.5 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-colors;
 }
