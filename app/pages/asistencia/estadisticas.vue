@@ -72,17 +72,19 @@
         <!-- Content -->
         <template v-else-if="stats && filters.aulaId">
 
-            <!-- 1. Stats Globales (Eliminado) -->
-            <!-- 
-            <div class="mb-8 border-b-2 border-gray-200 pb-8">
-                <StatsBoard title="Resumen Global"
-                    :subtitle="`${stats.meta?.total_inscritos || 0} Estudiantes Inscritos`" :stats="stats.global"
-                    :attendanceTaken="true" />
+            <!-- Empty State for Results -->
+            <div v-if="stats.asignaturas.length === 0"
+                class="flex flex-col items-center justify-center p-12 bg-white rounded-lg shadow-sm border border-gray-100">
+                <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+                <h3 class="text-lg font-medium text-gray-900">No hay registros de asistencia</h3>
+                <p class="text-sm text-gray-500 mt-1">No se encontraron clases registradas para esta fecha y aula.</p>
             </div>
-            -->
 
-            <!-- 2. Lista de Asignaturas -->
-            <div class="space-y-8">
+            <!-- List of Subjects -->
+            <div v-else class="space-y-8">
                 <div v-for="subject in stats.asignaturas" :key="subject.assignment_id">
                     <StatsBoard :title="subject.materia" :subtitle="`${subject.horario} • Prof. ${subject.profesor}`"
                         :stats="subject.stats" :attendanceTaken="subject.attendance_taken" />
