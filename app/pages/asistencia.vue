@@ -37,10 +37,9 @@
           <label class="block text-sm font-medium text-gray-700 mb-2">
             {{ (authStore.isAdmin || authStore.isMaster) ? 'Aula' : 'Materia y Aula' }}
           </label>
-          
+
           <!-- Para Administradores/Masters: Selector directo de Aulas -->
-          <select v-if="authStore.isAdmin || authStore.isMaster" 
-            v-model="selectedAulaId"
+          <select v-if="authStore.isAdmin || authStore.isMaster" v-model="selectedAulaId"
             @change="selectedAssignmentId = null"
             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
             :disabled="aulasStore.loading">
@@ -49,47 +48,48 @@
               {{ option.label }}
             </option>
           </select>
-          
+
           <!-- Para Administradores/Masters: Selector de Clase/Asignatura del día -->
           <div v-if="(authStore.isAdmin || authStore.isMaster) && selectedAulaId" class="mt-4">
-             <label class="block text-sm font-medium text-gray-700 mb-2">Clase / Asignatura</label>
-             <select v-model="selectedAssignmentId"
-               @change="loadAttendance"
-               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
-               :disabled="attendanceStore.loadingDailyClasses">
-               <option :value="null">
-                  {{ attendanceStore.loadingDailyClasses ? 'Cargando horario...' : (attendanceStore.dailyClasses.length ? 'Seleccionar clase...' : 'No hay clases programadas hoy') }}
-               </option>
-               <option v-for="entry in attendanceStore.dailyClasses" :key="entry.id" :value="entry.assignment_id">
-                 {{ entry.period?.start_time?.slice(0,5) }} - {{ entry.period?.end_time?.slice(0,5) }} | 
-                 {{ entry.assignment?.materia?.nombre }} 
-                 <span v-if="entry.assignment?.profesor">({{ entry.assignment.profesor.nombres }} {{ entry.assignment.profesor.apellidos }})</span>
-                 <span v-if="entry.attendance_summary?.attendance_taken" class="ml-2 text-green-600 font-bold">✓</span>
-               </option>
-             </select>
+            <label class="block text-sm font-medium text-gray-700 mb-2">Clase / Asignatura</label>
+            <select v-model="selectedAssignmentId" @change="loadAttendance"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
+              :disabled="attendanceStore.loadingDailyClasses">
+              <option :value="null">
+                {{ attendanceStore.loadingDailyClasses ? 'Cargando horario...' : (attendanceStore.dailyClasses.length ?
+                  'Seleccionar clase...' : 'No hay clases programadas hoy') }}
+              </option>
+              <option v-for="entry in attendanceStore.dailyClasses" :key="entry.id" :value="entry.assignment_id">
+                {{ entry.period?.start_time?.slice(0, 5) }} - {{ entry.period?.end_time?.slice(0, 5) }} |
+                {{ entry.assignment?.materia?.nombre }}
+                <span v-if="entry.assignment?.profesor">({{ entry.assignment.profesor.nombres }} {{
+                  entry.assignment.profesor.apellidos }})</span>
+                <span v-if="entry.attendance_summary?.attendance_taken" class="ml-2 text-green-600 font-bold">✓</span>
+              </option>
+            </select>
           </div>
 
           <!-- Para Profesores: Selector de Asignaciones (Filtrado por día) -->
           <div v-else-if="!(authStore.isAdmin || authStore.isMaster)">
-             <select v-model="selectedAssignmentId" 
-               @change="onAssignmentChange"
-               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
-               :disabled="attendanceStore.loadingDailyClasses">
-               <option :value="null">
-                   {{ attendanceStore.loadingDailyClasses ? 'Cargando horario...' : (attendanceStore.dailyClasses.length ? 'Seleccionar clase...' : 'No hay clases programadas hoy') }}
-               </option>
-               <option v-for="entry in attendanceStore.dailyClasses" :key="entry.id"
-                 :value="entry.assignment_id">
-                 {{ entry.period?.start_time?.slice(0,5) }} - {{ entry.period?.end_time?.slice(0,5) }} | 
-                 {{ entry.assignment?.materia?.nombre }} - {{ entry.assignment?.aula?.grado_cardinal }}-{{ entry.assignment?.aula?.seccion }}
-                 <span v-if="entry.attendance_summary?.attendance_taken" class="ml-2 text-green-600 font-bold">✓</span>
-               </option>
-             </select>
+            <select v-model="selectedAssignmentId" @change="onAssignmentChange"
+              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
+              :disabled="attendanceStore.loadingDailyClasses">
+              <option :value="null">
+                {{ attendanceStore.loadingDailyClasses ? 'Cargando horario...' : (attendanceStore.dailyClasses.length ?
+                  'Seleccionar clase...' : 'No hay clases programadas hoy') }}
+              </option>
+              <option v-for="entry in attendanceStore.dailyClasses" :key="entry.id" :value="entry.assignment_id">
+                {{ entry.period?.start_time?.slice(0, 5) }} - {{ entry.period?.end_time?.slice(0, 5) }} |
+                {{ entry.assignment?.materia?.nombre }} - {{ entry.assignment?.aula?.grado_cardinal }}-{{
+                  entry.assignment?.aula?.seccion }}
+                <span v-if="entry.attendance_summary?.attendance_taken" class="ml-2 text-green-600 font-bold">✓</span>
+              </option>
+            </select>
           </div>
         </div>
 
-        <!-- Botón para clase actual (Solo visible en horario escolar activo) -->
-        <div class="flex items-end" v-if="isInPeriod">
+        <!-- Botón para clase actual (Solo visible en horario escolar activo, si hay clases y es hoy) -->
+        <div class="flex items-end" v-if="isInPeriod && attendanceStore.dailyClasses.length > 0 && isToday">
           <button @click="loadCurrentClass" :disabled="attendanceStore.loadingCurrentClass"
             class="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
             <svg v-if="attendanceStore.loadingCurrentClass" class="animate-spin -ml-1 mr-2 h-4 w-4" fill="none"
@@ -259,6 +259,11 @@ const assignmentSelectLabel = computed(() =>
     : 'Seleccionar materia y aula'
 )
 
+const isToday = computed(() => {
+  const today = new Date().toISOString().split('T')[0]
+  return selectedDate.value === today
+})
+
 // Métodos
 const loadAttendance = async () => {
   if (!selectedDate.value || !selectedAulaId.value) return
@@ -322,14 +327,14 @@ watch(selectedDate, (newDate) => {
   if (newDate) {
     attendanceStore.resetRecords()
     selectedAssignmentId.value = null
-    
+
     // Si es admin/master, cargar el horario del día para el aula si está seleccionada
     if ((authStore.isAdmin || authStore.isMaster) && selectedAulaId.value) {
-       attendanceStore.fetchDailyClasses({ aulaId: selectedAulaId.value, date: newDate })
+      attendanceStore.fetchDailyClasses({ aulaId: selectedAulaId.value, date: newDate })
     }
     // Si es profesor, cargar su horario del día
     else if (authStore.user?.personal_id) {
-       attendanceStore.fetchDailyClasses({ professorId: authStore.user.personal_id, date: newDate })
+      attendanceStore.fetchDailyClasses({ professorId: authStore.user.personal_id, date: newDate })
     }
   }
 })
@@ -340,15 +345,15 @@ watch(selectedAulaId, (newAulaId) => {
   if (authStore.isAdmin || authStore.isMaster) {
     attendanceStore.resetRecords()
     selectedAssignmentId.value = null
-    
+
     if (newAulaId && selectedDate.value) {
-       attendanceStore.fetchDailyClasses({ aulaId: newAulaId, date: selectedDate.value })
+      attendanceStore.fetchDailyClasses({ aulaId: newAulaId, date: selectedDate.value })
     }
   } else {
     // Para profesores, solo reseteamos si el aula pasa a null (ej: limpieza manual)
     // Pero si tiene valor, es porque se seleccionó una asignación. No hacemos nada.
     if (!newAulaId) {
-        attendanceStore.resetRecords()
+      attendanceStore.resetRecords()
     }
   }
 })
@@ -360,7 +365,7 @@ onMounted(async () => {
 
   // Si es profesor, cargar horario inicial
   if (!(authStore.isAdmin || authStore.isMaster) && authStore.user?.personal_id) {
-     attendanceStore.fetchDailyClasses({ professorId: authStore.user.personal_id, date: selectedDate.value })
+    attendanceStore.fetchDailyClasses({ professorId: authStore.user.personal_id, date: selectedDate.value })
   }
 
   // Cargar aulas al montar el componente (para administradores)
