@@ -229,7 +229,7 @@ const authStore = useAuthStore() // Initialize auth store
 const { isInPeriod } = useLiveSchedule()
 
 // Estado reactivo
-const selectedDate = ref(new Date().toISOString().split('T')[0]!)
+const selectedDate = ref(new Date().toLocaleDateString('en-CA'))
 const selectedAulaId = ref<number | null>(null)
 const selectedAssignmentId = ref<number | null>(null)
 const showStatistics = ref(true)

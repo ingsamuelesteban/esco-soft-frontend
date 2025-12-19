@@ -135,7 +135,7 @@ const stats = ref<any>(null)
 const isPrintingGlobal = ref(false)
 
 const filters = reactive({
-    date: new Date().toISOString().split('T')[0],
+    date: new Date().toLocaleDateString('en-CA'),
     aulaId: null as number | null
 })
 

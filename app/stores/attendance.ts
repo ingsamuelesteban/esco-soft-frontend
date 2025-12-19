@@ -50,7 +50,7 @@ export const useAttendanceStore = defineStore('attendance', {
     records: [] as AttendanceRecord[],
     loading: false,
     error: null as string | null,
-    currentDate: new Date().toISOString().split('T')[0],
+    currentDate: new Date().toLocaleDateString('en-CA'),
     currentAulaId: null as number | null,
     currentAssignmentId: null as number | null, // <--- Agregado para manejar assignment_id actual
     teacherAssignments: [] as TeacherAssignment[],
