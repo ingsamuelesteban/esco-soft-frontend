@@ -20,7 +20,7 @@
 
                 <div class="flex flex-col sm:flex-row gap-4 items-end">
                     <!-- Global Print Button -->
-                    <button @click="printGlobal" :disabled="!stats || !filters.aulaId || isPrintingGlobal"
+                    <button @click="printGlobal" :disabled="!isGlobalPrintEnabled || isPrintingGlobal"
                         class="px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 flex items-center gap-2 h-[38px]">
                         <PrinterIcon v-if="!isPrintingGlobal" class="h-5 w-5 text-gray-500" />
                         <svg v-else class="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg"
@@ -47,6 +47,7 @@
                         <select v-model="filters.aulaId"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                             <option :value="null">Seleccionar aula...</option>
+                            <option value="all">Todas las aulas</option>
                             <option v-for="aula in aulasStore.paraSelect" :key="aula.value" :value="aula.value">
                                 {{ aula.label }}
                             </option>
@@ -101,7 +102,9 @@
             <!-- List of Subjects -->
             <div v-else class="space-y-8">
                 <div v-for="subject in stats.asignaturas" :key="subject.assignment_id">
-                    <StatsBoard :title="subject.materia" :subtitle="`${subject.horario} • Prof. ${subject.profesor}`"
+                    <StatsBoard 
+                        :title="subject.aula_nombre ? `${subject.aula_nombre} - ${subject.materia}` : subject.materia"
+                        :subtitle="`${subject.horario} • Prof. ${subject.profesor}`"
                         :stats="subject.stats" :attendanceTaken="subject.attendance_taken"
                         :assignmentId="subject.assignment_id" :date="filters.date" />
                 </div>
@@ -136,14 +139,22 @@ const isPrintingGlobal = ref(false)
 
 const filters = reactive({
     date: new Date().toLocaleDateString('en-CA'),
-    aulaId: null as number | null
+    aulaId: null as number | string | null
 })
 
 // Computed
 const selectedAulaName = computed(() => {
     if (!filters.aulaId) return ''
+    if (filters.aulaId === 'all') return 'Todas las aulas'
     const aula = aulasStore.paraSelect.find((a: any) => a.value === filters.aulaId)
     return aula ? aula.label : ''
+})
+
+const isGlobalPrintEnabled = computed(() => {
+    if (!filters.date) return false
+    // Enable if it's 'all' OR if it's a specific ID and we have stats
+    if (filters.aulaId === 'all') return true
+    return !!(filters.aulaId && stats.value)
 })
 
 
