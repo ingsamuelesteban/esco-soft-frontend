@@ -215,6 +215,7 @@
 import { ref, onMounted, reactive } from 'vue'
 import { api } from '../../utils/api'
 import type { Tenant } from '../../stores/auth'
+import Swal from 'sweetalert2'
 
 definePageMeta({
     layout: 'default',
@@ -330,7 +331,12 @@ const onLogoDepartamentoChange = (event: Event) => {
 
 const saveTenant = async () => {
     if (!form.name || !form.abbreviation) {
-        alert('Por favor complete los campos requeridos (Nombre y Abreviatura)')
+        Swal.fire({
+            icon: 'warning',
+            title: 'Campos incompletos',
+            text: 'Por favor complete los campos requeridos (Nombre y Abreviatura)',
+            confirmButtonColor: '#3085d6',
+        })
         return
     }
 
@@ -365,23 +371,38 @@ const saveTenant = async () => {
         const response = await api.post<{ success: boolean, message?: string }>(url, formData)
 
         if (response.success) {
+            Swal.fire({
+                icon: 'success',
+                title: '¡Guardado!',
+                text: response.message || 'Institución guardada exitosamente',
+                timer: 2000,
+                showConfirmButton: false
+            })
             await fetchTenants()
             closeModal()
         } else {
-            alert(response.message || 'Error al guardar la institución')
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: response.message || 'Error al guardar la institución'
+            })
         }
     } catch (error: any) {
         console.error('Error saving tenant:', error)
         const message = error.data?.message || 'Error al guardar la institución'
         const errors = error.data?.errors
 
+        let errorMsg = ''
         if (errors) {
-            // Basic error display for validation
-            const errorMsg = Object.values(errors).flat().join('\n')
-            alert(message + '\n' + errorMsg)
-        } else {
-            alert(message)
+            errorMsg = Object.values(errors).flat().join('<br>')
         }
+
+        Swal.fire({
+            icon: 'error',
+            title: 'Error de validación',
+            html: `<strong>${message}</strong>${errorMsg ? '<br><br>' + errorMsg : ''}`,
+            confirmButtonColor: '#d33'
+        })
     } finally {
         saving.value = false
     }
@@ -390,16 +411,38 @@ const saveTenant = async () => {
 
 
 const deleteTenant = async (tenant: Tenant) => {
-    if (!confirm('¿Estás seguro de que deseas eliminar esta institución?')) return
+    const result = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: `Deseas eliminar la institución "${tenant.name}"`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    })
+
+    if (!result.isConfirmed) return
 
     try {
-        const response = await api.delete<{ success: boolean }>(`/api/tenants/${tenant.id}`)
+        const response = await api.delete<{ success: boolean, message?: string }>(`/api/tenants/${tenant.id}`)
         if (response.success) {
+            Swal.fire({
+                icon: 'success',
+                title: 'Eliminado',
+                text: 'La institución ha sido eliminada correctamente',
+                timer: 1500,
+                showConfirmButton: false
+            })
             await fetchTenants()
         }
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error deleting tenant:', error)
-        alert('Error al eliminar la institución')
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: error.data?.message || 'Error al eliminar la institución'
+        })
     }
 }
 
