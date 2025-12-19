@@ -18,7 +18,22 @@
                     </p>
                 </div>
 
-                <div class="flex flex-col sm:flex-row gap-4">
+                <div class="flex flex-col sm:flex-row gap-4 items-end">
+                    <!-- Global Print Button -->
+                    <button @click="printGlobal" :disabled="!stats || !filters.aulaId || isPrintingGlobal"
+                        class="px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 flex items-center gap-2 h-[38px]">
+                        <PrinterIcon v-if="!isPrintingGlobal" class="h-5 w-5 text-gray-500" />
+                        <svg v-else class="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                        <span>Imprimir Todo</span>
+                    </button>
+
                     <!-- Filtro Fecha -->
                     <div class="w-full sm:w-48">
                         <label class="block text-xs font-medium text-gray-700 mb-1">Fecha</label>
@@ -87,13 +102,14 @@
             <div v-else class="space-y-8">
                 <div v-for="subject in stats.asignaturas" :key="subject.assignment_id">
                     <StatsBoard :title="subject.materia" :subtitle="`${subject.horario} • Prof. ${subject.profesor}`"
-                        :stats="subject.stats" :attendanceTaken="subject.attendance_taken" />
+                        :stats="subject.stats" :attendanceTaken="subject.attendance_taken"
+                        :assignmentId="subject.assignment_id" :date="filters.date" />
                 </div>
             </div>
 
         </template>
 
-        <!-- Empty State -->
+        <!-- Empty State for Selection -->
         <div v-if="!filters.aulaId" class="bg-white shadow-sm rounded-lg p-12 text-center text-gray-500">
             Selecciona un aula para ver las estadísticas.
         </div>
@@ -106,6 +122,8 @@ import { ref, reactive, watch, onMounted, computed } from 'vue'
 import { useAulasStore } from '~/stores/aulas'
 import { api } from '~/utils/api'
 import StatsBoard from '~/components/attendance/StatsBoard.vue'
+import { PrinterIcon } from '@heroicons/vue/24/outline'
+import printJS from 'print-js'
 
 // Stores
 const aulasStore = useAulasStore()
@@ -114,6 +132,7 @@ const aulasStore = useAulasStore()
 const loading = ref(false)
 const error = ref('')
 const stats = ref<any>(null)
+const isPrintingGlobal = ref(false)
 
 const filters = reactive({
     date: new Date().toISOString().split('T')[0],
@@ -129,6 +148,31 @@ const selectedAulaName = computed(() => {
 
 
 // Methods
+const printGlobal = async () => {
+    if (!filters.date || !filters.aulaId) return
+    isPrintingGlobal.value = true
+    try {
+        const blob = await api.getBlob('/api/attendance/report/daily', {
+            params: {
+                fecha: filters.date,
+                aula_id: filters.aulaId
+            }
+        })
+
+        const url = URL.createObjectURL(blob)
+        printJS({
+            printable: url,
+            type: 'pdf',
+            showModal: true,
+            onPrintDialogClose: () => URL.revokeObjectURL(url)
+        })
+    } catch (e: any) {
+        console.error('Error printing global:', e)
+    } finally {
+        isPrintingGlobal.value = false
+    }
+}
+
 const fetchStats = async () => {
     if (!filters.date || !filters.aulaId) return
 

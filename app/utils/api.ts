@@ -81,9 +81,18 @@ export async function apiCall<T = any>(url: string, options: Parameters<typeof $
   return $fetch<T>(fullUrl, {
     ...options,
     headers,
-    // Forzar que $fetch siempre parsee como JSON
-    responseType: 'json',
+    // Forzar que $fetch siempre parsee como JSON, a menos que se especifique lo contrario
+    responseType: (options.responseType as any) || 'json',
     onResponse({ response }) {
+      // Si esperamos un blob, no intentamos parsear errores como JSON structurado del backend
+      if (options.responseType === 'blob') {
+        if (!response.ok) {
+          // Si falla (ej 404), igual lanzamos error
+          throw new Error('Error descargando archivo')
+        }
+        return
+      }
+
       // Verificar si hay errores en el cuerpo, incluso si el status es 200
       if (response._data && (response._data.errors || response._data.error)) {
         const error = new Error(response._data.message || 'Error en la petición')
@@ -92,14 +101,11 @@ export async function apiCall<T = any>(url: string, options: Parameters<typeof $
         Object.assign(error, { data: response._data, statusCode: status, status: status })
         throw error
       }
-
-      if (!response.ok) {
-        // Fallback por si no entró en el if anterior
-        // En Nuxt 3/OhMyFetch, esto usualmente ya lanza error, 
-        // pero podemos asegurarnos o formatear el error aquí si es necesario.
-      }
     },
     onResponseError({ response }) {
+      if (options.responseType === 'blob') {
+        throw new Error(`Error ${response.status}: ${response.statusText}`)
+      }
       // Asegurar que el error se lance con la data correcta
       const error = new Error(response._data?.message || 'Error en la petición')
       Object.assign(error, { data: response._data, statusCode: response.status, status: response.status })
@@ -126,4 +132,7 @@ export const api = {
 
   delete: <T = any>(url: string, options?: Parameters<typeof $fetch>[1]) =>
     apiCall<T>(url, { ...options, method: 'DELETE' }),
+
+  getBlob: (url: string, options?: Parameters<typeof $fetch>[1]) =>
+    apiCall<Blob>(url, { ...options, method: 'GET', responseType: 'blob' }),
 }

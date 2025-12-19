@@ -9,8 +9,23 @@
             <div v-if="!attendanceTaken" class="px-3 py-1 bg-gray-200 text-gray-600 rounded-full text-xs font-medium">
                 Sin Registro
             </div>
-            <div v-else class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
-                Asistencia Tomada
+            <div v-else class="flex items-center gap-3">
+                <button @click="handlePrint" :disabled="isPrinting"
+                    class="p-1 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors"
+                    title="Imprimir Reporte">
+                    <PrinterIcon v-if="!isPrinting" class="h-5 w-5" />
+                    <svg v-else class="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                </button>
+                <div class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
+                    Asistencia Tomada
+                </div>
             </div>
         </div>
 
@@ -99,18 +114,53 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
+import { PrinterIcon } from '@heroicons/vue/24/outline'
 import StudentListCard from './StudentListCard.vue'
+import { api } from '~/utils/api'
+import printJS from 'print-js'
 
 const props = defineProps<{
     title: string
     subtitle?: string
     stats: any
     attendanceTaken?: boolean
+    assignmentId?: number // Added for API call
+    date?: string        // Added for API call
 }>()
+
+const isPrinting = ref(false)
 
 const calculatePercentage = (count: number, total: number) => {
     if (!total) return 0
     return Math.round((count / total) * 100)
+}
+
+const handlePrint = async () => {
+    if (!props.assignmentId || !props.date) return
+
+    isPrinting.value = true
+    try {
+        const blob = await api.getBlob('/api/attendance/report/assignment', {
+            params: {
+                fecha: props.date,
+                assignment_id: props.assignmentId
+            }
+        })
+
+        const url = URL.createObjectURL(blob)
+        printJS({
+            printable: url,
+            type: 'pdf',
+            showModal: true,
+            onPrintDialogClose: () => URL.revokeObjectURL(url)
+        })
+
+    } catch (e: any) {
+        console.error('Error printing:', e)
+        alert('Error al imprimir: ' + (e.message || e))
+    } finally {
+        isPrinting.value = false
+    }
 }
 </script>

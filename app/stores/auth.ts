@@ -33,6 +33,10 @@ export interface Tenant {
   email?: string
   website?: string
   logo_url?: string
+  departamento?: string
+  distrito?: string
+  logo_departamento?: string
+  abbreviation?: string
 }
 
 export interface LoginResponse {

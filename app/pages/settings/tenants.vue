@@ -105,6 +105,11 @@
                                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                             </div>
                             <div>
+                                <label class="block text-sm font-medium text-gray-700">Abreviatura</label>
+                                <input v-model="form.abbreviation" type="text" maxlength="10" required
+                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                            </div>
+                            <div>
                                 <label class="block text-sm font-medium text-gray-700">Dominio (opcional)</label>
                                 <input v-model="form.domain" type="text"
                                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
@@ -134,19 +139,59 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Logo</label>
                                 <div class="mt-1 flex items-center">
-                                    <span v-if="logoPreview || form.logo_url" class="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100 mr-4">
-                                         <img :src="logoPreview || form.logo_url" alt="Logo" class="h-full w-full object-cover">
+                                    <span v-if="logoPreview || form.logo_url"
+                                        class="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100 mr-4">
+                                        <img :src="logoPreview || form.logo_url" alt="Logo"
+                                            class="h-full w-full object-cover">
                                     </span>
-                                    <input type="file" @change="onLogoChange" accept="image/*"
-                                        class="block w-full text-sm text-gray-500
+                                    <input type="file" @change="onLogoChange" accept="image/*" class="block w-full text-sm text-gray-500
                                           file:mr-4 file:py-2 file:px-4
                                           file:rounded-full file:border-0
                                           file:text-sm file:font-semibold
                                           file:bg-primary-50 file:text-primary-700
                                           hover:file:bg-primary-100
-                                        "/>
+                                        " />
                                 </div>
                             </div>
+
+                            <!-- Nuevos Campos para Reportes -->
+                            <div class="border-t border-gray-200 pt-4 mt-4">
+                                <h4 class="text-sm font-medium text-gray-900 mb-3">Configuración de Reportes</h4>
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Departamento /
+                                            Dirección</label>
+                                        <input v-model="form.departamento" type="text"
+                                            placeholder="Ej: Dirección Regional 08"
+                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Distrito
+                                            Educativo</label>
+                                        <input v-model="form.distrito" type="text" placeholder="Ej: Distrito 03"
+                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                    </div>
+                                </div>
+                                <div class="mt-4">
+                                    <label class="block text-sm font-medium text-gray-700">Logo Departamento
+                                        (Izquierda)</label>
+                                    <div class="mt-1 flex items-center">
+                                        <span v-if="logoDepartamentoPreview || form.logo_departamento"
+                                            class="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100 mr-4 border border-gray-200">
+                                            <img :src="logoDepartamentoPreview || form.logo_departamento"
+                                                alt="Logo Dept" class="h-full w-full object-contain">
+                                        </span>
+                                        <input type="file" @change="onLogoDepartamentoChange" accept="image/*" class="block w-full text-sm text-gray-500
+                                              file:mr-4 file:py-2 file:px-4
+                                              file:rounded-full file:border-0
+                                              file:text-sm file:font-semibold
+                                              file:bg-primary-50 file:text-primary-700
+                                              hover:file:bg-primary-100
+                                            " />
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
                     </div>
                     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
@@ -185,12 +230,16 @@ const editingId = ref<number | null>(null)
 
 const form = reactive({
     name: '',
+    abbreviation: '',
     domain: '',
     address: '',
     phone: '',
     email: '',
     website: '',
-    logo_url: ''
+    logo_url: '',
+    departamento: '',
+    distrito: '',
+    logo_departamento: ''
 })
 
 const fetchTenants = async () => {
@@ -212,15 +261,21 @@ const openCreateModal = () => {
     editingId.value = null
     Object.assign(form, {
         name: '',
+        abbreviation: '',
         domain: '',
         address: '',
         phone: '',
         email: '',
         website: '',
-        logo_url: ''
+        logo_url: '',
+        departamento: '',
+        distrito: '',
+        logo_departamento: ''
     })
     logoFile.value = null
     logoPreview.value = null
+    logoDepartamentoFile.value = null
+    logoDepartamentoPreview.value = null
     showModal.value = true
 }
 
@@ -229,15 +284,21 @@ const editTenant = (tenant: Tenant) => {
     editingId.value = tenant.id
     Object.assign(form, {
         name: tenant.name,
+        abbreviation: tenant.abbreviation || '',
         domain: tenant.domain || '',
         address: tenant.address || '',
         phone: tenant.phone || '',
         email: tenant.email || '',
         website: tenant.website || '',
-        logo_url: tenant.logo_url || ''
+        logo_url: tenant.logo_url || '',
+        departamento: tenant.departamento || '',
+        distrito: tenant.distrito || '',
+        logo_departamento: tenant.logo_departamento || ''
     })
     logoFile.value = null
     logoPreview.value = null
+    logoDepartamentoFile.value = null
+    logoDepartamentoPreview.value = null
     showModal.value = true
 }
 
@@ -248,6 +309,9 @@ const closeModal = () => {
 const logoFile = ref<File | null>(null)
 const logoPreview = ref<string | null>(null)
 
+const logoDepartamentoFile = ref<File | null>(null)
+const logoDepartamentoPreview = ref<string | null>(null)
+
 const onLogoChange = (event: Event) => {
     const input = event.target as HTMLInputElement
     if (input.files && input.files[0]) {
@@ -256,62 +320,83 @@ const onLogoChange = (event: Event) => {
     }
 }
 
+const onLogoDepartamentoChange = (event: Event) => {
+    const input = event.target as HTMLInputElement
+    if (input.files && input.files[0]) {
+        logoDepartamentoFile.value = input.files[0]
+        logoDepartamentoPreview.value = URL.createObjectURL(input.files[0])
+    }
+}
+
 const saveTenant = async () => {
-    if (!form.name) return // Validación básica
+    if (!form.name || !form.abbreviation) {
+        alert('Por favor complete los campos requeridos (Nombre y Abreviatura)')
+        return
+    }
 
     saving.value = true
     try {
-        if (isEditing.value && editingId.value) {
-            if (logoFile.value) {
-                // Si hay archivo, usar POST con spoofing para multipart
-                const formData = new FormData()
-                formData.append('name', form.name)
-                if (form.domain) formData.append('domain', form.domain)
-                if (form.address) formData.append('address', form.address)
-                if (form.phone) formData.append('phone', form.phone)
-                if (form.email) formData.append('email', form.email)
-                if (form.website) formData.append('website', form.website)
-                formData.append('logo', logoFile.value)
-                formData.append('_method', 'PUT')
-                
-                await api.post(`/api/tenants/${editingId.value}`, formData)
-            } else {
-                // Si no hay archivo, usar PUT directo con JSON (más limpio)
-                await api.put(`/api/tenants/${editingId.value}`, form)
-            }
-        } else {
-            // Crear: usar FormData si hay logo, JSON si no
-            if (logoFile.value) {
-                const formData = new FormData()
-                formData.append('name', form.name)
-                if (form.domain) formData.append('domain', form.domain)
-                if (form.address) formData.append('address', form.address)
-                if (form.phone) formData.append('phone', form.phone)
-                if (form.email) formData.append('email', form.email)
-                if (form.website) formData.append('website', form.website)
-                formData.append('logo', logoFile.value)
-                
-                await api.post('/api/tenants', formData)
-            } else {
-                await api.post('/api/tenants', form)
-            }
+        const formData = new FormData()
+        formData.append('name', form.name)
+        formData.append('abbreviation', form.abbreviation)
+        if (form.domain) formData.append('domain', form.domain)
+        if (form.address) formData.append('address', form.address)
+        if (form.phone) formData.append('phone', form.phone)
+        if (form.email) formData.append('email', form.email)
+        if (form.website) formData.append('website', form.website)
+        if (form.departamento) formData.append('departamento', form.departamento)
+        if (form.distrito) formData.append('distrito', form.distrito)
+
+        if (logoFile.value) {
+            formData.append('logo', logoFile.value)
         }
-        await fetchTenants()
-        closeModal()
-    } catch (error) {
+
+        if (logoDepartamentoFile.value) {
+            formData.append('logo_departamento', logoDepartamentoFile.value)
+        }
+
+        let url = '/api/tenants'
+
+        if (isEditing.value && editingId.value) {
+            url = `/api/tenants/${editingId.value}`
+            formData.append('_method', 'PUT')
+        }
+
+        const response = await api.post<{ success: boolean, message?: string }>(url, formData)
+
+        if (response.success) {
+            await fetchTenants()
+            closeModal()
+        } else {
+            alert(response.message || 'Error al guardar la institución')
+        }
+    } catch (error: any) {
         console.error('Error saving tenant:', error)
-        alert('Error al guardar la institución')
+        const message = error.data?.message || 'Error al guardar la institución'
+        const errors = error.data?.errors
+
+        if (errors) {
+            // Basic error display for validation
+            const errorMsg = Object.values(errors).flat().join('\n')
+            alert(message + '\n' + errorMsg)
+        } else {
+            alert(message)
+        }
     } finally {
         saving.value = false
     }
 }
 
+
+
 const deleteTenant = async (tenant: Tenant) => {
-    if (!confirm(`¿Estás seguro de eliminar la institución "${tenant.name}"? Esta acción no se puede deshacer.`)) return
+    if (!confirm('¿Estás seguro de que deseas eliminar esta institución?')) return
 
     try {
-        await api.delete(`/api/tenants/${tenant.id}`)
-        await fetchTenants()
+        const response = await api.delete<{ success: boolean }>(`/api/tenants/${tenant.id}`)
+        if (response.success) {
+            await fetchTenants()
+        }
     } catch (error) {
         console.error('Error deleting tenant:', error)
         alert('Error al eliminar la institución')
