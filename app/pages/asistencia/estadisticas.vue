@@ -31,7 +31,22 @@
                                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                             </path>
                         </svg>
-                        <span>Imprimir Todo</span>
+                        <span>Imprimir</span>
+                    </button>
+
+                    <!-- Global Export Button -->
+                    <button @click="exportGlobalExcel" :disabled="!isGlobalPrintEnabled || isExportingGlobal"
+                        class="px-4 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 flex items-center gap-2 h-[38px]">
+                        <TableCellsIcon v-if="!isExportingGlobal" class="h-5 w-5 text-green-600" />
+                        <svg v-else class="animate-spin h-5 w-5 text-green-600" xmlns="http://www.w3.org/2000/svg"
+                            fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                        <span>Excel</span>
                     </button>
 
                     <!-- Filtro Fecha -->
@@ -125,7 +140,7 @@ import { ref, reactive, watch, onMounted, computed } from 'vue'
 import { useAulasStore } from '~/stores/aulas'
 import { api } from '~/utils/api'
 import StatsBoard from '~/components/attendance/StatsBoard.vue'
-import { PrinterIcon } from '@heroicons/vue/24/outline'
+import { PrinterIcon, TableCellsIcon } from '@heroicons/vue/24/outline'
 import printJS from 'print-js'
 
 // Stores
@@ -136,6 +151,7 @@ const loading = ref(false)
 const error = ref('')
 const stats = ref<any>(null)
 const isPrintingGlobal = ref(false)
+const isExportingGlobal = ref(false)
 
 const filters = reactive({
     date: new Date().toLocaleDateString('en-CA'),
@@ -179,6 +195,30 @@ const printGlobal = async () => {
         })
     } catch (e: any) {
         console.error('Error printing global:', e)
+    } finally {
+        isPrintingGlobal.value = false
+    }
+}
+
+const exportGlobalExcel = async () => {
+    if (!filters.date || !filters.aulaId) return
+    isPrintingGlobal.value = true 
+    try {
+        const response = await api.get('/api/attendance/report/daily/excel', {
+            params: {
+                fecha: filters.date,
+                aula_id: filters.aulaId
+            }
+        })
+
+        if (response && response.url) {
+            window.open(response.url, '_blank')
+        } else {
+            console.error('No URL returned for global excel export', response)
+        }
+
+    } catch (e: any) {
+        console.error('Error exporting excel:', e)
     } finally {
         isPrintingGlobal.value = false
     }

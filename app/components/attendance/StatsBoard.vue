@@ -23,6 +23,19 @@
                         </path>
                     </svg>
                 </button>
+                <button @click="handleExport" :disabled="isExporting"
+                    class="p-1 rounded-full text-gray-400 hover:text-green-600 hover:bg-green-50 transition-colors"
+                    title="Exportar a Excel">
+                    <TableCellsIcon v-if="!isExporting" class="h-5 w-5" />
+                    <svg v-else class="animate-spin h-5 w-5 text-green-600" xmlns="http://www.w3.org/2000/svg"
+                        fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                    </svg>
+                </button>
                 <div class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-xs font-medium">
                     Asistencia Tomada
                 </div>
@@ -115,7 +128,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { PrinterIcon } from '@heroicons/vue/24/outline'
+import { PrinterIcon, TableCellsIcon } from '@heroicons/vue/24/outline'
 import StudentListCard from './StudentListCard.vue'
 import { api } from '~/utils/api'
 import printJS from 'print-js'
@@ -130,6 +143,7 @@ const props = defineProps<{
 }>()
 
 const isPrinting = ref(false)
+const isExporting = ref(false)
 
 const calculatePercentage = (count: number, total: number) => {
     if (!total) return 0
@@ -161,6 +175,33 @@ const handlePrint = async () => {
         alert('Error al imprimir: ' + (e.message || e))
     } finally {
         isPrinting.value = false
+    }
+}
+
+const handleExport = async () => {
+    if (!props.assignmentId || !props.date) return
+
+    isExporting.value = true
+    try {
+        const response = await api.get('/api/attendance/report/assignment/excel', {
+            params: {
+                fecha: props.date,
+                assignment_id: props.assignmentId
+            }
+        })
+        
+        if (response && response.url) {
+            window.open(response.url, '_blank')
+        } else {
+            console.error('No URL returned for excel export', response)
+            alert('Error: No se pudo generar la URL de descarga.')
+        }
+
+    } catch (e: any) {
+        console.error('Error exporting excel:', e)
+        alert('Error al exportar: ' + (e.message || e))
+    } finally {
+        isExporting.value = false
     }
 }
 </script>
