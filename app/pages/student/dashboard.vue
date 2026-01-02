@@ -43,65 +43,126 @@
           No hay calificaciones registradas aún.
         </div>
 
-        <div v-else class="space-y-4">
-          <div v-for="subject in dashboardData?.grades" :key="subject.materia_id"
-            class="glass-card p-5 hover:shadow-lg transition-shadow duration-200">
-            <div class="flex justify-between items-start mb-4">
-              <div>
-                <h4 class="font-bold text-gray-800 text-lg">{{ subject.materia }}</h4>
-                <span class="text-xs text-gray-500 font-medium bg-gray-100 px-2 py-1 rounded mt-1 inline-block">Módulo
-                  Formativo</span>
-              </div>
-              <div class="text-right">
-                <div class="text-2xl font-bold" :class="getScoreColor(subject.promedio)">
-                  {{ subject.promedio ? subject.promedio.toFixed(0) : '-' }}
-                </div>
-                <div class="text-xs text-gray-500">Total</div>
-              </div>
+        <div v-else class="space-y-6">
+
+          <!-- TABLA DE CALIFICACIONES ACADÉMICAS -->
+          <div v-if="academicSubjects.length > 0" class="glass-card p-0 overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
+              <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wide">Calificaciones Académicas</h3>
             </div>
+            <div class="overflow-x-auto">
+              <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                  <tr>
+                    <th scope="col"
+                      class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider min-w-[150px]">
+                      Módulos Formativos
+                    </th>
+                    <!-- Headers provided by user -->
+                    <th scope="col"
+                      class="px-2 py-3 text-center text-[10px] font-bold text-gray-500 uppercase tracking-wider min-w-[140px] border-l border-gray-200">
+                      Comunicativa
+                      <div class="mt-1 font-normal text-gray-400">P1 | P2 | P3 | P4</div>
+                    </th>
+                    <th scope="col"
+                      class="px-2 py-3 text-center text-[10px] font-bold text-gray-500 uppercase tracking-wider min-w-[140px] border-l border-gray-200">
+                      Pens. Lógico, Creativo y Crítico | Res. Problemas
+                      <div class="mt-1 font-normal text-gray-400">P1 | P2 | P3 | P4</div>
+                    </th>
+                    <th scope="col"
+                      class="px-2 py-3 text-center text-[10px] font-bold text-gray-500 uppercase tracking-wider min-w-[140px] border-l border-gray-200">
+                      Ética y Ciudadana | Des. Personal y Espiritual
+                      <div class="mt-1 font-normal text-gray-400">P1 | P2 | P3 | P4</div>
+                    </th>
+                    <th scope="col"
+                      class="px-2 py-3 text-center text-[10px] font-bold text-gray-500 uppercase tracking-wider min-w-[140px] border-l border-gray-200">
+                      Científica y Tec. | Ambiental y Salud
+                      <div class="mt-1 font-normal text-gray-400">P1 | P2 | P3 | P4</div>
+                    </th>
+                  </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                  <tr v-for="subject in academicSubjects" :key="subject.materia_id" class="hover:bg-gray-50">
+                    <!-- Subject Name -->
+                    <td class="px-4 py-3 whitespace-normal align-top">
+                      <div class="text-xs font-bold text-gray-900">{{ subject.materia }}</div>
+                      <div class="text-[10px] text-gray-500 mt-1">Prom: {{ subject.promedio ?
+                        subject.promedio.toFixed(0) : '-' }}</div>
+                    </td>
 
-            <!-- Detalle de notas (RAs) -->
-            <div v-if="subject.notas_ra && subject.notas_ra.length > 0">
-              <h5 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Resultados de Aprendizaje
-              </h5>
-              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
-                <div v-for="raItem in subject.notas_ra" :key="raItem.ra"
-                  class="bg-gray-50 rounded p-2 text-center border border-gray-100 flex flex-col items-center">
-                  <div class="text-xs text-gray-500 mb-1">RA {{ raItem.ra }}</div>
+                    <!-- Block Columns 1-4 -->
+                    <td v-for="bloqueNum in 4" :key="bloqueNum" class="px-2 py-2 border-l border-gray-200 align-top">
+                      <div v-if="getBlockData(subject, bloqueNum)" class="space-y-3">
+                        <div v-for="comp in getBlockData(subject, bloqueNum).competencias" :key="comp.codigo"
+                          class="text-center">
+                          <!-- Code Removed -->
+                          <div class="flex justify-center space-x-1">
+                            <!-- P1-P4 Grid for this Competency -->
+                            <span v-for="p in 4" :key="p" class="w-6 text-center">
+                              <div class="text-xs font-bold" :class="getGradeColor(getNotaValue(comp, `P${p}`))">
+                                {{ getNotaDisplay(comp, `P${p}`) }}
+                              </div>
+                              <!-- Recovery underneath if exists -->
+                              <div v-if="getNotaDisplay(comp, `RP${p}`) !== '-'"
+                                class="text-[9px] text-orange-600 font-bold -mt-0.5">
+                                {{ getNotaDisplay(comp, `RP${p}`) }}
+                              </div>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                      <div v-else class="text-center text-gray-200 text-xs py-2">-</div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
 
-                  <!-- Lista de Intentos -->
-                  <div class="flex flex-wrap justify-center gap-1">
-                    <span v-for="intento in raItem.intentos" :key="intento.id"
-                      class="text-xs font-bold px-1.5 py-0.5 rounded border"
-                      :class="intento.is_nc ? 'bg-red-50 text-red-600 border-red-200' : 'bg-white text-gray-800 border-gray-200'">
-                      {{ intento.nota }}
-                    </span>
+          <!-- MÓDULOS TÉCNICOS (Solo RAs) - Render como Cards -->
+          <div v-if="technicalSubjects.length > 0">
+            <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wide mb-3 pl-1">Módulos Técnicos</h3>
+            <div class="space-y-4">
+              <div v-for="subject in technicalSubjects" :key="subject.materia_id"
+                class="glass-card p-5 hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-purple-500">
+                <div class="flex justify-between items-start mb-4">
+                  <div>
+                    <h4 class="font-bold text-gray-800 text-lg">{{ subject.materia }}</h4>
+                    <span
+                      class="text-xs text-gray-500 font-medium bg-gray-100 px-2 py-1 rounded mt-1 inline-block">Módulo
+                      Técnico</span>
                   </div>
-
-                  <div class="text-[10px] text-gray-400 mt-1">/{{ raItem.valor_max }}</div>
+                  <div class="text-right">
+                    <div class="text-2xl font-bold" :class="getScoreColor(subject.promedio)">
+                      {{ subject.promedio ? subject.promedio.toFixed(0) : '-' }}
+                    </div>
+                    <div class="text-xs text-gray-500">Total</div>
+                  </div>
                 </div>
-              </div>
-            </div>
 
-            <!-- Detalle de Competencias -->
-            <div v-if="subject.notas_competencia && subject.notas_competencia.length > 0" class="border-t pt-3">
-              <h5 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Competencias Específicas
-              </h5>
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                <div v-for="compGroup in subject.notas_competencia" :key="compGroup.codigo"
-                  class="bg-blue-50/50 rounded p-2 border border-blue-100 flex flex-col items-center">
-                  <div class="text-xs font-bold text-blue-700 mb-1">{{ compGroup.codigo }}</div>
-
-                  <div class="flex flex-wrap justify-center gap-2">
-                    <div v-for="periodo in compGroup.periodos" :key="periodo.label" class="flex flex-col items-center">
-                      <span class="text-[9px] text-gray-500 uppercase">{{ periodo.label }}</span>
-                      <span class="font-semibold text-gray-800 text-sm">{{ periodo.nota }}</span>
+                <!-- Detalle de notas (RAs) -->
+                <div v-if="subject.notas_ra && subject.notas_ra.length > 0">
+                  <h5 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Resultados de
+                    Aprendizaje</h5>
+                  <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+                    <div v-for="raItem in subject.notas_ra" :key="raItem.ra"
+                      class="bg-gray-50 rounded p-2 text-center border border-gray-100 flex flex-col items-center">
+                      <div class="text-xs text-gray-500 mb-1">RA {{ raItem.ra }}</div>
+                      <div class="flex flex-wrap justify-center gap-1">
+                        <span v-for="intento in raItem.intentos" :key="intento.id"
+                          class="text-xs font-bold px-1.5 py-0.5 rounded border"
+                          :class="intento.is_nc ? 'bg-red-50 text-red-600 border-red-200' : 'bg-white text-gray-800 border-gray-200'">
+                          {{ intento.nota }}
+                        </span>
+                      </div>
+                      <div class="text-[10px] text-gray-400 mt-1">/{{ raItem.valor_max }}</div>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+
         </div>
       </div>
 
@@ -166,9 +227,37 @@ const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']
 
 const currentSchedule = computed(() => {
   if (!dashboardData.value?.schedule) return []
-  // API returns object grouped by key "1", "2", etc.
   return dashboardData.value.schedule[selectedDay.value] || []
 })
+
+// Computed filter for Academic Subjects (Have Competencies)
+const academicSubjects = computed(() => {
+  if (!dashboardData.value?.grades) return []
+  return dashboardData.value.grades.filter((s: any) => s.notas_competencia && s.notas_competencia.length > 0)
+})
+
+// Computed filter for Technical Subjects (Only RA, No Competencies)
+const technicalSubjects = computed(() => {
+  if (!dashboardData.value?.grades) return []
+  return dashboardData.value.grades.filter((s: any) => !s.notas_competencia || s.notas_competencia.length === 0)
+})
+
+// Helper to get Data for a specific Block from a Subject
+const getBlockData = (subject: any, bloqueNum: number) => {
+  if (!subject.notas_competencia) return null
+  return subject.notas_competencia.find((b: any) => b.bloque === bloqueNum)
+}
+
+// Helper to get specific P-grade from a Competency
+const getNotaDisplay = (comp: any, type: string) => {
+  const grade = comp.notas.find((n: any) => n.tipo === type)
+  return grade ? grade.nota : '-'
+}
+
+const getNotaValue = (comp: any, type: string) => {
+  const grade = comp.notas.find((n: any) => n.tipo === type)
+  return grade ? Number(grade.nota) : null
+}
 
 const getScoreColor = (score: number | null) => {
   if (score === null) return 'text-gray-400'
@@ -178,8 +267,13 @@ const getScoreColor = (score: number | null) => {
   return 'text-red-600'
 }
 
+const getGradeColor = (score: number | null) => {
+  if (score === null) return 'text-gray-300'
+  if (score < 70) return 'text-red-600'
+  return 'text-gray-900'
+}
+
 const formatTime = (time: string) => {
-  // Assuming HH:MM:SS
   return time.substring(0, 5)
 }
 
