@@ -29,6 +29,12 @@ export interface Estudiante {
       }
     }
   }
+  user?: {
+    id: number
+    username: string
+    name: string
+    active: boolean
+  }
   created_at?: string
   updated_at?: string
 }
@@ -164,6 +170,45 @@ export const useEstudiantesStore = defineStore('estudiantes', {
         edad--
       }
       return edad
+    },
+
+    async generateUser(estudianteId: number) {
+      startLoading()
+      try {
+        const response = await api.post<{ success: boolean; data: any; message: string; pdf_token?: string }>(`/api/estudiantes/${estudianteId}/generate-user`, {})
+        return response
+      } catch (e: any) {
+        console.error(e)
+        throw e
+      } finally {
+        finishLoading()
+      }
+    },
+
+    async generateUsersBatch(aulaId: number) {
+      startLoading()
+      try {
+        const response = await api.post<{ success: boolean; data: any[]; message: string; pdf_token?: string }>('/api/estudiantes/generate-users-batch', { aula_id: aulaId })
+        return response
+      } catch (e: any) {
+        console.error(e)
+        throw e
+      } finally {
+        finishLoading()
+      }
+    },
+
+    async resetPassword(estudianteId: number) {
+      startLoading()
+      try {
+        const response = await api.post<{ success: boolean; data: any; message: string; pdf_token?: string }>(`/api/estudiantes/${estudianteId}/reset-password`, {})
+        return response
+      } catch (e: any) {
+        console.error(e)
+        throw e
+      } finally {
+        finishLoading()
+      }
     }
   }
 })

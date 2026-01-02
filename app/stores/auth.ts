@@ -5,7 +5,7 @@ export interface User {
   id: number
   name: string
   email: string
-  role: 'admin' | 'profesor' | 'master'
+  role: 'admin' | 'profesor' | 'master' | 'estudiante'
   personal_id?: number
   active: boolean
 }

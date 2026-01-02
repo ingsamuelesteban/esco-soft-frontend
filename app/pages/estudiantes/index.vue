@@ -22,13 +22,17 @@
     </div>
 
     <div class="mt-6">
-      <EstudiantesList :status-filter="statusFilter" @edit="openEditModal" @delete="handleDelete"
-        @restore="handleRestore" />
+      <EstudiantesList :status-filter="statusFilter"      @edit="openEditModal" @delete="handleDelete" @restore="handleRestore" @generate-user="handleGenerateUser"
+      @generate-batch="handleGenerateBatch" @reset-password="handleResetPassword" @saved="onSaved" />
     </div>
 
     <!-- Modal para crear/editar -->
     <EstudiantesFormModal v-if="showModal" :open="showModal" :model="selectedEstudiante" @close="closeModal"
       @saved="onSaved" />
+
+    <!-- Modal de Credenciales -->
+    <CredentialsModal :is-open="showCredentialsModal" :credentials="generatedCredentials" :pdf-token="currentPdfToken"
+      @close="showCredentialsModal = false" />
   </section>
 </template>
 
@@ -37,6 +41,7 @@ import { ref, watch } from 'vue'
 import { useEstudiantesStore, type Estudiante } from '../../stores/estudiantes'
 import { showConfirm, showError, showToast } from '../../utils/sweetalert'
 import FilterStatus from '../../components/common/FilterStatus.vue'
+import CredentialsModal from '../../components/estudiantes/CredentialsModal.vue'
 
 definePageMeta({
   middleware: ['auth', 'admin']
@@ -46,6 +51,11 @@ const store = useEstudiantesStore()
 const showModal = ref(false)
 const selectedEstudiante = ref<Estudiante | null>(null)
 const statusFilter = ref<'active' | 'inactive' | 'all'>('active')
+
+// Estado para credenciales
+const showCredentialsModal = ref(false)
+const generatedCredentials = ref<any[]>([])
+const currentPdfToken = ref<string | undefined>(undefined)
 
 // Watcher para el filtro de estado
 watch(statusFilter, async (newStatus) => {
@@ -69,12 +79,15 @@ const closeModal = () => {
 
 const onSaved = async () => {
   closeModal()
+  await reloadData('Actualizando lista...')
+  showToast('Estudiante guardado correctamente', 'success')
+}
 
+const reloadData = async (message: string) => {
   const { default: Swal } = await import('sweetalert2')
   
-  // Mostrar loading mientras se actualiza la lista
   Swal.fire({
-    title: 'Actualizando lista...',
+    title: message,
     text: 'Por favor espere',
     allowOutsideClick: false,
     didOpen: () => {
@@ -83,15 +96,12 @@ const onSaved = async () => {
   })
 
   try {
-    // Recargar datos (el reordenamiento ya se hizo automáticamente en el backend, pero forzamos por seguridad)
     await store.reordenarNumeros()
     await store.fetchAll(statusFilter.value)
-    
     Swal.close()
-    showToast('Estudiante guardado correctamente', 'success')
   } catch (error) {
     Swal.close()
-    showError('Error al guardar el estudiante')
+    console.error(error)
   }
 }
 
@@ -126,6 +136,75 @@ const handleRestore = async (estudiante: Estudiante) => {
       showToast('Estudiante restaurado correctamente', 'success')
     } catch (error: any) {
       showError(error?.data?.message || 'Error al restaurar el estudiante')
+    }
+  }
+}
+
+const handleGenerateUser = async (estudiante: Estudiante) => {
+  const result = await showConfirm(
+    `¿Generar usuario para ${estudiante.nombres}?`,
+    'Se creará una cuenta de usuario con contraseña aleatoria.',
+    'question'
+  )
+
+  if (result.isConfirmed) {
+    try {
+      const response = await store.generateUser(estudiante.id)
+      generatedCredentials.value = [response.data]
+      currentPdfToken.value = response.pdf_token
+      showCredentialsModal.value = true
+      
+      // Recargar para actualizar el estado del botón
+      await store.fetchAll(statusFilter.value)
+    } catch (error: any) {
+      showError(error?.data?.message || 'Error al generar usuario')
+    }
+  }
+}
+
+const handleGenerateBatch = async (aulaId: number) => {
+  const result = await showConfirm(
+    '¿Generar usuarios para toda el aula?',
+    'Se crearán cuentas solo para los estudiantes que no tengan una asignada.',
+    'question'
+  )
+
+  if (result.isConfirmed) {
+    try {
+      const response = await store.generateUsersBatch(aulaId)
+      
+      if (response.data.length === 0) {
+        showToast('Todos los estudiantes ya tienen usuario asignado', 'info')
+        return
+      }
+
+      generatedCredentials.value = response.data
+      currentPdfToken.value = response.pdf_token
+      showCredentialsModal.value = true
+      
+      // Recargar lista
+      await store.fetchAll(statusFilter.value)
+    } catch (error: any) {
+      showError(error?.data?.message || 'Error al generar usuarios')
+    }
+  }
+}
+
+const handleResetPassword = async (estudiante: Estudiante) => {
+  const result = await showConfirm(
+    `¿Restablecer contraseña para ${estudiante.nombres}?`,
+    'Se generará una nueva contraseña aleatoria y se solicitará cambiarla al iniciar sesión.',
+    'warning'
+  )
+
+  if (result.isConfirmed) {
+    try {
+      const response = await store.resetPassword(estudiante.id)
+      generatedCredentials.value = [response.data]
+      currentPdfToken.value = response.pdf_token
+      showCredentialsModal.value = true
+    } catch (error: any) {
+      showError(error?.data?.message || 'Error al restablecer contraseña')
     }
   }
 }
