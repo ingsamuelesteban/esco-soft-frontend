@@ -470,7 +470,7 @@ import CalificacionCompetenciaModal from '~/components/calificaciones/Calificaci
 import CalificacionOportunidadModal from '~/components/calificaciones/CalificacionOportunidadModal.vue'
 import { ref, computed, onMounted } from 'vue'
 import { api } from '~/utils/api'
-import { useAuthStore } from '../../stores/auth'
+import { useAuthStore } from '~/stores/auth'
 
 const authStore = useAuthStore()
 
