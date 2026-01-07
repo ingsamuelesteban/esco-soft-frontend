@@ -21,9 +21,9 @@
 </template>
 
 <script setup lang="ts">
-// Verificar permisos de administrador
+// Verificar permisos de administrador o profesor
 definePageMeta({
-  middleware: ['auth', 'admin']
+  middleware: ['auth', 'role:admin,profesor']
 })
 
 const reload = () => {

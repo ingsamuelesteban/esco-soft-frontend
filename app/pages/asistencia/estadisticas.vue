@@ -246,6 +246,8 @@ import { api } from '~/utils/api'
 import StatsBoard from '~/components/attendance/StatsBoard.vue'
 import { PrinterIcon, TableCellsIcon } from '@heroicons/vue/24/outline'
 import printJS from 'print-js'
+import { isWeekend } from '~/utils/dateValidation'
+import Swal from 'sweetalert2'
 
 const aulasStore = useAulasStore()
 const authStore = useAuthStore()
@@ -265,7 +267,13 @@ const viewMode = ref<'daily' | 'monthly'>('daily')
 
 // Filters
 const filters = reactive({
-    date: new Date().toLocaleDateString('en-CA'),
+    date: (() => {
+        const d = new Date()
+        const day = d.getDay()
+        if (day === 6) d.setDate(d.getDate() - 1)
+        else if (day === 0) d.setDate(d.getDate() - 2)
+        return d.toLocaleDateString('en-CA')
+    })(),
     aulaId: null as number | string | null,
     month: new Date().getMonth() + 1,
     year: new Date().getFullYear(),
@@ -493,6 +501,21 @@ const printMonthly = async () => {
 }
 
 // Watchers
+watch(() => filters.date, (newDate, oldDate) => {
+    if (newDate && isWeekend(newDate)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Fecha inválida',
+            text: 'No se pueden seleccionar fines de semana porque no hay clases.',
+            timer: 3000,
+            showConfirmButton: false,
+            toast: true,
+            position: 'top-end'
+        })
+        filters.date = oldDate || ''
+    }
+})
+
 watch(() => filters.aulaId, (newId) => {
     filters.assignmentId = null
     assignments.value = []

@@ -209,6 +209,8 @@ import { useAulasStore } from '~/stores/aulas'
 import { useAuthStore } from '~/stores/auth' // Import auth store
 import { useLiveSchedule } from '~/composables/useLiveSchedule'
 import AttendanceGrid from '~/components/attendance/AttendanceGrid.vue'
+import { isWeekend } from '~/utils/dateValidation'
+import Swal from 'sweetalert2'
 
 // Título de la página
 useHead({
@@ -229,7 +231,13 @@ const authStore = useAuthStore() // Initialize auth store
 const { isInPeriod } = useLiveSchedule()
 
 // Estado reactivo
-const selectedDate = ref(new Date().toLocaleDateString('en-CA'))
+const selectedDate = ref((() => {
+  const d = new Date()
+  const day = d.getDay()
+  if (day === 6) d.setDate(d.getDate() - 1) // Sábado -> Viernes
+  else if (day === 0) d.setDate(d.getDate() - 2) // Domingo -> Viernes
+  return d.toLocaleDateString('en-CA')
+})())
 const selectedAulaId = ref<number | null>(null)
 const selectedAssignmentId = ref<number | null>(null)
 const showStatistics = ref(true)
@@ -323,7 +331,21 @@ const aulaName = (aula: any) => {
 
 // Watchers
 // Watchers
-watch(selectedDate, (newDate) => {
+watch(selectedDate, (newDate, oldDate) => {
+  if (newDate && isWeekend(newDate)) {
+    Swal.fire({
+      icon: 'warning',
+      title: 'Fecha inválida',
+      text: 'No se pueden seleccionar fines de semana porque no hay clases.',
+      timer: 3000,
+      showConfirmButton: false,
+      toast: true,
+      position: 'top-end'
+    })
+    selectedDate.value = oldDate || ''
+    return
+  }
+
   if (newDate) {
     attendanceStore.resetRecords()
     selectedAssignmentId.value = null
