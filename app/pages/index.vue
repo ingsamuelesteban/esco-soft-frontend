@@ -5,29 +5,29 @@
 
     <!-- Cards resumen -->
     <div class="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-      <NuxtLink to="/aulas" class="group">
+      <div class="group cursor-default">
         <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm group-hover:shadow transition">
           <div class="text-sm text-gray-500">Aulas</div>
           <div class="mt-2 text-3xl font-semibold text-gray-900">{{ aulasCount }}</div>
           <div class="mt-2 text-xs text-gray-400">Capacidad total: {{ capacidadTotal }}</div>
         </div>
-      </NuxtLink>
+      </div>
 
-      <NuxtLink to="/modulos-formativos" class="group">
+      <div class="group cursor-default">
         <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm group-hover:shadow transition">
           <div class="text-sm text-gray-500">Módulos Formativos</div>
           <div class="mt-2 text-3xl font-semibold text-gray-900">{{ modulosFormativosCount }}</div>
           <div class="mt-2 text-xs text-gray-400">Horas/sem totales: {{ horasSemanalesTotales }}</div>
         </div>
-      </NuxtLink>
+      </div>
 
-      <NuxtLink to="/horarios" class="group">
+      <div class="group cursor-default">
         <div class="bg-white border border-gray-200 rounded-lg p-5 shadow-sm group-hover:shadow transition">
           <div class="text-sm text-gray-500">Horarios</div>
           <div class="mt-2 text-3xl font-semibold text-gray-900">{{ horariosCount }}</div>
           <div class="mt-2 text-xs text-gray-400">Grupos únicos: {{ gruposUnicos }}</div>
         </div>
-      </NuxtLink>
+      </div>
     </div>
   </section>
 </template>
