@@ -343,11 +343,11 @@
                         class="px-2 py-4 text-center">
                         <div class="flex justify-center space-x-1">
                           <button v-for="oportunidad in 4" :key="`${estudiante.id}-ra${ra}-op${oportunidad}`"
-                            :disabled="isRefreshing"
+                            :disabled="isRefreshing || !moduloData?.valores_ra?.[`ra_${ra}`]"
                             @click="abrirModalCalificarOportunidad(estudiante, ra, oportunidad)"
-                            class="w-5 h-5 border border-gray-300 rounded-sm flex items-center justify-center text-xs font-bold hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-wait disabled:hover:shadow-none"
+                            class="w-5 h-5 border border-gray-300 rounded-sm flex items-center justify-center text-xs font-bold hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
                             :class="getCasillaOportunidadClass(estudiante.id, ra, oportunidad)"
-                            :title="getTitleCasilla(estudiante.id, ra, oportunidad)">
+                            :title="!moduloData?.valores_ra?.[`ra_${ra}`] ? 'RA no configurado' : getTitleCasilla(estudiante.id, ra, oportunidad)">
                             <span v-if="tieneCalificacionEnOportunidad(estudiante.id, ra, oportunidad)">
                               {{ getDisplayCalificacion(estudiante.id, ra, oportunidad) }}
                             </span>
@@ -459,7 +459,7 @@
     <!-- Modal para calificar oportunidad (NUEVO COMPONENTE) -->
     <CalificacionOportunidadModal v-if="mostrarModalCalificarOportunidad" :estudiante="estudianteParaCalificar"
       :ra-numero="raParaCalificar" :oportunidad="oportunidadParaCalificar"
-      :valor-ra="moduloData?.valores_ra?.[`ra_${raParaCalificar}`] || 20" :nota-actual="calificacionActual"
+      :valor-ra="moduloData?.valores_ra?.[`ra_${raParaCalificar}`] || 0" :nota-actual="calificacionActual"
       :observaciones-actuales="observacionesActual" :loading="guardandoCalificacion"
       @close="cerrarModalCalificarOportunidad" @save="guardarCalificacion" />
   </div>

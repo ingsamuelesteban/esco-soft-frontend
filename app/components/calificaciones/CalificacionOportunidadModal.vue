@@ -101,7 +101,7 @@ const props = defineProps({
     oportunidad: Number,
     valorRa: {
         type: Number,
-        default: 20
+        default: 0
     },
     notaActual: [Number, String],
     observacionesActuales: String,
