@@ -8,7 +8,8 @@
           <option v-for="a in anios" :key="a.id" :value="a.id">{{ a.nombre }}</option>
         </select>
       </div>
-      <div class="flex items-center gap-2">
+      <!-- Selector de profesores: Visible si es admin/master -->
+      <div class="flex items-center gap-2" v-if="!authStore.isProfesor">
         <label class="text-sm text-gray-600">Profesor</label>
         <select v-model.number="profesorId" class="border rounded px-2 py-1 text-sm h-8 min-w-[250px]"
           :disabled="loadingProfesores">
@@ -16,6 +17,14 @@
           </option>
           <option v-for="p in profesores" :key="p.id" :value="p.id">{{ profesorName(p) }}</option>
         </select>
+      </div>
+
+      <!-- Nombre del profesor si es rol profesor -->
+      <div v-else class="flex items-center gap-2">
+        <span class="text-sm text-gray-500 mr-1">Profesor:</span>
+        <h2 class="text-base font-medium text-gray-900 border-b border-gray-300 pb-0.5">
+          {{ authStore.user?.name }}
+        </h2>
       </div>
       <div class="ml-auto flex items-center gap-2">
         <button @click="reload"
@@ -203,7 +212,15 @@ onMounted(async () => {
     else anioId.value = aniosStore.items[0].id
   }
 
-  await loadProfesores()
+  // Lógica para profesores
+  if (authStore.isProfesor && authStore.user?.personal_id) {
+    profesorId.value = authStore.user!.personal_id
+    // No necesitamos cargar la lista de todos los profesores si solo vamos a ver uno
+    loadingProfesores.value = false
+  } else {
+    // Solo cargar lista de profesores si es admin/master
+    await loadProfesores()
+  }
 })
 
 const loadProfesores = async () => {
