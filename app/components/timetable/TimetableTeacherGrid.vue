@@ -209,7 +209,7 @@ onMounted(async () => {
   if (!anioId.value && aniosStore.items.length > 0) {
     const activo = aniosStore.items.find(a => a.activo)
     if (activo) anioId.value = activo.id
-    else anioId.value = aniosStore.items[0].id
+    else anioId.value = aniosStore.items[0]?.id
   }
 
   // Lógica para profesores
