@@ -42,7 +42,7 @@
                         <select v-model="filters.aulaId"
                             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-white">
                             <option :value="null">Seleccionar...</option>
-                            <option v-if="isAdminOrMaster" value="all">Todas las aulas</option>
+                            <!-- Removed redundant option here, handled by aulaOptions -->
                             <option v-for="opt in aulaOptions" :key="opt.value" :value="opt.value">
                                 {{ opt.label }}
                             </option>
@@ -307,7 +307,15 @@ const canPrintDaily = computed(() => {
 
 // Options for Aula Select
 const aulaOptions = computed(() => {
-    return aulasStore.paraSelect
+    const opts = aulasStore.paraSelect
+    if (isAdminOrMaster.value) {
+        return [
+            { value: 'all_summary', label: 'Todas las Aulas (Resumen)' },
+            { value: 'all', label: 'Todas las Aulas (Detalle)' },
+            ...opts
+        ]
+    }
+    return opts
 })
 
 // Computed Assignments for Select
@@ -337,7 +345,7 @@ const getPercentClass = (pct: number) => {
 
 // Methods
 const fetchAssignments = async (aulaId: number | string) => {
-    if (!aulaId || aulaId === 'all') {
+    if (!aulaId || aulaId === 'all' || aulaId === 'all_summary') {
         assignments.value = []
         return
     }
@@ -360,7 +368,9 @@ const fetchAssignments = async (aulaId: number | string) => {
         assignments.value = Array.isArray(rawData) ? rawData : (rawData.data || [])
 
         // Auto-select first if available (since we removed 'All' option)
-        if (assignments.value.length > 0) {
+        // UPDATE: Only auto-select for Monthly view, or if wanted. 
+        // For Daily view, we want 'Todas' by default (null).
+        if (assignments.value.length > 0 && viewMode.value === 'monthly') {
             filters.assignmentId = assignments.value[0].id
         }
     } catch (e) {
@@ -400,6 +410,7 @@ const fetchStats = async () => {
                     // Ideally we should pass it if we want to filter.
                     // We can pass it and let backend handle or filter client side.
                     // Let's stick to current backend behavior for Daily.
+                    // UPDATE: Filter client side if assignment selected
                 }
             })
             // If we have an assignment selected, filter the result client-side for Daily View
@@ -519,7 +530,7 @@ watch(() => filters.date, (newDate, oldDate) => {
 watch(() => filters.aulaId, (newId) => {
     filters.assignmentId = null
     assignments.value = []
-    if (newId && newId !== 'all') {
+    if (newId && newId !== 'all' && newId !== 'all_summary') {
         fetchAssignments(newId)
     }
 })

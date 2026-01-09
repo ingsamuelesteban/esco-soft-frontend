@@ -7,7 +7,7 @@
                 <p v-if="subtitle" class="text-sm text-gray-500">{{ subtitle }}</p>
             </div>
             <div v-if="!attendanceTaken" class="px-3 py-1 bg-gray-200 text-gray-600 rounded-full text-xs font-medium">
-                Sin Registro
+                Aún sin pasar lista
             </div>
             <div v-else class="flex items-center gap-3">
                 <button @click="handlePrint" :disabled="isPrinting"
@@ -121,7 +121,7 @@
         </div>
 
         <div v-else class="p-8 text-center text-gray-500 italic">
-            No hay registros de asistencia para esta clase.
+            Aún sin pasar lista
         </div>
     </div>
 </template>
@@ -189,7 +189,7 @@ const handleExport = async () => {
                 assignment_id: props.assignmentId
             }
         })
-        
+
         if (response && response.url) {
             window.open(response.url, '_blank')
         } else {
