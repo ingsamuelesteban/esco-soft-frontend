@@ -834,12 +834,12 @@ const getRAButtonClass = (estudianteId, raNumero) => {
 }
 
 const getEstadoGeneral = (estudianteId) => {
-  if (!moduloData.value?.cantidad_ra) return '0/0'
+  if (!moduloData.value?.cantidad_ra) return '0/100'
 
   const puntosObtenidos = calcularPuntosObtenidos(estudianteId)
   const puntosMaximos = calcularPuntosMaximos()
 
-  return `${puntosObtenidos}/${puntosMaximos}`
+  return `${puntosObtenidos}/100`
 }
 
 const getEstadoGeneralClass = (estudianteId) => {
