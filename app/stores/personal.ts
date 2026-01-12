@@ -50,6 +50,26 @@ export const usePersonalStore = defineStore('personal', {
       }
     },
 
+    async fetchTeachers() {
+      this.loading = true
+      this.error = null
+      startLoading()
+      try {
+        // Use the dedicated professors endpoint
+        const response = await api.get<{ success: boolean, data: Personal[] }>('/api/profesores')
+        // Store in items
+        this.items = response.data
+        return response.data
+      } catch (e) {
+        this.error = 'No se pudieron cargar los profesores'
+        console.error(e)
+        return []
+      } finally {
+        this.loading = false
+        finishLoading()
+      }
+    },
+
     async create(payload: Omit<Personal, 'id' | 'cargo'>) {
       this.loading = true
       this.error = null

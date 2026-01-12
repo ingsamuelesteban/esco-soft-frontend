@@ -131,5 +131,21 @@ export const useClassAssignmentsStore = defineStore('classAssignments', {
         finishLoading()
       }
     },
+
+    async transfer(payload: { from_profesor_id: number, to_profesor_id: number, anio_lectivo_id?: number }) {
+      startLoading()
+      try {
+        const response = await api.post<{ message: string, count: number }>('/api/class-assignments/transfer', payload)
+        // Refresh all assignments to reflect changes
+        // Since many items changed, it's safer to re-fetch than to update manually
+        await this.fetchAll()
+        return response
+      } catch (e) {
+        console.error(e)
+        throw e
+      } finally {
+        finishLoading()
+      }
+    },
   },
 })
