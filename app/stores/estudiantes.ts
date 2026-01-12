@@ -5,6 +5,7 @@ import { startLoading, finishLoading } from '../utils/loading'
 export interface Estudiante {
   id: number
   numero_orden: number | null
+  orden_manual?: boolean
   nombres: string
   apellidos: string
   fecha_nacimiento: string
@@ -51,8 +52,22 @@ export const useEstudiantesStore = defineStore('estudiantes', {
     total: (state) => state.items.length,
     byId: (state) => (id: number) => state.items.find(e => e.id === id),
     ordenados: (state) => {
-      // Ordenados por apellidos, luego nombres
+      // Ordenados por aula, luego número de orden, luego apellidos y nombres
       return [...state.items].sort((a, b) => {
+        // 1. Por Aula
+        if ((a.aula_id || 0) !== (b.aula_id || 0)) {
+          return (a.aula_id || 0) - (b.aula_id || 0)
+        }
+
+        // 2. Por Número de Orden (si existe)
+        if (a.numero_orden && b.numero_orden) {
+          return a.numero_orden - b.numero_orden
+        }
+        // Si uno tiene numero y otro no, el que tiene numero va primero (opcional, o al revés)
+        if (a.numero_orden && !b.numero_orden) return -1
+        if (!a.numero_orden && b.numero_orden) return 1
+
+        // 3. Alfabético (fallback)
         const apellidosA = a.apellidos.toLowerCase()
         const apellidosB = b.apellidos.toLowerCase()
         if (apellidosA !== apellidosB) {

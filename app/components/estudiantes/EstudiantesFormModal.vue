@@ -64,17 +64,46 @@
                 readonly />
             </div>
           </div>
-
+          <!-- Aula -->
           <div>
-            <label class="block text-sm text-gray-600 mb-1">Aula Asignada</label>
-            <select v-model="form.aula_id" class="border rounded px-2 py-2 w-full">
-              <option value="">Sin asignar</option>
-              <option v-for="option in aulasStore.paraSelect" :key="option.value" :value="option.value">
-                {{ option.label }}
+            <label class="block text-sm font-medium text-gray-700 mb-1">Aula</label>
+            <select v-model="form.aula_id"
+              class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500">
+              <option :value="undefined">Sin aula asignada</option>
+              <option v-for="aula in aulasStore.items" :key="aula.id" :value="aula.id">
+                {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo?.nombre }}
               </option>
             </select>
-            <p v-if="errors.aula_id" class="text-sm text-red-600 mt-1">{{ errors.aula_id }}</p>
           </div>
+
+          <!-- Orden Manual -->
+          <div v-if="form.aula_id" class="sm:col-span-2 bg-gray-50 p-4 rounded-lg border border-gray-200">
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="text-sm font-medium text-gray-900">Ordenamiento Manual</h4>
+                <p class="text-xs text-gray-500 mt-1">Activar solo para excepciones (ej. inscripciones tardías fuera de
+                  orden alfabético).</p>
+              </div>
+              <div class="flex items-center">
+                <button type="button" @click="form.orden_manual = !form.orden_manual"
+                  :class="form.orden_manual ? 'bg-blue-600' : 'bg-gray-200'"
+                  class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
+                  <span
+                    class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"
+                    :class="form.orden_manual ? 'translate-x-5' : 'translate-x-0'" />
+                </button>
+              </div>
+            </div>
+
+            <div v-if="form.orden_manual" class="mt-4">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Número de Orden</label>
+              <input type="number" v-model.number="form.numero_orden"
+                class="w-32 border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500" min="1">
+              <p class="text-xs text-amber-600 mt-1">Este estudiante mantendrá este número fijo. Los demás se reodenarán
+                alrededor.</p>
+            </div>
+          </div>
+          <p v-if="errors.aula_id" class="text-sm text-red-600 mt-1">{{ errors.aula_id }}</p>
 
           <div v-if="formError" class="p-3 bg-red-50 text-red-700 rounded">{{ formError }}</div>
         </div>
@@ -119,14 +148,42 @@ onMounted(() => {
   aulasStore.fetchAll()
 })
 
+interface EstudianteForm {
+  nombres: string
+  apellidos: string
+  fecha_nacimiento: string
+  cedula: string
+  sexo: string
+  rne: string
+  aula_id?: number
+  orden_manual: boolean
+  numero_orden?: number
+}
+
+const form = reactive<EstudianteForm>({
+  nombres: '',
+  apellidos: '',
+  fecha_nacimiento: '',
+  cedula: '',
+  sexo: 'Masculino',
+  rne: '',
+  aula_id: undefined,
+  orden_manual: false,
+  numero_orden: undefined
+})
+
 function resetForm() {
-  form.nombres = ''
-  form.apellidos = ''
-  form.fecha_nacimiento = ''
-  form.cedula = ''
-  form.sexo = ''
-  form.rne = ''
-  form.aula_id = null
+  Object.assign(form, {
+    nombres: '',
+    apellidos: '',
+    fecha_nacimiento: '',
+    cedula: '',
+    sexo: 'Masculino',
+    rne: '',
+    aula_id: undefined,
+    orden_manual: false,
+    numero_orden: undefined
+  })
   errors.nombres = null
   errors.apellidos = null
   errors.fecha_nacimiento = null
@@ -134,26 +191,10 @@ function resetForm() {
   errors.sexo = null
   errors.rne = null
   errors.aula_id = null
+  errors.orden_manual = null
+  errors.numero_orden = null
   formError.value = null
 }
-
-const form = reactive<{
-  nombres: string
-  apellidos: string
-  fecha_nacimiento: string
-  cedula: string
-  sexo: string
-  rne: string
-  aula_id: number | null
-}>({
-  nombres: '',
-  apellidos: '',
-  fecha_nacimiento: '',
-  cedula: '',
-  sexo: '',
-  rne: '',
-  aula_id: null
-})
 
 const errors = reactive<Record<string, string | null>>({})
 const formError = ref<string | null>(null)
@@ -175,7 +216,9 @@ watch(() => props.model, (m) => {
     form.cedula = m.cedula || ''
     form.sexo = m.sexo || ''
     form.rne = m.rne || ''
-    form.aula_id = m.aula_id || null
+    form.aula_id = m.aula_id || undefined
+    form.orden_manual = m.orden_manual || false
+    form.numero_orden = m.numero_orden || undefined
   } else {
     resetForm()
   }
@@ -225,14 +268,14 @@ const onSubmit = async () => {
     if (err?.errors) {
       for (const k of Object.keys(err.errors)) {
         let msg = Array.isArray(err.errors[k]) ? err.errors[k][0] : String(err.errors[k])
-        
+
         // Traducir mensajes de error comunes del backend (Laravel defaults)
         if (msg.toLowerCase().includes('already been taken')) {
           if (k === 'rne') msg = 'Este RNE ya está registrado.'
           else if (k === 'cedula') msg = 'Esta cédula ya está registrada.'
           else msg = 'Este valor ya está registrado.'
         }
-        
+
         errors[k] = msg
       }
     }

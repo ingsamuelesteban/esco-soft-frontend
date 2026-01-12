@@ -30,7 +30,7 @@
           </svg>
           {{ loading ? 'Reordenando...' : 'Reordenar' }}
         </button>
-        
+
         <button v-if="filterAula" @click="$emit('generate-batch', filterAula)" :disabled="loading || allUsersGenerated"
           class="ml-2 px-3 py-2 text-sm bg-purple-600 text-white rounded-md hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors inline-flex items-center"
           :title="allUsersGenerated ? 'Todos los estudiantes de esta aula ya tienen usuario' : 'Generar usuarios para todos los estudiantes de esta aula'">
@@ -90,14 +90,16 @@
                   class="inline-flex items-center justify-center p-1.5 text-purple-600 hover:text-purple-800 hover:bg-purple-50 rounded-md transition-colors"
                   title="Generar Usuario">
                   <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
                   </svg>
                 </button>
                 <button v-else @click="$emit('reset-password', e)"
                   class="inline-flex items-center justify-center p-1.5 text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50 rounded-md transition-colors"
                   :title="'Restablecer contraseña para: ' + e.user.username">
                   <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
                   </svg>
                 </button>
 
@@ -157,27 +159,34 @@
           </tr>
           <tr v-if="loading && filtered.length === 0">
             <td colspan="10" class="px-4 py-6 text-center text-sm text-gray-500">
-                <div class="flex justify-center items-center">
-                    <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                    </svg>
-                    Cargando...
-                </div>
+              <div class="flex justify-center items-center">
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg"
+                  fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                  </path>
+                </svg>
+                Cargando...
+              </div>
             </td>
           </tr>
         </tbody>
       </table>
-      
+
       <!-- Loading Overlay for table updates -->
-      <div v-if="loading && filtered.length > 0" class="absolute inset-x-0 bottom-0 flex justify-center py-2 bg-white/80 border-t z-10">
-          <span class="inline-flex items-center text-sm text-blue-600 font-medium">
-            <svg class="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            Actualizando...
-          </span>
+      <div v-if="loading && filtered.length > 0"
+        class="absolute inset-x-0 bottom-0 flex justify-center py-2 bg-white/80 border-t z-10">
+        <span class="inline-flex items-center text-sm text-blue-600 font-medium">
+          <svg class="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
+            viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+          Actualizando...
+        </span>
       </div>
     </div>
   </div>
@@ -263,6 +272,7 @@ const reordenarNumeros = async () => {
 const filtered = computed<Estudiante[]>(() => {
   const q = query.value.toLowerCase()
   return store.ordenados.filter((e: Estudiante) => {
+    if (!e || !e.nombres) return false
     const matchesQuery = e.nombres.toLowerCase().includes(q) ||
       e.apellidos.toLowerCase().includes(q) ||
       (e.cedula && e.cedula.toLowerCase().includes(q)) ||
@@ -278,7 +288,7 @@ const filtered = computed<Estudiante[]>(() => {
 const allUsersGenerated = computed(() => {
   // Solo aplica si hay filtro de aula y hay estudiantes en la lista
   if (!filterAula.value || filtered.value.length === 0) return false
-  
+
   // Retorna true si TODOS los estudiantes filtrados tienen usuario
   return filtered.value.every(e => e.user)
 })

@@ -226,15 +226,14 @@ onMounted(async () => {
 const loadProfesores = async () => {
   try {
     loadingProfesores.value = true
-    const response = await api.get('/api/personal', {
-      params: {
-        role: 'profesor',
-        per_page: 1000
-      }
-    })
+    // Use the dedicated professors endpoint
+    const response = await api.get<{ success: boolean, data: Profesor[] }>('/api/profesores')
 
-    if ((response as any).data) {
-      profesores.value = (response as any).data
+    if (response.data) {
+      // Sort alphabetically by name (display name starts with Name)
+      profesores.value = response.data.sort((a, b) => {
+        return a.nombre.localeCompare(b.nombre)
+      })
     }
   } catch (error) {
     console.error('Error cargando profesores:', error)
