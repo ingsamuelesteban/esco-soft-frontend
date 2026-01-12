@@ -64,16 +64,50 @@
                 readonly />
             </div>
           </div>
-          <!-- Aula -->
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Aula</label>
-            <select v-model="form.aula_id"
-              class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500">
-              <option :value="undefined">Sin aula asignada</option>
-              <option v-for="aula in aulasStore.items" :key="aula.id" :value="aula.id">
-                {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo?.nombre }}
-              </option>
-            </select>
+          <!-- Estado y Aula -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Aula</label>
+              <select v-model="form.aula_id"
+                class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                <option :value="undefined">Sin aula asignada</option>
+                <option v-for="aula in aulasStore.items" :key="aula.id" :value="aula.id">
+                  {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo?.nombre }}
+                </option>
+              </select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
+              <select v-model="form.estado"
+                class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                <option value="activo">Activo</option>
+                <option value="retirado">Retirado</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Fecha de Retiro (visible solo si es retirado) -->
+          <div v-if="form.estado === 'retirado'" class="bg-red-50 p-4 rounded-lg border border-red-200">
+            <div class="flex items-start">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                    clip-rule="evenodd" />
+                </svg>
+              </div>
+              <div class="ml-3 w-full">
+                <h3 class="text-sm font-medium text-red-800">Fecha de Retiro</h3>
+                <div class="mt-2">
+                  <input v-model="form.fecha_retiro" type="date" class="border rounded px-2 py-2 w-full" />
+                </div>
+                <p class="mt-2 text-xs text-red-700">
+                  El estudiante mantendrá su número de orden (se activará orden manual). Su asistencia y calificaciones
+                  se deshabilitarán.
+                </p>
+              </div>
+            </div>
           </div>
 
           <!-- Orden Manual -->
@@ -158,6 +192,8 @@ interface EstudianteForm {
   aula_id?: number
   orden_manual: boolean
   numero_orden?: number
+  estado: string
+  fecha_retiro?: string
 }
 
 const form = reactive<EstudianteForm>({
@@ -169,7 +205,9 @@ const form = reactive<EstudianteForm>({
   rne: '',
   aula_id: undefined,
   orden_manual: false,
-  numero_orden: undefined
+  numero_orden: undefined,
+  estado: 'activo',
+  fecha_retiro: undefined
 })
 
 function resetForm() {
@@ -182,7 +220,9 @@ function resetForm() {
     rne: '',
     aula_id: undefined,
     orden_manual: false,
-    numero_orden: undefined
+    numero_orden: undefined,
+    estado: 'activo',
+    fecha_retiro: undefined
   })
   errors.nombres = null
   errors.apellidos = null
@@ -219,10 +259,19 @@ watch(() => props.model, (m) => {
     form.aula_id = m.aula_id || undefined
     form.orden_manual = m.orden_manual || false
     form.numero_orden = m.numero_orden || undefined
+    form.estado = m.estado || 'activo'
+    form.fecha_retiro = m.fecha_retiro ? m.fecha_retiro.split('T')[0] : undefined
   } else {
     resetForm()
   }
 }, { immediate: true })
+
+watch(() => form.estado, (newEstado) => {
+  if (newEstado === 'retirado' && !form.fecha_retiro) {
+    // Set default to today's date in YYYY-MM-DD format
+    form.fecha_retiro = new Date().toISOString().split('T')[0]
+  }
+})
 
 watch(() => props.open, (isOpen) => {
   if (isOpen && !isEdit.value) {

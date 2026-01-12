@@ -14,6 +14,8 @@ export interface Estudiante {
   sexo: 'Masculino' | 'Femenino'
   rne: string // código único alfanumérico
   aula_id?: number | null
+  estado?: string
+  fecha_retiro?: string | null
   aula?: {
     id: number
     grado_cardinal: number
@@ -45,7 +47,7 @@ export const useEstudiantesStore = defineStore('estudiantes', {
     items: [] as Estudiante[],
     loading: false as boolean,
     error: null as string | null,
-    statusFilter: 'active' as 'active' | 'inactive' | 'all' // Nuevo filtro
+    statusFilter: 'active' as 'active' | 'inactive' | 'retirado' | 'all' // Nuevo filtro
   }),
 
   getters: {
@@ -79,7 +81,7 @@ export const useEstudiantesStore = defineStore('estudiantes', {
   },
 
   actions: {
-    async fetchAll(status: 'active' | 'inactive' | 'all' = 'active') {
+    async fetchAll(status: 'active' | 'inactive' | 'retirado' | 'all' = 'active') {
       this.loading = true
       this.error = null
       this.statusFilter = status

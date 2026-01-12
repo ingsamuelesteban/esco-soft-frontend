@@ -120,7 +120,7 @@
     <div v-if="showStatistics && hasData"
       class="bg-white shadow-sm rounded-lg p-6 sticky top-20 z-30 transition-all duration-300 border-b border-gray-200">
       <h3 class="text-lg font-medium text-gray-900 mb-4">Resumen del Día</h3>
-      <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div class="grid grid-cols-2 md:grid-cols-6 gap-4">
         <div class="text-center">
           <div class="text-2xl font-bold text-gray-900">{{ attendanceStore.totalStudents }}</div>
           <div class="text-sm text-gray-600">Total</div>
@@ -140,6 +140,10 @@
         <div class="text-center">
           <div class="text-2xl font-bold text-orange-600">{{ attendanceStore.lateCount }}</div>
           <div class="text-sm text-gray-600">Tardanzas</div>
+        </div>
+        <div class="text-center">
+          <div class="text-2xl font-bold text-gray-500">{{ attendanceStore.withdrawnCount }}</div>
+          <div class="text-sm text-gray-600">Retirados</div>
         </div>
       </div>
 

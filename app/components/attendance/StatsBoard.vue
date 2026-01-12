@@ -44,7 +44,7 @@
 
         <div v-if="attendanceTaken" class="p-6">
             <!-- Summary Cards -->
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
                 <!-- Presentes -->
                 <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-green-500">
                     <h4 class="text-xs font-medium text-gray-500 uppercase tracking-wider">Presentes</h4>
@@ -105,10 +105,25 @@
                         </div>
                     </div>
                 </div>
+
+                <!-- Retirados -->
+                <div class="bg-white p-4 rounded-lg shadow-sm border-l-4 border-gray-500">
+                    <h4 class="text-xs font-medium text-gray-500 uppercase tracking-wider">Retirados</h4>
+                    <div class="mt-2 flex item-baseline">
+                        <span class="text-2xl font-bold text-gray-900">{{ stats?.retirado?.total || 0 }}</span>
+                        <span class="ml-2 text-xs text-gray-500" v-if="(stats?.total_registrados || 0) > 0">
+                            ({{ calculatePercentage(stats?.retirado?.total || 0, stats?.total_registrados || 0) }}%)
+                        </span>
+                    </div>
+                    <div class="mt-2 flex gap-4 text-xs text-gray-600">
+                        <div><span class="font-semibold">{{ stats?.retirado?.masculino || 0 }}</span> Masc</div>
+                        <div><span class="font-semibold">{{ stats?.retirado?.femenino || 0 }}</span> Fem</div>
+                    </div>
+                </div>
             </div>
 
             <!-- Detailed Lists -->
-            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StudentListCard title="Ausentes" :students="stats?.ausente?.estudiantes || []"
                     headerColor="bg-red-50 text-red-800" emptyText="Sin ausencias" />
 
@@ -117,6 +132,9 @@
 
                 <StudentListCard title="Tardanzas" :students="stats?.tardanza?.estudiantes || []"
                     headerColor="bg-orange-50 text-orange-800" emptyText="Sin tardanzas" />
+
+                <StudentListCard title="Retirados" :students="stats?.retirado?.estudiantes || []"
+                    headerColor="bg-gray-100 text-gray-800" emptyText="Sin retirados" />
             </div>
         </div>
 

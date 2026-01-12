@@ -68,12 +68,17 @@
 
           <!-- Botones de estado -->
           <div class="flex items-center space-x-2">
-            <button v-for="estado in estados" :key="estado.value"
-              @click="updateAttendance(record.estudiante.id, estado.value)"
-              :class="getButtonClass(estado.value, record.asistencia?.estado)"
-              class="px-3 py-2 text-xs font-medium rounded-lg transition-colors border">
-              {{ estado.label }}
-            </button>
+            <template v-if="record.estudiante.estado !== 'retirado'">
+              <button v-for="estado in estados" :key="estado.value"
+                @click="updateAttendance(record.estudiante.id, estado.value)"
+                :class="getButtonClass(estado.value, record.asistencia?.estado)"
+                class="px-3 py-2 text-xs font-medium rounded-lg transition-colors border">
+                {{ estado.label }}
+              </button>
+            </template>
+            <span v-else class="px-3 py-2 text-xs font-medium rounded-lg bg-red-100 text-red-800 border border-red-200">
+              Retirado
+            </span>
           </div>
         </div>
 

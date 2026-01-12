@@ -22,8 +22,9 @@
     </div>
 
     <div class="mt-6">
-      <EstudiantesList :status-filter="statusFilter"      @edit="openEditModal" @delete="handleDelete" @restore="handleRestore" @generate-user="handleGenerateUser"
-      @generate-batch="handleGenerateBatch" @reset-password="handleResetPassword" @saved="onSaved" />
+      <EstudiantesList :status-filter="statusFilter" @edit="openEditModal" @delete="handleDelete"
+        @restore="handleRestore" @generate-user="handleGenerateUser" @generate-batch="handleGenerateBatch"
+        @reset-password="handleResetPassword" @saved="onSaved" />
     </div>
 
     <!-- Modal para crear/editar -->
@@ -50,7 +51,7 @@ definePageMeta({
 const store = useEstudiantesStore()
 const showModal = ref(false)
 const selectedEstudiante = ref<Estudiante | null>(null)
-const statusFilter = ref<'active' | 'inactive' | 'all'>('active')
+const statusFilter = ref<'active' | 'inactive' | 'retirado' | 'all'>('active')
 
 // Estado para credenciales
 const showCredentialsModal = ref(false)
@@ -85,7 +86,7 @@ const onSaved = async () => {
 
 const reloadData = async (message: string) => {
   const { default: Swal } = await import('sweetalert2')
-  
+
   Swal.fire({
     title: message,
     text: 'Por favor espere',
@@ -153,7 +154,7 @@ const handleGenerateUser = async (estudiante: Estudiante) => {
       generatedCredentials.value = [response.data]
       currentPdfToken.value = response.pdf_token
       showCredentialsModal.value = true
-      
+
       // Recargar para actualizar el estado del botón
       await store.fetchAll(statusFilter.value)
     } catch (error: any) {
@@ -172,7 +173,7 @@ const handleGenerateBatch = async (aulaId: number) => {
   if (result.isConfirmed) {
     try {
       const response = await store.generateUsersBatch(aulaId)
-      
+
       if (response.data.length === 0) {
         showToast('Todos los estudiantes ya tienen usuario asignado', 'info')
         return
@@ -181,7 +182,7 @@ const handleGenerateBatch = async (aulaId: number) => {
       generatedCredentials.value = response.data
       currentPdfToken.value = response.pdf_token
       showCredentialsModal.value = true
-      
+
       // Recargar lista
       await store.fetchAll(statusFilter.value)
     } catch (error: any) {

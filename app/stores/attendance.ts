@@ -13,6 +13,8 @@ export interface Estudiante {
   sexo?: string
   rne?: string
   edad?: number
+  estado?: string
+  fecha_retiro?: string
 }
 
 export interface Attendance {
@@ -87,6 +89,10 @@ export const useAttendanceStore = defineStore('attendance', {
 
     totalStudents: (state) => {
       return state.records.length
+    },
+
+    withdrawnCount: (state) => {
+      return state.records.filter(record => record.estudiante.estado === 'retirado').length
     },
 
     pendingStudents: (state) => {
@@ -237,9 +243,7 @@ export const useAttendanceStore = defineStore('attendance', {
 
     markRemainingAsPresent() {
       this.records.forEach(record => {
-        // Si no tiene asistencia asignada (ni local ni guardada)
-        if (!record.asistencia) {
-          // Asignar localmente
+        if (!record.asistencia && record.estudiante.estado !== 'retirado') {
           this.updateLocalAttendance(record.estudiante.id, 'presente')
         }
       })

@@ -103,7 +103,7 @@
                         </button>
 
                         <button v-if="viewMode === 'monthly'" @click="printMonthly"
-                            :disabled="isPrintingMonthly || !monthlyStats || monthlyStats.students.length === 0"
+                            :disabled="isPrintingMonthly || !monthlyStats || !monthlyStats.students || monthlyStats.students.length === 0"
                             class="px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2">
                             <PrinterIcon v-if="!isPrintingMonthly" class="h-5 w-5 text-gray-500" />
                             <svg v-else class="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg"
@@ -189,7 +189,9 @@
                                 class="hover:bg-gray-50">
                                 <td class="px-4 py-2 font-medium text-gray-900 sticky left-0 z-10 bg-white border-r border-gray-200"
                                     :class="{ 'bg-gray-50': false /* hover effect handled by tr? sticky makes it tricky */ }">
-                                    <div class="truncate max-w-[200px]" :title="student.name">{{ student.name }}</div>
+                                    <div class="truncate max-w-[200px]" :title="student.name">
+                                        {{ student.name }}
+                                    </div>
                                 </td>
                                 <td v-for="day in (monthlyStats.dates || [])" :key="day" class="px-1 py-2 text-center">
                                     <span v-if="student.attendance[day]"
@@ -204,8 +206,12 @@
                                     {{ student.stats.effective_days }}
                                 </td>
                                 <td class="px-3 py-2 text-center font-bold border-l border-gray-200 bg-gray-50/50"
-                                    :class="getPercentClass(student.stats.percentage)">
-                                    {{ student.stats.percentage }}%
+                                    :class="student.estado === 'retirado' ? '' : getPercentClass(student.stats.percentage)">
+                                    <span v-if="student.estado === 'retirado'"
+                                        class="inline-block text-[10px] font-medium px-2 py-1 rounded bg-red-100 text-red-800 border border-red-200">
+                                        Retirado
+                                    </span>
+                                    <span v-else>{{ student.stats.percentage }}%</span>
                                 </td>
                             </tr>
                         </tbody>

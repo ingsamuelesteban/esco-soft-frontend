@@ -64,7 +64,13 @@
             <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
               {{ e.numero_orden ?? '-' }}
             </td>
-            <td class="px-4 py-3 whitespace-nowrap text-sm">{{ e.nombres }}</td>
+            <td class="px-4 py-3 whitespace-nowrap text-sm">
+              {{ e.nombres }}
+              <span v-if="e.estado === 'retirado'"
+                class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-orange-100 text-orange-800 border border-orange-200">
+                Retirado
+              </span>
+            </td>
             <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">{{ e.apellidos }}</td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">{{ e.cedula || '—' }}</td>
             <td class="px-4 py-3 whitespace-nowrap text-sm font-mono">{{ e.rne || '—' }}</td>
@@ -207,7 +213,7 @@ defineEmits<{
 }>()
 
 interface Props {
-  statusFilter?: 'active' | 'inactive' | 'all'
+  statusFilter?: 'active' | 'inactive' | 'retirado' | 'all'
 }
 
 const props = withDefaults(defineProps<Props>(), {

@@ -207,6 +207,10 @@
                           <div class="hidden sm:block">
                             <div class="text-sm font-medium text-gray-900">
                               {{ estudiante.nombres }} {{ estudiante.apellidos }}
+                              <span v-if="estudiante.estado === 'retirado'"
+                                class="ml-2 px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 border border-red-200">
+                                Retirado
+                              </span>
                             </div>
                             <div class="text-sm text-gray-500">{{ estudiante.rne }}</div>
                           </div>
@@ -218,9 +222,9 @@
                           <div class="flex flex-col items-center space-y-1">
                             <div class="flex space-x-1">
                               <div v-for="p in 4" :key="p" class="flex flex-col space-y-1">
-                                <button :disabled="isRefreshing"
+                                <button :disabled="isRefreshing || estudiante.estado === 'retirado'"
                                   @click="abrirModalCompetencia(estudiante, getCompetenciasPorBloque(bloque)[0], bloque, `P${p}`)"
-                                  class="w-8 h-8 rounded flex items-center justify-center text-sm font-medium transition-colors border disabled:opacity-50 disabled:cursor-wait"
+                                  class="w-8 h-8 rounded flex items-center justify-center text-sm font-medium transition-colors border disabled:opacity-50 disabled:cursor-not-allowed"
                                   :class="getCompetenciaButtonClass(estudiante.id, getCompetenciasPorBloque(bloque)[0], bloque, `P${p}`)"
                                   :title="`Calificar Bloque ${bloque} - P${p}`">
                                   {{ getNotaCompetencia(estudiante.id, getCompetenciasPorBloque(bloque)[0], bloque,
@@ -230,9 +234,9 @@
                                 <!-- Botón de Recuperación (RP) Condicional -->
                                 <button
                                   v-if="shouldShowRecovery(estudiante.id, getCompetenciasPorBloque(bloque)[0], bloque, `P${p}`)"
-                                  :disabled="isRefreshing"
+                                  :disabled="isRefreshing || estudiante.estado === 'retirado'"
                                   @click="abrirModalCompetencia(estudiante, getCompetenciasPorBloque(bloque)[0], bloque, `RP${p}`)"
-                                  class="w-8 h-8 rounded flex items-center justify-center text-sm font-medium transition-colors border border-orange-300 bg-orange-50 text-orange-700 hover:bg-orange-100 disabled:opacity-50 disabled:cursor-wait"
+                                  class="w-8 h-8 rounded flex items-center justify-center text-sm font-medium transition-colors border border-orange-300 bg-orange-50 text-orange-700 hover:bg-orange-100 disabled:opacity-50 disabled:cursor-not-allowed"
                                   :class="getCompetenciaButtonClass(estudiante.id, getCompetenciasPorBloque(bloque)[0], bloque, `RP${p}`)"
                                   :title="`Recuperación Bloque ${bloque} - RP${p}`">
                                   {{ getNotaCompetencia(estudiante.id, getCompetenciasPorBloque(bloque)[0], bloque,
@@ -334,6 +338,10 @@
                           <div class="hidden sm:block">
                             <div class="text-sm font-medium text-gray-900">
                               {{ estudiante.nombres }} {{ estudiante.apellidos }}
+                              <span v-if="estudiante.estado === 'retirado'"
+                                class="ml-2 px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 border border-red-200">
+                                Retirado
+                              </span>
                             </div>
                             <div class="text-sm text-gray-500">{{ estudiante.rne }}</div>
                           </div>
@@ -343,7 +351,7 @@
                         class="px-2 py-4 text-center">
                         <div class="flex justify-center space-x-1">
                           <button v-for="oportunidad in 4" :key="`${estudiante.id}-ra${ra}-op${oportunidad}`"
-                            :disabled="isRefreshing || !moduloData?.valores_ra?.[`ra_${ra}`]"
+                            :disabled="isRefreshing || !moduloData?.valores_ra?.[`ra_${ra}`] || estudiante.estado === 'retirado'"
                             @click="abrirModalCalificarOportunidad(estudiante, ra, oportunidad)"
                             class="w-5 h-5 border border-gray-300 rounded-sm flex items-center justify-center text-xs font-bold hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
                             :class="getCasillaOportunidadClass(estudiante.id, ra, oportunidad)"
