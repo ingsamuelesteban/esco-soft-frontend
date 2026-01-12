@@ -244,17 +244,24 @@
               <p class="text-sm text-gray-700 mb-2">
                 <strong>Credenciales temporales para {{ credencialesTemporales.profesor }}:</strong>
               </p>
-              <div class="space-y-2 text-sm">
-                <div>
-                  <span class="font-medium">Email:</span>
-                  <span class="font-mono bg-gray-100 px-2 py-1 rounded">{{ credencialesTemporales.email }}</span>
+              <div class="space-y-2 text-sm text-left">
+                <div v-if="credencialesTemporales.username">
+                  <span class="font-medium block text-gray-600">Usuario:</span>
+                  <span class="font-mono bg-white border border-gray-200 px-2 py-1 rounded block w-full">{{
+                    credencialesTemporales.username }}</span>
                 </div>
                 <div>
-                  <span class="font-medium">Contraseña:</span>
-                  <span class="font-mono bg-gray-100 px-2 py-1 rounded">{{ credencialesTemporales.password }}</span>
+                  <span class="font-medium block text-gray-600">Email:</span>
+                  <span class="font-mono bg-white border border-gray-200 px-2 py-1 rounded block w-full">{{
+                    credencialesTemporales.email }}</span>
+                </div>
+                <div>
+                  <span class="font-medium block text-gray-600">Contraseña:</span>
+                  <span class="font-mono bg-white border border-gray-200 px-2 py-1 rounded block w-full break-all">{{
+                    credencialesTemporales.password }}</span>
                 </div>
               </div>
-              <p class="text-xs text-yellow-700 mt-3">
+              <p class="text-xs text-yellow-700 mt-3 text-center">
                 ⚠️ Guarda estas credenciales. El profesor debe cambiar la contraseña en su primer acceso.
               </p>
             </div>
@@ -273,6 +280,7 @@
 
 <script setup lang="ts">
 // Import API utility
+import Swal from 'sweetalert2'
 import { api } from '~/utils/api'
 import { useAuthStore } from '../../stores/auth'
 
@@ -295,6 +303,7 @@ interface Profesor {
 
 interface CredencialesTemporales {
   profesor: string
+  username?: string
   email: string
   password: string
 }
@@ -345,6 +354,7 @@ const crearAcceso = async (profesor: Profesor) => {
       // Mostrar credenciales temporales
       credencialesTemporales.value = {
         profesor: profesor.nombre_completo,
+        username: response.data.credenciales_temporales.username,
         email: response.data.credenciales_temporales.email,
         password: response.data.credenciales_temporales.password
       }
@@ -355,7 +365,7 @@ const crearAcceso = async (profesor: Profesor) => {
     }
   } catch (error) {
     console.error('Error al crear acceso:', error)
-    alert('Error al crear acceso al sistema')
+    Swal.fire('Error', 'Error al crear acceso al sistema', 'error')
   } finally {
     procesando.value = null
   }
@@ -371,10 +381,18 @@ const toggleEstado = async (profesor: Profesor) => {
 
     if (response.success) {
       await cargarProfesores()
+      Swal.fire({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        icon: 'success',
+        title: nuevoEstado ? 'Acceso activado' : 'Acceso desactivado'
+      })
     }
   } catch (error) {
     console.error('Error al cambiar estado:', error)
-    alert('Error al cambiar el estado del usuario')
+    Swal.fire('Error', 'Error al cambiar el estado del usuario', 'error')
   } finally {
     procesando.value = null
   }
@@ -382,17 +400,29 @@ const toggleEstado = async (profesor: Profesor) => {
 
 // Resetear contraseña
 const resetearPassword = async (profesor: Profesor) => {
-  if (!confirm(`¿Estás seguro de resetear la contraseña de ${profesor.nombre_completo}?`)) {
+  const result = await Swal.fire({
+    title: '¿Estás seguro?',
+    text: `¿Deseas resetear la contraseña de ${profesor.nombre_completo}?`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Sí, resetear',
+    cancelButtonText: 'Cancelar'
+  })
+
+  if (!result.isConfirmed) {
     return
   }
 
   procesando.value = profesor.id
   try {
-    const response = await api.post(`/api/profesores/${profesor.id}/resetear-password`)
+    const response = await api.post<{ success: boolean; data: { username: string; nueva_password: string } }>(`/api/profesores/${profesor.id}/resetear-password`)
 
     if (response.success && profesor.user) {
       credencialesTemporales.value = {
         profesor: profesor.nombre_completo,
+        username: response.data.username,
         email: profesor.user.email,
         password: response.data.nueva_password
       }
@@ -400,7 +430,7 @@ const resetearPassword = async (profesor: Profesor) => {
     }
   } catch (error) {
     console.error('Error al resetear contraseña:', error)
-    alert('Error al resetear la contraseña')
+    Swal.fire('Error', 'Error al resetear la contraseña', 'error')
   } finally {
     procesando.value = null
   }
@@ -413,7 +443,18 @@ const verModulosFormativos = (profesor: Profesor) => {
 
 // Eliminar acceso
 const eliminarAcceso = async (profesor: Profesor) => {
-  if (!confirm(`¿Estás seguro de eliminar el acceso al sistema de ${profesor.nombre_completo}?`)) {
+  const result = await Swal.fire({
+    title: '¿Estás seguro?',
+    text: `¿Eliminar acceso al sistema de ${profesor.nombre_completo}? Esta acción no se puede deshacer.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  })
+
+  if (!result.isConfirmed) {
     return
   }
 
@@ -422,10 +463,11 @@ const eliminarAcceso = async (profesor: Profesor) => {
     const response = await api.delete(`/api/profesores/${profesor.id}/eliminar-acceso`)
     if ((response as any).success) {
       await cargarProfesores()
+      Swal.fire('Eliminado', 'El acceso ha sido eliminado.', 'success')
     }
   } catch (error) {
     console.error('Error al eliminar acceso:', error)
-    alert('Error al eliminar el acceso al sistema')
+    Swal.fire('Error', 'Error al eliminar el acceso al sistema', 'error')
   } finally {
     procesando.value = null
   }
