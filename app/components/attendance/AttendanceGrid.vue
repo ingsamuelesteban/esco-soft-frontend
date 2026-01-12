@@ -28,18 +28,6 @@
             </div>
           </div>
 
-          <!-- Botón de guardar -->
-          <button @click="saveAllChanges" :disabled="!hasUnsavedChanges || attendanceStore.loading"
-            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed">
-            <svg v-if="attendanceStore.loading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none"
-              viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-              </path>
-            </svg>
-            {{ attendanceStore.loading ? 'Guardando...' : 'Guardar Cambios' }}
-          </button>
         </div>
       </div>
     </div>
@@ -140,7 +128,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, watch } from 'vue'
 import { useAttendanceStore } from '../../stores/attendance'
 
 
@@ -148,16 +136,15 @@ interface Props {
   fecha: string
   aulaId: number
   aulaName: string
-  assignmentId: number // <--- Agregado para identificar el módulo/asignación
+  assignmentId: number
 }
 
-const props = defineProps<Props>()
+defineProps<Props>()
 
 const attendanceStore = useAttendanceStore()
 
 // Estado local para observaciones
 const localObservaciones = ref<Record<number, string>>({})
-const pendingChanges = ref<Set<number>>(new Set())
 
 const estados = [
   { value: 'presente', label: 'Presente', color: 'green' },
@@ -165,12 +152,6 @@ const estados = [
   { value: 'excusa', label: 'Excusa', color: 'yellow' },
   { value: 'tardanza', label: 'Tardanza', color: 'orange' }
 ]
-
-const hasUnsavedChanges = computed(() => pendingChanges.value.size > 0)
-
-
-// La carga de datos se maneja en el componente padre (asistencia.vue)
-// para evitar bucles infinitos de montaje/desmontaje
 
 // Inicializar observaciones locales cuando cambien los records  
 watch(() => attendanceStore.records, (records) => {
@@ -183,7 +164,6 @@ watch(() => attendanceStore.records, (records) => {
 
 const updateAttendance = (estudianteId: number, estado: string) => {
   attendanceStore.updateLocalAttendance(estudianteId, estado, localObservaciones.value[estudianteId])
-  pendingChanges.value.add(estudianteId)
 }
 
 const updateObservaciones = (estudianteId: number, observaciones: string) => {
@@ -193,32 +173,6 @@ const updateObservaciones = (estudianteId: number, observaciones: string) => {
   const record = attendanceStore.records.find((r: any) => r.estudiante.id === estudianteId)
   if (record?.asistencia) {
     attendanceStore.updateLocalAttendance(estudianteId, record.asistencia.estado, observaciones)
-    pendingChanges.value.add(estudianteId)
-  }
-}
-
-const saveAllChanges = async () => {
-  if (pendingChanges.value.size === 0) return
-
-  const asistencias = Array.from(pendingChanges.value).map(estudianteId => {
-    const record = attendanceStore.records.find((r: any) => r.estudiante.id === estudianteId)
-    if (!record?.asistencia) return null
-
-    return {
-      estudiante_id: estudianteId,
-      estado: record.asistencia.estado,
-      observaciones: localObservaciones.value[estudianteId] || null
-    }
-  }).filter(Boolean) as Array<{ estudiante_id: number, estado: string, observaciones?: string }>
-
-  try {
-    await attendanceStore.saveBatchAttendance(asistencias)
-    pendingChanges.value.clear()
-
-    // Mostrar notificación de éxito (podrías usar una librería como toast)
-    // console.log('Asistencias guardadas correctamente')
-  } catch (error) {
-    console.error('Error al guardar asistencias:', error)
   }
 }
 

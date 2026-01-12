@@ -59,9 +59,12 @@ export const useAttendanceStore = defineStore('attendance', {
     loadingAssignments: false,
     dailyClasses: [] as any[],
     loadingDailyClasses: false,
+    pendingChanges: new Set<number>(), // Track modified student IDs
   }),
 
   getters: {
+    hasUnsavedChanges: (state) => state.pendingChanges.size > 0,
+
     recordsByEstado: (state) => (estado: string) => {
       return state.records.filter(record => record.asistencia?.estado === estado)
     },
@@ -98,6 +101,7 @@ export const useAttendanceStore = defineStore('attendance', {
       this.currentDate = fecha
       this.currentAulaId = aulaId
       this.currentAssignmentId = assignmentId
+      this.pendingChanges.clear() // Reset pending changes on fetch
 
       try {
         const response = await api.get<{ data: AttendanceRecord[], fecha: string, aula_id: number, assignment_id: number }>('/api/attendance', {
@@ -140,9 +144,26 @@ export const useAttendanceStore = defineStore('attendance', {
       }
     },
 
-    async saveBatchAttendance(asistencias: Array<{ estudiante_id: number, estado: string, observaciones?: string }>) {
+    async saveBatchAttendance() {
       this.loading = true
       this.error = null
+
+      // Build payload from pendingChanges
+      const asistencias = Array.from(this.pendingChanges).map(estudianteId => {
+        const record = this.records.find((r: any) => r.estudiante.id === estudianteId)
+        if (!record?.asistencia) return null
+
+        return {
+          estudiante_id: estudianteId,
+          estado: record.asistencia.estado,
+          observaciones: record.asistencia.observaciones || null
+        }
+      }).filter(Boolean) as Array<{ estudiante_id: number, estado: string, observaciones?: string }>
+
+      if (asistencias.length === 0) {
+        this.loading = false
+        return
+      }
 
       try {
         const response = await api.post<any>('/api/attendance/batch', {
@@ -151,18 +172,13 @@ export const useAttendanceStore = defineStore('attendance', {
           asistencias
         })
 
-        // Actualizar todos los records en el estado local
+        // Actualizar todos los records en el estado local (IDs reales)
         asistencias.forEach(asistencia => {
-          const recordIndex = this.records.findIndex(r => r.estudiante.id === asistencia.estudiante_id)
-          if (recordIndex !== -1 && this.records[recordIndex]) {
-            this.records[recordIndex].asistencia = {
-              id: 0, // Se actualizará con el response real
-              estado: asistencia.estado as any,
-              observaciones: asistencia.observaciones
-            }
-          }
+          // Logic to update IDs if needed, essentially already updated locally via updateLocalAttendance
+          // Ideally backend returns updated IDs map
         })
 
+        this.pendingChanges.clear()
         return response
       } catch (error: any) {
         this.error = error.message || 'Error al guardar las asistencias'
@@ -210,7 +226,23 @@ export const useAttendanceStore = defineStore('attendance', {
             asistencia.observaciones = observaciones
           }
         }
+        this.pendingChanges.add(estudianteId)
       }
+    },
+
+    // Helper to add to pending changes if only observation changed
+    markAsModified(estudianteId: number) {
+      this.pendingChanges.add(estudianteId)
+    },
+
+    markRemainingAsPresent() {
+      this.records.forEach(record => {
+        // Si no tiene asistencia asignada (ni local ni guardada)
+        if (!record.asistencia) {
+          // Asignar localmente
+          this.updateLocalAttendance(record.estudiante.id, 'presente')
+        }
+      })
     },
 
     clearError() {
@@ -221,14 +253,18 @@ export const useAttendanceStore = defineStore('attendance', {
       this.records = []
       this.currentAulaId = null
       this.error = null
+      this.pendingChanges.clear()
     },
 
-    async getCurrentClass() {
+    async getCurrentClass(simulatedTime?: string) {
       this.loadingCurrentClass = true
       this.error = null
 
       try {
-        const response = await api.get<{ current_class: CurrentClass | null, message: string }>('/api/attendance/current-class')
+        const params: any = {}
+        if (simulatedTime) params.simulated_time = simulatedTime
+
+        const response = await api.get<{ current_class: CurrentClass | null, message: string }>('/api/attendance/current-class', { params })
         this.currentClass = response.current_class
         return response
       } catch (error: any) {
@@ -260,8 +296,6 @@ export const useAttendanceStore = defineStore('attendance', {
       this.dailyClasses = []
 
       try {
-        // Convert date string (YYYY-MM-DD) to day of week (0-6)
-        // Create date object treating input as local time components to avoid timezone shift
         const parts = filters.date.split('-').map(Number)
         if (parts.length < 3) {
           this.loadingDailyClasses = false

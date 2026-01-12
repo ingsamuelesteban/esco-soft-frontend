@@ -88,24 +88,6 @@
           </div>
         </div>
 
-        <!-- Botón para clase actual (Solo visible en horario escolar activo, si hay clases y es hoy) -->
-        <div class="flex items-end" v-if="isInPeriod && attendanceStore.dailyClasses.length > 0 && isToday">
-          <button @click="loadCurrentClass" :disabled="attendanceStore.loadingCurrentClass"
-            class="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center">
-            <svg v-if="attendanceStore.loadingCurrentClass" class="animate-spin -ml-1 mr-2 h-4 w-4" fill="none"
-              viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-              </path>
-            </svg>
-            <svg v-else class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Clase Actual
-          </button>
-        </div>
 
 
       </div>
@@ -162,15 +144,29 @@
       </div>
 
       <!-- Porcentaje de asistencia -->
-      <div class="mt-6">
-        <div class="flex justify-between text-sm text-gray-600 mb-2">
-          <span>Porcentaje de Asistencia</span>
-          <span>{{ attendancePercentage }}%</span>
+      <div class="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div class="flex-1">
+          <div class="flex justify-between text-sm text-gray-600 mb-2">
+            <span>Porcentaje de Asistencia</span>
+            <span>{{ attendancePercentage }}%</span>
+          </div>
+          <div class="w-full bg-gray-200 rounded-full h-2">
+            <div class="bg-green-600 h-2 rounded-full transition-all duration-300"
+              :style="{ width: `${attendancePercentage}%` }"></div>
+          </div>
         </div>
-        <div class="w-full bg-gray-200 rounded-full h-2">
-          <div class="bg-green-600 h-2 rounded-full transition-all duration-300"
-            :style="{ width: `${attendancePercentage}%` }"></div>
-        </div>
+
+        <button @click="saveChanges" :disabled="!attendanceStore.hasUnsavedChanges || attendanceStore.loading"
+          class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm min-w-[160px]">
+          <svg v-if="attendanceStore.loading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none"
+            viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
+          {{ attendanceStore.loading ? 'Guardando...' : 'Guardar Cambios' }}
+        </button>
       </div>
     </div>
 
@@ -344,7 +340,70 @@ const aulaName = (aula: any) => {
   return `${grado}${seccion}${titulo}`.trim() || `Aula ${aula.id}`
 }
 
-// Watchers
+const saveChanges = async () => {
+  try {
+    const totalPending = attendanceStore.pendingStudents
+    let shouldSave = true
+
+    if (totalPending > 0) {
+      const result = await Swal.fire({
+        title: 'Completar Asistencia',
+        text: `Hay ${totalPending} estudiantes sin marcar. ¿Desea marcarlos como "Presente" automáticamente?`,
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, marcar presentes',
+        cancelButtonText: 'No, guardar solo cambios',
+        confirmButtonColor: '#059669', // green-600
+        cancelButtonColor: '#6B7280', // gray-500
+      })
+
+      if (result.isConfirmed) {
+        attendanceStore.markRemainingAsPresent()
+      } else if (result.dismiss === Swal.DismissReason.cancel) {
+        // User clicked "No", proceed to save only what's changed
+        shouldSave = true
+      } else {
+        // User clicked outside or closed modal (DismissReason.backdrop, etc)
+        // Check if we should abort or save? Usually cancel means abort action.
+        // But here the button text is "No, guardar solo cambios". 
+        // Let's assume standard Cancel button behavior often means "Cancel whole action" 
+        // BUT my text says "No, save only changes".
+        // Let's refine:
+        // Confirm -> Mark present + Save
+        // Deny/Cancel -> Save only changes? Or Abort?
+        // User request: "el sistema pregunte si desea autocompletar... si guarda paricales".
+        // It implies the action IS saving, the question is just "Complete others?".
+        // So clicking "No" (Cancel button) should probably continue saving.
+        // HOWEVER, standard UX 'Cancel' usually aborts. 
+        // Let's stick to the prompt text. I'll treat "Cancel" as "Save without autocomeplete".
+        shouldSave = true
+      }
+    }
+
+    if (shouldSave) {
+      await attendanceStore.saveBatchAttendance()
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Cambios guardados',
+        text: 'La asistencia ha sido actualizada correctamente.',
+        timer: 2000,
+        showConfirmButton: false,
+        toast: true,
+        position: 'top-end'
+      })
+    }
+
+  } catch (error) {
+    console.error('Error al guardar:', error)
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'No se pudieron guardar los cambios.',
+    })
+  }
+}
+
 // Watchers
 watch(selectedDate, (newDate, oldDate) => {
   if (newDate && isWeekend(newDate)) {
@@ -402,15 +461,13 @@ onMounted(async () => {
 
   // Si es profesor, cargar horario inicial
   if (!(authStore.isAdmin || authStore.isMaster) && authStore.user?.personal_id) {
-    attendanceStore.fetchDailyClasses({ professorId: authStore.user.personal_id, date: selectedDate.value })
+    await attendanceStore.fetchDailyClasses({ professorId: authStore.user.personal_id, date: selectedDate.value })
+
+    // Auto-load clase actual para profesores
+    await loadCurrentClass()
   }
 
   // Cargar aulas al montar el componente (para administradores)
   await aulasStore.fetchAll()
-
-  // Intentar cargar la clase actual si estamos en periodo activo
-  if (isInPeriod.value) {
-    await loadCurrentClass()
-  }
 })
 </script>
