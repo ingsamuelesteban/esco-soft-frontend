@@ -286,6 +286,11 @@ const loadAttendance = async () => {
 const loadCurrentClass = async () => {
   try {
     await attendanceStore.getCurrentClass()
+
+    // Si se encontró una clase actual, usarla automáticamente
+    if (attendanceStore.currentClass) {
+      useCurrentClass()
+    }
   } catch (error) {
     console.error('Error al cargar clase actual:', error)
   }
@@ -293,15 +298,25 @@ const loadCurrentClass = async () => {
 
 const useCurrentClass = () => {
   if (attendanceStore.currentClass) {
-    // Buscar la asignación correspondiente
-    const assignment = attendanceStore.teacherAssignments.find(
-      a => a.id === attendanceStore.currentClass?.assignment_id
+    // Buscar la asignación correspondiente en dailyClasses
+    // Esto funciona porque `loadAttendance` usa la misma lista para llenar el select
+    const currentAssignmentId = attendanceStore.currentClass?.assignment_id
+
+    const entry = attendanceStore.dailyClasses.find(
+      e => e.assignment_id === currentAssignmentId
     )
 
-    if (assignment) {
-      selectedAssignmentId.value = assignment.id
-      selectedAulaId.value = assignment.aula_id
+    if (entry && entry.assignment) {
+      selectedAssignmentId.value = entry.assignment_id
+      selectedAulaId.value = entry.assignment.aula_id
       loadAttendance()
+    } else {
+      // Fallback: si no está en dailyClasses (ej: horario cambió), intentar cargar solo con los IDs básicos
+      if (currentAssignmentId) {
+        selectedAssignmentId.value = currentAssignmentId
+        selectedAulaId.value = attendanceStore.currentClass.aula_id
+        loadAttendance()
+      }
     }
   }
 }
