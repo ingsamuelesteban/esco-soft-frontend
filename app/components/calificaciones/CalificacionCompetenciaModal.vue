@@ -50,6 +50,12 @@
                                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
                                 {{ loading ? 'Guardando...' : 'Guardar' }}
                             </button>
+                            <button
+                                v-if="calificacionActual !== undefined && calificacionActual !== null && calificacionActual !== ''"
+                                type="button" @click="eliminar" :disabled="loading"
+                                class="mt-3 w-full inline-flex justify-center rounded-md border border-red-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-red-700 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
+                                Eliminar
+                            </button>
                             <button type="button" @click="$emit('close')" :disabled="loading"
                                 class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
                                 Cancelar
@@ -63,8 +69,9 @@
 </template>
 
 <script setup>
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { api } from '~/utils/api'
+import Swal from 'sweetalert2'
 
 const props = defineProps({
     estudiante: Object,
@@ -74,7 +81,8 @@ const props = defineProps({
     periodo: String, // "P1", "P2", "P3", "P4"
     tipo: String, // "P" (Periodo) or "RP" (Recuperacion)
     calificacionActual: [Number, String],
-    observacionesActuales: String
+    observacionesActuales: String,
+    calificacionId: [Number, String]
 })
 
 const emit = defineEmits(['close', 'save'])
@@ -133,6 +141,35 @@ const guardarCalificacion = async () => {
         loading.value = false
     }
 }
+
+const eliminar = async () => {
+    if (!props.calificacionId) return;
+
+    const result = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: "Se eliminará esta calificación. Esta acción no se puede deshacer.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    })
+
+    if (result.isConfirmed) {
+        loading.value = true
+        try {
+            await api.delete(`/api/calificaciones-competencias/${props.calificacionId}`)
+            emit('save') // Trigger refresh
+        } catch (e) {
+            console.error('Error al eliminar:', e)
+            error.value = 'Error al eliminar la calificación'
+        } finally {
+            loading.value = false
+        }
+    }
+}
+
 const isNumber = (evt) => {
     evt = (evt) ? evt : window.event;
     var charCode = (evt.which) ? evt.which : evt.keyCode;

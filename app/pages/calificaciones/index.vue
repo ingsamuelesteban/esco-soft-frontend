@@ -270,8 +270,8 @@
               :modulo="moduloData" :competencia-titulo="competenciaParaCalificar" :bloque-index="bloqueParaCalificar"
               :periodo="tipoParaCalificar" :tipo="tipoParaCalificar"
               :calificacion-actual="calificacionCompetenciaActual"
-              :observaciones-actuales="observacionesCompetenciaActual" @close="cerrarModalCompetencia"
-              @save="guardarCalificacionCompetencia" />
+              :observaciones-actuales="observacionesCompetenciaActual" :calificacion-id="calificacionCompetenciaId"
+              @close="cerrarModalCompetencia" @save="guardarCalificacionCompetencia" />
 
             <!-- Calificaciones para módulos técnicos (RA) -->
             <div v-if="moduloData?.tipo === 'Tecnico'">
@@ -461,7 +461,7 @@
       :ra-numero="raParaCalificar" :oportunidad="oportunidadParaCalificar"
       :valor-ra="moduloData?.valores_ra?.[`ra_${raParaCalificar}`] || 0" :nota-actual="calificacionActual"
       :observaciones-actuales="observacionesActual" :loading="guardandoCalificacion"
-      @close="cerrarModalCalificarOportunidad" @save="guardarCalificacion" />
+      @close="cerrarModalCalificarOportunidad" @save="guardarCalificacion" @delete="eliminarCalificacionRA" />
   </div>
 </template>
 
@@ -508,6 +508,7 @@ const oportunidadParaCalificar = ref(null)
 const calificacionActual = ref('')
 const observacionesActual = ref('')
 const guardandoCalificacion = ref(false)
+const calificacionRAId = ref(null)
 
 // Modal Calificar Competencia (Académico)
 const mostrarModalCompetencia = ref(false)
@@ -516,6 +517,7 @@ const bloqueParaCalificar = ref(null)
 const tipoParaCalificar = ref('P')
 const calificacionCompetenciaActual = ref('')
 const observacionesCompetenciaActual = ref('')
+const calificacionCompetenciaId = ref(null)
 
 // Mensajes de feedback
 const mensaje = ref('')
@@ -751,12 +753,19 @@ const abrirModalCalificarOportunidad = async (estudiante, raNumero, oportunidad)
   raParaCalificar.value = raNumero
   oportunidadParaCalificar.value = oportunidad
 
-  // Cargar calificación y observaciones existentes si existen
-  const calificacionExistente = getNotaOportunidad(estudiante.id, raNumero, oportunidad)
-  const observacionesExistentes = getObservacionesOportunidad(estudiante.id, raNumero, oportunidad)
+  // Find the grade object
+  const calificaciones = getCalificacionesRA(estudiante.id, raNumero)
+  const calificacionObj = calificaciones.find(c => c.oportunidad === oportunidad)
 
-  calificacionActual.value = calificacionExistente > 0 ? calificacionExistente : ''
-  observacionesActual.value = observacionesExistentes
+  if (calificacionObj) {
+    calificacionActual.value = calificacionObj.nota
+    observacionesActual.value = calificacionObj.observaciones || ''
+    calificacionRAId.value = calificacionObj.id
+  } else {
+    calificacionActual.value = ''
+    observacionesActual.value = ''
+    calificacionRAId.value = null
+  }
 
   mostrarModalCalificarOportunidad.value = true
 }
@@ -795,6 +804,27 @@ const guardarCalificacion = async (payload) => {
     console.error('Error al guardar calificación:', error)
     const mensajeError = error.data?.message || 'Error al guardar la calificación. Inténtalo nuevamente.'
     mostrarMensajeError(mensajeError)
+  } finally {
+    guardandoCalificacion.value = false
+  }
+}
+
+const eliminarCalificacionRA = async () => {
+  if (!calificacionRAId.value) return
+
+  guardandoCalificacion.value = true
+  try {
+    await api.delete(`/api/calificaciones-ra/${calificacionRAId.value}`)
+
+    // Actualizar datos
+    await cargarCalificaciones(true)
+
+    cerrarModalCalificarOportunidad()
+
+    mostrarMensajeExito('Calificación eliminada exitosamente')
+  } catch (error) {
+    console.error('Error al eliminar:', error)
+    mostrarMensajeError('Error al eliminar la calificación')
   } finally {
     guardandoCalificacion.value = false
   }
@@ -1147,6 +1177,7 @@ const abrirModalCompetencia = (estudiante, competencia, bloque, tipo) => {
   const cal = getCalificacionCompetencia(estudiante.id, competencia, bloque, tipo)
   calificacionCompetenciaActual.value = cal ? cal.nota : ''
   observacionesCompetenciaActual.value = cal ? cal.observaciones : ''
+  calificacionCompetenciaId.value = cal ? cal.id : null
 
   mostrarModalCompetencia.value = true
 }

@@ -80,6 +80,11 @@
                                 </svg>
                                 {{ loading ? 'Guardando...' : 'Guardar Calificación' }}
                             </button>
+                            <button v-if="notaActual !== undefined && notaActual !== null && notaActual !== ''"
+                                type="button" @click="eliminar" :disabled="loading"
+                                class="mt-3 w-full inline-flex justify-center rounded-md border border-red-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-red-700 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
+                                Eliminar
+                            </button>
                             <button type="button" @click="$emit('close')"
                                 class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
                                 Cancelar
@@ -94,6 +99,7 @@
 
 <script setup>
 import { ref, computed, watch } from 'vue'
+import Swal from 'sweetalert2'
 
 const props = defineProps({
     estudiante: Object,
@@ -108,7 +114,7 @@ const props = defineProps({
     loading: Boolean
 })
 
-const emit = defineEmits(['close', 'save'])
+const emit = defineEmits(['close', 'save', 'delete'])
 
 const form = ref({
     nota: '',
@@ -150,5 +156,22 @@ const guardar = () => {
         nota: form.value.nota,
         observaciones: form.value.observaciones
     })
+}
+
+const eliminar = async () => {
+    const result = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: "Se eliminará esta calificación. Esta acción no se puede deshacer.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    })
+
+    if (result.isConfirmed) {
+        emit('delete')
+    }
 }
 </script>
