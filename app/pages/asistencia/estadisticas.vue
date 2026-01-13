@@ -462,10 +462,16 @@ const printGlobal = async () => {
     if (!filters.date || !filters.aulaId) return
     isPrintingGlobal.value = true
     try {
+        // Force full report from main button
+        let aulaParam = filters.aulaId
+        if (aulaParam === 'all_summary') {
+            aulaParam = 'all'
+        }
+
         const blob = await api.getBlob('/api/attendance/report/daily', {
             params: {
                 fecha: filters.date,
-                aula_id: filters.aulaId
+                aula_id: aulaParam
             }
         })
 

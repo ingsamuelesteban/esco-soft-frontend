@@ -47,9 +47,10 @@
           {{ nowLabel }}
           <span v-if="isOverridden" class="text-xs text-orange-600 font-medium">(Simulado)</span>
         </span>
-        <span v-if="currentPeriods.length" class="px-2 py-0.5 rounded bg-green-50 text-green-700">{{ currentPeriodRange
-        }}</span>
-        <span v-else class="px-2 py-0.5 rounded bg-yellow-50 text-yellow-700">Fuera de período</span>
+        <span v-if="currentPeriods.length" class="px-2 py-0.5 rounded" :class="statusClass">
+          {{ statusLabel }}
+        </span>
+        <span v-else class="px-2 py-0.5 rounded bg-gray-100 text-gray-600">Fuera de período</span>
       </div>
 
       <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -143,7 +144,7 @@ const parseToMinutes = (hhmm: string) => {
 const currentPeriods = computed<Period[]>(() => {
   if (periods.items.length === 0) return []
   const minutes = effectiveNow.value.getHours() * 60 + effectiveNow.value.getMinutes()
-  return periods.clases.filter(p => {
+  return periods.activas.filter(p => {
     const s = parseToMinutes(p.start_time)
     const e = parseToMinutes(p.end_time)
     // Inclusivo al inicio, exclusivo al final
@@ -154,7 +155,21 @@ const currentPeriods = computed<Period[]>(() => {
 const currentPeriodRange = computed(() => {
   if (!currentPeriods.value.length) return ''
   const p = currentPeriods.value[0]!
-  return `${formatTime12h(p.start_time)} - ${formatTime12h(p.end_time)}`
+  const range = `${formatTime12h(p.start_time)} - ${formatTime12h(p.end_time)}`
+
+  if (p.type === 'break') {
+    return `En Receso de ${formatTime12h(p.start_time)} a ${formatTime12h(p.end_time)}`
+  }
+  return range
+})
+
+const statusLabel = computed(() => currentPeriodRange.value)
+
+const statusClass = computed(() => {
+  if (!currentPeriods.value.length) return ''
+  const p = currentPeriods.value[0]!
+  if (p.type === 'break') return 'bg-orange-100 text-orange-800'
+  return 'bg-green-50 text-green-700'
 })
 
 const teacherName = (a?: ClassAssignment) => a?.profesor ? `${a.profesor.nombre} ${a.profesor.apellido}` : '—'
