@@ -169,6 +169,8 @@ const calculatePercentage = (count: number, total: number) => {
 }
 
 const handlePrint = async () => {
+    // If stats are provided directly (global summary), we can't print detailed report for "assignment"
+    if (!props.assignmentId && props.stats && !props.date) return
     if (!props.assignmentId || !props.date) return
 
     isPrinting.value = true

@@ -147,7 +147,13 @@
 
         <!-- CONTENT: DAILY VIEW -->
         <template v-else-if="viewMode === 'daily'">
-            <div v-if="stats && stats.asignaturas && stats.asignaturas.length > 0" class="space-y-8">
+            <div v-if="stats && (stats.asignaturas?.length > 0 || stats.global_summary)" class="space-y-8">
+                <!-- Global Summary Header -->
+                <div v-if="stats.global_summary">
+                    <StatsBoard title="Resumen General" subtitle="Consolidado de todas las aulas"
+                        :stats="stats.global_summary" :attendanceTaken="true" />
+                </div>
+
                 <div v-for="subject in stats.asignaturas" :key="subject.assignment_id">
                     <StatsBoard
                         :title="subject.aula_nombre ? `${subject.aula_nombre} - ${subject.materia}` : subject.materia"
