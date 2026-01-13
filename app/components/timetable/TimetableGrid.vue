@@ -139,6 +139,12 @@ onMounted(async () => {
   if (aulasStore.items.length === 0) await aulasStore.fetchAll()
   if (periodsStore.items.length === 0) await periodsStore.fetchAll()
   if (aniosLectivosStore.items.length === 0) await aniosLectivosStore.fetchAll()
+
+  // Auto-select active academic year
+  const activeYear = aniosLectivosStore.items.find(a => a.activo)
+  if (activeYear && !anioId.value) {
+    anioId.value = activeYear.id
+  }
 })
 
 watch([anioId, aulaId], async () => {

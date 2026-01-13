@@ -124,17 +124,23 @@
 
             <!-- Detailed Lists -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- Pass isGlobal prop derived from title (a bit hacky but effective given context) or check props.stats structure -->
+                <!-- Better: check if we are in global summary mode -->
                 <StudentListCard title="Ausentes" :students="stats?.ausente?.estudiantes || []"
-                    headerColor="bg-red-50 text-red-800" emptyText="Sin ausencias" />
+                    headerColor="bg-red-50 text-red-800" emptyText="Sin ausencias"
+                    :isGlobal="title === 'Resumen General'" />
 
                 <StudentListCard title="Excusas" :students="stats?.excusa?.estudiantes || []"
-                    headerColor="bg-yellow-50 text-yellow-800" emptyText="Sin excusas" />
+                    headerColor="bg-yellow-50 text-yellow-800" emptyText="Sin excusas"
+                    :isGlobal="title === 'Resumen General'" />
 
                 <StudentListCard title="Tardanzas" :students="stats?.tardanza?.estudiantes || []"
-                    headerColor="bg-orange-50 text-orange-800" emptyText="Sin tardanzas" />
+                    headerColor="bg-orange-50 text-orange-800" emptyText="Sin tardanzas"
+                    :isGlobal="title === 'Resumen General'" />
 
                 <StudentListCard title="Retirados" :students="stats?.retirado?.estudiantes || []"
-                    headerColor="bg-gray-100 text-gray-800" emptyText="Sin retirados" />
+                    headerColor="bg-gray-100 text-gray-800" emptyText="Sin retirados"
+                    :isGlobal="title === 'Resumen General'" />
             </div>
         </div>
 
@@ -170,17 +176,33 @@ const calculatePercentage = (count: number, total: number) => {
 
 const handlePrint = async () => {
     // If stats are provided directly (global summary), we can't print detailed report for "assignment"
-    if (!props.assignmentId && props.stats && !props.date) return
-    if (!props.assignmentId || !props.date) return
+    // BUT if we have a date and it IS the global summary (no assignmentId), we can print the Global Daily Report
+    const isGlobalSummary = !props.assignmentId && props.stats && props.title === 'Resumen General'
+
+    if (!isGlobalSummary && (!props.assignmentId || !props.date)) return
+    if (isGlobalSummary && !props.date) return
 
     isPrinting.value = true
     try {
-        const blob = await api.getBlob('/api/attendance/report/assignment', {
-            params: {
-                fecha: props.date,
-                assignment_id: props.assignmentId
-            }
-        })
+        let blob;
+
+        if (isGlobalSummary) {
+            // Print Global Daily Report
+            blob = await api.getBlob('/api/attendance/report/daily', {
+                params: {
+                    fecha: props.date,
+                    aula_id: 'all_summary' // Special flag for global summary
+                }
+            })
+        } else {
+            // Print Single Assignment Report
+            blob = await api.getBlob('/api/attendance/report/assignment', {
+                params: {
+                    fecha: props.date,
+                    assignment_id: props.assignmentId
+                }
+            })
+        }
 
         const url = URL.createObjectURL(blob)
         printJS({

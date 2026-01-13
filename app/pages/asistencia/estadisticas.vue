@@ -151,7 +151,7 @@
                 <!-- Global Summary Header -->
                 <div v-if="stats.global_summary">
                     <StatsBoard title="Resumen General" subtitle="Consolidado de todas las aulas"
-                        :stats="stats.global_summary" :attendanceTaken="true" />
+                        :stats="stats.global_summary" :attendanceTaken="true" :date="filters.date" />
                 </div>
 
                 <div v-for="subject in stats.asignaturas" :key="subject.assignment_id">
