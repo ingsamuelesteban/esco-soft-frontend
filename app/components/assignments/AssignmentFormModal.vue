@@ -16,7 +16,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm text-gray-600 mb-1">Año lectivo</label>
-              <select v-model.number="form.anio_lectivo_id" class="border rounded px-2 py-2 w-full">
+              <select ref="initialFocus" v-model.number="form.anio_lectivo_id" class="border rounded px-2 py-2 w-full">
                 <option :value="undefined">Seleccionar...</option>
                 <option v-for="a in anios" :key="a.id" :value="a.id">{{ a.nombre }}</option>
               </select>
@@ -109,6 +109,7 @@ const errors = reactive<Record<string, string | null>>({})
 const formError = ref<string | null>(null)
 
 const isEdit = computed(() => !!props.model)
+const initialFocus = ref<HTMLSelectElement | null>(null)
 
 onMounted(async () => {
   if (modulosFormativosStore.items.length === 0) await modulosFormativosStore.fetchAll()
@@ -219,6 +220,12 @@ const onSubmit = async () => {
 watch(() => props.open, (isOpen) => {
   if (isOpen && !isEdit.value) {
     resetForm()
+  }
+  if (isOpen) {
+    // Small delay to ensure render
+    setTimeout(() => {
+      initialFocus.value?.focus()
+    }, 100)
   }
 })
 

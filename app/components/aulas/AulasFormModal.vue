@@ -7,7 +7,7 @@
       <form @submit.prevent="onSubmit" class="space-y-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Título</label>
-          <select v-model.number="form.titulo_id" class="w-full rounded-md border-gray-300 text-sm">
+          <select ref="initialInput" v-model.number="form.titulo_id" class="w-full rounded-md border-gray-300 text-sm">
             <option :value="null">Seleccione un título…</option>
             <option v-for="t in titulos.activas" :key="t.id" :value="t.id">{{ t.nombre }}</option>
           </select>
@@ -76,6 +76,7 @@ const form = reactive<{ titulo_id: number | null; grado_cardinal: number | null;
 })
 
 const errors = reactive<{ [k: string]: string | null }>({})
+const initialInput = ref<HTMLSelectElement | null>(null)
 
 const reset = () => {
   form.titulo_id = null
@@ -99,6 +100,9 @@ watch(() => props.aula, (a) => {
 
 onMounted(() => {
   if (titulos.items.length === 0) titulos.fetchAll().catch(() => { })
+  setTimeout(() => {
+    initialInput.value?.focus()
+  }, 100)
 })
 
 const onSeccionInput = () => {

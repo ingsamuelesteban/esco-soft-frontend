@@ -12,7 +12,7 @@
             <div class="space-y-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700">Familia *</label>
-                <select v-model.number="form.familia_profesional_id" required
+                <select ref="initialInput" v-model.number="form.familia_profesional_id" required
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
                   <option disabled value="">Selecciona una familia</option>
                   <option v-for="f in familias" :key="f.id" :value="f.id">{{ f.nombre }}</option>
@@ -51,7 +51,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useTitulosStore, type Titulo } from '../../stores/titulos'
 import { useFamiliasProfesionalesStore } from '../../stores/familias_profesionales'
 import { showError } from '../../utils/sweetalert'
@@ -67,6 +67,7 @@ const isEdit = computed(() => !!props.titulo)
 
 const loading = ref(false)
 const error = ref<string | null>(null)
+const initialInput = ref<HTMLSelectElement | null>(null)
 
 const form = ref<Omit<Titulo, 'id' | 'familia'>>({
   familia_profesional_id: 0,
@@ -85,6 +86,12 @@ watch(() => props.titulo, (val) => {
     }
   }
 }, { immediate: true })
+
+onMounted(() => {
+  setTimeout(() => {
+    initialInput.value?.focus()
+  }, 100)
+})
 
 const handleSubmit = async () => {
   loading.value = true

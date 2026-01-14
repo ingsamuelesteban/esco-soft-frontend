@@ -7,7 +7,7 @@
       <form @submit.prevent="onSubmit" class="space-y-4">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-1">Etiqueta</label>
-          <input v-model.trim="form.label" class="w-full rounded-md border-gray-300 text-sm"
+          <input ref="initialInput" v-model.trim="form.label" class="w-full rounded-md border-gray-300 text-sm"
             placeholder="1ra hora, Receso, etc." />
           <p v-if="errors.label" class="mt-1 text-sm text-red-600">{{ errors.label }}</p>
         </div>
@@ -59,7 +59,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, reactive, watch } from 'vue'
+import { computed, reactive, watch, ref, onMounted } from 'vue'
 import { usePeriodsStore, type Period } from '../../stores/periods'
 
 const props = defineProps<{ modelValue: boolean; period?: Period | null }>()
@@ -85,7 +85,10 @@ const form = reactive<{
   is_active: true,
 })
 
+
+
 const errors = reactive<{ [k: string]: string | null }>({})
+const initialInput = ref<HTMLInputElement | null>(null)
 
 const reset = () => {
   form.label = ''
@@ -113,6 +116,9 @@ const init = () => {
 watch(() => [props.modelValue, props.period], ([isOpen, p]) => {
   if (isOpen) {
     init()
+    setTimeout(() => {
+      initialInput.value?.focus()
+    }, 100)
   }
 }, { immediate: true })
 

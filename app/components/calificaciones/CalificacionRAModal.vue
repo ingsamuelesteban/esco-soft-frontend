@@ -81,7 +81,7 @@
               <div class="space-y-4">
                 <div>
                   <label class="block text-sm font-medium text-gray-700">Estado *</label>
-                  <select v-model="form.estado" required
+                  <select ref="initialInput" v-model="form.estado" required
                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                     <option value="">Seleccionar estado...</option>
                     <option value="Logrado">Logrado</option>
@@ -135,7 +135,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { api } from '~/utils/api'
 
 const props = defineProps({
@@ -149,6 +149,7 @@ const emit = defineEmits(['close', 'save'])
 
 const loading = ref(false)
 const error = ref('')
+const initialInput = ref(null)
 
 const form = ref({
   estado: '',
@@ -215,6 +216,14 @@ const guardarCalificacion = async () => {
     loading.value = false
   }
 }
+
+onMounted(() => {
+  if (puedeAgregarOportunidad.value) {
+    setTimeout(() => {
+      initialInput.value?.focus()
+    }, 100)
+  }
+})
 
 // Reset form when props change
 watch(() => props.calificacionesExistentes, () => {

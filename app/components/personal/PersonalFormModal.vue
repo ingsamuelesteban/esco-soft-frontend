@@ -22,7 +22,8 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <!-- Cédula -->
                   <div>
-                    <CedulaInput v-model="form.cedula" label="Cédula" placeholder="000-0000000-0" required />
+                    <CedulaInput ref="cedulaInput" v-model="form.cedula" label="Cédula" placeholder="000-0000000-0"
+                      required />
                   </div>
 
                   <!-- Nombre -->
@@ -153,6 +154,7 @@ const store = usePersonalStore()
 const cargosStore = useCargosStore()
 const loading = ref(false)
 const error = ref<string | null>(null)
+const cedulaInput = ref<any>(null)
 
 const isEdit = computed(() => !!props.personal)
 
@@ -227,6 +229,9 @@ const handleSubmit = async () => {
 
 onMounted(() => {
   cargosStore.fetchAll()
+  setTimeout(() => {
+    cedulaInput.value?.focus()
+  }, 100)
 })
 
 const cargosOptions = computed(() => cargosStore.options)

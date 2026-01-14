@@ -29,7 +29,7 @@
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Profesor Origen
                                         (Actual)</label>
-                                    <select v-model="form.from_profesor_id"
+                                    <select ref="initialInput" v-model="form.from_profesor_id"
                                         class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
                                         <option :value="null" disabled>Seleccione...</option>
                                         <option v-for="p in props.teachers" :key="p.id" :value="p.id">
@@ -110,6 +110,7 @@ const emit = defineEmits(['close', 'transfer'])
 
 const loading = ref(false)
 const error = ref('')
+const initialInput = ref<HTMLSelectElement | null>(null)
 
 const form = reactive({
     from_profesor_id: null as number | null,
@@ -123,6 +124,9 @@ watch(() => props.open, (val) => {
         form.to_profesor_id = null
         error.value = ''
         loading.value = false
+        setTimeout(() => {
+            initialInput.value?.focus()
+        }, 100)
     }
 })
 

@@ -17,7 +17,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm text-gray-600 mb-1">Nombres <span class="text-red-500">*</span></label>
-              <input v-model="form.nombres" type="text" class="border rounded px-2 py-2 w-full"
+              <input ref="initialInput" v-model="form.nombres" type="text" class="border rounded px-2 py-2 w-full"
                 placeholder="Nombres del estudiante" />
               <p v-if="errors.nombres" class="text-sm text-red-600 mt-1">{{ errors.nombres }}</p>
             </div>
@@ -239,6 +239,7 @@ function resetForm() {
 const errors = reactive<Record<string, string | null>>({})
 const formError = ref<string | null>(null)
 const loading = ref(false)
+const initialInput = ref<HTMLInputElement | null>(null)
 
 const isEdit = computed(() => !!props.model)
 
@@ -276,6 +277,11 @@ watch(() => form.estado, (newEstado) => {
 watch(() => props.open, (isOpen) => {
   if (isOpen && !isEdit.value) {
     resetForm()
+  }
+  if (isOpen) {
+    setTimeout(() => {
+      initialInput.value?.focus()
+    }, 100)
   }
 })
 

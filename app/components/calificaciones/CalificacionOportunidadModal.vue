@@ -47,7 +47,8 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">
                                     Calificación obtenida
                                 </label>
-                                <input v-model="form.nota" type="number" min="0" :max="valorRa" step="0.1"
+                                <input ref="notaInput" v-model="form.nota" type="number" min="0" :max="valorRa"
+                                    step="0.1"
                                     class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
                                     placeholder="Ingresa la calificación" />
                                 <p class="text-xs text-gray-500 mt-1">
@@ -98,7 +99,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import Swal from 'sweetalert2'
 
 const props = defineProps({
@@ -121,6 +122,8 @@ const form = ref({
     observaciones: ''
 })
 
+const notaInput = ref(null)
+
 const error = ref('')
 
 // Computed validation
@@ -128,6 +131,13 @@ const isValid = computed(() => {
     if (form.value.nota === '' || form.value.nota === null) return false;
     const nota = parseFloat(form.value.nota);
     return !isNaN(nota) && nota >= 0 && nota <= props.valorRa;
+})
+
+onMounted(() => {
+    // Focus input on mount
+    setTimeout(() => {
+        notaInput.value?.focus()
+    }, 100)
 })
 
 // Initialize form

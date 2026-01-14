@@ -270,7 +270,7 @@
             <!-- Módulo Formativo -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Módulo Formativo</label>
-              <select v-model="nuevaAsignacion.materia_id" required
+              <select ref="nuevaAsignacionInput" v-model="nuevaAsignacion.materia_id" required
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Seleccionar módulo...</option>
                 <option v-for="modulo in modulosFormativos" :key="modulo.id" :value="modulo.id">
@@ -358,7 +358,7 @@
             <!-- Año Lectivo -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Año Lectivo</label>
-              <select v-model.number="opcionesDuplicacion.anio_lectivo_id" required
+              <select ref="duplicarInput" v-model.number="opcionesDuplicacion.anio_lectivo_id" required
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option :value="undefined">Seleccionar...</option>
                 <option v-for="a in anios" :key="a.id" :value="a.id">{{ a.nombre }}</option>
@@ -401,7 +401,7 @@
             <!-- Módulo Formativo -->
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-2">Módulo Formativo</label>
-              <select v-model="datosEdicion.materia_id" required
+              <select ref="editarAsignacionInput" v-model="datosEdicion.materia_id" required
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Seleccionar módulo...</option>
                 <option v-for="modulo in modulosFormativos" :key="modulo.id" :value="modulo.id">
@@ -579,6 +579,36 @@ const datosEdicion = ref({
 const modulosFormativos = ref<ModuloFormativo[]>([])
 const aulas = ref<Aula[]>([])
 const anios = computed(() => aniosStore.items);
+
+// Refs for autofocus
+const nuevaAsignacionInput = ref<HTMLSelectElement | null>(null)
+const duplicarInput = ref<HTMLSelectElement | null>(null)
+const editarAsignacionInput = ref<HTMLSelectElement | null>(null)
+
+// Watchers for autofocus
+watch(mostrarModalNuevaAsignacion, (val) => {
+  if (val) {
+    setTimeout(() => {
+      nuevaAsignacionInput.value?.focus()
+    }, 100)
+  }
+})
+
+watch(mostrarModalDuplicar, (val) => {
+  if (val) {
+    setTimeout(() => {
+      duplicarInput.value?.focus()
+    }, 100)
+  }
+})
+
+watch(mostrarModalEditarAsignacion, (val) => {
+  if (val) {
+    setTimeout(() => {
+      editarAsignacionInput.value?.focus()
+    }, 100)
+  }
+})
 
 // Computed
 const profesorId = computed(() => Number(route.params.id))

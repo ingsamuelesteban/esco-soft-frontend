@@ -12,7 +12,7 @@
             <div class="space-y-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700">Nombre *</label>
-                <input v-model.trim="form.nombre" type="text" required
+                <input ref="initialInput" v-model.trim="form.nombre" type="text" required
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
               </div>
               <div>
@@ -58,7 +58,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useModulosFormativosApiStore, type ModuloFormativoApi } from '../../stores/modulos-formativos-api'
 import { showError } from '../../utils/sweetalert'
 
@@ -71,6 +71,7 @@ const isEdit = computed(() => !!props.moduloFormativo)
 const title = computed(() => isEdit.value ? 'Editar módulo formativo' : 'Nuevo módulo formativo')
 const loading = ref(false)
 const error = ref<string | null>(null)
+const initialInput = ref<HTMLInputElement | null>(null)
 
 const form = ref<{ nombre: string; codigo?: string | null; tipo: 'Academico' | 'Tecnico'; descripcion?: string | null; activo: boolean }>({
   nombre: '',
@@ -93,6 +94,12 @@ watch(() => props.moduloFormativo, (m) => {
     form.value = { nombre: '', codigo: '', tipo: 'Academico', descripcion: '', activo: true }
   }
 }, { immediate: true })
+
+onMounted(() => {
+  setTimeout(() => {
+    initialInput.value?.focus()
+  }, 100)
+})
 
 const handleSubmit = async () => {
   loading.value = true

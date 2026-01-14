@@ -23,7 +23,7 @@
                   <!-- Nombre -->
                   <div>
                     <label class="block text-sm font-medium text-gray-700">Nombre *</label>
-                    <input v-model.trim="form.nombre" type="text" required
+                    <input ref="initialInput" v-model.trim="form.nombre" type="text" required
                       :class="['mt-1 block w-full rounded-md shadow-sm sm:text-sm', nombreError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500']"
                       placeholder="Ej: Informática y Comunicaciones" />
                     <p v-if="nombreError" class="mt-1 text-xs text-red-600">{{ nombreError }}</p>
@@ -74,7 +74,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useFamiliasProfesionalesStore, type FamiliaProfesional } from '../../stores/familias_profesionales'
 import { showError } from '../../utils/sweetalert'
 
@@ -92,6 +92,7 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 const nombreError = ref<string | null>(null)
 const codigoError = ref<string | null>(null)
+const initialInput = ref<HTMLInputElement | null>(null)
 
 const isEdit = computed(() => !!props.familia)
 
@@ -111,6 +112,12 @@ watch(() => props.familia, (newVal) => {
     }
   }
 }, { immediate: true })
+
+onMounted(() => {
+  setTimeout(() => {
+    initialInput.value?.focus()
+  }, 100)
+})
 
 // Limpiar errores cuando cambian los campos
 watch(() => form.value.nombre, () => { nombreError.value = null })

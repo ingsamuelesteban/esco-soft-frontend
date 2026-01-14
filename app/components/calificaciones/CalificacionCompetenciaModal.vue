@@ -29,7 +29,8 @@
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Calificación (0-100) *</label>
-                                <input v-model.number="form.nota" type="number" min="0" max="100" step="1" required
+                                <input ref="gradeInput" v-model.number="form.nota" type="number" min="0" max="100"
+                                    step="1" required
                                     class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                                     placeholder="Ingrese la nota" @keypress="isNumber($event)" />
                             </div>
@@ -69,7 +70,7 @@
 </template>
 
 <script setup>
-import { ref, watch, computed } from 'vue'
+import { ref, watch, computed, onMounted } from 'vue'
 import { api } from '~/utils/api'
 import Swal from 'sweetalert2'
 
@@ -89,6 +90,7 @@ const emit = defineEmits(['close', 'save'])
 
 const loading = ref(false)
 const error = ref('')
+const gradeInput = ref(null)
 
 const form = ref({
     nota: '',
@@ -105,6 +107,12 @@ watch(() => props.calificacionActual, (newVal) => {
 watch(() => props.observacionesActuales, (newVal) => {
     form.value.observaciones = newVal || ''
 }, { immediate: true })
+
+onMounted(() => {
+    setTimeout(() => {
+        gradeInput.value?.focus()
+    }, 100)
+})
 
 const guardarCalificacion = async () => {
     if (form.value.nota === '' || form.value.nota < 0 || form.value.nota > 100) {
