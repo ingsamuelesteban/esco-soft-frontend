@@ -602,21 +602,15 @@ const cargarModulosYEstudiantes = async () => {
     // Extraer los módulos formativos de los assignments
     const assignments = assignmentsResponse.data?.data || assignmentsResponse.data || []
 
-    // Crear array de módulos únicos desde los assignments
-    const modulosMap = new Map()
-    assignments.forEach(assignment => {
-      if (assignment.materia && !modulosMap.has(assignment.materia.id)) {
-        modulosMap.set(assignment.materia.id, {
-          id: assignment.materia.id,
-          nombre: assignment.materia.nombre,
-          tipo: assignment.materia.tipo,
-          cantidad_ra: assignment.materia.cantidad_ra,
-          valores_ra: assignment.materia.valores_ra
-        })
-      }
-    })
-
-    modulosDisponibles.value = Array.from(modulosMap.values())
+    // Map assignments directly
+    modulosDisponibles.value = assignments.map(assignment => ({
+      id: assignment.id, // ID de la Asignación
+      materia_id: assignment.materia?.id,
+      nombre: assignment.materia?.nombre,
+      tipo: assignment.materia?.tipo,
+      cantidad_ra: assignment.cantidad_ra, // Configuración del Assignment
+      valores_ra: assignment.valores_ra // Configuración del Assignment
+    }))
 
     // Limpiar selección de módulo
     moduloSeleccionado.value = ''
@@ -643,11 +637,11 @@ const cargarCalificaciones = async (background = false) => {
 
     if (moduloData.value?.tipo === 'Tecnico') {
       // Cargar calificaciones RA para módulos técnicos
-      const response = await api.get(`/api/calificaciones-ra?aula_id=${aulaSeleccionada.value}&materia_id=${moduloSeleccionado.value}`)
+      const response = await api.get(`/api/calificaciones-ra?aula_id=${aulaSeleccionada.value}&materia_id=${moduloData.value.materia_id}`)
       calificacionesRA.value = response.data || []
     } else if (moduloData.value?.tipo === 'Academico') {
       // Cargar calificaciones de competencias para módulos académicos
-      const response = await api.get(`/api/calificaciones-competencias?aula_id=${aulaSeleccionada.value}&materia_id=${moduloSeleccionado.value}`)
+      const response = await api.get(`/api/calificaciones-competencias?aula_id=${aulaSeleccionada.value}&materia_id=${moduloData.value.materia_id}`)
       calificacionesCompetencias.value = response.data || []
     }
   } catch (error) {
@@ -685,8 +679,9 @@ const cerrarModalValorRA = () => {
 
 const cargarValorRAActual = async (raNumero) => {
   try {
-    const response = await api.get(`/api/modulos-formativos/${moduloSeleccionado.value}/ra/${raNumero}/valor`)
-    valorRAActual.value = response.valor || ''
+    const response = await api.get(`/api/class-assignments/${moduloSeleccionado.value}/ra-values`)
+    // Filtrar el valor específico si es necesario, aunque el endpoint devuelve todo
+    valorRAActual.value = response.valores_ra?.[`ra_${raNumero}`] || ''
   } catch (error) {
     console.error('Error al cargar valor del RA:', error)
     valorRAActual.value = ''
@@ -697,7 +692,8 @@ const guardarValorRA = async (valor) => {
   const raNumero = raParaConfigurar.value // Capturar valor antes de que se limpie
   guardandoValorRA.value = true
   try {
-    await api.post(`/api/modulos-formativos/${moduloSeleccionado.value}/ra/${raNumero}/valor`, {
+    await api.post(`/api/class-assignments/${moduloSeleccionado.value}/ra-values`, {
+      ra_numero: raNumero,
       valor: valor
     })
 

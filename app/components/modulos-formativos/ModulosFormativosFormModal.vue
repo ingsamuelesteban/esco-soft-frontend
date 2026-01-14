@@ -28,13 +28,7 @@
                   <option value="Tecnico">Técnico</option>
                 </select>
               </div>
-              <div v-if="form.tipo === 'Tecnico'">
-                <label class="block text-sm font-medium text-gray-700">Cantidad de RA *</label>
-                <input v-model.number="form.cantidad_ra" type="number" min="1" max="20" required
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
-                  placeholder="Ej: 5" />
-                <p class="mt-1 text-xs text-gray-500">Número de Resultados de Aprendizaje para este módulo técnico</p>
-              </div>
+
               <div>
                 <label class="block text-sm font-medium text-gray-700">Descripción</label>
                 <textarea v-model.trim="form.descripcion" rows="3"
@@ -78,11 +72,10 @@ const title = computed(() => isEdit.value ? 'Editar módulo formativo' : 'Nuevo 
 const loading = ref(false)
 const error = ref<string | null>(null)
 
-const form = ref<{ nombre: string; codigo?: string | null; tipo: 'Academico' | 'Tecnico'; cantidad_ra?: number | null; descripcion?: string | null; activo: boolean }>({
+const form = ref<{ nombre: string; codigo?: string | null; tipo: 'Academico' | 'Tecnico'; descripcion?: string | null; activo: boolean }>({
   nombre: '',
   codigo: '',
   tipo: 'Academico',
-  cantidad_ra: null,
   descripcion: '',
   activo: true,
 })
@@ -93,12 +86,11 @@ watch(() => props.moduloFormativo, (m) => {
       nombre: m.nombre,
       codigo: m.codigo ?? '',
       tipo: m.tipo || 'Academico',
-      cantidad_ra: m.cantidad_ra ?? null,
       descripcion: m.descripcion ?? '',
       activo: m.activo,
     }
   } else {
-    form.value = { nombre: '', codigo: '', tipo: 'Academico', cantidad_ra: null, descripcion: '', activo: true }
+    form.value = { nombre: '', codigo: '', tipo: 'Academico', descripcion: '', activo: true }
   }
 }, { immediate: true })
 

@@ -54,9 +54,17 @@
               <p v-if="errors.aula_id" class="text-sm text-red-600 mt-1">{{ errors.aula_id }}</p>
             </div>
           </div>
+          <div v-if="isTecnico">
+            <label class="block text-sm text-gray-600 mb-1">Cantidad de RAs</label>
+            <input v-model.number="form.cantidad_ra" type="number" min="1" max="20"
+              class="border rounded px-2 py-2 w-full" placeholder="p. ej. 4" />
+            <p v-if="errors.cantidad_ra" class="text-sm text-red-600 mt-1">{{ errors.cantidad_ra }}</p>
+          </div>
+
           <div class="mt-2">
             <label class="inline-flex items-center">
-              <input type="checkbox" v-model="form.compartido" class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+              <input type="checkbox" v-model="form.compartido"
+                class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
               <span class="ml-2 text-sm text-gray-600">Asignación Compartida (Permitir múltiples profesores)</span>
             </label>
           </div>
@@ -91,10 +99,11 @@ const aulasStore = useAulasStore()
 const assignments = useClassAssignmentsStore()
 const aniosStore = useAniosLectivosStore()
 
-const form = reactive<{ anio_lectivo_id?: number; horas_semanales: number | null; materia_id?: number; profesor_id?: number; aula_id?: number; compartido: boolean }>({
+const form = reactive<{ anio_lectivo_id?: number; horas_semanales: number | null; materia_id?: number; profesor_id?: number; aula_id?: number; compartido: boolean; cantidad_ra: number | null }>({
   anio_lectivo_id: assignments.anioLectivoId || undefined,
   horas_semanales: null,
   compartido: false,
+  cantidad_ra: null,
 })
 const errors = reactive<Record<string, string | null>>({})
 const formError = ref<string | null>(null)
@@ -118,10 +127,12 @@ function resetForm() {
   form.profesor_id = undefined
   form.aula_id = undefined
   form.compartido = false
+  form.cantidad_ra = null
   errors.anio_lectivo_id = null
   errors.materia_id = null
   errors.profesor_id = null
   errors.aula_id = null
+  errors.cantidad_ra = null
   formError.value = null
 }
 
@@ -133,6 +144,7 @@ watch(() => props.model, (m) => {
     form.profesor_id = m.profesor_id
     form.aula_id = m.aula_id
     form.compartido = !!m.compartido
+    form.cantidad_ra = m.cantidad_ra || null
   } else {
     resetForm()
   }
@@ -142,6 +154,12 @@ const modulosFormativos = computed(() => modulosFormativosStore.active)
 const profesores = computed(() => personalStore.items.filter(p => p.cargo?.nombre === 'Profesor'))
 const aulas = computed(() => aulasStore.items)
 const anios = computed(() => aniosStore.items)
+
+const isTecnico = computed(() => {
+  if (!form.materia_id) return false
+  const m = modulosFormativos.value.find(x => x.id === form.materia_id)
+  return m?.tipo === 'Tecnico'
+})
 
 const aulaName = (a: Aula) => {
   const grado = a.grado_cardinal ? `${a.grado_cardinal}º` : ''
@@ -163,7 +181,8 @@ const onSubmit = async () => {
     if (!form.materia_id) errors.materia_id = 'Requerido'
     if (!form.profesor_id) errors.profesor_id = 'Requerido'
     if (!form.aula_id) errors.aula_id = 'Requerido'
-    if (errors.materia_id || errors.profesor_id || errors.aula_id || errors.anio_lectivo_id) return
+    if (isTecnico.value && !form.cantidad_ra) errors.cantidad_ra = 'Requerido'
+    if (errors.materia_id || errors.profesor_id || errors.aula_id || errors.anio_lectivo_id || errors.cantidad_ra) return
 
     if (isEdit.value && props.model) {
       const updated = await assignments.update(props.model.id, { ...form })
@@ -177,6 +196,7 @@ const onSubmit = async () => {
         aula_id: form.aula_id!,
         activo: true,
         compartido: form.compartido,
+        cantidad_ra: form.cantidad_ra,
       })
       emit('saved', created)
       resetForm()
