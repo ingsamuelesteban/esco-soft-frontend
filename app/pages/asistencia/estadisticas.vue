@@ -176,6 +176,10 @@
                         <thead class="bg-gray-50">
                             <tr>
                                 <th
+                                    class="px-2 py-3 text-center font-bold text-gray-700 bg-gray-50 border-r border-gray-200 min-w-[40px]">
+                                    No.
+                                </th>
+                                <th
                                     class="px-4 py-3 text-left font-bold text-gray-700 bg-gray-50 sticky left-0 z-10 border-r border-gray-200 min-w-[200px]">
                                     Estudiante
                                 </th>
@@ -193,6 +197,9 @@
                         <tbody class="divide-y divide-gray-200 bg-white">
                             <tr v-for="student in (monthlyStats.students || [])" :key="student.id"
                                 class="hover:bg-gray-50">
+                                <td class="px-2 py-2 text-center text-gray-700 bg-white border-r border-gray-200">
+                                    {{ student.numero_orden }}
+                                </td>
                                 <td class="px-4 py-2 font-medium text-gray-900 sticky left-0 z-10 bg-white border-r border-gray-200"
                                     :class="{ 'bg-gray-50': false /* hover effect handled by tr? sticky makes it tricky */ }">
                                     <div class="truncate max-w-[200px]" :title="student.name">
