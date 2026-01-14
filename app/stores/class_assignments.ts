@@ -25,6 +25,8 @@ export interface ClassAssignment {
   profesor?: Personal
   aula?: Aula
   anio_lectivo?: AnioLectivo
+  cantidad_ra?: number | null
+  valores_ra?: any
 }
 
 export const useClassAssignmentsStore = defineStore('classAssignments', {

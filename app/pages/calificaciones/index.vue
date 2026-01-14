@@ -789,7 +789,7 @@ const guardarCalificacion = async (payload) => {
   try {
     const response = await api.post('/api/calificaciones-ra', {
       estudiante_id: estudianteParaCalificar.value.id,
-      materia_id: moduloSeleccionado.value,
+      materia_id: moduloData.value.materia_id,
       ra_numero: raParaCalificar.value,
       oportunidad: oportunidadParaCalificar.value,
       nota: parseFloat(payload.nota),

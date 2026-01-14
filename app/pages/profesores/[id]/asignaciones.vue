@@ -308,6 +308,14 @@
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
 
+            <!-- Cantidad RAs (Solo Técnicos) -->
+            <div v-if="isTecnicoNueva">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Cantidad de RAs</label>
+              <input v-model.number="nuevaAsignacion.cantidad_ra" type="number" min="1" max="20"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Ej. 4" />
+            </div>
+
             <!-- Botones -->
             <div class="flex justify-end space-x-3 mt-6">
               <button type="button" @click="mostrarModalNuevaAsignacion = false; resetearFormulario()"
@@ -431,6 +439,14 @@
                 class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
 
+            <!-- Cantidad RAs (Solo Técnicos) -->
+            <div v-if="isTecnicoEdicion">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Cantidad de RAs</label>
+              <input v-model.number="datosEdicion.cantidad_ra" type="number" min="1" max="20"
+                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                placeholder="Ej. 4" />
+            </div>
+
             <!-- Estado Activo -->
             <div>
               <label class="flex items-center">
@@ -474,6 +490,7 @@ interface ModuloFormativo {
   id: number
   nombre: string
   codigo: string
+  tipo?: string
 }
 
 interface Aula {
@@ -497,6 +514,7 @@ interface Asignacion {
   aula_id: number
   anio_lectivo_id: number
   horas_semanales: number | null
+  cantidad_ra?: number | null
   activo: boolean
   materia?: ModuloFormativo
   aula?: Aula
@@ -537,6 +555,7 @@ const nuevaAsignacion = ref({
   aula_id: '',
   anio_lectivo_id: undefined as number | undefined,
   horas_semanales: 1,
+  cantidad_ra: null as number | null,
   activo: true
 })
 
@@ -552,6 +571,7 @@ const datosEdicion = ref({
   aula_id: '',
   anio_lectivo_id: undefined as number | undefined,
   horas_semanales: 1,
+  cantidad_ra: null as number | null,
   activo: true
 })
 
@@ -562,6 +582,18 @@ const anios = computed(() => aniosStore.items);
 
 // Computed
 const profesorId = computed(() => Number(route.params.id))
+
+const isTecnicoNueva = computed(() => {
+  if (!nuevaAsignacion.value.materia_id) return false
+  const m = modulosFormativos.value.find(m => m.id === Number(nuevaAsignacion.value.materia_id))
+  return m?.tipo === 'Tecnico'
+})
+
+const isTecnicoEdicion = computed(() => {
+  if (!datosEdicion.value.materia_id) return false
+  const m = modulosFormativos.value.find(m => m.id === Number(datosEdicion.value.materia_id))
+  return m?.tipo === 'Tecnico'
+})
 
 const totalHorasSemanales = computed(() => {
   return asignaciones.value
@@ -642,6 +674,7 @@ const editarAsignacion = (asignacion: Asignacion) => {
     aula_id: asignacion.aula_id.toString(),
     anio_lectivo_id: asignacion.anio_lectivo_id,
     horas_semanales: asignacion.horas_semanales || 1,
+    cantidad_ra: asignacion.cantidad_ra || null,
     activo: asignacion.activo
   }
   mostrarModalEditarAsignacion.value = true
@@ -733,6 +766,7 @@ const actualizarAsignacion = async () => {
       aula_id: Number(datosEdicion.value.aula_id),
       anio_lectivo_id: datosEdicion.value.anio_lectivo_id!,
       horas_semanales: datosEdicion.value.horas_semanales,
+      cantidad_ra: datosEdicion.value.cantidad_ra,
       activo: datosEdicion.value.activo
     }
 
@@ -757,6 +791,7 @@ const resetearFormulario = () => {
     aula_id: '',
     anio_lectivo_id: aniosStore.items.length > 0 ? aniosStore.items[0]?.id : undefined,
     horas_semanales: 1,
+    cantidad_ra: null,
     activo: true
   }
 }
