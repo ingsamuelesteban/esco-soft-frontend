@@ -12,7 +12,7 @@
         <div class="flex items-center space-x-6 text-sm text-gray-500">
           <a href="#" class="hover:text-primary-600 transition-colors">Soporte</a>
           <a href="#" class="hover:text-primary-600 transition-colors">Documentación</a>
-          <span class="text-xs">v1.0.0</span>
+          <span class="text-xs">v2.0.0</span>
         </div>
       </div>
     </div>
