@@ -176,6 +176,14 @@ const isActive = (path) => {
     const remainder = route.path.slice(path.length)
     // Si no hay resto, es exacta
     if (remainder === '') return true
+
+    // Fix: Evitar que /psicologia coincida con /psicologia/estadisticas o /psicologia/categorias
+    if (path === '/psicologia') {
+      if (remainder.startsWith('/estadisticas') || remainder.startsWith('/categorias')) {
+        return false
+      }
+    }
+
     // Si el resto empieza con / y el path NO es '/horarios', es una sub-ruta válida
     if (remainder.startsWith('/') && path !== '/horarios') return true
     // Si el path termina con /, es válida

@@ -26,6 +26,11 @@ export interface Attendance {
 export interface AttendanceRecord {
   estudiante: Estudiante
   asistencia: Attendance | null
+  psychology?: {
+    has_pending_referral: boolean
+    has_open_case: boolean
+    is_in_office?: boolean
+  }
 }
 
 export interface TeacherAssignment {
