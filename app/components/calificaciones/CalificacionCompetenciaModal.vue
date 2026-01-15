@@ -126,7 +126,8 @@ const guardarCalificacion = async () => {
     try {
         const payload = {
             estudiante_id: props.estudiante.id,
-            materia_id: props.modulo.id,
+            // Prioritize materia_id (from ClassAssignment) if available, otherwise use id (ModuloFormativo)
+            materia_id: props.modulo.materia_id ?? props.modulo.id,
             competencia_codigo: props.competenciaTitulo,
             bloque: props.bloqueIndex,
             periodo: props.periodo,
