@@ -222,6 +222,20 @@
                           <div class="flex flex-col items-center space-y-1">
                             <div class="flex space-x-1">
                               <div v-for="p in 4" :key="p" class="flex flex-col space-y-1">
+                                <div class="flex items-center justify-center space-x-1 mb-1">
+                                  <span class="text-[10px] font-bold text-gray-400">P{{ p }}</span>
+                                  <!-- Botón Importar -->
+                                  <button v-if="!isReadOnly"
+                                    @click.stop="openImportModal('academic', { competencia: getCompetenciasPorBloque(bloque)[0], bloque, tipo: `P${p}` })"
+                                    class="text-blue-400 hover:text-blue-600 rounded-full hover:bg-blue-50 p-0.5"
+                                    title="Pegar notas desde Excel">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                                      </path>
+                                    </svg>
+                                  </button>
+                                </div>
                                 <button
                                   @click="abrirModalCompetencia(estudiante, getCompetenciasPorBloque(bloque)[0], bloque, `P${p}`)"
                                   class="w-8 h-8 rounded flex items-center justify-center text-sm font-medium transition-colors border disabled:opacity-50 disabled:cursor-not-allowed"
@@ -350,6 +364,24 @@
                       </td>
                       <td v-for="ra in Array.from({ length: moduloData.cantidad_ra }, (_, i) => i + 1)" :key="ra"
                         class="px-2 py-4 text-center">
+
+                        <!-- Header interno de oportunidades con Importar -->
+                        <div class="flex justify-center space-x-1 mb-2 border-b pb-1">
+                          <div v-for="op in 4" :key="op" class="w-5 flex flex-col items-center">
+                            <span class="text-[9px] text-gray-400 font-bold mb-0.5">{{ op }}</span>
+                            <button v-if="!isReadOnly && moduloData?.valores_ra?.[`ra_${ra}`]"
+                              @click.stop="openImportModal('technical', { ra, oportunidad: op })"
+                              class="text-blue-300 hover:text-blue-600 rounded-full hover:bg-blue-50 p-0.5 -mt-0.5"
+                              title="Pegar notas">
+                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                                </path>
+                              </svg>
+                            </button>
+                          </div>
+                        </div>
+
                         <div class="flex justify-center space-x-1">
                           <button v-for="oportunidad in 4" :key="`${estudiante.id}-ra${ra}-op${oportunidad}`"
                             :disabled="isRefreshing || !moduloData?.valores_ra?.[`ra_${ra}`] || estudiante.estado === 'retirado' || isReadOnly"
@@ -471,10 +503,15 @@
       :valor-ra="moduloData?.valores_ra?.[`ra_${raParaCalificar}`] || 0" :nota-actual="calificacionActual"
       :observaciones-actuales="observacionesActual" :loading="guardandoCalificacion"
       @close="cerrarModalCalificarOportunidad" @save="guardarCalificacion" @delete="eliminarCalificacionRA" />
+
+    <!-- Modal de Importación Masiva -->
+    <GradeImportModal v-if="showImportModal" :show="showImportModal" :column-title="importColumnTitle"
+      :estudiantes="estudiantes" :max-nota="importMaxNota" @close="showImportModal = false" @save="handleBulkSave" />
   </div>
 </template>
 
 <script setup>
+import GradeImportModal from '~/components/calificaciones/GradeImportModal.vue'
 import CalificacionCompetenciaModal from '~/components/calificaciones/CalificacionCompetenciaModal.vue'
 import CalificacionOportunidadModal from '~/components/calificaciones/CalificacionOportunidadModal.vue'
 import { ref, computed, onMounted } from 'vue'
@@ -533,6 +570,12 @@ const tipoParaCalificar = ref('P')
 const calificacionCompetenciaActual = ref('')
 const observacionesCompetenciaActual = ref('')
 const calificacionCompetenciaId = ref(null)
+
+// Modal Importación Masiva
+const showImportModal = ref(false)
+const importColumnTitle = ref('')
+const importMaxNota = ref(100)
+const importContext = ref({}) // Stores context (ra, oportunidad OR competencia, bloque)
 
 // Mensajes de feedback
 const mensaje = ref('')
@@ -758,7 +801,75 @@ const cerrarMensaje = () => {
   mostrarMensaje.value = false
 }
 
-// Métodos para modal de calificar oportunidad
+// Métodos para Importación Masiva
+const openImportModal = (type, context) => {
+  if (isReadOnly.value) return
+
+  importContext.value = { ...context, type }
+
+  if (type === 'academic') {
+    importColumnTitle.value = `Bloque ${context.bloque} - ${context.tipo}`
+    importMaxNota.value = 100
+  } else if (type === 'technical') {
+    importColumnTitle.value = `RA ${context.ra} - Oportunidad ${context.oportunidad}`
+    // Obtener valor máximo configurado
+    const raKey = `ra_${context.ra}`
+    const raValue = moduloData.value?.valores_ra?.[raKey]
+
+    if (!raValue) {
+      mostrarMensajeError(`Primero debes configurar el valor del RA ${context.ra}`)
+      return
+    }
+    importMaxNota.value = parseFloat(raValue)
+  }
+
+  showImportModal.value = true
+}
+
+const handleBulkSave = async (grades) => {
+  loadingCalificaciones.value = true
+  showImportModal.value = false
+
+  try {
+    const payload = {
+      materia_id: moduloData.value.materia_id,
+      aula_id: aulaSeleccionada.value,
+      grades,
+      // Context mappings based on type
+      ...(importContext.value.type === 'academic' ? {
+        competencia_codigo: importContext.value.competencia,
+        bloque: importContext.value.bloque,
+        tipo_periodo: importContext.value.tipo
+      } : {
+        ra_numero: importContext.value.ra,
+        oportunidad: importContext.value.oportunidad
+      })
+    }
+
+    const response = await api.post('/api/calificaciones/bulk', payload)
+
+    if (response.success) {
+      const updatedCount = response.updated || 0
+      const errors = response.errors || []
+
+      if (errors.length > 0) {
+        mostrarMensajeError(`${updatedCount} notas guardadas. ${errors.length} errores (ver consola).`)
+        console.warn('Errores en importación:', errors)
+      } else {
+        mostrarMensajeExito(`${updatedCount} calificaciones importadas correctamente.`)
+      }
+
+      await cargarCalificaciones(true) // Refresh data
+    }
+  } catch (error) {
+    console.error('Bulk update error:', error)
+    mostrarMensajeError('Error al importar calificaciones.')
+  } finally {
+    loadingCalificaciones.value = false
+  }
+}
+
+// Métodos para modal de calificar oportunidad (existentes)
 const abrirModalCalificarOportunidad = async (estudiante, raNumero, oportunidad) => {
   estudianteParaCalificar.value = estudiante
   raParaCalificar.value = raNumero
@@ -989,7 +1100,7 @@ const getDisplayCalificacion = (estudianteId, raNumero, oportunidad) => {
     // Si es entero, mostrar entero, si es decimal, mostrar hasta 1 decimal (ej: 18.5)
     // O si prefieren mostrar siempre decimales? "tal cual". 
     // Vamos a usar una función helper simple
-    return parseFloat(nota) 
+    return parseFloat(nota)
   } else {
     return 'NC' // NC (No Completó) si no aprobó
   }
