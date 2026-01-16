@@ -917,7 +917,7 @@ const calcularPuntosObtenidos = (estudianteId) => {
     }
   }
 
-  return Math.round(puntosObtenidos)
+  return parseFloat(puntosObtenidos.toFixed(2))
 }
 
 // Función para calcular puntos máximos posibles
@@ -929,7 +929,7 @@ const calcularPuntosMaximos = () => {
     total += parseFloat(moduloData.value.valores_ra?.[`ra_${ra}`] || 20)
   }
 
-  return Math.round(total)
+  return parseFloat(total.toFixed(2))
 }
 
 // Helpers para estilos de casillas
@@ -986,7 +986,10 @@ const getDisplayCalificacion = (estudianteId, raNumero, oportunidad) => {
   const notaMinima = getNotaMinima(raNumero)
 
   if (nota >= notaMinima) {
-    return Math.round(nota) // Mostrar la nota si aprobó
+    // Si es entero, mostrar entero, si es decimal, mostrar hasta 1 decimal (ej: 18.5)
+    // O si prefieren mostrar siempre decimales? "tal cual". 
+    // Vamos a usar una función helper simple
+    return parseFloat(nota) 
   } else {
     return 'NC' // NC (No Completó) si no aprobó
   }
