@@ -120,6 +120,18 @@ export const usePsychologyStore = defineStore('psychology', () => {
         }
     }
 
+    const updateCategory = async (id: number, categoryData: any) => {
+        loading.value = true
+        try {
+            const res = await api.put(`/api/psychology/categories/${id}`, categoryData)
+            return { success: true, data: res.data }
+        } catch (e: any) {
+            return { success: false, error: e.response?._data?.message }
+        } finally {
+            loading.value = false
+        }
+    }
+
     const deleteCategory = async (id: number) => {
         try {
             await api.delete(`/api/psychology/categories/${id}`)
@@ -153,6 +165,7 @@ export const usePsychologyStore = defineStore('psychology', () => {
         addCaseEntry,
         fetchCategories,
         createCategory,
+        updateCategory,
         deleteCategory,
         fetchStats
     }

@@ -60,8 +60,10 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button @click="openModal(category)"
+                                class="text-indigo-600 hover:text-indigo-900 mx-2">Editar</button>
                             <button @click="handleDelete(category)"
-                                class="text-red-600 hover:text-red-900 ml-4">Eliminar</button>
+                                class="text-red-600 hover:text-red-900 ml-2">Eliminar</button>
                         </td>
                     </tr>
                 </tbody>
@@ -77,7 +79,7 @@
                 <div
                     class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Nueva Categoría</h3>
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ isEditing ? 'Editar Categoría' : 'Nueva Categoría' }}</h3>
                         <div class="space-y-4">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700">Nombre</label>
@@ -138,10 +140,12 @@ const showModal = ref(false)
 const saving = ref(false)
 
 const form = ref({
+    id: null as number | null,
     name: '',
     description: '',
     color: '#6366f1'
 })
+const isEditing = ref(false)
 
 const loadCategories = async () => {
     loading.value = true
@@ -150,8 +154,14 @@ const loadCategories = async () => {
     loading.value = false
 }
 
-const openModal = () => {
-    form.value = { name: '', description: '', color: '#6366f1' }
+const openModal = (category: any = null) => {
+    if (category) {
+        form.value = { ...category }
+        isEditing.value = true
+    } else {
+        form.value = { id: null, name: '', description: '', color: '#6366f1' }
+        isEditing.value = false
+    }
     showModal.value = true
 }
 
@@ -159,12 +169,25 @@ const saveCategory = async () => {
     if (!form.value.name) return
 
     saving.value = true
-    const res = await store.createCategory(form.value)
+    let res
+
+    if (isEditing.value && form.value.id) {
+        res = await store.updateCategory(form.value.id, form.value)
+    } else {
+        res = await store.createCategory(form.value)
+    }
 
     if (res.success) {
         showModal.value = false
         loadCategories()
-        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Categoría guardada', timer: 2000, showConfirmButton: false })
+        Swal.fire({ 
+            toast: true, 
+            position: 'top-end', 
+            icon: 'success', 
+            title: isEditing.value ? 'Categoría actualizada' : 'Categoría guardada', 
+            timer: 2000, 
+            showConfirmButton: false 
+        })
     } else {
         Swal.fire('Error', res.error, 'error')
     }
