@@ -385,6 +385,7 @@ export const useAuthStore = defineStore('auth', {
         formData.append('apellido', profileData.apellido)
 
         if (profileData.telefono) formData.append('telefono', profileData.telefono)
+        if (profileData.cedula) formData.append('cedula', profileData.cedula)
 
         if (profileData.photo) {
           formData.append('photo', profileData.photo)

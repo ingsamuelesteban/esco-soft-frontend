@@ -38,16 +38,19 @@
 
                         <div class="grid grid-cols-6 gap-6">
                             <div class="col-span-6 sm:col-span-4">
-                                <FormsCedulaInput v-model="form.cedula" label="Cédula" :disabled="true"
-                                    help-text="La cédula no se puede modificar." />
+                                <FormsCedulaInput v-model="form.cedula" label="Cédula" />
+                            </div>
+
+                            <div class="col-span-6 sm:col-span-4" v-if="form.cargo">
+                                <label class="block text-sm font-medium text-gray-700">Cargo</label>
+                                <input type="text" :value="form.cargo" disabled
+                                    class="mt-1 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50 text-gray-500 cursor-not-allowed">
                             </div>
 
                             <div class="col-span-6 sm:col-span-3">
                                 <label for="first-name" class="block text-sm font-medium text-gray-700">Nombre</label>
                                 <input type="text" v-model="form.nombre" id="first-name" autocomplete="given-name"
-                                    disabled
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md bg-gray-50 text-gray-500 cursor-not-allowed">
-                                <p class="text-xs text-gray-500 mt-1">El nombre no se puede modificar.</p>
+                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
                             </div>
 
                             <div class="col-span-6 sm:col-span-3">
@@ -271,6 +274,7 @@ const form = ref({
     nombre: '',
     apellido: '',
     telefono: '',
+    cargo: '',
     photo: null as File | null
 })
 
@@ -328,6 +332,7 @@ const initForm = async () => {
                 form.value.nombre = personal.nombre
                 form.value.apellido = personal.apellido
                 form.value.telefono = personal.telefono
+                form.value.cargo = personal.cargo?.nombre || ''
             } else {
                 // Fallback si no hay personal linkeado
             }
@@ -356,11 +361,23 @@ const updatePhotoPreview = (event: Event) => {
 }
 
 const updateProfile = async () => {
+    // Agregar cedula al payload si es necesario, aunque authStore.updateProfileInformation usa FormData
+    // Asegurémonos que el store maneje la cédula
     const res = await authStore.updateProfileInformation(form.value)
     if (res.success) {
         Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Perfil actualizado', timer: 2000, showConfirmButton: false })
     } else {
-        Swal.fire('Error', res.message, 'error')
+        let errorMessage = res.message
+        if (res.errors) {
+            // Si hay errores de validación, mostrarlos en una lista
+            const errorList = Object.values(res.errors).flat().map((err: any) => `<li>${err}</li>`).join('')
+            errorMessage = `<ul class="text-left text-sm">${errorList}</ul>`
+        }
+        Swal.fire({
+            title: 'Error',
+            html: errorMessage,
+            icon: 'error'
+        })
     }
 }
 
