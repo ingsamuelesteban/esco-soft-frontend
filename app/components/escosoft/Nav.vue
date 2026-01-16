@@ -32,7 +32,11 @@
         <!-- Menú de usuario -->
         <div class="relative">
           <button @click="toggleUserMenu" class="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-100">
-            <div
+            <div v-if="authStore.user?.profile_photo_path" class="h-8 w-8 rounded-full overflow-hidden">
+              <img :src="`${$config.public.apiBase}/storage/${authStore.user.profile_photo_path}`" alt="Profile"
+                class="h-full w-full object-cover">
+            </div>
+            <div v-else
               class="h-8 w-8 rounded-full bg-primary-500 flex items-center justify-center text-white text-sm font-medium">
               {{ userInitials }}
             </div>
@@ -53,7 +57,8 @@
             <div v-if="isUserMenuOpen"
               class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100">
               <div class="py-1">
-                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mi Perfil</a>
+                <NuxtLink to="/perfil" @click="closeUserMenu"
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mi Perfil</NuxtLink>
                 <NuxtLink v-if="authStore.isMaster" to="/settings/tenants"
                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                   Configuración
@@ -117,14 +122,14 @@ const tenantLogo = computed(() => {
   if (!process.client || !authStore.tenant?.logo_url) return null
   // Si ya es una URL absoluta, devolverla
   if (authStore.tenant.logo_url.startsWith('http')) return authStore.tenant.logo_url
-  
+
   // Si es relativa, prepender la URL base de la API
   const config = useRuntimeConfig()
   const apiBase = config.public.apiBase
   // Asegurar que no haya doble slash
   const baseUrl = apiBase.endsWith('/') ? apiBase.slice(0, -1) : apiBase
   const path = authStore.tenant.logo_url.startsWith('/') ? authStore.tenant.logo_url : `/${authStore.tenant.logo_url}`
-  
+
   return `${baseUrl}${path}`
 })
 

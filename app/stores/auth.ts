@@ -4,10 +4,13 @@ import { api } from '../utils/api'
 export interface User {
   id: number
   name: string
+  username: string
   email: string
   role: 'admin' | 'profesor' | 'master' | 'estudiante'
   personal_id?: number
   active: boolean
+  profile_photo_path?: string
+  profile_photo_url?: string
 }
 
 export interface LoginCredentials {
@@ -369,6 +372,65 @@ export const useAuthStore = defineStore('auth', {
 
       await this.loadUserMenu()
       return navigateTo('/')
+    },
+
+    async updateProfileInformation(profileData: any) {
+      this.isLoading = true
+      try {
+        // Use FormData for file upload
+        const formData = new FormData()
+        formData.append('username', profileData.username)
+        formData.append('email', profileData.email)
+        formData.append('nombre', profileData.nombre)
+        formData.append('apellido', profileData.apellido)
+
+        if (profileData.telefono) formData.append('telefono', profileData.telefono)
+
+        if (profileData.photo) {
+          formData.append('photo', profileData.photo)
+        }
+
+        const response: any = await api.post('/api/user/profile', formData)
+
+        if (response.user) {
+          this.user = { ...this.user, ...response.user }
+        }
+
+        return { success: true, message: 'Perfil actualizado correctamente' }
+      } catch (error: any) {
+        return {
+          success: false,
+          message: error.data?.message || 'Error al actualizar perfil',
+          errors: error.data?.errors
+        }
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    async updatePassword(passwordData: any) {
+      this.isLoading = true
+      try {
+        await api.put('/api/user/password', passwordData)
+        return { success: true, message: 'Contraseña actualizada correctamente' }
+      } catch (error: any) {
+        return {
+          success: false,
+          message: error.data?.message || 'Error al actualizar contraseña',
+          errors: error.data?.errors
+        }
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    async validateCurrentPassword(password: string) {
+      try {
+        const response: any = await api.post('/api/user/validate-password', { password })
+        return { success: true, valid: response.valid }
+      } catch (error) {
+        return { success: false, valid: false }
+      }
     }
   }
 })
