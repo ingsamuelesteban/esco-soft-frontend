@@ -163,6 +163,35 @@ export const usePsychologyStore = defineStore('psychology', () => {
         }
     }
 
+    const fetchDismissals = async (params: any = {}) => {
+        loading.value = true
+        error.value = null
+        try {
+            const res = await api.get('/api/psychology/dismissals/history', { params })
+            const dismissals = Array.isArray(res) ? res : (res as any).data || []
+            return { success: true, data: dismissals }
+        } catch (e: any) {
+            error.value = e.response?.data?.message || 'Error al cargar el historial'
+            return { success: false, error: error.value }
+        } finally {
+            loading.value = false
+        }
+    }
+
+    const createDismissal = async (data: { student_id: number, reason: string }) => {
+        loading.value = true
+        error.value = null
+        try {
+            const res = await api.post('/api/psychology/dismissals', data)
+            return { success: true, data: res.data }
+        } catch (e: any) {
+            error.value = e.response?._data?.message || 'Error al crear el alta'
+            return { success: false, error: error.value }
+        } finally {
+            loading.value = false
+        }
+    }
+
     return {
         loading,
         error,
@@ -178,6 +207,8 @@ export const usePsychologyStore = defineStore('psychology', () => {
         updateCategory,
         deleteCategory,
         fetchStats,
-        fetchPsychologists
+        fetchPsychologists,
+        createDismissal,
+        fetchDismissals
     }
 })
