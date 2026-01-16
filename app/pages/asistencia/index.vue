@@ -35,11 +35,11 @@
         <!-- Selector de asignación/aula -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
-            {{ (authStore.isAdmin || authStore.isMaster) ? 'Aula' : 'Materia y Aula' }}
+            {{ (authStore.isAdmin || authStore.isMaster || isPsychologist) ? 'Aula' : 'Materia y Aula' }}
           </label>
 
-          <!-- Para Administradores/Masters: Selector directo de Aulas -->
-          <select v-if="authStore.isAdmin || authStore.isMaster" v-model="selectedAulaId"
+          <!-- Para Administradores/Masters/Psicólogos: Selector directo de Aulas -->
+          <select v-if="authStore.isAdmin || authStore.isMaster || isPsychologist" v-model="selectedAulaId"
             @change="selectedAssignmentId = null"
             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
             :disabled="aulasStore.loading">
@@ -49,8 +49,8 @@
             </option>
           </select>
 
-          <!-- Para Administradores/Masters: Selector de Clase/Asignatura del día -->
-          <div v-if="(authStore.isAdmin || authStore.isMaster) && selectedAulaId" class="mt-4">
+          <!-- Para Administradores/Masters/Psicólogos: Selector de Clase/Asignatura del día -->
+          <div v-if="(authStore.isAdmin || authStore.isMaster || isPsychologist) && selectedAulaId" class="mt-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Clase / Asignatura</label>
             <select v-model="selectedAssignmentId" @change="loadAttendance"
               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
@@ -70,7 +70,7 @@
           </div>
 
           <!-- Para Profesores: Selector de Asignaciones (Filtrado por día) -->
-          <div v-else-if="!(authStore.isAdmin || authStore.isMaster)">
+          <div v-else-if="!(authStore.isAdmin || authStore.isMaster || isPsychologist)">
             <select v-model="selectedAssignmentId" @change="onAssignmentChange"
               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
               :disabled="attendanceStore.loadingDailyClasses">
@@ -160,7 +160,8 @@
           </div>
         </div>
 
-        <button @click="saveChanges" :disabled="!attendanceStore.hasUnsavedChanges || attendanceStore.loading"
+        <button v-if="!isReadOnly" @click="saveChanges"
+          :disabled="!attendanceStore.hasUnsavedChanges || attendanceStore.loading"
           class="inline-flex items-center justify-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm min-w-[160px]">
           <svg v-if="attendanceStore.loading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none"
             viewBox="0 0 24 24">
@@ -188,7 +189,8 @@
 
     <!-- Componente de lista de asistencia -->
     <AttendanceGrid v-else-if="hasData && selectedDate && selectedAulaId && selectedAssignmentId" :fecha="selectedDate"
-      :aula-id="selectedAulaId" :aula-name="selectedAulaName" :assignment-id="selectedAssignmentId" />
+      :aula-id="selectedAulaId" :aula-name="selectedAulaName" :assignment-id="selectedAssignmentId"
+      :read-only="isReadOnly" />
 
     <!-- Estado inicial -->
     <div v-else-if="!attendanceStore.loading" class="bg-white shadow-sm rounded-lg p-12 text-center">
@@ -241,6 +243,12 @@ const selectedDate = ref((() => {
 const selectedAulaId = ref<number | null>(null)
 const selectedAssignmentId = ref<number | null>(null)
 const showStatistics = ref(true)
+
+const isPsychologist = computed(() => {
+  const role = authStore.user?.role?.toLowerCase() || ''
+  return role.includes('psic') || role.includes('orient')
+})
+const isReadOnly = computed(() => isPsychologist.value)
 
 // Computed properties
 const hasData = computed(() =>
@@ -428,8 +436,8 @@ watch(selectedDate, (newDate, oldDate) => {
     attendanceStore.resetRecords()
     selectedAssignmentId.value = null
 
-    // Si es admin/master, cargar el horario del día para el aula si está seleccionada
-    if ((authStore.isAdmin || authStore.isMaster) && selectedAulaId.value) {
+    // Si es admin/master/psicologo, cargar el horario del día para el aula si está seleccionada
+    if ((authStore.isAdmin || authStore.isMaster || isPsychologist.value) && selectedAulaId.value) {
       attendanceStore.fetchDailyClasses({ aulaId: selectedAulaId.value, date: newDate })
     }
     // Si es profesor, cargar su horario del día
@@ -440,9 +448,9 @@ watch(selectedDate, (newDate, oldDate) => {
 })
 
 watch(selectedAulaId, (newAulaId) => {
-  // Solo reaccionar a cambios de aula si es Admin/Master (que seleccionan aula manualmente)
+  // Solo reaccionar a cambios de aula si es Admin/Master/Psicologo
   // Para profesores, el cambio de aula es consecuencia del cambio de asignación, así que no reseteamos
-  if (authStore.isAdmin || authStore.isMaster) {
+  if (authStore.isAdmin || authStore.isMaster || isPsychologist.value) {
     attendanceStore.resetRecords()
     selectedAssignmentId.value = null
 
@@ -463,8 +471,8 @@ onMounted(async () => {
   // Cargar asignaciones del profesor (ya no es prioritario, usamos fetchDailyClasses)
   // await attendanceStore.getTeacherAssignments() // Comentado o eliminado si ya no se usa
 
-  // Si es profesor, cargar horario inicial
-  if (!(authStore.isAdmin || authStore.isMaster) && authStore.user?.personal_id) {
+  // Si es profesor (y no admin/master/psicologo), cargar horario inicial
+  if (!(authStore.isAdmin || authStore.isMaster || isPsychologist.value) && authStore.user?.personal_id) {
     await attendanceStore.fetchDailyClasses({ professorId: authStore.user.personal_id, date: selectedDate.value })
 
     // Auto-load clase actual para profesores

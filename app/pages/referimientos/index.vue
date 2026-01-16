@@ -172,6 +172,18 @@
                                     </select>
                                 </div>
                                 <div>
+                                    <label class="block text-sm font-medium text-gray-700">Asignar a (Opcional)</label>
+                                    <select v-model="form.assigned_to"
+                                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                        <option value="">Automático (Según disponibilidad)</option>
+                                        <option v-for="psych in psychologists" :key="psych.id" :value="psych.id">
+                                            {{ psych.name }}
+                                        </option>
+                                    </select>
+                                    <p class="mt-1 text-xs text-gray-500">Si se deja en blanco, el sistema asignará
+                                        automáticamente.</p>
+                                </div>
+                                <div>
                                     <label class="block text-sm font-medium text-gray-700">Motivo</label>
                                     <textarea v-model="form.reason" rows="3" required
                                         class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
@@ -202,6 +214,7 @@ import { ref, computed, onMounted, watch, reactive } from 'vue'
 import { useAttendanceStore } from '~/stores/attendance'
 import { usePsychologyStore } from '~/stores/psychology'
 import { useAuthStore } from '~/stores/auth'
+import { api } from '~/utils/api'
 import Swal from 'sweetalert2'
 
 definePageMeta({
@@ -222,13 +235,24 @@ const submitting = ref(false)
 
 const form = reactive({
     priority: 'medium',
-    reason: ''
+    reason: '',
+    assigned_to: ''
 })
+
+const psychologists = ref<Array<{ id: number, name: string }>>([])
 
 // Cargar clases del día al iniciar
 onMounted(async () => {
     if (authStore.user?.personal_id) {
-        await attendanceStore.fetchDailyClasses({ professorId: authStore.user.personal_id, date: selectedDate.value })
+        attendanceStore.fetchDailyClasses({ professorId: authStore.user.personal_id, date: selectedDate.value })
+    }
+
+    // Cargar psicólogos
+    try {
+        const data = await api.get('/api/users/psychologists')
+        psychologists.value = data
+    } catch (e) {
+        console.error("Error loading psychologists", e)
     }
 })
 
@@ -304,7 +328,8 @@ const submitReferral = async () => {
         const res = await psychologyStore.createReferral({
             student_id: studentId,
             reason: form.reason,
-            priority: form.priority
+            priority: form.priority,
+            assigned_to: form.assigned_to || null
         })
         if (res.success) successCount++
         else failCount++

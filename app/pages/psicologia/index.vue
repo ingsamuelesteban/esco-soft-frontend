@@ -58,6 +58,9 @@
                                 Ref por: {{ referral.reporter?.name || (referral.reporter?.nombres ?
                                     referral.reporter?.nombres + ' ' + referral.reporter?.apellidos : 'Desconocido') }}
                             </div>
+                            <div class="mt-1 text-xs text-indigo-600 font-medium" v-if="referral.assigned_to">
+                                Referido a: {{ referral.assigned_to.name }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -67,11 +70,20 @@
             <div class="lg:col-span-2 space-y-6">
                 <div class="bg-white shadow-sm rounded-lg p-4 h-[calc(100vh-180px)] min-h-[600px] flex flex-col">
                     <div v-if="viewMode === 'list'">
-                        <div class="flex items-center justify-between mb-4">
-                            <h2 class="text-lg font-medium text-gray-900">Casos Activos</h2>
-                            <!-- TODO: Filter controls -->
+                        <div class="flex items-center justify-between mb-4 border-b border-gray-200">
+                            <h2 class="text-lg font-medium text-gray-900 pb-2">Casos</h2>
+                            <nav class="-mb-px flex space-x-8" aria-label="Tabs">
+                                <a href="#" @click.prevent="caseFilter = 'open'"
+                                    :class="[caseFilter === 'open' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">
+                                    Activos
+                                </a>
+                                <a href="#" @click.prevent="caseFilter = 'closed'"
+                                    :class="[caseFilter === 'closed' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">
+                                    Historial (Cerrados)
+                                </a>
+                            </nav>
                         </div>
-                        <ActiveCaseList ref="activeCaseListRef" @select="handleCaseSelected" />
+                        <ActiveCaseList ref="activeCaseListRef" @select="handleCaseSelected" :status="caseFilter" />
                     </div>
 
                     <CaseDetail v-else-if="viewMode === 'detail' && selectedCaseId" :case-id="selectedCaseId"
@@ -85,9 +97,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { usePsychologyStore } from '~/stores/psychology'
+import { useAuthStore } from '~/stores/auth'
 import ActiveCaseList from '~/components/psychology/ActiveCaseList.vue'
 import CaseDetail from '~/components/psychology/CaseDetail.vue'
 import Swal from 'sweetalert2'
+import { api } from '~/utils/api'
 
 useHead({
     title: 'Psicología - EscoSoft'
@@ -99,15 +113,27 @@ definePageMeta({
 })
 
 const psychologyStore = usePsychologyStore()
+const authStore = useAuthStore()
 const pendingReferrals = ref<any[]>([])
 const loadingReferrals = ref(true)
 const activeCaseListRef = ref<any>(null)
 const selectedCaseId = ref<number | null>(null)
 const viewMode = ref<'list' | 'detail'>('list')
+const caseFilter = ref<'open' | 'closed'>('open')
 
 const loadReferrals = async () => {
     loadingReferrals.value = true
-    const res = await psychologyStore.fetchReferrals({ status: 'pending' })
+    const userRole = authStore.user?.role?.toLowerCase()
+    // Admin/Master see unlimited by default (or can filter manually later). 
+    // Psychologist sees 'me' by default.
+    const isPowerful = userRole === 'admin' || userRole === 'master'
+
+    const filter: any = { status: 'pending' }
+    if (!isPowerful) {
+        filter.assigned_to = 'me'
+    }
+
+    const res = await psychologyStore.fetchReferrals(filter)
     if (res.data) {
         pendingReferrals.value = res.data
     }
@@ -142,6 +168,26 @@ const formatDate = (dateStr: string) => {
 }
 
 const openReferralPreview = async (referral: any) => {
+    const userRole = authStore.user?.role?.toLowerCase()
+    const isAdminOrMaster = userRole === 'admin' || userRole === 'master'
+
+    const buttons = isAdminOrMaster ? {
+        confirmButtonText: 'Transferir a otro psicólogo',
+        confirmButtonColor: '#4f46e5', // Indigo
+        showCancelButton: true,
+        cancelButtonText: 'Cerrar',
+        showDenyButton: false, // No reject for admin
+    } : {
+        confirmButtonText: 'Sí, iniciar caso',
+        confirmButtonColor: '#10b981', // Green
+        showCancelButton: true,
+        cancelButtonText: 'Cancelar',
+        showDenyButton: true,
+        denyButtonText: 'Rechazar',
+    }
+
+    const footer = isAdminOrMaster ? '' : '<button id="btn-transfer-referral" class="text-indigo-600 hover:text-indigo-800 font-medium">Transferir a otro psicólogo</button>'
+
     const result = await Swal.fire({
         title: 'Referimiento Pendiente',
         html: `
@@ -152,23 +198,87 @@ const openReferralPreview = async (referral: any) => {
                 <p><strong>Prioridad:</strong> <span class="uppercase font-bold">${referral.priority}</span></p>
                 <hr class="my-2">
                 <p><strong>Motivo:</strong></p>
-                <p class="italic text-gray-700">${referral.reason}</p>
+                <div class="italic text-gray-700 p-2 bg-yellow-50 rounded border border-yellow-100 max-h-60 overflow-y-auto">
+                    ${referral.reason}
+                </div>
+                ${!isAdminOrMaster ? '<p class="text-xs text-green-600 mt-2 font-medium">✨ Este comentario se guardará automáticamente como la primera entrada del caso.</p>' : ''}
             </div>
-            <p class="mt-4 text-sm">¿Desea aceptar este referimiento e iniciar un caso?</p>
+            ${!isAdminOrMaster ? '<p class="mt-4 text-sm">¿Desea aceptar este referimiento e iniciar un caso?</p>' : ''}
         `,
         icon: 'info',
-        showCancelButton: true,
-        confirmButtonText: 'Sí, iniciar caso',
-        cancelButtonText: 'Cancelar',
-        confirmButtonColor: '#4f46e5',
-        showDenyButton: true,
-        denyButtonText: 'Rechazar/Cerrar',
+        ...buttons,
+        footer: footer,
+        didOpen: () => {
+            const btn = document.getElementById('btn-transfer-referral')
+            if (btn) {
+                btn.addEventListener('click', () => {
+                    Swal.close()
+                    handleTransferReferral(referral)
+                })
+            }
+        }
     })
 
     if (result.isConfirmed) {
-        handleAcceptReferral(referral)
+        if (isAdminOrMaster) {
+            handleTransferReferral(referral)
+        } else {
+            handleAcceptReferral(referral)
+        }
     } else if (result.isDenied) {
         handleRejectReferral(referral)
+    }
+}
+
+const handleTransferReferral = async (referral: any) => {
+    // 1. Fetch psychologists
+    let psychologists = []
+    try {
+        const data = await api.get('/api/users/psychologists')
+        psychologists = data
+    } catch (e) {
+        Swal.fire('Error', 'No se pudo cargar la lista de psicólogos', 'error')
+        return
+    }
+
+    // Filter out current user and current assignee (if any)
+    const currentUserId = Number(authStore.user?.id)
+    psychologists = psychologists.filter((p: any) => p.id !== currentUserId && p.id !== referral.assigned_to)
+
+    if (psychologists.length === 0) {
+        Swal.fire('Info', 'No hay otros psicólogos disponibles para transferir', 'info')
+        return
+    }
+
+    const options: any = {}
+    psychologists.forEach((p: any) => {
+        options[p.id] = p.name
+    })
+
+    const { value: selectedId } = await Swal.fire({
+        title: 'Transferir Referimiento',
+        text: 'Seleccione el nuevo responsable:',
+        input: 'select',
+        inputOptions: options,
+        inputPlaceholder: 'Seleccione...',
+        showCancelButton: true,
+        confirmButtonText: 'Transferir',
+        cancelButtonText: 'Cancelar',
+        inputValidator: (value) => {
+            if (!value) return 'Debe seleccionar un usuario'
+        }
+    })
+
+    if (selectedId) {
+        try {
+            await api.post(`/api/referrals/${referral.id}/transfer`, {
+                assigned_to: selectedId
+            })
+            Swal.fire('Transferido', 'Referimiento reasignado exitosamente.', 'success')
+            loadReferrals()
+        } catch (e) {
+            Swal.fire('Error', 'No se pudo transferir el referimiento', 'error')
+        }
     }
 }
 

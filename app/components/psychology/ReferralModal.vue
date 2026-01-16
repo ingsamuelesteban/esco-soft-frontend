@@ -41,6 +41,22 @@
                                     </div>
 
                                     <div>
+                                        <label for="assigned_to" class="block text-sm font-medium text-gray-700">Asignar
+                                            a
+                                            (Opcional)</label>
+                                        <select id="assigned_to" v-model="form.assigned_to"
+                                            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                            <option value="">Automático (Según disponibilidad)</option>
+                                            <option v-for="psych in psychologists" :key="psych.id" :value="psych.id">
+                                                {{ psych.name }}
+                                            </option>
+                                        </select>
+                                        <p class="mt-1 text-xs text-gray-500">Si se deja en blanco, el sistema asignará
+                                            al
+                                            psicólogo con menos carga.</p>
+                                    </div>
+
+                                    <div>
                                         <label for="reason" class="block text-sm font-medium text-gray-700">Motivo del
                                             Referimiento</label>
                                         <textarea id="reason" v-model="form.reason" rows="3" required
@@ -71,6 +87,7 @@
 <script setup lang="ts">
 import { ref, reactive, onMounted } from 'vue'
 import { usePsychologyStore } from '~/stores/psychology'
+import { api } from '~/utils/api'
 import Swal from 'sweetalert2'
 
 const props = defineProps<{
@@ -84,15 +101,27 @@ const psychologyStore = usePsychologyStore()
 const loading = ref(false)
 const priorityInput = ref<HTMLSelectElement | null>(null)
 
+const form = reactive({
+    priority: 'medium',
+    reason: '',
+    assigned_to: ''
+})
+
+const psychologists = ref<Array<{ id: number, name: string }>>([])
+const loadPsychologists = async () => {
+    try {
+        const data = await api.get('/api/users/psychologists')
+        psychologists.value = data
+    } catch (e) {
+        console.error("Error loading psychologists", e)
+    }
+}
+
 onMounted(() => {
+    loadPsychologists()
     setTimeout(() => {
         priorityInput.value?.focus()
     }, 100)
-})
-
-const form = reactive({
-    priority: 'medium',
-    reason: ''
 })
 
 const handleSubmit = async () => {
@@ -101,11 +130,11 @@ const handleSubmit = async () => {
         return
     }
 
-    loading.value = true
     const res = await psychologyStore.createReferral({
         student_id: props.studentId,
         reason: form.reason,
-        priority: form.priority
+        priority: form.priority,
+        assigned_to: form.assigned_to || null
     })
     loading.value = false
 

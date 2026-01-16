@@ -88,8 +88,8 @@
           <textarea v-model="localObservaciones[record.estudiante.id]"
             @input="updateObservaciones(record.estudiante.id, ($event.target as HTMLTextAreaElement).value)"
             :placeholder="`Observaciones para ${record.asistencia.estado}...`"
-            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500 resize-none"
-            rows="2"></textarea>
+            class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500 resize-none disabled:bg-gray-100 disabled:text-gray-500"
+            :disabled="props.readOnly" rows="2"></textarea>
         </div>
       </div>
     </div>
@@ -142,9 +142,10 @@ interface Props {
   aulaId: number
   aulaName: string
   assignmentId: number
+  readOnly?: boolean
 }
 
-defineProps<Props>()
+const props = defineProps<Props>()
 
 const attendanceStore = useAttendanceStore()
 
@@ -168,10 +169,12 @@ watch(() => attendanceStore.records, (records) => {
 }, { deep: true, immediate: true })
 
 const updateAttendance = (estudianteId: number, estado: string) => {
+  if (props.readOnly) return
   attendanceStore.updateLocalAttendance(estudianteId, estado, localObservaciones.value[estudianteId])
 }
 
 const updateObservaciones = (estudianteId: number, observaciones: string) => {
+  if (props.readOnly) return
   localObservaciones.value[estudianteId] = observaciones
 
   // Si ya tiene asistencia, actualizar también en el store
@@ -184,23 +187,29 @@ const updateObservaciones = (estudianteId: number, observaciones: string) => {
 const getButtonClass = (estado: string, estadoActual?: string) => {
   const isActive = estado === estadoActual
   const estadoConfig = estados.find(e => e.value === estado)
+  let baseClass = 'px-3 py-2 text-xs font-medium rounded-lg transition-colors border'
+
+  if (props.readOnly) {
+    baseClass += ' cursor-not-allowed opacity-75'
+    if (!isActive) baseClass += ' opacity-50'
+  }
 
   if (isActive) {
     switch (estadoConfig?.color) {
       case 'green':
-        return 'bg-green-100 text-green-800 border-green-200'
+        return `${baseClass} bg-green-100 text-green-800 border-green-200`
       case 'red':
-        return 'bg-red-100 text-red-800 border-red-200'
+        return `${baseClass} bg-red-100 text-red-800 border-red-200`
       case 'yellow':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200'
+        return `${baseClass} bg-yellow-100 text-yellow-800 border-yellow-200`
       case 'orange':
-        return 'bg-orange-100 text-orange-800 border-orange-200'
+        return `${baseClass} bg-orange-100 text-orange-800 border-orange-200`
       default:
-        return 'bg-gray-100 text-gray-800 border-gray-200'
+        return `${baseClass} bg-gray-100 text-gray-800 border-gray-200`
     }
   }
 
-  return 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+  return `${baseClass} bg-white text-gray-700 border-gray-300 hover:bg-gray-50`
 }
 
 const formatFecha = (fecha: string) => {

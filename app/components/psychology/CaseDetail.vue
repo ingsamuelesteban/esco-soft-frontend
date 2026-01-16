@@ -73,6 +73,20 @@
                         class="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded border border-red-200">
                         Cerrar Caso
                     </button>
+                    <!-- Botón Transferir -->
+                    <button v-if="currentCase.status === 'open'" @click="transferCase"
+                        title="Transferir a otro psicólogo"
+                        class="px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded border border-gray-200">
+                        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                        </svg>
+                    </button>
+                    <!-- Botón Reabrir Caso (Solo si está cerrado) -->
+                    <button v-if="currentCase.status === 'closed'" @click="reopenCase"
+                        class="px-3 py-1 text-sm text-green-600 hover:bg-green-50 rounded border border-green-200">
+                        Reabrir Caso
+                    </button>
                 </div>
             </div>
 
@@ -271,6 +285,7 @@
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
 import { usePsychologyStore } from '../../stores/psychology'
+import { useAuthStore } from '../../stores/auth'
 import { api } from '~/utils/api'
 import Swal from 'sweetalert2'
 
@@ -280,6 +295,7 @@ const props = defineProps<{
 
 const emit = defineEmits(['back'])
 const store = usePsychologyStore()
+const authStore = useAuthStore()
 
 const currentCase = ref<any>(null)
 const loading = ref(true)
@@ -420,6 +436,85 @@ const closeCase = async () => {
             Swal.fire('Caso Cerrado', '', 'success')
         } catch (e) {
             Swal.fire('Error', 'No se pudo cerrar', 'error')
+        }
+    }
+}
+
+const reopenCase = async () => {
+    const result = await Swal.fire({
+        title: '¿Reabrir Caso?',
+        text: 'El caso volverá a estado Activo.',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, reabrir',
+        cancelButtonText: 'Cancelar'
+    })
+
+    if (result.isConfirmed) {
+        try {
+            await api.put(`/api/psychology/cases/${props.caseId}`, { status: 'open' })
+            loadCase()
+            Swal.fire('Caso Reabierto', 'El caso está activo nuevamente.', 'success')
+        } catch (e) {
+            Swal.fire('Error', 'No se pudo reabrir el caso', 'error')
+        }
+    }
+}
+
+const transferCase = async () => {
+    // 1. Fetch psychologists
+    let psychologists = []
+    try {
+        const data = await api.get('/api/users/psychologists')
+        psychologists = data
+    } catch (e) {
+        Swal.fire('Error', 'No se pudo cargar la lista de psicólogos', 'error')
+        return
+    }
+
+    // 2. Filter out current assigned user AND current logged in user (self)
+    const currentAssignedId = currentCase.value.assigned_to?.id || currentCase.value.managed_by_id
+    // Use user.id consistently as assigned_to relies on users table
+    const currentUserId = Number(authStore.user?.id)
+
+    psychologists = psychologists.filter((p: any) => p.id !== currentAssignedId && p.id !== currentUserId)
+
+    if (psychologists.length === 0) {
+        Swal.fire('Info', 'No hay otros psicólogos disponibles para transferir', 'info')
+        return
+    }
+
+    // 3. Prepare options for Swal
+    const options: any = {}
+    psychologists.forEach((p: any) => {
+        options[p.id] = p.name
+    })
+
+    const { value: selectedId } = await Swal.fire({
+        title: 'Transferir Caso',
+        text: 'Seleccione el nuevo psicólogo responsable:',
+        input: 'select',
+        inputOptions: options,
+        inputPlaceholder: 'Seleccione...',
+        showCancelButton: true,
+        confirmButtonText: 'Transferir',
+        cancelButtonText: 'Cancelar',
+        inputValidator: (value) => {
+            if (!value) return 'Debe seleccionar un usuario'
+        }
+    })
+
+    if (selectedId) {
+        try {
+            await api.post(`/api/psychology/cases/${props.caseId}/transfer`, {
+                assigned_to: selectedId
+            })
+            Swal.fire('Transferido', 'El caso ha sido transferido exitosamente.', 'success')
+            // Emit back to return to list, as access might be lost if strictly filtered
+            emit('back')
+        } catch (e) {
+            console.error(e)
+            Swal.fire('Error', 'No se pudo transferir el caso', 'error')
         }
     }
 }

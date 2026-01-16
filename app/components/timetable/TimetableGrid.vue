@@ -17,7 +17,7 @@
           <option v-for="a in aulas" :key="a.id" :value="a.id">{{ aulaName(a) }}</option>
         </select>
       </div>
-      <div class="flex items-center gap-2">
+      <div class="flex items-center gap-2" v-if="!readOnly">
         <label class="text-sm text-gray-600">Asignación</label>
         <select v-model.number="selectedAssignmentId" class="border rounded px-2 py-1 text-sm h-8 min-w-[220px]"
           :disabled="!aulaId || !anioId">
@@ -66,7 +66,7 @@
                     <div class="text-gray-500 truncate" :title="teacherName(entryAt(d.value, p.id)?.assignment)">{{
                       teacherName(entryAt(d.value, p.id)?.assignment) }}</div>
                   </div>
-                  <button @click="remove(entryAt(d.value, p.id)?.id as number)"
+                  <button v-if="!readOnly" @click="remove(entryAt(d.value, p.id)?.id as number)"
                     class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 inline-flex items-center justify-center p-1.5 rounded-md text-red-600 hover:text-red-800 hover:bg-red-50 transition-colors"
                     title="Eliminar">
                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -75,7 +75,7 @@
                   </button>
                 </template>
                 <template v-else>
-                  <button @click="assignHere(d.value, p.id)"
+                  <button v-if="!readOnly" @click="assignHere(d.value, p.id)"
                     class="w-full h-full flex items-center justify-center text-gray-400 hover:text-gray-600"
                     :disabled="!selectedAssignmentId || !aulaId" title="Asignar aquí">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -113,6 +113,7 @@ const props = defineProps<{
   fitViewport?: boolean
   // Offset en px para descontar encabezados/controles superiores de la altura de la ventana
   viewportOffset?: number
+  readOnly?: boolean
 }>()
 
 const aulasStore = useAulasStore()

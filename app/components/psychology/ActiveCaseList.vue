@@ -9,8 +9,10 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">No hay casos activos</h3>
-            <p class="mt-1 text-sm text-gray-500">Acepte un referimiento para iniciar un caso.</p>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">No hay casos {{ status === 'open' ? 'activos' :
+                'cerrados' }}</h3>
+            <p v-if="status === 'open'" class="mt-1 text-sm text-gray-500">Acepte un referimiento para iniciar un
+                caso.</p>
         </div>
 
         <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -26,7 +28,8 @@
                         <h3 class="text-sm font-medium text-gray-900">{{ caso.student?.nombres }} {{
                             caso.student?.apellidos }}</h3>
                         <p class="text-xs text-gray-500">#{{ caso.student?.numero_orden || '?' }} • {{
-                            caso.student?.aula ? (caso.student.aula.grado_cardinal + '° ' + caso.student.aula.seccion) :
+                            caso.student?.aula ? (caso.student.aula.grado_cardinal + '° ' +
+                                caso.student.aula.seccion) :
                                 'Sin curso' }}</p>
                     </div>
                 </div>
@@ -43,12 +46,20 @@
                     <p class="text-xs text-gray-500 mt-1">
                         Iniciado el {{ formatDate(caso.start_date) }}
                     </p>
+                    <div class="mt-2 text-xs">
+                        <p v-if="caso.status === 'open' && caso.assigned_to" class="text-indigo-600 font-medium">
+                            Asignado a: {{ caso.assigned_to.name }}
+                        </p>
+                        <p v-else-if="caso.status === 'closed' && caso.closed_by" class="text-red-600 font-medium">
+                            Cerrado por: {{ caso.closed_by.name }}
+                        </p>
+                    </div>
                 </div>
 
                 <div class="flex items-center justify-between mt-4">
-                    <span
-                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        Activo
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                        :class="caso.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
+                        {{ caso.status === 'open' ? 'Activo' : 'Cerrado' }}
                     </span>
                     <span class="text-xs text-gray-400">
                         Última act. {{ formatDate(caso.updated_at) }}
@@ -60,17 +71,37 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { usePsychologyStore } from '../../stores/psychology'
+import { useAuthStore } from '../../stores/auth'
+
+const props = withDefaults(defineProps<{
+    status?: 'open' | 'closed'
+}>(), {
+    status: 'open'
+})
 
 const emit = defineEmits(['select'])
 const store = usePsychologyStore()
+const authStore = useAuthStore()
 const cases = ref<any[]>([])
 const loading = ref(true)
 
+watch(() => props.status, () => {
+    loadCases()
+})
+
 const loadCases = async () => {
     loading.value = true
-    const res = await store.fetchCases({ status: 'open' })
+    const userRole = authStore.user?.role?.toLowerCase()
+    const isPowerful = userRole === 'admin' || userRole === 'master'
+
+    const filter: any = { status: props.status }
+    if (!isPowerful) {
+        filter.assigned_to = 'me'
+    }
+
+    const res = await store.fetchCases(filter)
     if (res.data) {
         cases.value = res.data
     }

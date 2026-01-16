@@ -159,17 +159,17 @@
           <div v-else class="overflow-x-auto">
             <!-- Calificaciones para módulos académicos -->
             <div v-if="moduloData?.tipo === 'Academico'">
-              <div class="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+              <div class="overflow-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg max-h-[70vh]">
                 <table class="min-w-full divide-y divide-gray-200">
                   <thead class="bg-gray-50">
                     <tr>
                       <th
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 bg-gray-50 z-10">
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 top-0 bg-gray-50 z-30 shadow-sm">
                         Estudiante
                       </th>
                       <!-- Bloques 1-4 -->
                       <th v-for="bloque in 4" :key="bloque"
-                        class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-l border-gray-200">
+                        class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-l border-gray-200 sticky top-0 bg-gray-50 z-20 shadow-sm">
                         <div class="flex justify-center space-x-4">
                           <div v-for="comp in getCompetenciasPorBloque(bloque)" :key="comp" class="flex flex-col">
                             <span class="text-[10px] text-gray-500">{{ comp }}</span>
@@ -178,7 +178,7 @@
                       </th>
                       <!-- Promedios PC1-PC4 -->
                       <th
-                        class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-l-2 border-gray-300 bg-gray-100">
+                        class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-l-2 border-gray-300 bg-gray-100 sticky top-0 z-20 shadow-sm">
                         <div class="flex flex-col items-center">
                           <span>Promedio Competencias</span>
                           <div class="flex space-x-4 mt-1">
@@ -188,7 +188,7 @@
                       </th>
                       <!-- Calificación Final -->
                       <th
-                        class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-l border-gray-300 bg-gray-200 sticky right-0 z-10">
+                        class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-l border-gray-300 bg-gray-200 sticky right-0 top-0 z-30 shadow-sm">
                         Final
                       </th>
                     </tr>
@@ -222,9 +222,10 @@
                           <div class="flex flex-col items-center space-y-1">
                             <div class="flex space-x-1">
                               <div v-for="p in 4" :key="p" class="flex flex-col space-y-1">
-                                <button :disabled="isRefreshing || estudiante.estado === 'retirado'"
+                                <button
                                   @click="abrirModalCompetencia(estudiante, getCompetenciasPorBloque(bloque)[0], bloque, `P${p}`)"
                                   class="w-8 h-8 rounded flex items-center justify-center text-sm font-medium transition-colors border disabled:opacity-50 disabled:cursor-not-allowed"
+                                  :disabled="isRefreshing || estudiante.estado === 'retirado' || isReadOnly"
                                   :class="getCompetenciaButtonClass(estudiante.id, getCompetenciasPorBloque(bloque)[0], bloque, `P${p}`)"
                                   :title="`Calificar Bloque ${bloque} - P${p}`">
                                   {{ getNotaCompetencia(estudiante.id, getCompetenciasPorBloque(bloque)[0], bloque,
@@ -234,7 +235,7 @@
                                 <!-- Botón de Recuperación (RP) Condicional -->
                                 <button
                                   v-if="shouldShowRecovery(estudiante.id, getCompetenciasPorBloque(bloque)[0], bloque, `P${p}`)"
-                                  :disabled="isRefreshing || estudiante.estado === 'retirado'"
+                                  :disabled="isRefreshing || estudiante.estado === 'retirado' || isReadOnly"
                                   @click="abrirModalCompetencia(estudiante, getCompetenciasPorBloque(bloque)[0], bloque, `RP${p}`)"
                                   class="w-8 h-8 rounded flex items-center justify-center text-sm font-medium transition-colors border border-orange-300 bg-orange-50 text-orange-700 hover:bg-orange-100 disabled:opacity-50 disabled:cursor-not-allowed"
                                   :class="getCompetenciaButtonClass(estudiante.id, getCompetenciasPorBloque(bloque)[0], bloque, `RP${p}`)"
@@ -279,23 +280,23 @@
 
             <!-- Calificaciones para módulos técnicos (RA) -->
             <div v-if="moduloData?.tipo === 'Tecnico'">
-              <div class="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+              <div class="overflow-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg max-h-[70vh]">
                 <table class="min-w-full divide-y divide-gray-200">
                   <thead class="bg-gray-50">
                     <tr>
                       <th
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 bg-gray-50">
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 top-0 bg-gray-50 z-30 shadow-sm">
                         Estudiante
                       </th>
                       <th v-for="ra in Array.from({ length: moduloData.cantidad_ra }, (_, i) => i + 1)" :key="ra"
-                        class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                        class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-0 bg-gray-50 z-20 shadow-sm">
                         <div class="flex flex-col items-center space-y-1">
                           <span>RA {{ ra }}</span>
                           <div v-if="moduloData?.valores_ra && moduloData.valores_ra[`ra_${ra}`]"
                             class="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
                             {{ moduloData.valores_ra[`ra_${ra}`] }}%
                           </div>
-                          <button @click="abrirModalValorRA(ra)"
+                          <button v-if="!isReadOnly" @click="abrirModalValorRA(ra)"
                             class="p-1 bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
                             :title="`${moduloData?.valores_ra && moduloData.valores_ra[`ra_${ra}`] ? 'Editar' : 'Configurar'} porcentaje del RA ${ra}`">
                             <!-- Icono de + para agregar valor -->
@@ -313,7 +314,7 @@
                         </div>
                       </th>
                       <th
-                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 bg-gray-50 border-l border-gray-200">
+                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 top-0 bg-gray-50 border-l border-gray-200 z-30 shadow-sm">
                         <div class="flex flex-col items-center space-y-1">
                           <span>Total</span>
                           <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium"
@@ -351,7 +352,7 @@
                         class="px-2 py-4 text-center">
                         <div class="flex justify-center space-x-1">
                           <button v-for="oportunidad in 4" :key="`${estudiante.id}-ra${ra}-op${oportunidad}`"
-                            :disabled="isRefreshing || !moduloData?.valores_ra?.[`ra_${ra}`] || estudiante.estado === 'retirado'"
+                            :disabled="isRefreshing || !moduloData?.valores_ra?.[`ra_${ra}`] || estudiante.estado === 'retirado' || isReadOnly"
                             @click="abrirModalCalificarOportunidad(estudiante, ra, oportunidad)"
                             class="w-5 h-5 border border-gray-300 rounded-sm flex items-center justify-center text-xs font-bold hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
                             :class="getCasillaOportunidadClass(estudiante.id, ra, oportunidad)"
@@ -481,6 +482,12 @@ import { api } from '~/utils/api'
 import { useAuthStore } from '~/stores/auth'
 
 const authStore = useAuthStore()
+
+const isPsychologist = computed(() => {
+  const role = authStore.user?.role?.toLowerCase() || ''
+  return role.includes('psic') || role.includes('orient')
+})
+const isReadOnly = computed(() => isPsychologist.value)
 
 // Constantes
 
