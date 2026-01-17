@@ -81,13 +81,24 @@ export const useEstudiantesStore = defineStore('estudiantes', {
   },
 
   actions: {
-    async fetchAll(status: 'active' | 'inactive' | 'retirado' | 'all' = 'active') {
+    async fetchAll(options: { status?: 'active' | 'inactive' | 'retirado' | 'all', aula_id?: number, include_psychology?: boolean } | string = 'active') {
       this.loading = true
       this.error = null
+
+      // Backward compatibility for string argument
+      const status = (typeof options === 'string' ? options : (options.status || 'active')) as 'active' | 'inactive' | 'retirado' | 'all'
+      const aula_id = typeof options === 'object' ? options.aula_id : undefined
+      const include_psychology = typeof options === 'object' ? options.include_psychology : undefined
+
       this.statusFilter = status
       startLoading()
       try {
-        const url = `/api/estudiantes?status=${status}`
+        const params = new URLSearchParams()
+        params.append('status', status)
+        if (aula_id) params.append('aula_id', aula_id.toString())
+        if (include_psychology) params.append('include_psychology', '1')
+
+        const url = `/api/estudiantes?${params.toString()}`
         const response = await api.get<{ success: boolean; data: Estudiante[]; status: string }>(url)
         // El API ya devuelve la edad calculada, no necesitamos recalcularla
         this.items = response.data

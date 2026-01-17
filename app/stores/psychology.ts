@@ -153,6 +153,16 @@ export const usePsychologyStore = defineStore('psychology', () => {
         }
     }
 
+    const fetchPsychologists = async () => {
+        try {
+            const res = await api.get('/api/psychology/psychologists')
+            // Verify if it is an array directly or wrapped
+            return Array.isArray(res) ? res : (res as any).data || []
+        } catch (e: any) {
+            return []
+        }
+    }
+
     return {
         loading,
         error,
@@ -167,6 +177,7 @@ export const usePsychologyStore = defineStore('psychology', () => {
         createCategory,
         updateCategory,
         deleteCategory,
-        fetchStats
+        fetchStats,
+        fetchPsychologists
     }
 })

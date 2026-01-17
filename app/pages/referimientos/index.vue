@@ -10,18 +10,18 @@
             </div>
         </div>
 
-        <!-- Filtros (Copia de Asistencia) -->
+        <!-- Filtros -->
         <div class="bg-white shadow-sm rounded-lg p-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <!-- Selector de fecha -->
-                <div>
+                <!-- Selector de fecha (Solo Profesor) -->
+                <div v-if="isTeacher">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Fecha</label>
                     <input v-model="selectedDate" type="date"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500" />
                 </div>
 
-                <!-- Selector de Materia/Aula (Lógica Profesor) -->
-                <div>
+                <!-- Selector de Materia/Aula (Profesor) -->
+                <div v-if="isTeacher">
                     <label class="block text-sm font-medium text-gray-700 mb-2">Materia y Aula</label>
                     <select v-model="selectedAssignmentId" @change="onAssignmentChange"
                         class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
@@ -39,12 +39,25 @@
                         </option>
                     </select>
                 </div>
+
+                <!-- Selector de Aula (Admin/Psicólogo) -->
+                <div v-if="isAdminOrPsychologist" class="md:col-span-2">
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Seleccionar Aula</label>
+                    <select v-model="selectedAulaId" @change="onAulaChange"
+                        class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                        <option :value="null">Seleccione un aula...</option>
+                        <option v-for="aula in aulasStore.items" :key="aula.id" :value="aula.id">
+                            {{ aula.grado_cardinal }} - {{ aula.seccion }}
+                        </option>
+                    </select>
+                </div>
             </div>
         </div>
 
         <!-- Lista de Estudiantes -->
-        <div v-if="hasData" class="bg-white shadow-sm rounded-lg overflow-hidden">
-            <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+        <div v-if="hasData" class="bg-white shadow-sm rounded-lg">
+            <div
+                class="p-4 border-b border-gray-200 flex justify-between items-center sticky top-0 z-10 bg-white shadow-sm rounded-t-lg">
                 <h3 class="text-lg font-medium text-gray-900">Estudiantes</h3>
 
                 <button v-if="selectedStudents.length > 0" @click="openReferralModal"
@@ -77,8 +90,7 @@
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
-                        <tr v-for="record in attendanceStore.records" :key="record.estudiante.id"
-                            class="hover:bg-gray-50">
+                        <tr v-for="record in records" :key="record.estudiante.id" class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <input type="checkbox" :value="record.estudiante.id" v-model="selectedStudents"
                                     :disabled="record.estudiante.estado === 'retirado' || record.psychology?.has_pending_referral || record.psychology?.has_open_case"
@@ -171,7 +183,7 @@
                                         <option value="high">Alta</option>
                                     </select>
                                 </div>
-                                <div>
+                                <div v-if="!isPsychologistRole">
                                     <label class="block text-sm font-medium text-gray-700">Asignar a (Opcional)</label>
                                     <select v-model="form.assigned_to"
                                         class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
@@ -210,11 +222,13 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, reactive } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, reactive } from 'vue'
+// Stores
 import { useAttendanceStore } from '~/stores/attendance'
 import { usePsychologyStore } from '~/stores/psychology'
 import { useAuthStore } from '~/stores/auth'
-import { api } from '~/utils/api'
+import { useEstudiantesStore } from '~/stores/estudiantes'
+import { useAulasStore } from '~/stores/aulas'
 import Swal from 'sweetalert2'
 
 definePageMeta({
@@ -224,6 +238,8 @@ definePageMeta({
 const attendanceStore = useAttendanceStore()
 const psychologyStore = usePsychologyStore()
 const authStore = useAuthStore()
+const estudiantesStore = useEstudiantesStore()
+const aulasStore = useAulasStore()
 
 const selectedDate = ref(new Date().toLocaleDateString('en-CA'))
 const selectedAssignmentId = ref<number | null>(null)
@@ -232,28 +248,45 @@ const selectedAulaId = ref<number | null>(null)
 const selectedStudents = ref<number[]>([]) // Array de IDs
 const showModal = ref(false)
 const submitting = ref(false)
+const psychologists = ref<any[]>([])
 
 const form = reactive({
     priority: 'medium',
     reason: '',
-    assigned_to: ''
+    assigned_to: '' as string | number | null
 })
 
-const psychologists = ref<Array<{ id: number, name: string }>>([])
+// Check Roles
+const isAdminOrPsychologist = computed(() => ['admin', 'master', 'psico', 'orien'].some(r => authStore.user?.role?.includes(r)))
+// Specific check for psychologist/orientador to hide manual assignment in modal
+const isPsychologistRole = computed(() => ['psico', 'orien'].some(r => authStore.user?.role?.includes(r)))
+
+const isTeacher = computed(() => !isAdminOrPsychologist.value && (authStore.user?.role === 'profesor' || !!authStore.user?.personal_id))
 
 // Cargar clases del día al iniciar
 onMounted(async () => {
-    if (authStore.user?.personal_id) {
-        attendanceStore.fetchDailyClasses({ professorId: authStore.user.personal_id, date: selectedDate.value })
+    // Para profesores: Cargar Horario
+    if (isTeacher.value && authStore.user?.personal_id) {
+        await attendanceStore.fetchDailyClasses({ professorId: authStore.user.personal_id, date: selectedDate.value })
     }
 
-    // Cargar psicólogos
-    try {
-        const data = await api.get('/api/users/psychologists')
-        psychologists.value = data
-    } catch (e) {
-        console.error("Error loading psychologists", e)
+    // Para Admin/Psicólogos: Cargar Aulas
+    if (isAdminOrPsychologist.value) {
+        await aulasStore.fetchAll()
     }
+
+    // Cargar lista de psicólogos para Admin, Master y Profesores (todos los que NO son roles psico/orien)
+    // Para que puedan asignar manualmente en el modal.
+    if (!isPsychologistRole.value) {
+        psychologists.value = await psychologyStore.fetchPsychologists()
+    }
+    // Cargar psicólogos
+    // ... (existing code)
+})
+
+onUnmounted(() => {
+    estudiantesStore.items = []
+    selectedStudents.value = []
 })
 
 // Recargar clases si cambia la fecha
@@ -282,11 +315,48 @@ const onAssignmentChange = async () => {
     }
 }
 
-const hasData = computed(() => attendanceStore.records.length > 0)
+
+
+const onAulaChange = async () => {
+    selectedStudents.value = []
+    if (selectedAulaId.value) {
+        await estudiantesStore.fetchAll({
+            aula_id: selectedAulaId.value,
+            status: 'active',
+            include_psychology: true
+        })
+    } else {
+        estudiantesStore.items = []
+    }
+}
+
+// Unify records from AttendanceStore (Teachers) or EstudiantesStore (Admin/Psych)
+const records = computed(() => {
+    if (isTeacher.value) {
+        return attendanceStore.records
+    } else {
+        // Map estudiantesStore items to similar structure
+        return estudiantesStore.items.map((est: any) => {
+            const hasPending = est.psychological_referrals_count > 0 || est.psychology_referrals?.length > 0
+            const hasOpenCase = est.psychological_cases_count > 0 || est.psychology_cases?.length > 0
+
+            return {
+                estudiante: est,
+                psychology: {
+                    has_pending_referral: hasPending,
+                    has_open_case: hasOpenCase,
+                    is_in_office: false // We simplified this for non-attendance view
+                }
+            }
+        })
+    }
+})
+
+const hasData = computed(() => records.value.length > 0)
 
 const areAllSelected = computed(() => {
     if (!hasData.value) return false
-    const activeStudents = attendanceStore.records.filter((r: any) => r.estudiante.estado !== 'retirado')
+    const activeStudents = records.value.filter((r: any) => r.estudiante.estado !== 'retirado')
     return activeStudents.length > 0 && selectedStudents.value.length === activeStudents.length
 })
 
@@ -294,7 +364,7 @@ const toggleSelectAll = () => {
     if (areAllSelected.value) {
         selectedStudents.value = []
     } else {
-        selectedStudents.value = attendanceStore.records
+        selectedStudents.value = records.value
             .filter((r: any) => r.estudiante.estado !== 'retirado')
             .map((r: any) => r.estudiante.id)
     }
@@ -320,10 +390,6 @@ const submitReferral = async () => {
     let successCount = 0
     let failCount = 0
 
-    // Enviar uno por uno (o idealmente backend batch endpoint, pero reusamos store)
-    // Para simplificar y dado que el store hace POST individual, hacemos loop.
-    // OJO: Si son muchos, esto es ineficiente, pero funcional para MVP.
-
     for (const studentId of selectedStudents.value) {
         const res = await psychologyStore.createReferral({
             student_id: studentId,
@@ -345,17 +411,21 @@ const submitReferral = async () => {
             text: `Se enviaron ${successCount} referimientos correctamente.` + (failCount > 0 ? ` Fallaron ${failCount}.` : '')
         })
 
-        // UPDATE LOCAL STATE to reflect changes immediately
-        selectedStudents.value.forEach(studentId => {
-            const record = attendanceStore.records.find((r: any) => r.estudiante.id === studentId)
-            if (record) {
-                if (!record.psychology) {
-                    record.psychology = { has_pending_referral: true, has_open_case: false }
-                } else {
-                    record.psychology.has_pending_referral = true
-                }
+        // Refresh Data
+        if (isTeacher.value) {
+            if (selectedAulaId.value && selectedAssignmentId.value) {
+                await attendanceStore.fetchAttendance(selectedDate.value, selectedAulaId.value, selectedAssignmentId.value)
             }
-        })
+        } else {
+            // Re-fetch estudiantes to update status flags
+            if (selectedAulaId.value) {
+                await estudiantesStore.fetchAll({
+                    aula_id: selectedAulaId.value,
+                    status: 'active',
+                    include_psychology: true
+                })
+            }
+        }
 
         selectedStudents.value = [] // Reset selection
     } else {
