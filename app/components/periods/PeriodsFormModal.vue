@@ -139,11 +139,17 @@ const onSubmit = async () => {
     }
     if (errors.label || errors.start_time || errors.end_time) return
 
+    const payload = {
+      ...form,
+      start_time: form.start_time.substring(0, 5),
+      end_time: form.end_time.substring(0, 5)
+    }
+
     let saved: Period
     if (isEdit.value && props.period) {
-      saved = await store.update(props.period.id, form)
+      saved = await store.update(props.period.id, payload)
     } else {
-      saved = await store.create(form)
+      saved = await store.create(payload)
     }
     emit('saved', saved)
     emit('update:modelValue', false)

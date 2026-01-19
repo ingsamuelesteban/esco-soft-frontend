@@ -203,10 +203,24 @@ export const useAuthStore = defineStore('auth', {
             // Usar api.get que ya incluye el token automáticamente
             const response = await api.get<ApiResponse<{ user: User, isAuthenticated: boolean, tenant?: Tenant }>>('/api/me')
 
-            if (response.success) {
-              console.log('Auth initialized, tenant:', response.data.tenant)
-              this.user = response.data.user
-              this.tenant = response.data.tenant || null
+            let data: any = response
+            if (typeof response === 'string') {
+              try {
+                const jsonStart = (response as string).indexOf('{')
+                const jsonEnd = (response as string).lastIndexOf('}')
+                if (jsonStart !== -1 && jsonEnd !== -1) {
+                  const jsonStr = (response as string).substring(jsonStart, jsonEnd + 1)
+                  data = JSON.parse(jsonStr)
+                }
+              } catch (e) {
+                console.error('Error parsing response string in initializeAuth:', e)
+              }
+            }
+
+            if (data.success) {
+              console.log('Auth initialized, tenant:', data.data.tenant)
+              this.user = data.data.user
+              this.tenant = data.data.tenant || null
 
               // Fix: Asegurar que se restaure el tenant ID en localStorage
               // PERO: Si ya hay uno seleccionado y somos master, no lo sobrescribamos con el default del backend (que suele ser localhost=tenant1)
