@@ -260,16 +260,16 @@ export const useAuthStore = defineStore('auth', {
                 }
               }
 
+              this.isAuthenticated = true
               await this.loadUserMenu()
             } else {
               this.clearTokens()
             }
           } catch (error: any) {
             console.error('Error in initializeAuth:', error)
-            // Only clear tokens if unauthorized (401) or forbidden (403)
-            // Do not clear on network errors or 500s
-            if (error.status === 401 || error.statusCode === 401 ||
-              error.status === 403 || error.statusCode === 403) {
+            // Critical fix: Only logout on strict 401. 
+            // 403 might be lack of permissions but valid user. 500 is server error.
+            if (error.status === 401 || error.statusCode === 401) {
               this.clearTokens()
             }
           }

@@ -42,35 +42,40 @@ export async function apiCall<T = any>(url: string, options: Parameters<typeof $
       '/api/tenants'
     ]
 
-    // Check if URL matches any global route (exact or start)
+    // Check if URL triggers isGlobal
+    // Be careful: /api/notifications should not match /api logic if we want to inject tenant!
     const isGlobal = globalRoutes.some(route => url === route || url.startsWith(route + '/'))
 
-    if (tenantId && !isGlobal) {
-      if (url.startsWith('/api/')) {
-        // Ejemplo: /api/menu -> /api/2/menu
-        url = `/api/${tenantId}${url.substring(4)}`
-      } else if (url.startsWith('api/')) {
-        // Ejemplo: api/menu -> api/2/menu
-        url = `api/${tenantId}${url.substring(3)}`
-      } else if (!url.startsWith('http')) {
-        // Si no tiene prefijo api, lo inyectamos al principio si asumimos que va a la API
-        // Ejemplo: /menu -> /2/menu (esto estaba causando el error)
-        // Pero si el backend espera /api/2/menu, el baseURL debe manejar el api prefix
-        // O debemos inyectarlo.
-        // Asumiendo que las llamadas relativas son recursos API:
-        // url = `/${tenantId}${url.startsWith('/') ? url : '/' + url}`
+    if (tenantId && !isGlobal && !url.startsWith('http')) {
+      // Clean leading slashes
+      const cleanPath = url.startsWith('/') ? url.substring(1) : url;
 
-        // CORRECCIÓN: Si el baseURL ya tiene /api, entonces /2/menu resulta en .../api/2/menu
-        // El error previo fue "The route 2/api/menu could not be found". 
-        // Eso significa que la URL final fue .../2/api/menu.
+      // If it already starts with 'api/', inject tenant after 'api/'
+      if (cleanPath.startsWith('api/')) {
+        // e.g. api/notifications -> api/2/notifications
+        url = `api/${tenantId}/${cleanPath.substring(4)}`
+      }
+      // If it doesn't start with 'api/' (e.g. 'notifications'), assumig it is relative
+      // The current backend structure expects /api/{tenant}/...
+      // BUT if we use useRuntimeConfig().public.apiBase (which usually includes /api),
+      // we might just need to prepend the tenant ID if the endpoint is NOT under /api explicitly in the call?
+      // Actually usually API calls are like '/api/resource'.
+      // So let's stick to injecting after 'api/'.
 
-        // Si url era '/api/menu', mi código anterior hizo '/2/api/menu'.
-        // Con este cambio de arriba (startsWith /api/), eso se arregla.
+      // What if the user calls '/notifications'? 
+      // We should probably convert it to `api/${tenantId}/notifications` IF the base url doesn't have it?
+      // Let's assume input URLs usually start with /api/ or api/
 
-        // Si url NO empieza con api... dejemos la lógica simple de prepender,
-        // asumiendo que el baseURL se encarga del resto o que la ruta es relativa al root.
-        const cleanUrl = url.startsWith('/') ? url.substring(1) : url
-        url = `/${tenantId}/${cleanUrl}`
+      else {
+        // Fallback for paths without explicit 'api/' prefix if that ever happens
+        // e.g. 'dashboard/stats' -> '{tenantId}/dashboard/stats' ? or 'api/{tenantId}/...'?
+        // Safest is to inject at root if no api prefix found, assuming tenant prefix is at root of grouped routes
+        url = `${tenantId}/${cleanPath}`
+      }
+
+      // Ensure leading slash for consistency if original had it or if we want absolute path from base
+      if (!url.startsWith('/')) {
+        url = '/' + url
       }
     }
   }
