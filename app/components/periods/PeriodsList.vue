@@ -101,7 +101,7 @@ onMounted(() => {
 })
 
 const loading = computed(() => store.loading)
-const filtered = computed<Period[]>(() => store.items)
+const filtered = computed<Period[]>(() => store.items || [])
 
 const onDragStart = (idx: number) => {
   draggedIndex.value = idx
