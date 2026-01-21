@@ -78,6 +78,16 @@ export const useLocksStore = defineStore('locks', {
                 console.error("Error fetching lock details", e)
                 throw e
             }
+        },
+
+        async getLockFullDetails(studentId: number) {
+            try {
+                const response = await api.get(`/api/psychology/locks/${studentId}/full-details`)
+                return response
+            } catch (e: any) {
+                console.error("Error fetching lock full details", e)
+                throw e
+            }
         }
     }
 })

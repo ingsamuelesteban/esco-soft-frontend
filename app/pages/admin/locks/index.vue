@@ -133,100 +133,14 @@
                     </div>
                 </div>
             </div>
-            <!-- Modal Details -->
-            <div v-if="showDetailsModal"
-                class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
-                <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl p-6">
-                    <div class="flex justify-between items-center mb-4">
-                        <div>
-                            <h3 class="text-lg font-bold">Detalles del Bloqueo</h3>
-                            <p class="text-sm text-gray-600">{{ selectedLockStudentName }}</p>
-                        </div>
-                        <button @click="showDetailsModal = false" class="text-gray-500 hover:text-gray-700">
-                            <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M6 18L18 6M6 6l12 12" />
-                            </svg>
-                        </button>
-                    </div>
 
-                    <div v-if="detailsLoading" class="text-center py-6">
-                        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                        <p class="text-sm text-gray-500 mt-2">Cargando detalles...</p>
-                    </div>
-
-                    <div v-else class="space-y-6 max-h-[60vh] overflow-y-auto">
-                        <!-- Academic Failures -->
-                        <div v-if="detailsData.academic && detailsData.academic.length > 0">
-                            <h4 class="font-medium text-red-700 border-b border-red-200 pb-1 mb-2">Materias Académicas
-                                Reprobadas</h4>
-                            <table class="min-w-full text-sm">
-                                <thead class="bg-red-50">
-                                    <tr>
-                                        <th class="px-3 py-2 text-left">Materia</th>
-                                        <th class="px-3 py-2 text-left">Periodo</th>
-                                        <th class="px-3 py-2 text-right">Nota</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(item, idx) in detailsData.academic" :key="idx" class="border-b">
-                                        <td class="px-3 py-2 text-gray-700">{{ item.materia }}</td>
-                                        <td class="px-3 py-2 text-gray-700">Periodo {{ item.periodo }}</td>
-                                        <td class="px-3 py-2 text-right font-bold text-red-600">{{ item.nota }}</td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <!-- Technical Failures -->
-                        <div v-if="detailsData.technical && detailsData.technical.length > 0">
-                            <h4 class="font-medium text-orange-700 border-b border-orange-200 pb-1 mb-2">Módulos
-                                Técnicos Reprobados</h4>
-                            <table class="min-w-full text-sm">
-                                <thead class="bg-orange-50">
-                                    <tr>
-                                        <th class="px-3 py-2 text-left">Materia</th>
-                                        <th class="px-3 py-2 text-left">RA</th>
-                                        <th class="px-3 py-2 text-left">Periodo</th>
-                                        <th class="px-3 py-2 text-right">Nota</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="(item, idx) in detailsData.technical" :key="idx" class="border-b">
-                                        <td class="px-3 py-2 text-gray-700">{{ item.materia }}</td>
-                                        <td class="px-3 py-2 text-gray-700">RA {{ item.ra }} (Op. {{ item.oportunidad
-                                        }})</td>
-                                        <td class="px-3 py-2 text-gray-700">Periodo {{ item.periodo }}</td>
-                                        <td class="px-3 py-2 text-right font-bold text-red-600">
-                                            {{ item.nota }} <span v-if="item.valor_ra"
-                                                class="text-xs text-gray-400 font-normal">/ {{ item.valor_ra }}</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-
-                        <div v-if="(!detailsData.academic?.length && !detailsData.technical?.length)"
-                            class="text-center py-4 bg-gray-50 rounded">
-                            <p class="text-gray-500 italic">No se encontraron asignaturas reprobadas que justifiquen un
-                                bloqueo automático actual.</p>
-                            <p class="text-xs text-gray-400 mt-1">Es posible que el bloqueo sea manual o que las notas
-                                hayan sido corregidas sin actualizar el bloqueo.</p>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 flex justify-end">
-                        <button @click="showDetailsModal = false"
-                            class="bg-gray-200 text-gray-800 px-4 py-2 rounded hover:bg-gray-300 text-sm">Cerrar</button>
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed, reactive } from 'vue'
+import { useRouter } from 'vue-router'
 import { useLocksStore } from '~/stores/locks'
 import { useAulasStore } from '~/stores/aulas'
 import { LockOpenIcon, EyeIcon } from '@heroicons/vue/24/outline'
@@ -347,20 +261,9 @@ async function unlock(lock: any) {
     }
 }
 
-async function viewDetails(lock: any) {
-    selectedLockStudentName.value = `${lock.student?.nombres} ${lock.student?.apellidos}`
-    showDetailsModal.value = true
-    detailsLoading.value = true
-    detailsData.value = {}
+const router = useRouter()
 
-    try {
-        const data = await store.getLockDetails(lock.student_id)
-        detailsData.value = data
-    } catch (e) {
-        console.error(e)
-        // detailsData remains empty or show error
-    } finally {
-        detailsLoading.value = false
-    }
+async function viewDetails(lock: any) {
+    router.push(`/admin/locks/${lock.student_id}`)
 }
 </script>
