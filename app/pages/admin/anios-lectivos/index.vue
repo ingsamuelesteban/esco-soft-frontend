@@ -32,17 +32,21 @@
                         </div>
                         <div class="flex items-center gap-4">
                             <!-- Toggle Activo -->
-                            <button @click="toggleActive(anio)" 
+                            <button @click="toggleActive(anio)"
                                 class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
                                 :class="anio.activo ? 'bg-blue-600' : 'bg-gray-200'"
                                 :title="anio.activo ? 'Año activo actualmente' : 'Click para activar este año'">
                                 <span class="sr-only">Usar configuración</span>
-                                <span aria-hidden="true" 
+                                <span aria-hidden="true"
                                     class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"
                                     :class="anio.activo ? 'translate-x-5' : 'translate-x-0'">
                                 </span>
                             </button>
-                            
+
+                            <button v-if="anio.activo" @click="openConfigModal(anio)"
+                                class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
+                                {{ hasPeriods(anio.id) ? 'Actualizar Periodos' : 'Configurar Periodos' }}
+                            </button>
                             <button @click="openModal(anio)"
                                 class="text-blue-600 hover:text-blue-900 text-sm font-medium">Editar</button>
                             <button @click="confirmDelete(anio)"
@@ -56,12 +60,16 @@
             </div>
         </div>
 
+        <!-- Academic Periods Config Modal -->
+        <AcademicPeriodsConfig v-if="showConfigModal && selectedAnioId" :anioId="selectedAnioId"
+            @close="closeConfigModal" />
+
         <!-- Modal -->
         <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
             <div class="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden">
                 <div class="px-6 py-4 border-b flex justify-between items-center">
                     <h3 class="text-lg font-medium text-gray-900">{{ isEdit ? 'Editar Año Lectivo' : 'Nuevo Año Lectivo'
-                    }}</h3>
+                        }}</h3>
                     <button @click="closeModal" class="text-gray-400 hover:text-gray-500">
                         <span class="sr-only">Cerrar</span>
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -116,16 +124,59 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive } from 'vue'
 import { useAniosLectivosStore, type AnioLectivo } from '../../../stores/anios_lectivos'
+import { useAcademicPeriodsStore } from '../../../stores/academic_periods'
+import AcademicPeriodsConfig from '../../../components/anios-lectivos/AcademicPeriodsConfig.vue'
 
 const store = useAniosLectivosStore()
+const periodsStore = useAcademicPeriodsStore()
 const loading = computed(() => store.loading)
 const error = computed(() => store.error)
 const items = computed(() => store.items)
+const allPeriods = computed(() => periodsStore.periods) // Accessing state directly might need fetchAll logic in store that populates 'periods' with everything or a separate list. 
+// Wait, store.periods in academic_periods.ts is rewritten by fetchByAnio. 
+// We need a way to get ALL periods to check existence without overwriting the specific one needed for the modal.
+// Or we just fetch all blindly into a separate state or just use an action that returns them.
+// Let's modify the store to support holding "all loaded periods" or just fetch them here locally/or in a new store property.
+// Given strict setup, let's look at academic_periods.ts again. 
+// It has `periods` state. `fetchByAnio` overwrites it.
+// I should probably add `fetchAll` to store or just use `api` call here to check.
+// Better: Add `checkConfiguredYears` action to store that returns list of year IDs that have periods.
+
+const configuredYears = ref<number[]>([])
+
+onMounted(async () => {
+    store.fetchAll()
+    loadConfiguredYears()
+})
+
+async function loadConfiguredYears() {
+    // We can use the store to fetch all and process, but `fetchByAnio` overwrites `periods`.
+    // Let's use a direct API call here or add a dedicated method in store.
+    // Let's add `fetchAll` to store that populates a differnet list or just returns data.
+    // For now, I will use the store's `fetchAll` if I create it, or just use api directly here for simplicity to not break store pattern if complex.
+    // Actually, let's use the store. I'll uncomment the import and implementation below.
+    try {
+        const response = await periodsStore.getAll()
+        // response should be all periods from backend
+        const periods: any[] = response || []
+        const years = new Set(periods.map((p: any) => p.anio_lectivo_id))
+        configuredYears.value = Array.from(years) as number[]
+    } catch (e) {
+        console.error("Error checking configured periods", e)
+    }
+}
+
+function hasPeriods(anioId: number) {
+    return configuredYears.value.includes(anioId)
+}
 
 const showModal = ref(false)
 const isEdit = ref(false)
 const formError = ref<string | null>(null)
 const editingId = ref<number | null>(null)
+
+const showConfigModal = ref(false)
+const selectedAnioId = ref<number | null>(null)
 
 const form = reactive({
     nombre: '',
@@ -136,6 +187,16 @@ const form = reactive({
 onMounted(() => {
     store.fetchAll()
 })
+
+function openConfigModal(anio: AnioLectivo) {
+    selectedAnioId.value = anio.id
+    showConfigModal.value = true
+}
+
+function closeConfigModal() {
+    showConfigModal.value = false
+    selectedAnioId.value = null
+}
 
 function openModal(item?: AnioLectivo) {
     formError.value = null
@@ -186,16 +247,16 @@ async function confirmDelete(item: AnioLectivo) {
 async function toggleActive(item: AnioLectivo) {
     // Removed guard to allow re-activating an item which triggers the backend cleanup
     // if (item.activo) return 
-    
+
     // Optimistic UI Update:
     // 1. Snapshot current state in case we need to revert
     const previousState = items.value.map(i => ({ id: i.id, activo: i.activo }))
-    
+
     // 2. Update local state immediately
     store.items.forEach(i => {
         i.activo = (i.id === item.id)
     })
-    
+
     try {
         // 3. Call backend
         await store.update(item.id, { activo: true })

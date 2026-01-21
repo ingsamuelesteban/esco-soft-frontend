@@ -474,6 +474,21 @@
                 ⚠️ El valor ingresado excede el porcentaje disponible ({{ porcentajeDisponible }}%)
               </p>
             </div>
+
+            <!-- FECHAS RA (NUEVO) -->
+            <div class="mt-4 grid grid-cols-2 gap-3">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Inicio</label>
+                <input v-model="fechaInicioRA" type="date" :disabled="guardandoValorRA"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Fin</label>
+                <input v-model="fechaFinRA" type="date" :disabled="guardandoValorRA"
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+              </div>
+            </div>
+            <p class="text-xs text-gray-500 mt-1">Definir el periodo de evaluación para este RA.</p>
           </div>
 
           <div class="flex justify-end space-x-3">
@@ -550,6 +565,8 @@ const moduloData = ref(null)
 const mostrarModalValorRA = ref(false)
 const raParaConfigurar = ref(null)
 const valorRAActual = ref('')
+const fechaInicioRA = ref('')
+const fechaFinRA = ref('')
 const guardandoValorRA = ref(false)
 
 // Modal Calificar Oportunidad (RA)
@@ -659,7 +676,8 @@ const cargarModulosYEstudiantes = async () => {
       nombre: assignment.materia?.nombre,
       tipo: assignment.materia?.tipo,
       cantidad_ra: assignment.cantidad_ra, // Configuración del Assignment
-      valores_ra: assignment.valores_ra // Configuración del Assignment
+      valores_ra: assignment.valores_ra, // Configuración del Assignment
+      fechas_ra: assignment.fechas_ra // Fechas guardadas
     }))
 
     // Limpiar selección de módulo
@@ -724,6 +742,8 @@ const cerrarModalValorRA = () => {
   mostrarModalValorRA.value = false
   raParaConfigurar.value = null
   valorRAActual.value = ''
+  fechaInicioRA.value = ''
+  fechaFinRA.value = ''
   guardandoValorRA.value = false
 }
 
@@ -732,6 +752,11 @@ const cargarValorRAActual = async (raNumero) => {
     const response = await api.get(`/api/class-assignments/${moduloSeleccionado.value}/ra-values`)
     // Filtrar el valor específico si es necesario, aunque el endpoint devuelve todo
     valorRAActual.value = response.valores_ra?.[`ra_${raNumero}`] || ''
+
+    // Cargar fechas si existen
+    const fechas = response.fechas_ra?.[`ra_${raNumero}`] || {}
+    fechaInicioRA.value = fechas.start ? fechas.start.substring(0, 10) : ''
+    fechaFinRA.value = fechas.end ? fechas.end.substring(0, 10) : ''
   } catch (error) {
     console.error('Error al cargar valor del RA:', error)
     valorRAActual.value = ''
@@ -739,12 +764,23 @@ const cargarValorRAActual = async (raNumero) => {
 }
 
 const guardarValorRA = async (valor) => {
-  const raNumero = raParaConfigurar.value // Capturar valor antes de que se limpie
+  const raNumero = raParaConfigurar.value
+
+  // Validar fechas frontend
+  if (fechaInicioRA.value && fechaFinRA.value) {
+    if (new Date(fechaInicioRA.value) > new Date(fechaFinRA.value)) {
+      mostrarMensajeError('La fecha de fin no puede ser anterior a la fecha de inicio')
+      return
+    }
+  }
+
   guardandoValorRA.value = true
   try {
     await api.post(`/api/class-assignments/${moduloSeleccionado.value}/ra-values`, {
       ra_numero: raNumero,
-      valor: valor
+      valor: valor,
+      start_date: fechaInicioRA.value || null,
+      end_date: fechaFinRA.value || null
     })
 
     // Actualizar los datos del módulo con el nuevo valor
