@@ -145,9 +145,15 @@
                                                 <div class="mt-2 text-sm text-gray-700 whitespace-pre-wrap">{{
                                                     entry.content }}</div>
                                             </div>
-                                            <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                                            <div
+                                                class="text-right text-sm whitespace-nowrap text-gray-500 flex flex-col items-end">
                                                 <time :datetime="entry.date_of_event">{{ formatDate(entry.date_of_event)
                                                 }}</time>
+                                                <button @click="openEditEntry(entry)"
+                                                    class="mt-2 p-1.5 rounded-md text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-colors shadow-sm"
+                                                    title="Editar entrada">
+                                                    <PencilSquareIcon class="h-4 w-4" />
+                                                </button>
                                             </div>
                                         </div>
                                     </div>
@@ -288,6 +294,7 @@ import { usePsychologyStore } from '../../stores/psychology'
 import { useAuthStore } from '../../stores/auth'
 import { api } from '~/utils/api'
 import Swal from 'sweetalert2'
+import { PencilSquareIcon } from '@heroicons/vue/20/solid'
 
 const props = defineProps<{
     caseId: number
@@ -396,28 +403,61 @@ const saveCategories = async () => {
     savingCategories.value = false
 }
 
+const editingEntryId = ref<number | null>(null)
+
+const openEditEntry = (entry: any) => {
+    editingEntryId.value = entry.id
+    newEntry.value = {
+        type: entry.type,
+        content: entry.content,
+        date_of_event: entry.date_of_event ? entry.date_of_event.split('T')[0] : new Date().toISOString().split('T')[0]
+    }
+    showAddEntry.value = true
+}
+
 const saveEntry = async () => {
     if (!newEntry.value.content) return
 
     savingEntry.value = true
-    const res = await store.addCaseEntry({
-        case_id: props.caseId,
-        ...newEntry.value
-    })
+    let res;
+
+    if (editingEntryId.value) {
+        // Update
+        res = await store.updateCaseEntry(editingEntryId.value, {
+            case_id: props.caseId, // validated by backend but good to send? backend ignores case_id on update generally or validates it belongs to same
+            ...newEntry.value
+        })
+    } else {
+        // Create
+        res = await store.addCaseEntry({
+            case_id: props.caseId,
+            ...newEntry.value
+        })
+    }
 
     if (res.success) {
         // Reset form
         newEntry.value.content = ''
         newEntry.value.type = 'observation'
+        editingEntryId.value = null
         showAddEntry.value = false
         // Reload case to see new entry
         await loadCase()
-        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Entrada guardada', timer: 2000, showConfirmButton: false })
+        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: editingEntryId.value ? 'Entrada actualizada' : 'Entrada guardada', timer: 2000, showConfirmButton: false })
     } else {
         Swal.fire('Error', res.error, 'error')
     }
     savingEntry.value = false
 }
+
+// Reset editing state when modal closes manually
+watch(showAddEntry, (val) => {
+    if (!val) {
+        editingEntryId.value = null
+        newEntry.value.content = ''
+        newEntry.value.type = 'observation'
+    }
+})
 
 const closeCase = async () => {
     const result = await Swal.fire({

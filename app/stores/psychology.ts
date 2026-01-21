@@ -99,6 +99,18 @@ export const usePsychologyStore = defineStore('psychology', () => {
         }
     }
 
+    const updateCaseEntry = async (id: number, entryData: any) => {
+        loading.value = true
+        try {
+            const { data } = await api.put(`/api/psychology/case-entries/${id}`, entryData)
+            return { success: true, data }
+        } catch (e: any) {
+            return { success: false, error: e.response?._data?.message }
+        } finally {
+            loading.value = false
+        }
+    }
+
     const fetchCategories = async () => {
         try {
             const res = await api.get('/api/psychology/categories')
@@ -202,6 +214,7 @@ export const usePsychologyStore = defineStore('psychology', () => {
         createCase,
         fetchCase,
         addCaseEntry,
+        updateCaseEntry,
         fetchCategories,
         createCategory,
         updateCategory,
