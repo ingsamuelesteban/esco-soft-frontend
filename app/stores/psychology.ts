@@ -28,7 +28,7 @@ export const usePsychologyStore = defineStore('psychology', () => {
             const { data } = await api.get('/api/psychology/referrals', { params })
             return { data }
         } catch (e: any) {
-            error.value = e.response?._data?.message || 'Error al cargar referimientos'
+            error.value = e.response?._data?.message || 'Error al cargar reportes'
             return { data: [] }
         } finally {
             loading.value = false

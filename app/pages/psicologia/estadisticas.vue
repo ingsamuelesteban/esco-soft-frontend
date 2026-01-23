@@ -73,7 +73,7 @@
                             </div>
                             <div class="ml-5 w-0 flex-1">
                                 <dl>
-                                    <dt class="text-sm font-medium text-gray-500 truncate">Referimientos Pendientes</dt>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">Reportes Pendientes</dt>
                                     <dd class="text-lg font-semibold text-gray-900">{{ stats.summary?.pending_referrals
                                     }}</dd>
                                 </dl>
@@ -96,7 +96,7 @@
                             </div>
                             <div class="ml-5 w-0 flex-1">
                                 <dl>
-                                    <dt class="text-sm font-medium text-gray-500 truncate">Total Referimientos</dt>
+                                    <dt class="text-sm font-medium text-gray-500 truncate">Total Reportes</dt>
                                     <dd class="text-lg font-semibold text-gray-900">{{ stats.summary?.total_referrals }}
                                     </dd>
                                 </dl>
@@ -213,7 +213,11 @@ const calculatePercentageOfMax = (value: number) => {
 
 const monthLabel = (yyyymm: string) => {
     if (!yyyymm) return ''
-    const [year, month] = yyyymm.split('-')
+    const parts = yyyymm.split('-')
+    if (parts.length !== 2) return ''
+    const year = parts[0]
+    const month = parts[1]
+    if (!year || !month) return ''
     const date = new Date(parseInt(year), parseInt(month) - 1, 1)
     return date.toLocaleDateString('es-ES', { month: 'short', year: '2-digit' })
 }

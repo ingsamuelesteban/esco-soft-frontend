@@ -46,6 +46,10 @@
                     <p class="text-xs text-gray-500 mt-1">
                         Iniciado el {{ formatDate(caso.start_date) }}
                     </p>
+                    <p v-if="caso.referral?.reporter" class="text-xs text-gray-600 mt-1">
+                        <span class="font-medium">Enviado por:</span> {{ caso.referral.reporter.name ||
+                            (caso.referral.reporter.nombres + ' ' + caso.referral.reporter.apellidos) }}
+                    </p>
                     <div class="mt-2 text-xs">
                         <p v-if="caso.status === 'open' && caso.assigned_to" class="text-indigo-600 font-medium">
                             Asignado a: {{ caso.assigned_to.name }}
@@ -76,9 +80,11 @@ import { usePsychologyStore } from '../../stores/psychology'
 import { useAuthStore } from '../../stores/auth'
 
 const props = withDefaults(defineProps<{
-    status?: 'open' | 'closed'
+    status?: 'open' | 'closed',
+    reportedByMe?: boolean
 }>(), {
-    status: 'open'
+    status: 'open',
+    reportedByMe: false
 })
 
 const emit = defineEmits(['select'])
@@ -97,7 +103,11 @@ const loadCases = async () => {
     const isPowerful = userRole === 'admin' || userRole === 'master'
 
     const filter: any = { status: props.status }
-    if (!isPowerful) {
+
+    if (props.reportedByMe) {
+        filter.reported_by = 'me'
+    } else if (!isPowerful) {
+        // If not powerful and not asking for own reports, assume psychologist looking for assigned cases
         filter.assigned_to = 'me'
     }
 

@@ -165,7 +165,7 @@
             </div>
 
             <div v-else-if="historyData && historyData.length > 0"
-                class="bg-white shadow-sm rounded-lg overflow-hidden">
+                class="bg-white shadow-sm rounded-lg overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
@@ -205,6 +205,16 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ item.reporter?.name || 'Sistema' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button @click="openDetailModal(item)" class="text-indigo-600 hover:text-indigo-900">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </button>
                             </td>
                         </tr>
                     </tbody>
@@ -278,6 +288,66 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal de Detalle -->
+        <div v-if="showDetailModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="detail-modal-title"
+            role="dialog" aria-modal="true">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
+                    @click="closeDetailModal"></div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                <div
+                    class="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div
+                                class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
+                                <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                                <h3 class="text-lg leading-6 font-medium text-gray-900" id="detail-modal-title">Detalles
+                                    del Despacho</h3>
+                                <div class="mt-4 border-t border-gray-100 pt-4">
+                                    <div class="grid grid-cols-1 gap-y-4">
+                                        <div>
+                                            <dt class="text-sm font-medium text-gray-500">Estudiante</dt>
+                                            <dd class="mt-1 text-sm text-gray-900 font-semibold">{{
+                                                selectedDispatch?.student?.nombres }} {{
+                                                    selectedDispatch?.student?.apellidos }}</dd>
+                                        </div>
+                                        <div>
+                                            <dt class="text-sm font-medium text-gray-500">Fecha y Hora</dt>
+                                            <dd class="mt-1 text-sm text-gray-900">{{
+                                                formatDate(selectedDispatch?.dismissed_at) }}</dd>
+                                        </div>
+                                        <div>
+                                            <dt class="text-sm font-medium text-gray-500">Motivo</dt>
+                                            <dd class="mt-1 text-sm text-gray-900 bg-gray-50 p-3 rounded-md">{{
+                                                selectedDispatch?.reason }}</dd>
+                                        </div>
+                                        <div>
+                                            <dt class="text-sm font-medium text-gray-500">Despachado por</dt>
+                                            <dd class="mt-1 text-sm text-gray-900">{{ selectedDispatch?.reporter?.name
+                                                || 'Sistema' }}</dd>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <button type="button" @click="closeDetailModal"
+                            class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -298,6 +368,20 @@ const showModal = ref(false)
 const selectedStudent = ref<any>(null)
 const dismissReason = ref('')
 const submitting = ref(false)
+
+// Detail Modal State
+const showDetailModal = ref(false)
+const selectedDispatch = ref<any>(null)
+
+const openDetailModal = (dispatch: any) => {
+    selectedDispatch.value = dispatch
+    showDetailModal.value = true
+}
+
+const closeDetailModal = () => {
+    showDetailModal.value = false
+    selectedDispatch.value = null
+}
 
 // History Filter
 const filters = ref<{ date: string, month: string, year: number | string }>({

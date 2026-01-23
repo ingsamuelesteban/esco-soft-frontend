@@ -154,6 +154,15 @@
                                 <span v-else class="text-xs text-gray-400 italic">Sin adjunto</span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <button @click="openDetailModal(excuse)"
+                                    class="text-indigo-600 hover:text-indigo-900 bg-indigo-50 hover:bg-indigo-100 p-2 rounded-full transition-colors mr-2">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </button>
                                 <button v-if="!excuse.cancelled_at" @click="cancelExcuse(excuse)"
                                     title="Finalizar/Cancelar Excusa"
                                     class="text-orange-600 hover:text-orange-900 bg-orange-50 hover:bg-orange-100 p-2 rounded-full transition-colors">
@@ -199,6 +208,76 @@
                 </nav>
             </div>
         </div>
+
+        <!-- Modal de Detalle -->
+        <div v-if="showDetailModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="detail-modal-title"
+            role="dialog" aria-modal="true">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
+                    @click="closeDetailModal"></div>
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                <div
+                    class="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <div class="sm:flex sm:items-start">
+                            <div
+                                class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
+                                <svg class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                                <h3 class="text-lg leading-6 font-medium text-gray-900" id="detail-modal-title">Detalles
+                                    de la Excusa</h3>
+                                <div class="mt-4 border-t border-gray-100 pt-4">
+                                    <div class="grid grid-cols-1 gap-y-4">
+                                        <div>
+                                            <dt class="text-sm font-medium text-gray-500">Estudiante</dt>
+                                            <dd class="mt-1 text-sm text-gray-900 font-semibold">{{
+                                                selectedExcuse?.estudiante?.nombres }} {{
+                                                    selectedExcuse?.estudiante?.apellidos }}</dd>
+                                        </div>
+                                        <div>
+                                            <dt class="text-sm font-medium text-gray-500">Periodo</dt>
+                                            <dd class="mt-1 text-sm text-gray-900">Desde {{
+                                                formatDate(selectedExcuse?.start_date) }} hasta {{
+                                                    formatDate(selectedExcuse?.end_date) }}</dd>
+                                        </div>
+                                        <div>
+                                            <dt class="text-sm font-medium text-gray-500">Concepto/Motivo</dt>
+                                            <dd class="mt-1 text-sm text-gray-900 bg-gray-50 p-3 rounded-md">{{
+                                                selectedExcuse?.concept }}</dd>
+                                        </div>
+                                        <div>
+                                            <dt class="text-sm font-medium text-gray-500">Registrado por</dt>
+                                            <dd class="mt-1 text-sm text-gray-900">{{ selectedExcuse?.user?.name ||
+                                                'Desconocido' }}</dd>
+                                        </div>
+                                        <div v-if="selectedExcuse?.cancelled_at">
+                                            <dt class="text-sm font-medium text-red-500">Cancelada/Finalizada</dt>
+                                            <dd class="mt-1 text-xs text-red-600 bg-red-50 p-2 rounded">
+                                                {{ selectedExcuse.cancellation_reason }}<br>
+                                                <span class="text-gray-400">{{ formatDate(selectedExcuse.cancelled_at)
+                                                }}</span>
+                                            </dd>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                        <button type="button" @click="closeDetailModal"
+                            class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                            Cerrar
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
 
         <!-- Create Modal -->
         <TransitionRoot appear :show="isOpen" as="template">
@@ -584,6 +663,20 @@ const cancelExcuse = async (excuse) => {
         })
         fetchExcuses()
     }
+}
+
+// Detail Modal Logic
+const showDetailModal = ref(false)
+const selectedExcuse = ref(null)
+
+const openDetailModal = (excuse) => {
+    selectedExcuse.value = excuse
+    showDetailModal.value = true
+}
+
+const closeDetailModal = () => {
+    showDetailModal.value = false
+    selectedExcuse.value = null
 }
 
 

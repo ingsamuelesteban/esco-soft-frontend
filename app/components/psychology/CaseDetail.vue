@@ -30,7 +30,7 @@
                                 :style="{ backgroundColor: cat.color ? cat.color + '20' : '', color: cat.color }">
                                 {{ cat.name }}
                             </span>
-                            <button @click="openCategoryModal"
+                            <button @click="openCategoryModal" v-if="isPsychologist"
                                 class="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center">
                                 <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -48,7 +48,7 @@
                     </span>
                     <div class="flex items-center space-x-2">
                         <!-- Toggle En Oficina / En Aula -->
-                        <div class="flex items-center mr-4" v-if="currentCase.status === 'open'">
+                        <div class="flex items-center mr-4" v-if="currentCase.status === 'open' && isPsychologist">
                             <button @click="toggleInOffice"
                                 class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                 :class="currentCase.in_office ? 'bg-indigo-600' : 'bg-gray-200'"
@@ -69,12 +69,12 @@
                         </button>
                     </div>
                     <!-- Botón Cerrar Caso (Solo si está abierto) -->
-                    <button v-if="currentCase.status === 'open'" @click="closeCase"
+                    <button v-if="currentCase.status === 'open' && isPsychologist" @click="closeCase"
                         class="px-3 py-1 text-sm text-red-600 hover:bg-red-50 rounded border border-red-200">
                         Cerrar Caso
                     </button>
                     <!-- Botón Transferir -->
-                    <button v-if="currentCase.status === 'open'" @click="transferCase"
+                    <button v-if="currentCase.status === 'open' && isPsychologist" @click="transferCase"
                         title="Transferir a otro psicólogo"
                         class="px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded border border-gray-200">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -83,7 +83,7 @@
                         </svg>
                     </button>
                     <!-- Botón Reabrir Caso (Solo si está cerrado) -->
-                    <button v-if="currentCase.status === 'closed'" @click="reopenCase"
+                    <button v-if="currentCase.status === 'closed' && isPsychologist" @click="reopenCase"
                         class="px-3 py-1 text-sm text-green-600 hover:bg-green-50 rounded border border-green-200">
                         Reabrir Caso
                     </button>
@@ -303,6 +303,11 @@ const props = defineProps<{
 const emit = defineEmits(['back'])
 const store = usePsychologyStore()
 const authStore = useAuthStore()
+
+const isPsychologist = computed(() => {
+    const role = authStore.user?.role?.toLowerCase() || ''
+    return role === 'admin' || role === 'master' || role.includes('psic') || role.includes('orient')
+})
 
 const currentCase = ref<any>(null)
 const loading = ref(true)

@@ -21,7 +21,7 @@
                         </div>
                         <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                             <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                                Referir a Orientación y Psicología
+                                Reportar a Orientación y Psicología
                             </h3>
                             <div class="mt-2">
                                 <p class="text-sm text-gray-500 mb-4">
@@ -58,10 +58,24 @@
 
                                     <div>
                                         <label for="reason" class="block text-sm font-medium text-gray-700">Motivo del
-                                            Referimiento</label>
+                                            Reporte</label>
                                         <textarea id="reason" v-model="form.reason" rows="3" required
                                             class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
                                             placeholder="Describa la situación o comportamiento observado..."></textarea>
+                                    </div>
+
+                                    <div class="flex items-start">
+                                        <div class="flex items-center h-5">
+                                            <input id="send_student" v-model="form.send_student" type="checkbox"
+                                                class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" />
+                                        </div>
+                                        <div class="ml-3 text-sm">
+                                            <label for="send_student" class="font-medium text-gray-700">¿Enviar
+                                                estudiante a psicología?</label>
+                                            <p class="text-gray-500">Marque esta opción si el estudiante debe
+                                                presentarse al departamento de psicología. Si no se marca, solo se
+                                                abrirá el caso para seguimiento.</p>
+                                        </div>
                                     </div>
                                 </form>
                             </div>
@@ -72,7 +86,7 @@
                     <button type="button" @click="handleSubmit" :disabled="loading"
                         class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
                         <span v-if="loading">Enviando...</span>
-                        <span v-else>Referir Estudiante</span>
+                        <span v-else>Crear Reporte</span>
                     </button>
                     <button type="button" @click="$emit('close')" :disabled="loading"
                         class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
@@ -104,7 +118,8 @@ const priorityInput = ref<HTMLSelectElement | null>(null)
 const form = reactive({
     priority: 'medium',
     reason: '',
-    assigned_to: ''
+    assigned_to: '',
+    send_student: false
 })
 
 const psychologists = ref<Array<{ id: number, name: string }>>([])
@@ -134,22 +149,23 @@ const handleSubmit = async () => {
         student_id: props.studentId,
         reason: form.reason,
         priority: form.priority,
-        assigned_to: form.assigned_to || null
+        assigned_to: form.assigned_to || null,
+        send_student: form.send_student
     })
     loading.value = false
 
     if (res.success) {
         Swal.fire({
             icon: 'success',
-            title: 'Referimiento Enviado',
-            text: 'El departamento de psicología ha sido notificado.',
-            timer: 2000,
+            title: 'Reporte Creado',
+            text: 'El caso ha sido abierto y el departamento de psicología ha sido notificado.',
+            timer: 2500,
             showConfirmButton: false
         })
         emit('saved')
         emit('close')
     } else {
-        Swal.fire('Error', res.error || 'No se pudo enviar', 'error')
+        Swal.fire('Error', res.error || 'No se pudo crear el reporte', 'error')
     }
 }
 </script>

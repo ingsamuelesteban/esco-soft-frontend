@@ -4,8 +4,8 @@
         <div class="bg-white shadow-sm rounded-lg p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Referimientos a Psicología</h1>
-                    <p class="text-sm text-gray-600 mt-1">Seleccione un aula y los estudiantes que desea referir.</p>
+                    <h1 class="text-2xl font-bold text-gray-900">Reportes a Psicología</h1>
+                    <p class="text-sm text-gray-600 mt-1">Seleccione un aula y los estudiantes que desea reportar.</p>
                 </div>
             </div>
         </div>
@@ -66,7 +66,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                     </svg>
-                    Referir Seleccionados ({{ selectedStudents.length }})
+                    Reportar Seleccionados ({{ selectedStudents.length }})
                 </button>
             </div>
 
@@ -84,16 +84,13 @@
                             <th scope="col"
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Estudiante</th>
-                            <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                Estado</th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
                         <tr v-for="record in records" :key="record.estudiante.id" class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <input type="checkbox" :value="record.estudiante.id" v-model="selectedStudents"
-                                    :disabled="record.estudiante.estado === 'retirado' || record.psychology?.has_pending_referral || record.psychology?.has_open_case"
+                                    :disabled="record.estudiante.estado === 'retirado'"
                                     class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
@@ -113,33 +110,6 @@
                                             }}</div>
                                     </div>
                                 </div>
-                            </td>
-                            <td class="px-6 py-4 whitespace-nowrap">
-                                <span v-if="record.estudiante.estado === 'retirado'"
-                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
-                                    Retirado
-                                </span>
-                                <span v-else-if="record.psychology?.has_pending_referral"
-                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800"
-                                    title="Ya tiene un referimiento pendiente">
-                                    Referido
-                                </span>
-                                <template v-else-if="record.psychology?.has_open_case">
-                                    <span v-if="record.psychology?.is_in_office"
-                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800"
-                                        title="Actualmente en oficina de psicología">
-                                        En Psicología
-                                    </span>
-                                    <span v-else
-                                        class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800"
-                                        title="Tiene un caso abierto pero está en el aula">
-                                        Caso Abierto
-                                    </span>
-                                </template>
-                                <span v-else
-                                    class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                    Disponible
-                                </span>
                             </td>
                         </tr>
                     </tbody>
@@ -170,7 +140,7 @@
                     class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg w-full">
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                         <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                            Referir Estudiantes ({{ selectedStudents.length }})
+                            Reportar Estudiantes ({{ selectedStudents.length }})
                         </h3>
                         <div class="mt-4">
                             <form @submit.prevent="submitReferral" class="space-y-4">
@@ -201,13 +171,28 @@
                                         class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
                                         placeholder="Describa el motivo..."></textarea>
                                 </div>
+
+                                <div class="flex items-start">
+                                    <div class="flex items-center h-5">
+                                        <input id="send_student" v-model="form.send_student" type="checkbox"
+                                            class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" />
+                                    </div>
+                                    <div class="ml-3 text-sm">
+                                        <label for="send_student" class="font-medium text-gray-700">¿Enviar estudiante a
+                                            psicología?</label>
+                                        <p class="text-gray-500">Marque esta opción si el estudiante debe presentarse al
+                                            departamento de psicología. Si no se marca, solo se abrirá el caso para
+                                            seguimiento.
+                                        </p>
+                                    </div>
+                                </div>
                             </form>
                         </div>
                     </div>
                     <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                         <button type="button" @click="submitReferral" :disabled="submitting"
                             class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
-                            {{ submitting ? 'Enviando...' : 'Referir' }}
+                            {{ submitting ? 'Enviando...' : 'Reportar' }}
                         </button>
                         <button type="button" @click="closeModal"
                             class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
@@ -253,7 +238,8 @@ const psychologists = ref<any[]>([])
 const form = reactive({
     priority: 'medium',
     reason: '',
-    assigned_to: '' as string | number | null
+    assigned_to: '' as string | number | null,
+    send_student: false
 })
 
 // Check Roles
@@ -395,7 +381,8 @@ const submitReferral = async () => {
             student_id: studentId,
             reason: form.reason,
             priority: form.priority,
-            assigned_to: form.assigned_to || null
+            assigned_to: form.assigned_to || null,
+            send_student: form.send_student
         })
         if (res.success) successCount++
         else failCount++
@@ -408,7 +395,7 @@ const submitReferral = async () => {
         Swal.fire({
             icon: 'success',
             title: 'Proceso completado',
-            text: `Se enviaron ${successCount} referimientos correctamente.` + (failCount > 0 ? ` Fallaron ${failCount}.` : '')
+            text: `Se enviaron ${successCount} reportes correctamente.` + (failCount > 0 ? ` Fallaron ${failCount}.` : '')
         })
 
         // Refresh Data
@@ -429,7 +416,7 @@ const submitReferral = async () => {
 
         selectedStudents.value = [] // Reset selection
     } else {
-        Swal.fire('Error', 'No se pudieron enviar los referimientos', 'error')
+        Swal.fire('Error', 'No se pudieron enviar los reportes', 'error')
     }
 }
 </script>

@@ -4,8 +4,8 @@
         <div class="bg-white shadow-sm rounded-lg p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Departamento de Psicología</h1>
-                    <p class="text-sm text-gray-600 mt-1">Gestión de Casos de Psicología</p>
+                    <h1 class="text-2xl font-bold text-gray-900">Mis Casos Reportados</h1>
+                    <p class="text-sm text-gray-600 mt-1">Seguimiento de estudiantes reportados a Psicología</p>
                 </div>
             </div>
         </div>
@@ -14,7 +14,7 @@
         <div class="bg-white shadow-sm rounded-lg p-4 h-[calc(100vh-180px)] min-h-[600px] flex flex-col">
             <div v-if="viewMode === 'list'">
                 <div class="flex items-center justify-between mb-4 border-b border-gray-200">
-                    <h2 class="text-lg font-medium text-gray-900 pb-2">Casos</h2>
+                    <h2 class="text-lg font-medium text-gray-900 pb-2">Mis Casos</h2>
                     <nav class="-mb-px flex space-x-8" aria-label="Tabs">
                         <a href="#" @click.prevent="caseFilter = 'open'"
                             :class="[caseFilter === 'open' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">
@@ -26,9 +26,12 @@
                         </a>
                     </nav>
                 </div>
-                <ActiveCaseList ref="activeCaseListRef" @select="handleCaseSelected" :status="caseFilter" />
+                <!-- :reported-by-me="true" forces filter to show only cases reported by logged in user -->
+                <ActiveCaseList ref="activeCaseListRef" @select="handleCaseSelected" :status="caseFilter"
+                    :reported-by-me="true" />
             </div>
 
+            <!-- Detail View: Reusing same component but it will have restricted buttons based on role -->
             <CaseDetail v-else-if="viewMode === 'detail' && selectedCaseId" :case-id="selectedCaseId"
                 @back="backToCaseList" />
         </div>
@@ -41,11 +44,12 @@ import ActiveCaseList from '~/components/psychology/ActiveCaseList.vue'
 import CaseDetail from '~/components/psychology/CaseDetail.vue'
 
 useHead({
-    title: 'Psicología - EscoSoft'
+    title: 'Mis Casos - EscoSoft'
 })
 
 definePageMeta({
     layout: 'default',
+    middleware: 'auth'
 })
 
 const activeCaseListRef = ref<any>(null)
