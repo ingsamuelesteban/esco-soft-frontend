@@ -151,12 +151,22 @@ export const useLeaveRequestsStore = defineStore('leaveRequests', () => {
         }
     }
 
+    const calculateDays = async (dates: { start_date: string, end_date: string }) => {
+        try {
+            const data = await api.post('/api/staff/leave-requests/calculate-days', dates)
+            return data
+        } catch (e: any) {
+            console.error('Error calculating days:', e)
+            throw e
+        }
+    }
+
     const getStatistics = async () => {
         try {
-            const response = await api.get('/api/staff/leave-requests/statistics')
-            return response.data
+            const data = await api.get('/api/staff/leave-requests/statistics')
+            return data
         } catch (e: any) {
-            error.value = e.message || 'Error al cargar estadísticas'
+            console.error('Error fetching statistics:', e)
             throw e
         }
     }
@@ -175,6 +185,8 @@ export const useLeaveRequestsStore = defineStore('leaveRequests', () => {
         review,
         cancel,
         remove,
+        remove,
+        calculateDays,
         getStatistics
     }
 })

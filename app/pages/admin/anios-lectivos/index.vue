@@ -69,7 +69,7 @@
             <div class="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden">
                 <div class="px-6 py-4 border-b flex justify-between items-center">
                     <h3 class="text-lg font-medium text-gray-900">{{ isEdit ? 'Editar Año Lectivo' : 'Nuevo Año Lectivo'
-                        }}</h3>
+                    }}</h3>
                     <button @click="closeModal" class="text-gray-400 hover:text-gray-500">
                         <span class="sr-only">Cerrar</span>
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -89,6 +89,16 @@
                             <label class="block text-sm font-medium text-gray-700">Descripción</label>
                             <textarea v-model="form.descripcion" rows="2"
                                 class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Fecha de Inicio</label>
+                            <input v-model="form.fecha_inicio" type="date"
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Fecha de Fin</label>
+                            <input v-model="form.fecha_fin" type="date"
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                         </div>
                         <div class="flex items-center">
                             <input id="activo" v-model="form.activo" type="checkbox"
@@ -181,6 +191,8 @@ const selectedAnioId = ref<number | null>(null)
 const form = reactive({
     nombre: '',
     descripcion: '' as string | null | undefined,
+    fecha_inicio: null as string | null,
+    fecha_fin: null as string | null,
     activo: true
 })
 
@@ -205,12 +217,16 @@ function openModal(item?: AnioLectivo) {
         editingId.value = item.id
         form.nombre = item.nombre
         form.descripcion = item.descripcion
+        form.fecha_inicio = item.fecha_inicio || null
+        form.fecha_fin = item.fecha_fin || null
         form.activo = item.activo
     } else {
         isEdit.value = false
         editingId.value = null
         form.nombre = ''
         form.descripcion = ''
+        form.fecha_inicio = null
+        form.fecha_fin = null
         form.activo = true
     }
     showModal.value = true

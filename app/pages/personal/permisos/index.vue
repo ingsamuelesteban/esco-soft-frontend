@@ -41,7 +41,7 @@
 
             <!-- Filters -->
             <div class="p-4 border-b border-gray-200 flex flex-wrap gap-4">
-                <div class="w-full sm:w-64">
+                <div v-if="authStore.isAdmin || authStore.isMaster" class="w-full sm:w-64">
                     <label class="block text-xs font-medium text-gray-700 mb-1">Empleado</label>
                     <select v-model="filters.personal_id" @change="loadRequests"
                         class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
@@ -148,7 +148,8 @@
                     </div>
 
                     <div class="ml-4 flex flex-col gap-2">
-                        <button v-if="request.status === 'pendiente'" @click="openReviewModal(request)"
+                        <button v-if="request.status === 'pendiente' && (authStore.isAdmin || authStore.isMaster)"
+                            @click="openReviewModal(request)"
                             class="px-3 py-1.5 text-sm text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors">
                             Revisar
                         </button>
@@ -183,16 +184,9 @@
         <LeaveRequestFormModal :show="showCreateModal" :personal-list="personalList" @close="showCreateModal = false"
             @saved="onSaved" />
 
-        <!-- Review Modal (placeholder) -->
-        <div v-if="showReviewModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div class="bg-white rounded-xl p-6 max-w-2xl w-full mx-4">
-                <h2 class="text-xl font-semibold mb-4">Revisar Solicitud</h2>
-                <p class="text-gray-600">Modal de revisión en construcción...</p>
-                <button @click="showReviewModal = false" class="mt-4 px-4 py-2 bg-gray-200 rounded-lg">
-                    Cerrar
-                </button>
-            </div>
-        </div>
+        <!-- Review Modal -->
+        <LeaveRequestReviewModal v-if="showReviewModal && selectedRequest" :show="showReviewModal"
+            :request="selectedRequest" @close="showReviewModal = false" @reviewed="onSaved" />
     </div>
 </template>
 
@@ -200,20 +194,29 @@
 import { ref, computed, onMounted, watch } from 'vue'
 import { useLeaveRequestsStore, type LeaveRequest } from '../../../stores/leaveRequests'
 import { usePersonalStore } from '../../../stores/personal'
+import { useAuthStore } from '../../../stores/auth'
 import LeaveRequestFormModal from '../../../components/staff/LeaveRequestFormModal.vue'
+import LeaveRequestReviewModal from '../../../components/staff/LeaveRequestReviewModal.vue'
 import dayjs from 'dayjs'
 
 definePageMeta({
-    middleware: ['auth', 'admin']
+    middleware: ['auth']
 })
 
 const store = useLeaveRequestsStore()
 const personalStore = usePersonalStore()
+const authStore = useAuthStore()
 
 const activeTab = ref('all')
 const showCreateModal = ref(false)
 const showReviewModal = ref(false)
 const selectedRequest = ref<LeaveRequest | null>(null)
+const statistics = ref({
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+    total: 0
+})
 
 const filters = ref({
     personal_id: undefined as number | undefined,
@@ -221,18 +224,30 @@ const filters = ref({
 })
 
 const tabs = computed(() => [
-    { label: 'Todas', value: 'all', count: store.total },
-    { label: 'Pendientes', value: 'pendiente' },
-    { label: 'Aprobadas', value: 'aprobado' },
-    { label: 'Rechazadas', value: 'rechazado' }
+    { label: 'Todas', value: 'all', count: statistics.value.total || store.total },
+    { label: 'Pendientes', value: 'pendiente', count: statistics.value.pending },
+    { label: 'Aprobadas', value: 'aprobado', count: statistics.value.approved },
+    { label: 'Rechazadas', value: 'rechazado', count: statistics.value.rejected }
 ])
 
 const personalList = computed(() => personalStore.items)
 
 onMounted(async () => {
     await personalStore.fetchAll('active')
+    loadStatistics()
     await loadRequests()
 })
+
+const loadStatistics = async () => {
+    try {
+        const stats = await store.getStatistics() // Assuming getStatistics calls the API and returns JSON
+        if (stats) {
+            statistics.value = stats
+        }
+    } catch (e) {
+        console.error('Error loading statistics', e)
+    }
+}
 
 // Watch activeTab changes
 watch(activeTab, () => {
@@ -262,6 +277,7 @@ const viewDetails = (request: LeaveRequest) => {
 const onSaved = () => {
     showCreateModal.value = false
     loadRequests()
+    loadStatistics()
 }
 
 const getInitials = (personal: any) => {

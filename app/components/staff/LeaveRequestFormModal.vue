@@ -15,7 +15,8 @@
             <!-- Form -->
             <form @submit.prevent="handleSubmit" class="p-6 space-y-6">
                 <!-- Empleado -->
-                <div>
+                <!-- Empleado (Solo Admin/Master) -->
+                <div v-if="canSelectEmployee">
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Empleado <span class="text-red-500">*</span>
                     </label>
@@ -28,6 +29,18 @@
                         </option>
                     </select>
                     <p v-if="errors.personal_id" class="mt-1 text-sm text-red-600">{{ errors.personal_id }}</p>
+                </div>
+
+                <!-- Info Empleado (Para usuarios normales) -->
+                <div v-else class="bg-blue-50 p-4 rounded-lg flex items-center gap-4 border border-blue-100">
+                    <div
+                        class="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-lg">
+                        {{ user?.initials }}
+                    </div>
+                    <div>
+                        <p class="font-medium text-gray-900">{{ user?.name }}</p>
+                        <p class="text-sm text-gray-500">Solicitante (Usted)</p>
+                    </div>
                 </div>
 
                 <!-- Tipo de Permiso -->
@@ -74,10 +87,42 @@
                 </div>
 
                 <!-- Días calculados -->
-                <div v-if="calculatedDays > 0" class="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                    <p class="text-sm text-blue-800">
-                        <span class="font-semibold">Días solicitados:</span> {{ calculatedDays }} días
-                    </p>
+                <div v-if="form.start_date && form.end_date" class="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                    <div v-if="calculatingDays" class="flex items-center gap-2 text-blue-800">
+                        <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                            </circle>
+                            <path class="opacity-75" fill="currentColor"
+                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                            </path>
+                        </svg>
+                        Calculando días hábiles...
+                    </div>
+                    <div v-else>
+                        <div class="flex justify-between items-center mb-2">
+                            <p class="text-sm text-blue-800">
+                                <span class="font-semibold">Días a descontar:</span> {{ calculatedDays }} días
+                            </p>
+                        </div>
+
+                        <!-- Visual Calendar -->
+                        <LeaveRequestCalendar v-if="form.start_date && form.end_date" :start-date="form.start_date"
+                            :end-date="form.end_date" :holidays="holidaysFound" />
+
+                        <div v-if="holidaysFound.length > 0" class="mt-3 text-xs text-red-600 flex items-start gap-1">
+                            <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                                stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div>
+                                <p class="font-semibold">Feriados detectados (No descontables):</p>
+                                <ul class="list-disc list-inside ml-1">
+                                    <li v-for="h in holidaysFound" :key="h.date">{{ h.name }} ({{ h.date }})</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Motivo -->
@@ -139,9 +184,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { useLeaveRequestsStore } from '~/stores/leaveRequests'
+import { useAuthStore } from '~/stores/auth'
 import SignaturePad from '~/components/staff/SignaturePad.vue'
+import LeaveRequestCalendar from '~/components/staff/LeaveRequestCalendar.vue'
 import Swal from 'sweetalert2'
 import dayjs from 'dayjs'
 
@@ -157,11 +204,18 @@ const emit = defineEmits<{
 }>()
 
 const store = useLeaveRequestsStore()
+const auth = useAuthStore()
+const user = computed(() => auth.user)
+
 const signaturePadRef = ref<InstanceType<typeof SignaturePad> | null>(null)
 const submitting = ref(false)
 const signatureEmpty = ref(true)
 
-const form = ref({
+const canSelectEmployee = computed(() => {
+    return user.value?.role === 'admin' || user.value?.role === 'master'
+})
+
+const form = ref<any>({
     personal_id: '',
     leave_type: '',
     start_date: '',
@@ -170,13 +224,59 @@ const form = ref({
     employee_signature: ''
 })
 
+onMounted(() => {
+    // If user is not admin and has personal_id, pre-fill it for frontend validation
+    // Although backend handles it, frontend validation checks for personal_id
+    if (!canSelectEmployee.value && user.value?.personal_id) {
+        form.value.personal_id = user.value.personal_id
+    }
+})
+
+// Watch for modal opening to reset/init
+watch(() => props.show, (newVal) => {
+    if (newVal && !canSelectEmployee.value && user.value?.personal_id) {
+        form.value.personal_id = user.value.personal_id
+    }
+})
+
 const errors = ref<Record<string, string>>({})
 
-const calculatedDays = computed(() => {
-    if (!form.value.start_date || !form.value.end_date) return 0
-    const start = dayjs(form.value.start_date)
-    const end = dayjs(form.value.end_date)
-    return end.diff(start, 'day') + 1
+const calculatedDays = ref(0)
+const holidaysFound = ref<any[]>([])
+const calculatingDays = ref(false)
+
+const calculateDays = async () => {
+    if (!form.value.start_date || !form.value.end_date) {
+        calculatedDays.value = 0
+        holidaysFound.value = []
+        return
+    }
+
+    calculatingDays.value = true
+    calculatingDays.value = true
+    try {
+        const data = await store.calculateDays({
+            start_date: form.value.start_date,
+            end_date: form.value.end_date
+        })
+        console.log('Respuesta Store CalculateDays:', data)
+
+        // Verificamos si data tiene la forma esperada o si está anidado
+        const result = data.days !== undefined ? data : (data.data || {})
+
+        calculatedDays.value = result.days || 0
+        holidaysFound.value = result.holidays || []
+    } catch (e) {
+        console.error('Error en calculo:', e)
+        // Fallback or error handling
+    } finally {
+        calculatingDays.value = false
+    }
+}
+
+// Watchers for dates
+watch(() => [form.value.start_date, form.value.end_date], () => {
+    calculateDays()
 })
 
 const handleSignatureUpdate = (signature: string) => {

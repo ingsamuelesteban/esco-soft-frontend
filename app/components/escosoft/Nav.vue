@@ -244,6 +244,10 @@ const handleNotificationClick = async (notification) => {
     await notificationStore.markAsRead(notification.id)
   }
   isNotificationsOpen.value = false
+
+  if (notification.data?.action_url) {
+    await navigateTo(notification.data.action_url)
+  }
 }
 
 const markAllRead = async () => {
