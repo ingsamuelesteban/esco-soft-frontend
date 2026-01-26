@@ -187,6 +187,13 @@ const isActive = (path) => {
       }
     }
 
+    // Fix: Evitar que /personal coincida con /personal/permisos
+    if (path === '/personal') {
+      if (remainder.startsWith('/permisos')) {
+        return false
+      }
+    }
+
     // Si el resto empieza con / y el path NO es '/horarios', es una sub-ruta válida
     if (remainder.startsWith('/') && path !== '/horarios') return true
     // Si el path termina con /, es válida

@@ -116,8 +116,22 @@
       </div>
     </div>
 
-    <!-- Panel de estadísticas -->
-    <div v-if="showStatistics && hasData"
+    <!-- Alerta de Feriado -->
+    <div v-if="attendanceStore.holiday" class="bg-indigo-50 border border-indigo-200 rounded-lg p-8 text-center my-6">
+      <div class="flex flex-col items-center justify-center">
+        <svg class="h-16 w-16 text-indigo-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+        <h3 class="text-xl font-bold text-indigo-900 mb-2">Día Feriado</h3>
+        <p class="text-indigo-800 text-lg">
+          No hay docencia programada para esta fecha debido a: <br>
+          <span class="font-bold text-2xl mt-2 block">{{ attendanceStore.holiday.name }}</span>
+        </p>
+      </div>
+    </div>
+
+    <!-- Panel de estadísticas (Ocultar si es feriado) -->
+    <div v-if="showStatistics && hasData && !attendanceStore.holiday"
       class="bg-white shadow-sm rounded-lg p-6 sticky top-20 z-30 transition-all duration-300 border-b border-gray-200">
       <h3 class="text-lg font-medium text-gray-900 mb-4">Resumen del Día</h3>
       <div class="grid grid-cols-2 md:grid-cols-6 gap-4">
@@ -187,13 +201,13 @@
       <span class="text-gray-700 font-medium">Cargando lista de estudiantes...</span>
     </div>
 
-    <!-- Componente de lista de asistencia -->
-    <AttendanceGrid v-else-if="hasData && selectedDate && selectedAulaId && selectedAssignmentId" :fecha="selectedDate"
+    <!-- Componente de lista de asistencia (Ocultar si es feriado) -->
+    <AttendanceGrid v-else-if="!attendanceStore.holiday && hasData && selectedDate && selectedAulaId && selectedAssignmentId" :fecha="selectedDate"
       :aula-id="selectedAulaId" :aula-name="selectedAulaName" :assignment-id="selectedAssignmentId"
       :read-only="isReadOnly" />
 
     <!-- Estado inicial -->
-    <div v-else-if="!attendanceStore.loading" class="bg-white shadow-sm rounded-lg p-12 text-center">
+    <div v-else-if="!attendanceStore.loading && !attendanceStore.holiday" class="bg-white shadow-sm rounded-lg p-12 text-center">
       <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
           d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -433,6 +447,9 @@ watch(selectedDate, (newDate, oldDate) => {
   }
 
   if (newDate) {
+    // Check for holiday immediately
+    attendanceStore.checkHoliday(newDate)
+
     attendanceStore.resetRecords()
     selectedAssignmentId.value = null
 

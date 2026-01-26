@@ -147,11 +147,24 @@
 
         <!-- CONTENT: DAILY VIEW -->
         <template v-else-if="viewMode === 'daily'">
+            <!-- Holiday Banner -->
+            <div v-if="stats && stats.holiday" class="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mb-6 flex items-center justify-center gap-4">
+                <svg class="h-10 w-10 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                <div>
+                    <h3 class="text-lg font-bold text-indigo-900">Día Feriado: {{ stats.holiday.name }}</h3>
+                    <p class="text-indigo-700 text-sm">No hubo docencia regular programada.</p>
+                </div>
+            </div>
+
             <div v-if="stats && (stats.asignaturas?.length > 0 || stats.global_summary)" class="space-y-8">
                 <!-- Global Summary Header -->
-                <div v-if="stats.global_summary">
+                <div v-if="stats.global_summary && !stats.holiday">
                     <StatsBoard title="Resumen General" subtitle="Consolidado de todas las aulas"
-                        :stats="stats.global_summary" :attendanceTaken="true" :date="filters.date" />
+                        :stats="stats.global_summary" 
+                        :attendanceTaken="(stats.global_summary.total_registrados || 0) > 0" 
+                        :date="filters.date" />
                 </div>
 
                 <div v-for="subject in stats.asignaturas" :key="subject.assignment_id">
@@ -171,7 +184,7 @@
         <!-- CONTENT: MONTHLY VIEW -->
         <template v-else-if="viewMode === 'monthly'">
             <div v-if="monthlyStats" class="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
-                <div class="overflow-x-auto">
+                <div class="overflow-x-auto pb-4"> <!-- Added pb-4 for scrollbar space if needed -->
                     <table class="min-w-full divide-y divide-gray-200 text-sm">
                         <thead class="bg-gray-50">
                             <tr>
@@ -184,11 +197,21 @@
                                     Estudiante
                                 </th>
                                 <th v-for="day in (monthlyStats.dates || [])" :key="day"
-                                    class="px-1 py-3 text-center font-semibold text-gray-500 min-w-[32px]">
-                                    {{ day }}
+                                    class="px-1 py-3 text-center font-semibold text-gray-500 min-w-[32px] relative align-bottom h-32 group"
+                                    :class="{'bg-indigo-50/50': monthlyStats.holidays && monthlyStats.holidays[day]}"
+                                    :title="monthlyStats.holidays ? monthlyStats.holidays[day] : ''"
+                                    >
+                                    <div class="flex flex-col items-center justify-end h-full w-full">
+                                        <!-- Vertical Holiday Text -->
+                                        <span v-if="monthlyStats.holidays && monthlyStats.holidays[day]" 
+                                            class="writing-mode-vertical text-[10px] text-indigo-600 font-bold mb-2 whitespace-nowrap overflow-visible">
+                                            {{ monthlyStats.holidays[day] }}
+                                        </span>
+                                        <span>{{ day }}</span>
+                                    </div>
                                 </th>
                                 <th class="px-3 py-3 text-center font-bold text-gray-700 border-l border-gray-200">Total
-                                    ({{ monthlyStats.dates ? monthlyStats.dates.length : 0 }})
+                                    ({{ (monthlyStats.dates ? monthlyStats.dates.length : 0) - (monthlyStats.holidays ? Object.keys(monthlyStats.holidays).length : 0) }})
                                 </th>
                                 <th class="px-3 py-3 text-center font-bold text-gray-700 border-l border-gray-200">%
                                 </th>
@@ -206,8 +229,11 @@
                                         {{ student.name }}
                                     </div>
                                 </td>
-                                <td v-for="day in (monthlyStats.dates || [])" :key="day" class="px-1 py-2 text-center">
-                                    <span v-if="student.attendance[day]"
+                                <td v-for="day in (monthlyStats.dates || [])" :key="day" class="px-1 py-2 text-center"
+                                     :class="{'bg-indigo-50/30': monthlyStats.holidays && monthlyStats.holidays[day]}">
+                                    
+                                    <span v-if="monthlyStats.holidays && monthlyStats.holidays[day]" class="text-xs text-indigo-300">-</span>
+                                    <span v-else-if="student.attendance[day]"
                                         class="inline-flex items-center justify-center w-6 h-6 rounded text-xs font-bold"
                                         :class="getStatusClass(student.attendance[day])">
                                         {{ student.attendance[day] }}
@@ -248,6 +274,9 @@
                     <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span>
                         <strong>E</strong>xcusa (3 = 1 A)
                     </div>
+                     <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+                        <strong>F</strong>eriado
+                    </div>
                 </div>
             </div>
             <div v-else-if="!loading" class="text-center p-12 text-gray-500">Selecciona un aula o asignatura para ver el
@@ -257,6 +286,30 @@
     </div>
 </template>
 
+<style scoped>
+/* Custom scrollbar for table */
+.overflow-x-auto::-webkit-scrollbar {
+    height: 8px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb {
+    background: #d1d5db;
+    border-radius: 4px;
+}
+
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+    background: #9ca3af;
+}
+
+.writing-mode-vertical {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+}
+</style>
 <script setup lang="ts">
 import { ref, reactive, watch, onMounted, computed } from 'vue'
 import { useAulasStore } from '~/stores/aulas'
@@ -328,6 +381,10 @@ const canPrintDaily = computed(() => {
 const aulaOptions = computed(() => {
     const opts = aulasStore.paraSelect
     if (isAdminOrMaster.value) {
+        // Filter out 'all' options for Monthly View as requested
+        if (viewMode.value === 'monthly') {
+            return [...opts]
+        }
         return [
             { value: 'all_summary', label: 'Todas las Aulas (Resumen)' },
             { value: 'all', label: 'Todas las Aulas (Detalle)' },

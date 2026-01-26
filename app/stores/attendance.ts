@@ -67,6 +67,7 @@ export const useAttendanceStore = defineStore('attendance', {
     dailyClasses: [] as any[],
     loadingDailyClasses: false,
     pendingChanges: new Set<number>(), // Track modified student IDs
+    holiday: null as { name: string } | null,
   }),
 
   getters: {
@@ -113,13 +114,16 @@ export const useAttendanceStore = defineStore('attendance', {
       this.currentAulaId = aulaId
       this.currentAssignmentId = assignmentId
       this.pendingChanges.clear() // Reset pending changes on fetch
+      this.holiday = null
 
       try {
-        const response = await api.get<{ data: AttendanceRecord[], fecha: string, aula_id: number, assignment_id: number }>('/api/attendance', {
+        const response = await api.get<{ data: AttendanceRecord[], fecha: string, aula_id: number, assignment_id: number, holiday?: { name: string } }>('/api/attendance', {
           params: { fecha, aula_id: aulaId, assignment_id: assignmentId }
         })
 
         this.records = response.data || []
+        this.holiday = response.holiday || null
+
       } catch (error: any) {
         this.error = error.message || 'Error al cargar la asistencia'
         console.error('Error fetching attendance:', error)
@@ -334,6 +338,26 @@ export const useAttendanceStore = defineStore('attendance', {
         // No blocking error, just empty list
       } finally {
         this.loadingDailyClasses = false
+      }
+    },
+
+    async checkHoliday(date: string) {
+      if (!date) return
+
+      try {
+        const response = await api.get<{ is_holiday: boolean, holiday: { name: string } | null }>('/api/holidays/check', {
+          params: { date }
+        })
+
+        if (response.is_holiday) {
+          this.holiday = response.holiday
+        } else {
+          this.holiday = null
+        }
+      } catch (error) {
+        console.error('Error checking holiday:', error)
+        // Optionally handle error, but don't block
+        this.holiday = null
       }
     }
   }
