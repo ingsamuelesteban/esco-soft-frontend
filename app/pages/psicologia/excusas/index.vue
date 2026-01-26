@@ -260,7 +260,7 @@
                                             <dd class="mt-1 text-xs text-red-600 bg-red-50 p-2 rounded">
                                                 {{ selectedExcuse.cancellation_reason }}<br>
                                                 <span class="text-gray-400">{{ formatDate(selectedExcuse.cancelled_at)
-                                                }}</span>
+                                                    }}</span>
                                             </dd>
                                         </div>
                                     </div>
@@ -362,10 +362,13 @@
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 mb-1">Concepto / Motivo
                                             *</label>
-                                        <textarea v-model="form.concept" rows="3"
+                                        <textarea v-model="form.concept" rows="3" maxlength="1000"
                                             class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                                             placeholder="Describe el motivo de la excusa (ej. Licencia Médica)..."
                                             :class="{ 'border-red-300': errors.concept }"></textarea>
+                                        <div class="flex justify-end mt-1">
+                                            <span class="text-xs text-gray-400">{{ form.concept.length }}/1000</span>
+                                        </div>
                                         <p v-if="errors.concept" class="text-red-500 text-xs mt-1">{{ errors.concept }}
                                         </p>
                                     </div>
