@@ -119,8 +119,8 @@
                                 </p>
                             </div>
                             <div>
-                                <p class="text-xs text-gray-500">Días</p>
-                                <p class="text-sm font-medium text-gray-900">{{ request.days_count }} días</p>
+                                <p class="text-xs text-gray-500">Duración</p>
+                                <p class="text-sm font-medium text-gray-900">{{ getDurationDisplay(request) }}</p>
                             </div>
                             <div>
                                 <p class="text-xs text-gray-500">Estado</p>
@@ -293,9 +293,33 @@ const getLeaveTypeName = (type: string) => {
         maternidad: 'Maternidad',
         paternidad: 'Paternidad',
         duelo: 'Duelo',
+        express: 'Permiso Express',
         otro: 'Otro'
     }
     return types[type] || type
+}
+
+const formatDate = (date: string) => {
+    return dayjs(date).format('DD/MM/YYYY')
+}
+
+const getDurationDisplay = (req: LeaveRequest) => {
+    if (req.leave_type === 'express' && req.start_time && req.end_time) {
+        const startParts = req.start_time.split(':')
+        const endParts = req.end_time.split(':')
+
+        const start = parseInt(startParts[0] ?? '0') * 60 + parseInt(startParts[1] ?? '0')
+        const end = parseInt(endParts[0] ?? '0') * 60 + parseInt(endParts[1] ?? '0')
+
+        const diff = end - start
+        const hours = Math.floor(diff / 60)
+        const minutes = diff % 60
+        let duration = ''
+        if (hours > 0) duration += `${hours} hora${hours !== 1 ? 's' : ''}`
+        if (minutes > 0) duration += ` ${minutes} min`
+        return duration.trim()
+    }
+    return `${req.days_count} día${req.days_count !== 1 ? 's' : ''}`
 }
 
 const getStatusLabel = (status: string) => {
@@ -316,9 +340,5 @@ const getStatusClass = (status: string) => {
         cancelado: 'bg-gray-100 text-gray-800'
     }
     return classes[status] || 'bg-gray-100 text-gray-800'
-}
-
-const formatDate = (date: string) => {
-    return dayjs(date).format('DD MMM YYYY')
 }
 </script>

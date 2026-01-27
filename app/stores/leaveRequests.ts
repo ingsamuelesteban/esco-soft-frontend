@@ -6,9 +6,11 @@ export interface LeaveRequest {
     id: number
     tenant_id: number
     personal_id: number
-    leave_type: 'vacaciones' | 'personal' | 'medico' | 'maternidad' | 'paternidad' | 'duelo' | 'otro'
+    leave_type: 'vacaciones' | 'personal' | 'medico' | 'maternidad' | 'paternidad' | 'duelo' | 'express' | 'otro'
     start_date: string
     end_date: string
+    start_time?: string | null
+    end_time?: string | null
     days_count: number
     reason: string
     attachment_path: string | null
@@ -19,6 +21,7 @@ export interface LeaveRequest {
     reviewed_at: string | null
     review_notes: string | null
     admin_signature: string | null
+    approval_attachment_path?: string | null
     created_at: string
     updated_at: string
     personal?: {
@@ -110,7 +113,7 @@ export const useLeaveRequestsStore = defineStore('leaveRequests', () => {
         }
     }
 
-    const review = async (id: number, data: { status: string; review_notes?: string; admin_signature: string }) => {
+    const review = async (id: number, data: { status: string; review_notes?: string; admin_signature: string } | FormData) => {
         loading.value = true
         error.value = null
         try {
@@ -184,7 +187,6 @@ export const useLeaveRequestsStore = defineStore('leaveRequests', () => {
         update,
         review,
         cancel,
-        remove,
         remove,
         calculateDays,
         getStatistics

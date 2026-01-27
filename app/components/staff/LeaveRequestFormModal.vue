@@ -52,6 +52,7 @@
                         class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                         :class="{ 'border-red-500': errors.leave_type }">
                         <option value="">Seleccione un tipo</option>
+                        <option value="express">Permiso Express (Horas)</option>
                         <option value="vacaciones">Vacaciones</option>
                         <option value="personal">Permiso Personal</option>
                         <option value="medico">Permiso Médico</option>
@@ -63,11 +64,59 @@
                     <p v-if="errors.leave_type" class="mt-1 text-sm text-red-600">{{ errors.leave_type }}</p>
                 </div>
 
-                <!-- Fechas -->
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Horas para Permiso Express -->
+                <div v-if="form.leave_type === 'express'"
+                    class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-yellow-50 p-4 rounded-lg border border-yellow-200">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Fecha de Inicio <span class="text-red-500">*</span>
+                            Hora Inicio <span class="text-red-500">*</span>
+                        </label>
+                        <div class="flex gap-2">
+                            <select v-model="startTime12.hour" @change="updateStartTime"
+                                class="rounded-lg border-gray-300 w-full text-sm">
+                                <option v-for="h in hours" :key="h" :value="h">{{ h }}</option>
+                            </select>
+                            <span class="self-center font-bold">:</span>
+                            <select v-model="startTime12.minute" @change="updateStartTime"
+                                class="rounded-lg border-gray-300 w-full text-sm">
+                                <option v-for="m in minutes" :key="m" :value="m">{{ m }}</option>
+                            </select>
+                            <select v-model="startTime12.ampm" @change="updateStartTime"
+                                class="rounded-lg border-gray-300 w-full text-sm font-semibold">
+                                <option v-for="p in periods" :key="p" :value="p">{{ p }}</option>
+                            </select>
+                        </div>
+                        <p v-if="errors.start_time" class="mt-1 text-sm text-red-600">{{ errors.start_time }}</p>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Hora Fin <span class="text-red-500">*</span>
+                        </label>
+                        <div class="flex gap-2">
+                            <select v-model="endTime12.hour" @change="updateEndTime"
+                                class="rounded-lg border-gray-300 w-full text-sm">
+                                <option v-for="h in hours" :key="h" :value="h">{{ h }}</option>
+                            </select>
+                            <span class="self-center font-bold">:</span>
+                            <select v-model="endTime12.minute" @change="updateEndTime"
+                                class="rounded-lg border-gray-300 w-full text-sm">
+                                <option v-for="m in minutes" :key="m" :value="m">{{ m }}</option>
+                            </select>
+                            <select v-model="endTime12.ampm" @change="updateEndTime"
+                                class="rounded-lg border-gray-300 w-full text-sm font-semibold">
+                                <option v-for="p in periods" :key="p" :value="p">{{ p }}</option>
+                            </select>
+                        </div>
+                        <p v-if="errors.end_time" class="mt-1 text-sm text-red-600">{{ errors.end_time }}</p>
+                    </div>
+                </div>
+
+                <!-- Fechas -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- Fecha para Permiso Express (Una sola fecha) -->
+                    <div v-if="form.leave_type === 'express'" class="md:col-span-2">
+                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                            Fecha del Permiso <span class="text-red-500">*</span>
                         </label>
                         <input v-model="form.start_date" type="date" required
                             class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
@@ -75,18 +124,32 @@
                         <p v-if="errors.start_date" class="mt-1 text-sm text-red-600">{{ errors.start_date }}</p>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
-                            Fecha de Fin <span class="text-red-500">*</span>
-                        </label>
-                        <input v-model="form.end_date" type="date" required :min="form.start_date"
-                            class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                            :class="{ 'border-red-500': errors.end_date }" />
-                        <p v-if="errors.end_date" class="mt-1 text-sm text-red-600">{{ errors.end_date }}</p>
-                    </div>
+                    <!-- Fechas para otros permisos (Rango) -->
+                    <template v-else>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Fecha de Inicio <span class="text-red-500">*</span>
+                            </label>
+                            <input v-model="form.start_date" type="date" required
+                                class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                :class="{ 'border-red-500': errors.start_date }" />
+                            <p v-if="errors.start_date" class="mt-1 text-sm text-red-600">{{ errors.start_date }}</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-2">
+                                Fecha de Fin <span class="text-red-500">*</span>
+                            </label>
+                            <input v-model="form.end_date" type="date" required :min="form.start_date"
+                                class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
+                                :class="{ 'border-red-500': errors.end_date }" />
+                            <p v-if="errors.end_date" class="mt-1 text-sm text-red-600">{{ errors.end_date }}</p>
+                        </div>
+                    </template>
                 </div>
 
                 <!-- Días calculados -->
+                <!-- Días calculados / Info Express -->
                 <div v-if="form.start_date && form.end_date" class="bg-blue-50 border border-blue-200 rounded-lg p-3">
                     <div v-if="calculatingDays" class="flex items-center gap-2 text-blue-800">
                         <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
@@ -99,28 +162,45 @@
                         Calculando días hábiles...
                     </div>
                     <div v-else>
-                        <div class="flex justify-between items-center mb-2">
-                            <p class="text-sm text-blue-800">
-                                <span class="font-semibold">Días a descontar:</span> {{ calculatedDays }} días
-                            </p>
+                        <!-- Normal Leave -->
+                        <div v-if="form.leave_type !== 'express'">
+                            <div class="flex justify-between items-center mb-2">
+                                <p class="text-sm text-blue-800">
+                                    <span class="font-semibold">Días a descontar:</span> {{ calculatedDays }} días
+                                </p>
+                            </div>
+
+                            <LeaveRequestCalendar v-if="form.start_date && form.end_date" :start-date="form.start_date"
+                                :end-date="form.end_date" :holidays="holidaysFound" />
+
+                            <div v-if="holidaysFound.length > 0"
+                                class="mt-3 text-xs text-red-600 flex items-start gap-1">
+                                <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24"
+                                    stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <div>
+                                    <p class="font-semibold">Feriados detectados (No descontables):</p>
+                                    <ul class="list-disc list-inside ml-1">
+                                        <li v-for="h in holidaysFound" :key="h.date">{{ h.name }} ({{ h.date }})</li>
+                                    </ul>
+                                </div>
+                            </div>
                         </div>
 
-                        <!-- Visual Calendar -->
-                        <LeaveRequestCalendar v-if="form.start_date && form.end_date" :start-date="form.start_date"
-                            :end-date="form.end_date" :holidays="holidaysFound" />
-
-                        <div v-if="holidaysFound.length > 0" class="mt-3 text-xs text-red-600 flex items-start gap-1">
-                            <svg class="w-4 h-4 mt-0.5 flex-shrink-0" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                            <div>
-                                <p class="font-semibold">Feriados detectados (No descontables):</p>
-                                <ul class="list-disc list-inside ml-1">
-                                    <li v-for="h in holidaysFound" :key="h.date">{{ h.name }} ({{ h.date }})</li>
-                                </ul>
+                        <!-- Express Leave Info -->
+                        <div v-else class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                            <div class="flex justify-between items-center mb-2" v-if="expressDuration">
+                                <p class="text-sm text-yellow-800">
+                                    <span class="font-semibold">Tiempo solicitado:</span> {{ expressDuration }}
+                                </p>
                             </div>
+                            <p class="text-sm text-yellow-800">
+                                <span class="font-semibold">Importante:</span> El horario permitido para permisos
+                                express es únicamente
+                                de <strong>8:00 AM a 4:00 PM</strong>.
+                            </p>
                         </div>
                     </div>
                 </div>
@@ -140,11 +220,8 @@
 
                 <!-- Archivo Adjunto -->
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-2">
-                        Documento de Soporte (Opcional)
-                    </label>
-                    <input type="file" @change="handleFileChange" accept=".pdf,.jpg,.jpeg,.png"
-                        class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+                    <DropZone v-model="form.attachment" label="Documento de Soporte (Opcional)"
+                        accept=".pdf,.jpg,.jpeg,.png" :max-size="5 * 1024 * 1024" />
                     <p class="mt-1 text-xs text-gray-500">PDF, JPG, JPEG o PNG. Máximo 5MB</p>
                     <p v-if="errors.attachment" class="mt-1 text-sm text-red-600">{{ errors.attachment }}</p>
                 </div>
@@ -156,7 +233,8 @@
                     </label>
                     <SignaturePad ref="signaturePadRef" @update="handleSignatureUpdate"
                         @change="handleSignatureChange" />
-                    <p v-if="errors.employee_signature" class="mt-1 text-sm text-red-600">{{ errors.employee_signature
+                    <p v-if="errors.employee_signature" class="mt-1 text-sm text-red-600">{{
+                        errors.employee_signature
                     }}</p>
                 </div>
 
@@ -188,6 +266,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useLeaveRequestsStore } from '~/stores/leaveRequests'
 import { useAuthStore } from '~/stores/auth'
 import SignaturePad from '~/components/staff/SignaturePad.vue'
+import DropZone from '~/components/ui/DropZone.vue'
 import LeaveRequestCalendar from '~/components/staff/LeaveRequestCalendar.vue'
 import Swal from 'sweetalert2'
 import dayjs from 'dayjs'
@@ -220,8 +299,61 @@ const form = ref<any>({
     leave_type: '',
     start_date: '',
     end_date: '',
+    start_time: '',
+    end_time: '',
     reason: '',
-    employee_signature: ''
+    employee_signature: '',
+    attachment: null
+})
+
+// 12-hour format state
+const startTime12 = ref({ hour: '08', minute: '00', ampm: 'AM' })
+const endTime12 = ref({ hour: '04', minute: '00', ampm: 'PM' })
+
+const hours = ['01', '02', '03', '04', '05', '06', '07', '08', '09', '10', '11', '12']
+const minutes = ['00', '15', '30', '45']
+const periods = ['AM', 'PM']
+
+// Update 24h format when 12h changes
+const updateStartTime = () => {
+    let hour = parseInt(startTime12.value.hour)
+    if (startTime12.value.ampm === 'PM' && hour !== 12) hour += 12
+    if (startTime12.value.ampm === 'AM' && hour === 12) hour = 0
+    form.value.start_time = `${hour.toString().padStart(2, '0')}:${startTime12.value.minute}`
+}
+
+const updateEndTime = () => {
+    let hour = parseInt(endTime12.value.hour)
+    if (endTime12.value.ampm === 'PM' && hour !== 12) hour += 12
+    if (endTime12.value.ampm === 'AM' && hour === 12) hour = 0
+    form.value.end_time = `${hour.toString().padStart(2, '0')}:${endTime12.value.minute}`
+}
+
+// Initialize 24h values on mount/reset
+watch(() => form.value.leave_type, (newType) => {
+    if (newType === 'express') {
+        updateStartTime()
+        updateEndTime()
+    }
+})
+
+const expressDuration = computed(() => {
+    if (form.value.leave_type !== 'express' || !form.value.start_time || !form.value.end_time) return null
+
+    const start = parseInt(form.value.start_time.split(':')[0]) * 60 + parseInt(form.value.start_time.split(':')[1])
+    const end = parseInt(form.value.end_time.split(':')[0]) * 60 + parseInt(form.value.end_time.split(':')[1])
+
+    if (end <= start) return null
+
+    const diff = end - start
+    const hours = Math.floor(diff / 60)
+    const minutes = diff % 60
+
+    let duration = ''
+    if (hours > 0) duration += `${hours} hora${hours !== 1 ? 's' : ''}`
+    if (minutes > 0) duration += ` ${minutes} minutos`
+
+    return duration.trim()
 })
 
 onMounted(() => {
@@ -275,8 +407,18 @@ const calculateDays = async () => {
 }
 
 // Watchers for dates
-watch(() => [form.value.start_date, form.value.end_date], () => {
-    calculateDays()
+watch(() => [form.value.start_date, form.value.end_date, form.value.leave_type], () => {
+    // Si es express, forzar que fecha fin sea igual a fecha inicio
+    if (form.value.leave_type === 'express' && form.value.start_date) {
+        if (form.value.end_date !== form.value.start_date) {
+            form.value.end_date = form.value.start_date
+        }
+    }
+
+    // Solo calcular días si NO es express
+    if (form.value.leave_type !== 'express') {
+        calculateDays()
+    }
 })
 
 const handleSignatureUpdate = (signature: string) => {
@@ -321,6 +463,40 @@ const handleSubmit = async () => {
         errors.value.end_date = 'La fecha de fin es obligatoria'
         return
     }
+    if (form.value.leave_type === 'express') {
+        if (!form.value.start_time) {
+            errors.value.start_time = 'La hora de inicio es obligatoria'
+            return
+        }
+        if (!form.value.end_time) {
+            errors.value.end_time = 'La hora de fin es obligatoria'
+            return
+        }
+        if (form.value.start_time >= form.value.end_time) {
+            errors.value.end_time = 'La hora de fin debe ser posterior a la de inicio'
+            return
+        }
+
+        // Validar rango de horario (8:00 AM - 4:00 PM)
+        if (form.value.start_time < '08:00' || form.value.start_time > '16:00') {
+            errors.value.start_time = 'La hora de inicio debe estar entre 8:00 AM y 4:00 PM'
+            return
+        }
+        if (form.value.end_time < '08:00' || form.value.end_time > '16:00') {
+            errors.value.end_time = 'La hora de fin debe estar entre 8:00 AM y 4:00 PM'
+            return
+        }
+
+        // Validar máximo 8 horas
+        const start = parseInt(form.value.start_time.split(':')[0]) * 60 + parseInt(form.value.start_time.split(':')[1])
+        const end = parseInt(form.value.end_time.split(':')[0]) * 60 + parseInt(form.value.end_time.split(':')[1])
+        const diffMinutes = end - start
+
+        if (diffMinutes > 480) { // 8 horas * 60 minutos
+            errors.value.end_time = 'El permiso express no puede exceder las 8 horas laborales'
+            return
+        }
+    }
     if (form.value.reason.length < 10) {
         errors.value.reason = 'El motivo debe tener al menos 10 caracteres'
         return
@@ -338,13 +514,16 @@ const handleSubmit = async () => {
         formData.append('leave_type', form.value.leave_type)
         formData.append('start_date', form.value.start_date)
         formData.append('end_date', form.value.end_date)
+        if (form.value.leave_type === 'express') {
+            formData.append('start_time', form.value.start_time)
+            formData.append('end_time', form.value.end_time)
+        }
         formData.append('reason', form.value.reason)
         formData.append('employee_signature', form.value.employee_signature)
 
         // Agregar archivo si existe
-        const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement
-        if (fileInput?.files?.[0]) {
-            formData.append('attachment', fileInput.files[0])
+        if (form.value.attachment) {
+            formData.append('attachment', form.value.attachment)
         }
 
         await store.create(formData)
@@ -384,6 +563,8 @@ const close = () => {
         leave_type: '',
         start_date: '',
         end_date: '',
+        start_time: '',
+        end_time: '',
         reason: '',
         employee_signature: ''
     }

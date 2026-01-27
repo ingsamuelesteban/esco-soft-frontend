@@ -43,7 +43,7 @@
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Duración</p>
-                            <p class="font-medium text-gray-900 mt-1">{{ request.days_count }} días</p>
+                            <p class="font-medium text-gray-900 mt-1">{{ getDurationDisplay(request) }}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Fecha Inicio</p>
@@ -63,7 +63,7 @@
                     </div>
 
                     <div v-if="request.attachment_path" class="mt-6">
-                        <p class="text-sm text-gray-500 mb-2">Documento Adjunto</p>
+                        <p class="text-sm text-gray-500 mb-2">Documento Adjunto (Empleado)</p>
                         <a :href="getFileUrl(request.attachment_path)" target="_blank"
                             class="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -71,6 +71,18 @@
                                     d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                             </svg>
                             Ver Adjunto
+                        </a>
+                    </div>
+
+                    <div v-if="request.approval_attachment_path" class="mt-6">
+                        <p class="text-sm text-gray-500 mb-2">Adjunto de Aprobación</p>
+                        <a :href="getFileUrl(request.approval_attachment_path)" target="_blank"
+                            class="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">
+                            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            </svg>
+                            Ver Adjunto de Aprobación
                         </a>
                     </div>
                 </div>
@@ -239,6 +251,27 @@ const printRequest = async () => {
 
 const formatDate = (date: string) => dayjs(date).format('DD MMM YYYY')
 
+const config = useRuntimeConfig()
+
+const getDurationDisplay = (req: any) => {
+    if (req.leave_type === 'express' && req.start_time && req.end_time) {
+        const startParts = req.start_time.split(':')
+        const endParts = req.end_time.split(':')
+
+        const start = parseInt(startParts[0] ?? '0') * 60 + parseInt(startParts[1] ?? '0')
+        const end = parseInt(endParts[0] ?? '0') * 60 + parseInt(endParts[1] ?? '0')
+
+        const diff = end - start
+        const hours = Math.floor(diff / 60)
+        const minutes = diff % 60
+        let duration = ''
+        if (hours > 0) duration += `${hours} hora${hours !== 1 ? 's' : ''}`
+        if (minutes > 0) duration += ` ${minutes} min`
+        return duration.trim()
+    }
+    return `${req.days_count} día${req.days_count !== 1 ? 's' : ''}`
+}
+
 const getLeaveTypeName = (type: string) => {
     const types: Record<string, string> = {
         vacaciones: 'Vacaciones',
@@ -247,6 +280,7 @@ const getLeaveTypeName = (type: string) => {
         maternidad: 'Maternidad',
         paternidad: 'Paternidad',
         duelo: 'Duelo',
+        express: 'Permiso Express',
         otro: 'Otro'
     }
     return types[type] || type
@@ -273,7 +307,7 @@ const getStatusClass = (status: string) => {
 }
 
 const getFileUrl = (path: string) => {
-    // Adjust base URL as needed
-    return `${useRuntimeConfig().public.apiBase}/storage/${path}`
+    if (!path) return '#'
+    return `${config.public.apiBase}/storage/${path}`
 }
 </script>

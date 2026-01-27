@@ -375,15 +375,8 @@
 
                                     <!-- File -->
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Archivo Adjunto
-                                            (Opcional)</label>
-                                        <input type="file" @change="handleFileUpload" accept=".pdf,.jpg,.jpeg,.png"
-                                            class="block w-full text-sm text-gray-500
-                        file:mr-4 file:py-2 file:px-4
-                        file:rounded-full file:border-0
-                        file:text-sm file:font-semibold
-                        file:bg-primary-50 file:text-primary-700
-                        hover:file:bg-primary-100">
+                                        <DropZone v-model="form.file" label="Archivo Adjunto (Opcional)"
+                                            accept=".pdf,.jpg,.jpeg,.png" :max-size="10 * 1024 * 1024" />
                                         <p class="text-xs text-gray-500 mt-1">Formatos: PDF, JPEG, PNG. Max: 10MB.</p>
                                         <p v-if="errors.file" class="text-red-500 text-xs mt-1">{{ errors.file }}</p>
                                     </div>
@@ -425,6 +418,7 @@
 <script setup>
 import { ref, reactive, onMounted, watch } from 'vue'
 import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } from '@headlessui/vue'
+import DropZone from '~/components/ui/DropZone.vue'
 import debounce from 'lodash/debounce'
 import Swal from 'sweetalert2'
 import dayjs from 'dayjs'

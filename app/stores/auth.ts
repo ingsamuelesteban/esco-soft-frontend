@@ -11,6 +11,7 @@ export interface User {
   active: boolean
   profile_photo_path?: string
   profile_photo_url?: string
+  initials?: string
 }
 
 export interface LoginCredentials {
