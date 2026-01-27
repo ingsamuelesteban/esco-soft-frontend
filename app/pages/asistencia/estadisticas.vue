@@ -625,42 +625,62 @@ watch(() => [filters.date, filters.aulaId, viewMode, filters.month, filters.year
 
 // Init
 onMounted(async () => {
-    await aulasStore.fetchAll()
+    try {
+        await aulasStore.fetchAll()
+    } catch (e) {
+        console.error("Error loading aulas initially", e)
+    }
 
     // Check for query params for deep linking (e.g. from Notifications)
     const route = useRoute()
     const query = route.query
 
     if (query.view === 'monthly' && query.aula_id) {
-        viewMode.value = 'monthly'
-        filters.aulaId = Number(query.aula_id)
+        const targetAula = Number(query.aula_id)
+        const targetAssignment = query.assignment_id ? Number(query.assignment_id) : null
 
+        // 1. Set View Mode
+        viewMode.value = 'monthly'
+
+        // 2. Set Filters (Month/Year)
         if (query.month) filters.month = Number(query.month)
         if (query.year) filters.year = Number(query.year)
 
-        // Wait for assignments to load (fetchAssignments is triggered by aulaId watcher)
-        // However, watcher might not select the correct assignment automatically if we have a specific one in URL.
-        // We need to set assignmentId AFTER assignments are loaded.
-        // Or strictly set it here and let fetchStats handle it?
-        // Let's set it. The fetchStats watcher depends on it. 
-        // But fetchAssignments clears assignmentId. 
-        // We should probably wait for assignments.
+        // 3. Set Aula (triggers watcher)
+        filters.aulaId = targetAula
 
-        if (query.assignment_id) {
-            // We can use a watcher on 'assignments' to set it once loaded?
-            // Or explicitly call fetchAssignments here to bypass the generic watcher logic?
-            // The watcher `watch(() => filters.aulaId` calls `fetchAssignments`.
+        // 4. Force Assignment selection if present
+        if (targetAssignment) {
+            // Because watcher triggers fetchAssignments asynchronously, we want to ensure
+            // we catch the result and set the assignment ID.
 
-            // Let's rely on a temporary watcher or check
-            const targetAssignmentId = Number(query.assignment_id)
-
-            // Watch for assignments change ONCE
-            const unwatch = watch(assignments, (newVal) => {
-                if (newVal.length > 0) {
-                    filters.assignmentId = targetAssignmentId
-                    unwatch() // Remove watcher
+            // We can manually fetch to be safe and await it
+            loadingAssignments.value = true
+            try {
+                // Re-using fetch logic manually to ensure await
+                let url = `/api/class-assignments?aula_id=${targetAula}&only_active=true`
+                if (!isAdminOrMaster.value && authStore.user?.personal_id) {
+                    url += `&profesor_id=${authStore.user.personal_id}`
                 }
-            })
+                const res = await api.get(url)
+                const rawData = res.data || res
+                const loadedAssignments = Array.isArray(rawData) ? rawData : (rawData.data || [])
+
+                assignments.value = loadedAssignments
+
+                // Now safely set assignment ID
+                // Allow Vue reactivity to process 'assignments' change first if needed? 
+                // Direct assignment should be fine if 'assignments.value' is set.
+                filters.assignmentId = targetAssignment
+
+                // Finally fetch stats
+                fetchStats()
+
+            } catch (e) {
+                console.error("Deep link assignment fetch error", e)
+            } finally {
+                loadingAssignments.value = false
+            }
         }
     }
 })
