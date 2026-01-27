@@ -148,9 +148,11 @@
         <!-- CONTENT: DAILY VIEW -->
         <template v-else-if="viewMode === 'daily'">
             <!-- Holiday Banner -->
-            <div v-if="stats && stats.holiday" class="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mb-6 flex items-center justify-center gap-4">
+            <div v-if="stats && stats.holiday"
+                class="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mb-6 flex items-center justify-center gap-4">
                 <svg class="h-10 w-10 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
                 <div>
                     <h3 class="text-lg font-bold text-indigo-900">Día Feriado: {{ stats.holiday.name }}</h3>
@@ -162,9 +164,8 @@
                 <!-- Global Summary Header -->
                 <div v-if="stats.global_summary && !stats.holiday">
                     <StatsBoard title="Resumen General" subtitle="Consolidado de todas las aulas"
-                        :stats="stats.global_summary" 
-                        :attendanceTaken="(stats.global_summary.total_registrados || 0) > 0" 
-                        :date="filters.date" />
+                        :stats="stats.global_summary"
+                        :attendanceTaken="(stats.global_summary.total_registrados || 0) > 0" :date="filters.date" />
                 </div>
 
                 <div v-for="subject in stats.asignaturas" :key="subject.assignment_id">
@@ -198,12 +199,11 @@
                                 </th>
                                 <th v-for="day in (monthlyStats.dates || [])" :key="day"
                                     class="px-1 py-3 text-center font-semibold text-gray-500 min-w-[32px] relative align-bottom h-32 group"
-                                    :class="{'bg-indigo-50/50': monthlyStats.holidays && monthlyStats.holidays[day]}"
-                                    :title="monthlyStats.holidays ? monthlyStats.holidays[day] : ''"
-                                    >
+                                    :class="{ 'bg-indigo-50/50': monthlyStats.holidays && monthlyStats.holidays[day] }"
+                                    :title="monthlyStats.holidays ? monthlyStats.holidays[day] : ''">
                                     <div class="flex flex-col items-center justify-end h-full w-full">
                                         <!-- Vertical Holiday Text -->
-                                        <span v-if="monthlyStats.holidays && monthlyStats.holidays[day]" 
+                                        <span v-if="monthlyStats.holidays && monthlyStats.holidays[day]"
                                             class="writing-mode-vertical text-[10px] text-indigo-600 font-bold mb-2 whitespace-nowrap overflow-visible">
                                             {{ monthlyStats.holidays[day] }}
                                         </span>
@@ -211,7 +211,8 @@
                                     </div>
                                 </th>
                                 <th class="px-3 py-3 text-center font-bold text-gray-700 border-l border-gray-200">Total
-                                    ({{ (monthlyStats.dates ? monthlyStats.dates.length : 0) - (monthlyStats.holidays ? Object.keys(monthlyStats.holidays).length : 0) }})
+                                    ({{ (monthlyStats.dates ? monthlyStats.dates.length : 0) - (monthlyStats.holidays ?
+                                        Object.keys(monthlyStats.holidays).length : 0) }})
                                 </th>
                                 <th class="px-3 py-3 text-center font-bold text-gray-700 border-l border-gray-200">%
                                 </th>
@@ -230,9 +231,10 @@
                                     </div>
                                 </td>
                                 <td v-for="day in (monthlyStats.dates || [])" :key="day" class="px-1 py-2 text-center"
-                                     :class="{'bg-indigo-50/30': monthlyStats.holidays && monthlyStats.holidays[day]}">
-                                    
-                                    <span v-if="monthlyStats.holidays && monthlyStats.holidays[day]" class="text-xs text-indigo-300">-</span>
+                                    :class="{ 'bg-indigo-50/30': monthlyStats.holidays && monthlyStats.holidays[day] }">
+
+                                    <span v-if="monthlyStats.holidays && monthlyStats.holidays[day]"
+                                        class="text-xs text-indigo-300">-</span>
                                     <span v-else-if="student.attendance[day]"
                                         class="inline-flex items-center justify-center w-6 h-6 rounded text-xs font-bold"
                                         :class="getStatusClass(student.attendance[day])">
@@ -274,7 +276,7 @@
                     <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-blue-500"></span>
                         <strong>E</strong>xcusa (3 = 1 A)
                     </div>
-                     <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+                    <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-indigo-400"></span>
                         <strong>F</strong>eriado
                     </div>
                 </div>
@@ -624,6 +626,43 @@ watch(() => [filters.date, filters.aulaId, viewMode, filters.month, filters.year
 // Init
 onMounted(async () => {
     await aulasStore.fetchAll()
+
+    // Check for query params for deep linking (e.g. from Notifications)
+    const route = useRoute()
+    const query = route.query
+
+    if (query.view === 'monthly' && query.aula_id) {
+        viewMode.value = 'monthly'
+        filters.aulaId = Number(query.aula_id)
+
+        if (query.month) filters.month = Number(query.month)
+        if (query.year) filters.year = Number(query.year)
+
+        // Wait for assignments to load (fetchAssignments is triggered by aulaId watcher)
+        // However, watcher might not select the correct assignment automatically if we have a specific one in URL.
+        // We need to set assignmentId AFTER assignments are loaded.
+        // Or strictly set it here and let fetchStats handle it?
+        // Let's set it. The fetchStats watcher depends on it. 
+        // But fetchAssignments clears assignmentId. 
+        // We should probably wait for assignments.
+
+        if (query.assignment_id) {
+            // We can use a watcher on 'assignments' to set it once loaded?
+            // Or explicitly call fetchAssignments here to bypass the generic watcher logic?
+            // The watcher `watch(() => filters.aulaId` calls `fetchAssignments`.
+
+            // Let's rely on a temporary watcher or check
+            const targetAssignmentId = Number(query.assignment_id)
+
+            // Watch for assignments change ONCE
+            const unwatch = watch(assignments, (newVal) => {
+                if (newVal.length > 0) {
+                    filters.assignmentId = targetAssignmentId
+                    unwatch() // Remove watcher
+                }
+            })
+        }
+    }
 })
 </script>
 

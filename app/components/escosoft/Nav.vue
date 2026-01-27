@@ -90,7 +90,7 @@
                           {{ notification.data.title }}
                         </p>
                         <p class="text-sm text-gray-600 line-clamp-2 mt-0.5"
-                          :class="{ 'text-gray-900': !notification.read_at }">
+                          :class="{ 'text-gray-900': !notification.read_at }" :title="notification.data.message">
                           {{ notification.data.message }}
                         </p>
                         <p class="text-xs text-gray-400 mt-1">
