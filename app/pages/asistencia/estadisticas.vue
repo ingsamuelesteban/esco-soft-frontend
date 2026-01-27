@@ -595,6 +595,8 @@ const printMonthly = async () => {
     }
 }
 
+const isInitializing = ref(false)
+
 // Watchers
 watch(() => filters.date, (newDate, oldDate) => {
     if (newDate && isWeekend(newDate)) {
@@ -612,6 +614,8 @@ watch(() => filters.date, (newDate, oldDate) => {
 })
 
 watch(() => filters.aulaId, (newId) => {
+    if (isInitializing.value) return
+
     filters.assignmentId = null
     assignments.value = []
     if (newId && newId !== 'all' && newId !== 'all_summary') {
@@ -620,6 +624,7 @@ watch(() => filters.aulaId, (newId) => {
 })
 
 watch(() => [filters.date, filters.aulaId, viewMode, filters.month, filters.year, filters.assignmentId], () => {
+    if (isInitializing.value) return
     if (filters.aulaId) fetchStats()
 }, { immediate: false })
 
@@ -636,51 +641,44 @@ onMounted(async () => {
     const query = route.query
 
     if (query.view === 'monthly' && query.aula_id) {
-        const targetAula = Number(query.aula_id)
-        const targetAssignment = query.assignment_id ? Number(query.assignment_id) : null
+        isInitializing.value = true // Block watchers
 
-        // 1. Set View Mode
-        viewMode.value = 'monthly'
+        try {
+            const targetAula = Number(query.aula_id)
+            const targetAssignment = query.assignment_id ? Number(query.assignment_id) : null
 
-        // 2. Set Filters (Month/Year)
-        if (query.month) filters.month = Number(query.month)
-        if (query.year) filters.year = Number(query.year)
+            // 1. Set View & Filters
+            viewMode.value = 'monthly'
+            if (query.month) filters.month = Number(query.month)
+            if (query.year) filters.year = Number(query.year)
 
-        // 3. Set Aula (triggers watcher)
-        filters.aulaId = targetAula
+            // 2. Set Aula
+            // Watchers blocked, so this just sets the v-model state
+            filters.aulaId = targetAula
 
-        // 4. Force Assignment selection if present
-        if (targetAssignment) {
-            // Because watcher triggers fetchAssignments asynchronously, we want to ensure
-            // we catch the result and set the assignment ID.
-
-            // We can manually fetch to be safe and await it
+            // 3. Load Assignments manually
             loadingAssignments.value = true
-            try {
-                // Re-using fetch logic manually to ensure await
-                let url = `/api/class-assignments?aula_id=${targetAula}&only_active=true`
-                if (!isAdminOrMaster.value && authStore.user?.personal_id) {
-                    url += `&profesor_id=${authStore.user.personal_id}`
-                }
-                const res = await api.get(url)
-                const rawData = res.data || res
-                const loadedAssignments = Array.isArray(rawData) ? rawData : (rawData.data || [])
-
-                assignments.value = loadedAssignments
-
-                // Now safely set assignment ID
-                // Allow Vue reactivity to process 'assignments' change first if needed? 
-                // Direct assignment should be fine if 'assignments.value' is set.
-                filters.assignmentId = targetAssignment
-
-                // Finally fetch stats
-                fetchStats()
-
-            } catch (e) {
-                console.error("Deep link assignment fetch error", e)
-            } finally {
-                loadingAssignments.value = false
+            let url = `/api/class-assignments?aula_id=${targetAula}&only_active=true`
+            if (!isAdminOrMaster.value && authStore.user?.personal_id) {
+                url += `&profesor_id=${authStore.user.personal_id}`
             }
+            const res = await api.get(url)
+            const rawData = res.data || res
+            assignments.value = Array.isArray(rawData) ? rawData : (rawData.data || [])
+
+            // 4. Set Assignment
+            if (targetAssignment) {
+                filters.assignmentId = targetAssignment
+            }
+
+            // 5. Fetch Stats manually
+            await fetchStats()
+
+        } catch (e) {
+            console.error("Deep link init error", e)
+        } finally {
+            // Re-enable washers after everything is set
+            isInitializing.value = false
         }
     }
 })
