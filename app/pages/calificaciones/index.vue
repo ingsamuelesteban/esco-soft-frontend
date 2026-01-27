@@ -1132,10 +1132,7 @@ const getDisplayCalificacion = (estudianteId, raNumero, oportunidad) => {
   const nota = getNotaOportunidad(estudianteId, raNumero, oportunidad)
   const notaMinima = getNotaMinima(raNumero)
 
-  if (nota >= notaMinima) {
-    // Si es entero, mostrar entero, si es decimal, mostrar hasta 1 decimal (ej: 18.5)
-    // O si prefieren mostrar siempre decimales? "tal cual". 
-    // Vamos a usar una función helper simple
+  if (nota >= notaMinima || oportunidad === 4) {
     return parseFloat(nota)
   } else {
     return 'NC' // NC (No Completó) si no aprobó
@@ -1147,9 +1144,8 @@ const getTitleCasilla = (estudianteId, raNumero, oportunidad) => {
   if (tieneCalificacionEnOportunidad(estudianteId, raNumero, oportunidad)) {
     const nota = getNotaOportunidad(estudianteId, raNumero, oportunidad)
     const notaMinima = getNotaMinima(raNumero)
-    const display = getDisplayCalificacion(estudianteId, raNumero, oportunidad)
 
-    if (display === 'NC') {
+    if (nota < notaMinima) {
       return `RA ${raNumero} - Oportunidad ${oportunidad}: ${nota} (No Completó)`
     } else {
       return `RA ${raNumero} - Oportunidad ${oportunidad}: ${nota} (Completó)`

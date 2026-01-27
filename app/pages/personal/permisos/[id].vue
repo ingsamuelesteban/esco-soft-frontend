@@ -39,7 +39,7 @@
                         <div>
                             <p class="text-sm text-gray-500">Tipo de Permiso</p>
                             <p class="font-medium text-gray-900 mt-1 capitalize">{{ getLeaveTypeName(request.leave_type)
-                                }}</p>
+                            }}</p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-500">Duración</p>
@@ -232,6 +232,28 @@ const cancelRequest = async () => {
             refresh()
         } catch (e) {
             Swal.fire('Error', 'No se pudo cancelar la solicitud.', 'error')
+        }
+    }
+}
+
+const deleteRequest = async () => {
+    const result = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: "Esta acción no se puede deshacer.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar'
+    })
+
+    if (result.isConfirmed) {
+        try {
+            await store.remove(request.value.id)
+            await Swal.fire('Eliminado', 'La solicitud ha sido eliminada.', 'success')
+            router.push('/personal/permisos')
+        } catch (e) {
+            Swal.fire('Error', 'No se pudo eliminar la solicitud.', 'error')
         }
     }
 }
