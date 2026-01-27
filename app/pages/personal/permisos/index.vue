@@ -157,6 +157,10 @@
                             class="px-3 py-1.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
                             Ver Detalles
                         </button>
+                        <button v-if="authStore.isAdmin || authStore.isMaster" @click="deleteRequest(request)"
+                            class="px-3 py-1.5 text-sm text-red-700 bg-red-100 hover:bg-red-200 rounded-lg transition-colors">
+                            Eliminar
+                        </button>
                     </div>
                 </div>
             </div>
@@ -198,6 +202,7 @@ import { useAuthStore } from '../../../stores/auth'
 import LeaveRequestFormModal from '../../../components/staff/LeaveRequestFormModal.vue'
 import LeaveRequestReviewModal from '../../../components/staff/LeaveRequestReviewModal.vue'
 import dayjs from 'dayjs'
+import Swal from 'sweetalert2'
 
 definePageMeta({
     middleware: ['auth']
@@ -272,6 +277,38 @@ const openReviewModal = (request: LeaveRequest) => {
 const viewDetails = (request: LeaveRequest) => {
     // Navigate to detail page
     navigateTo(`/personal/permisos/${request.id}`)
+}
+
+const deleteRequest = async (request: LeaveRequest) => {
+    const result = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: "¡Esta acción eliminará permanentemente la solicitud y no se podrá recuperar!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    })
+
+    if (result.isConfirmed) {
+        try {
+            await store.remove(request.id)
+            await Swal.fire(
+                '¡Eliminada!',
+                'La solicitud ha sido eliminada correctamente.',
+                'success'
+            )
+            loadRequests()
+            loadStatistics()
+        } catch (error: any) {
+            Swal.fire(
+                'Error',
+                error.message || 'No se pudo eliminar la solicitud',
+                'error'
+            )
+        }
+    }
 }
 
 const onSaved = () => {
