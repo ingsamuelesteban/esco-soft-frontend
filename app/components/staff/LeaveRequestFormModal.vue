@@ -231,8 +231,32 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Firma del Empleado <span class="text-red-500">*</span>
                     </label>
-                    <SignaturePad ref="signaturePadRef" @update="handleSignatureUpdate"
+                    <div v-if="usingStoredSignature" class="bg-gray-50 border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <div class="bg-green-100 p-2 rounded-full">
+                                <svg class="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-900">Firma Digital Cargada</p>
+                                <p class="text-xs text-gray-500">Se utilizará su firma registrada en el perfil</p>
+                            </div>
+                        </div>
+                        <button type="button" @click="useManualSignature" class="text-sm text-blue-600 hover:text-blue-800 hover:underline">
+                            Firmarmanualmente
+                        </button>
+                    </div>
+                    <div v-else>
+                         <SignaturePad ref="signaturePadRef" @update="handleSignatureUpdate"
                         @change="handleSignatureChange" />
+                        <div v-if="user?.digital_signature_path" class="mt-2 text-right">
+                             <button type="button" @click="loadStoredSignature" class="text-sm text-blue-600 hover:text-blue-800 hover:underline">
+                                Usar firma guardada
+                            </button>
+                        </div>
+                    </div>
+                   
                     <p v-if="errors.employee_signature" class="mt-1 text-sm text-red-600">{{
                         errors.employee_signature
                     }}</p>
@@ -289,6 +313,8 @@ const user = computed(() => auth.user)
 const signaturePadRef = ref<InstanceType<typeof SignaturePad> | null>(null)
 const submitting = ref(false)
 const signatureEmpty = ref(true)
+const usingStoredSignature = ref(false)
+const isLoadingSignature = ref(false)
 
 const canSelectEmployee = computed(() => {
     return user.value?.role === 'admin' || user.value?.role === 'master'
@@ -364,10 +390,59 @@ onMounted(() => {
     }
 })
 
+// ... load signature logic
+const loadStoredSignature = async () => {
+    const userAny = user.value as any
+    if (!userAny?.digital_signature_path) return
+
+    try {
+        isLoadingSignature.value = true
+        // Fetch image as blob
+        const config = useRuntimeConfig()
+        const response = await fetch(`${config.public.apiBase}/storage/${userAny.digital_signature_path}`)
+        const blob = await response.blob()
+        
+        // Convert to base64
+        const reader = new FileReader()
+        reader.readAsDataURL(blob)
+        reader.onloadend = () => {
+            const base64data = reader.result as string
+            form.value.employee_signature = base64data
+            signatureEmpty.value = false
+            usingStoredSignature.value = true
+        }
+    } catch (e) {
+        console.error('Error loading signature:', e)
+        usingStoredSignature.value = false
+    } finally {
+        isLoadingSignature.value = false
+    }
+}
+
+const useManualSignature = () => {
+    usingStoredSignature.value = false
+    form.value.employee_signature = ''
+    signatureEmpty.value = true
+    // Next tick clear pad?
+    setTimeout(() => {
+        if (signaturePadRef.value) signaturePadRef.value.clear()
+    }, 100)
+}
+
 // Watch for modal opening to reset/init
 watch(() => props.show, (newVal) => {
-    if (newVal && !canSelectEmployee.value && user.value?.personal_id) {
-        form.value.personal_id = user.value.personal_id
+    if (newVal) {
+        if (!canSelectEmployee.value && user.value?.personal_id) {
+            form.value.personal_id = user.value.personal_id
+        }
+        
+        // Auto-load signature
+        const userAny = user.value as any
+        if (userAny?.digital_signature_path) {
+            loadStoredSignature()
+        } else {
+             usingStoredSignature.value = false
+        }
     }
 })
 

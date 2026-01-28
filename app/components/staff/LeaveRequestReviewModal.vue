@@ -99,8 +99,31 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">
                             Firma del Administrador <span class="text-red-500">*</span>
                         </label>
-                        <SignaturePad ref="signaturePadRef" @update="handleSignatureUpdate"
-                            @change="handleSignatureChange" />
+                        <div v-if="usingStoredSignature" class="bg-gray-50 border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <div class="bg-green-100 p-2 rounded-full">
+                                    <svg class="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                </div>
+                                <div>
+                                    <p class="font-medium text-gray-900">Firma Digital Cargada</p>
+                                    <p class="text-xs text-gray-500">Se utilizará su firma registrada en el perfil</p>
+                                </div>
+                            </div>
+                            <button type="button" @click="useManualSignature" class="text-sm text-blue-600 hover:text-blue-800 hover:underline">
+                                Firmar manualmente
+                            </button>
+                        </div>
+                        <div v-else>
+                            <SignaturePad ref="signaturePadRef" @update="handleSignatureUpdate"
+                                @change="handleSignatureChange" />
+                            <div v-if="authStore.user?.digital_signature_path" class="mt-2 text-right">
+                                <button type="button" @click="loadStoredSignature" class="text-sm text-blue-600 hover:text-blue-800 hover:underline">
+                                    Usar firma guardada
+                                </button>
+                            </div>
+                        </div>
                         <p v-if="signatureError" class="mt-1 text-sm text-red-600">La firma es obligatoria</p>
                     </div>
 
@@ -177,6 +200,53 @@ const form = ref({
 const handleSignatureUpdate = (signature: string) => {
     form.value.admin_signature = signature
 }
+
+const usingStoredSignature = ref(false)
+const isLoadingSignature = ref(false)
+
+const loadStoredSignature = async () => {
+    if (!authStore.user?.digital_signature_path) return
+
+    try {
+        isLoadingSignature.value = true
+        const config = useRuntimeConfig()
+        const response = await fetch(`${config.public.apiBase}/storage/${authStore.user.digital_signature_path}`)
+        const blob = await response.blob()
+        
+        const reader = new FileReader()
+        reader.readAsDataURL(blob)
+        reader.onloadend = () => {
+            const base64data = reader.result as string
+            form.value.admin_signature = base64data
+            signatureEmpty.value = false
+            usingStoredSignature.value = true
+        }
+    } catch (e) {
+        console.error('Error loading signature:', e)
+        usingStoredSignature.value = false
+    } finally {
+        isLoadingSignature.value = false
+    }
+}
+
+const useManualSignature = () => {
+    usingStoredSignature.value = false
+    form.value.admin_signature = ''
+    signatureEmpty.value = true
+    setTimeout(() => {
+        if (signaturePadRef.value) signaturePadRef.value.clear()
+    }, 100)
+}
+
+watch(() => props.show, (newVal) => {
+    if (newVal) {
+        if (authStore.user?.digital_signature_path) {
+            loadStoredSignature()
+        } else {
+             usingStoredSignature.value = false
+        }
+    }
+})
 
 const handleSignatureChange = (isEmpty: boolean) => {
     signatureEmpty.value = isEmpty

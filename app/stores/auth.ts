@@ -12,6 +12,7 @@ export interface User {
   profile_photo_path?: string
   profile_photo_url?: string
   initials?: string
+  digital_signature_path?: string
 }
 
 export interface LoginCredentials {
@@ -405,6 +406,10 @@ export const useAuthStore = defineStore('auth', {
 
         if (profileData.photo) {
           formData.append('photo', profileData.photo)
+        }
+
+        if (profileData.digital_signature) {
+          formData.append('digital_signature', profileData.digital_signature)
         }
 
         const response: any = await api.post('/api/user/profile', formData)
