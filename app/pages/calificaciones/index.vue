@@ -539,7 +539,28 @@ const isPsychologist = computed(() => {
   const role = authStore.user?.role?.toLowerCase() || ''
   return role.includes('psic') || role.includes('orient')
 })
-const isReadOnly = computed(() => isPsychologist.value)
+const isReadOnly = computed(() => {
+  if (isPsychologist.value) return true
+  
+  // Coordinator logic: Read only if NOT the assigned teacher
+  if (authStore.user?.role === 'coordinador') {
+    // Check if the current user matches the assignment's teacher (if we have that info)
+    // modulosDisponibles contains assignments. We can check the selected assignment.
+    if (moduloSeleccionado.value && modulosDisponibles.value) {
+       const selectedAssignment = modulosDisponibles.value.find(m => m.id == moduloSeleccionado.value)
+       // However, modulosDisponibles from API response might not have 'profesor_id' directly?
+       // Wait, 'profesor_id' is on the assignment?
+       // Let's check 'cargarModulosYEstudiantes'. It maps assignments.
+       // We might need to ensure 'profesor_id' is returned and available.
+       // If not available, we rely on backend blocking? No, UI should initiate readonly.
+       // Let's assume we can add 'profesor_id' to the map.
+       return selectedAssignment?.profesor_id !== authStore.user.personal_id
+    }
+    return true // Default to readonly until selected
+  }
+  
+  return false
+})
 
 // Constantes
 
@@ -672,6 +693,7 @@ const cargarModulosYEstudiantes = async () => {
     // Map assignments directly
     modulosDisponibles.value = assignments.map(assignment => ({
       id: assignment.id, // ID de la Asignación
+      profesor_id: assignment.profesor_id, // Needed for coordinator permission check
       materia_id: assignment.materia?.id,
       nombre: assignment.materia?.nombre,
       tipo: assignment.materia?.tipo,

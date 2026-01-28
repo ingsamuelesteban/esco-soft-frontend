@@ -6,7 +6,7 @@ export interface User {
   name: string
   username: string
   email: string
-  role: 'admin' | 'profesor' | 'master' | 'estudiante'
+  role: 'admin' | 'profesor' | 'master' | 'estudiante' | 'coordinador'
   personal_id?: number
   active: boolean
   profile_photo_path?: string
@@ -65,6 +65,7 @@ export const useAuthStore = defineStore('auth', {
     isProfesor: (state) => state.user?.role === 'profesor',
     isAdmin: (state) => state.user?.role === 'admin',
     isMaster: (state) => state.user?.role === 'master',
+    isCoordinator: (state) => state.user?.role === 'coordinador',
   },
 
   actions: {
