@@ -142,15 +142,15 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <a v-if="excuse.file_path"
-                                    :href="`${$config.public.apiBase}/storage/${excuse.file_path}`" target="_blank"
-                                    class="text-primary-600 hover:text-primary-900 flex items-center text-sm font-medium">
+                                <button v-if="excuse.file_path"
+                                    @click="printFile(excuse.file_path)"
+                                    class="text-primary-600 hover:text-primary-900 flex items-center text-sm font-medium focus:outline-none">
                                     <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                             d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                                     </svg>
                                     Ver Adjunto
-                                </a>
+                                </button>
                                 <span v-else class="text-xs text-gray-400 italic">Sin adjunto</span>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -422,6 +422,7 @@ import DropZone from '~/components/ui/DropZone.vue'
 import debounce from 'lodash/debounce'
 import Swal from 'sweetalert2'
 import dayjs from 'dayjs'
+import { usePrint } from '~/composables/usePrint'
 
 const config = useRuntimeConfig()
 const { $api } = useNuxtApp()
@@ -430,6 +431,7 @@ const { $api } = useNuxtApp()
 const excuses = ref([])
 const aulas = ref([])
 const loading = ref(false)
+const { printFile } = usePrint()
 const page = ref(1)
 const lastPage = ref(1)
 

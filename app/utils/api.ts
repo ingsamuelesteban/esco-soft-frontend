@@ -39,7 +39,8 @@ export async function apiCall<T = any>(url: string, options: Parameters<typeof $
       '/api/profile',
       '/sanctum/csrf-cookie',
       '/tenants',
-      '/api/tenants'
+      '/api/tenants',
+      '/storage'
     ]
 
     // Check if URL triggers isGlobal

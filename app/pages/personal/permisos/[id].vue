@@ -64,26 +64,27 @@
 
                     <div v-if="request.attachment_path" class="mt-6">
                         <p class="text-sm text-gray-500 mb-2">Documento Adjunto (Empleado)</p>
-                        <a :href="getFileUrl(request.attachment_path)" target="_blank"
+                        <button v-if="request.attachment_path" @click="printFile(request.attachment_path)"
                             class="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                             </svg>
                             Ver Adjunto
-                        </a>
+                        </button>
                     </div>
 
                     <div v-if="request.approval_attachment_path" class="mt-6">
                         <p class="text-sm text-gray-500 mb-2">Adjunto de Aprobación</p>
-                        <a :href="getFileUrl(request.approval_attachment_path)" target="_blank"
+                        <button v-if="request.approval_attachment_path"
+                            @click="printFile(request.approval_attachment_path)"
                             class="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                             </svg>
                             Ver Adjunto de Aprobación
-                        </a>
+                        </button>
                     </div>
                 </div>
 
@@ -179,6 +180,7 @@ import printJS from 'print-js'
 import { useLeaveRequestsStore } from '~/stores/leaveRequests'
 import { useAuthStore } from '~/stores/auth'
 import LeaveRequestReviewModal from '~/components/staff/LeaveRequestReviewModal.vue'
+import { usePrint } from '~/composables/usePrint'
 import dayjs from 'dayjs'
 import Swal from 'sweetalert2'
 
@@ -190,6 +192,7 @@ const route = useRoute()
 const router = useRouter()
 const store = useLeaveRequestsStore()
 const authStore = useAuthStore()
+const { printFile } = usePrint()
 const request = ref<any>(null)
 const loading = ref(true)
 const showReviewModal = ref(false)

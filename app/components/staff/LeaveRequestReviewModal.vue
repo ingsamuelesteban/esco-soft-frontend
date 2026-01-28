@@ -52,28 +52,28 @@
                             <span
                                 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 block">Evidencia
                                 del Empleado</span>
-                            <a :href="`/storage/${request.attachment_path}`" target="_blank"
+                            <button @click="printFile(request.attachment_path)"
                                 class="inline-flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm hover:bg-blue-100 transition-colors w-fit">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
                                 </svg>
                                 Ver Documento Adjunto
-                            </a>
+                            </button>
                         </div>
 
                         <div v-if="request.approval_attachment_path">
                             <span
                                 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 block">Adjunto
                                 de Aprobación</span>
-                            <a :href="`/storage/${request.approval_attachment_path}`" target="_blank"
+                            <button @click="printFile(request.approval_attachment_path)"
                                 class="inline-flex items-center gap-2 px-3 py-2 bg-green-50 text-green-700 rounded-lg text-sm hover:bg-green-100 transition-colors w-fit">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                                 </svg>
                                 Ver Documento de Aprobación
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -147,6 +147,7 @@ import Swal from 'sweetalert2'
 import dayjs from 'dayjs'
 import printJS from 'print-js'
 import { api } from '~/utils/api'
+import { usePrint } from '~/composables/usePrint'
 
 interface Props {
     show: boolean
@@ -165,6 +166,7 @@ const signaturePadRef = ref<InstanceType<typeof SignaturePad> | null>(null)
 const submitting = ref(false)
 const signatureEmpty = ref(true)
 const signatureError = ref(false)
+const { printFile } = usePrint()
 
 const form = ref({
     review_notes: '',
