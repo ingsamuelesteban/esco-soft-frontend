@@ -35,12 +35,13 @@
         <!-- Selector de asignación/aula -->
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">
-            {{ (authStore.isAdmin || authStore.isMaster || isPsychologist || authStore.isCoordinator) ? 'Aula' : 'Materia y Aula' }}
+            {{ (authStore.isAdmin || authStore.isMaster || isPsychologist || authStore.isCoordinator) ? 'Aula' :
+              'Materia y Aula' }}
           </label>
 
           <!-- Para Administradores/Masters/Psicólogos/Coordinadores: Selector directo de Aulas -->
-          <select v-if="authStore.isAdmin || authStore.isMaster || isPsychologist || authStore.isCoordinator" v-model="selectedAulaId"
-            @change="selectedAssignmentId = null"
+          <select v-if="authStore.isAdmin || authStore.isMaster || isPsychologist || authStore.isCoordinator"
+            v-model="selectedAulaId" @change="selectedAssignmentId = null"
             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
             :disabled="aulasStore.loading">
             <option :value="null">Seleccionar aula...</option>
@@ -50,7 +51,9 @@
           </select>
 
           <!-- Para Administradores/Masters/Psicólogos/Coordinadores: Selector de Clase/Asignatura del día -->
-          <div v-if="(authStore.isAdmin || authStore.isMaster || isPsychologist || authStore.isCoordinator) && selectedAulaId" class="mt-4">
+          <div
+            v-if="(authStore.isAdmin || authStore.isMaster || isPsychologist || authStore.isCoordinator) && selectedAulaId"
+            class="mt-4">
             <label class="block text-sm font-medium text-gray-700 mb-2">Clase / Asignatura</label>
             <select v-model="selectedAssignmentId" @change="loadAttendance"
               class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
@@ -120,7 +123,8 @@
     <div v-if="attendanceStore.holiday" class="bg-indigo-50 border border-indigo-200 rounded-lg p-8 text-center my-6">
       <div class="flex flex-col items-center justify-center">
         <svg class="h-16 w-16 text-indigo-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
         </svg>
         <h3 class="text-xl font-bold text-indigo-900 mb-2">Día Feriado</h3>
         <p class="text-indigo-800 text-lg">
@@ -202,12 +206,14 @@
     </div>
 
     <!-- Componente de lista de asistencia (Ocultar si es feriado) -->
-    <AttendanceGrid v-else-if="!attendanceStore.holiday && hasData && selectedDate && selectedAulaId && selectedAssignmentId" :fecha="selectedDate"
-      :aula-id="selectedAulaId" :aula-name="selectedAulaName" :assignment-id="selectedAssignmentId"
-      :read-only="isReadOnly" />
+    <AttendanceGrid
+      v-else-if="!attendanceStore.holiday && hasData && selectedDate && selectedAulaId && selectedAssignmentId"
+      :fecha="selectedDate" :aula-id="selectedAulaId" :aula-name="selectedAulaName"
+      :assignment-id="selectedAssignmentId" :read-only="isReadOnly" />
 
     <!-- Estado inicial -->
-    <div v-else-if="!attendanceStore.loading && !attendanceStore.holiday" class="bg-white shadow-sm rounded-lg p-12 text-center">
+    <div v-else-if="!attendanceStore.loading && !attendanceStore.holiday"
+      class="bg-white shadow-sm rounded-lg p-12 text-center">
       <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
           d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -220,6 +226,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { useAttendanceStore } from '~/stores/attendance'
 import { useAulasStore } from '~/stores/aulas'
 import { useAuthStore } from '~/stores/auth' // Import auth store
@@ -264,21 +271,21 @@ const isPsychologist = computed(() => {
 })
 const isReadOnly = computed(() => {
   if (isPsychologist.value) return true
-  
+
   if (authStore.user?.role === 'coordinador') {
-     // Coordinator can view everything, but edit only their own assignments.
-     // We check if the selected assignment belongs to them.
-     if (selectedAssignmentId.value) {
-         // Find the assignment in dailyClasses
-         const entry = attendanceStore.dailyClasses.find(e => e.assignment_id === selectedAssignmentId.value)
-         if (entry && entry.assignment) {
-             return entry.assignment.profesor_id !== authStore.user.personal_id
-         }
-         // If we can't find it (maybe loading), default to readonly to be safe?
-         // Or if loadingDailyClasses is true?
-         return true
-     }
-     return true
+    // Coordinator can view everything, but edit only their own assignments.
+    // We check if the selected assignment belongs to them.
+    if (selectedAssignmentId.value) {
+      // Find the assignment in dailyClasses
+      const entry = attendanceStore.dailyClasses.find(e => e.assignment_id === selectedAssignmentId.value)
+      if (entry && entry.assignment) {
+        return entry.assignment.profesor_id !== authStore.user.personal_id
+      }
+      // If we can't find it (maybe loading), default to readonly to be safe?
+      // Or if loadingDailyClasses is true?
+      return true
+    }
+    return true
   }
 
   return false
@@ -505,6 +512,8 @@ watch(selectedAulaId, (newAulaId) => {
 
 // Lifecycle
 onMounted(async () => {
+  const route = useRoute()
+
   // Cargar asignaciones del profesor (ya no es prioritario, usamos fetchDailyClasses)
   // await attendanceStore.getTeacherAssignments() // Comentado o eliminado si ya no se usa
 
@@ -512,8 +521,24 @@ onMounted(async () => {
   if (!(authStore.isAdmin || authStore.isMaster || isPsychologist.value || authStore.isCoordinator) && authStore.user?.personal_id) {
     await attendanceStore.fetchDailyClasses({ professorId: authStore.user.personal_id, date: selectedDate.value })
 
-    // Auto-load clase actual para profesores
-    await loadCurrentClass()
+    // Check query param first
+    if (route.query.assignment_id) {
+      const queryId = Number(route.query.assignment_id)
+      const entry = attendanceStore.dailyClasses.find(e => e.assignment_id === queryId)
+      if (entry) {
+        selectedAssignmentId.value = queryId
+        // Trigger selection logic manually since v-model updates won't trigger @change immediately usually or logic is in watcher?
+        // Correct, logic is in 'onAssignmentChange' or just setting it causes watcher? 
+        // Wait, for professors, 'onAssignmentChange' sets aula_id. 'selectedAssignmentId' does NOT have a watcher for logic, only 'selectedAulaId' does for admins.
+        // Professors rely on 'onAssignmentChange' or manual setting.
+        // Let's call the logic:
+        selectedAulaId.value = entry.assignment.aula_id
+        loadAttendance()
+      }
+    } else {
+      // Auto-load clase actual para profesores only if no query param
+      await loadCurrentClass()
+    }
   }
 
   // Cargar aulas al montar el componente (para administradores)
