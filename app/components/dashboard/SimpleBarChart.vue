@@ -1,22 +1,33 @@
 <template>
   <div class="bg-white p-6 rounded-lg shadow">
-    <h3 class="text-lg font-medium text-gray-900 mb-4">{{ title }}</h3>
+    <h3 class="text-lg font-medium text-gray-900 mb-6">{{ title }}</h3>
     <div class="relative h-64">
+      <!-- Grid lines (optional, kept simple for now) -->
+
       <div class="absolute inset-0 flex items-end justify-between space-x-2">
-        <div v-for="(item, index) in data" :key="index" class="relative flex flex-col items-center flex-1 h-full justify-end group">
-          
-          <!-- Tooltip -->
-          <div class="opacity-0 group-hover:opacity-100 absolute bottom-full mb-2 bg-black text-white text-xs rounded py-1 px-2 transition-opacity z-10 whitespace-nowrap pointer-events-none">
+        <div v-for="(item, index) in data" :key="index"
+          class="relative flex flex-col items-center flex-1 h-full justify-end group">
+
+          <!-- Value Label (Visible) -->
+          <div class="mb-1 text-xs font-bold text-gray-700">
+            {{ item.percentage }}%
+          </div>
+
+          <!-- Tooltip (Hover) -->
+          <div
+            class="opacity-0 group-hover:opacity-100 absolute bottom-full mb-6 bg-gray-900 text-white text-xs rounded py-1 px-2 transition-opacity z-10 whitespace-nowrap pointer-events-none shadow-lg">
             {{ item.label }}: {{ item.value }} ({{ item.percentage }}%)
           </div>
 
           <!-- Bar -->
-          <div class="w-full bg-blue-100 rounded-t relative overflow-hidden transition-all duration-500" :style="{ height: item.percentage + '%' }">
-             <div class="absolute bottom-0 left-0 right-0 bg-blue-500 transition-all duration-500" :style="{ height: '100%' }"></div>
+          <div
+            class="w-full rounded-t relative overflow-hidden transition-all duration-500 hover:brightness-110 cursor-pointer"
+            :class="getBgColorClass(index)" :style="{ height: item.percentage + '%' }">
+            <!-- Removed inner fill div to allow simple full color bar -->
           </div>
-          
+
           <!-- Label -->
-          <div class="mt-2 text-xs text-gray-500 truncate w-full text-center">
+          <div class="mt-2 text-xs text-gray-500 truncate w-full text-center font-medium">
             {{ item.shortLabel || item.label }}
           </div>
         </div>
@@ -37,4 +48,21 @@ defineProps<{
   title: string
   data: ChartData[]
 }>()
+
+const colors = [
+  'bg-blue-500',
+  'bg-green-500',
+  'bg-purple-500',
+  'bg-yellow-500',
+  'bg-indigo-500',
+  'bg-pink-500',
+  'bg-teal-500',
+  'bg-red-500',
+  'bg-orange-500',
+  'bg-cyan-500'
+]
+
+const getBgColorClass = (index: number) => {
+  return colors[index % colors.length]
+}
 </script>
