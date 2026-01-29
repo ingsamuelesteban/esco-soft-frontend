@@ -60,6 +60,8 @@ export const useAuthStore = defineStore('auth', {
     availableTenants: [] as Tenant[],
     isAuthenticated: false as boolean,
     isLoading: false as boolean,
+    lastActivity: Date.now() as number,
+    activityInterval: null as any,
   }),
 
   getters: {
@@ -190,9 +192,57 @@ export const useAuthStore = defineStore('auth', {
 
       if (process.client) {
         localStorage.removeItem('auth_token')
+        this.stopActivityTracker() // Stop tracker on logout
       }
 
       await navigateTo('/login')
+    },
+
+    initActivityTracker() {
+      if (!process.client) return
+
+      this.lastActivity = Date.now()
+      this.startActivityInterval()
+
+      const events = ['mousemove', 'keydown', 'click', 'scroll']
+      const updateActivity = () => {
+        this.lastActivity = Date.now()
+      }
+
+      events.forEach(event => {
+        window.addEventListener(event, updateActivity)
+      })
+
+      // Store cleanup function if needed later, 
+      // but for now we rely on the interval check to define "active"
+    },
+
+    startActivityInterval() {
+      if (this.activityInterval) clearInterval(this.activityInterval)
+
+      // Check every minute
+      this.activityInterval = setInterval(() => {
+        this.checkAutoLogout()
+      }, 60000)
+    },
+
+    stopActivityTracker() {
+      if (this.activityInterval) {
+        clearInterval(this.activityInterval)
+        this.activityInterval = null
+      }
+    },
+
+    checkAutoLogout() {
+      if (!this.isAuthenticated) return
+
+      const timeoutDuration = 30 * 60 * 1000 // 30 minutes in ms
+      const timeSinceLastActivity = Date.now() - this.lastActivity
+
+      if (timeSinceLastActivity > timeoutDuration) {
+        console.warn('Session timed out due to inactivity')
+        this.logout()
+      }
     },
 
     async initializeAuth() {
