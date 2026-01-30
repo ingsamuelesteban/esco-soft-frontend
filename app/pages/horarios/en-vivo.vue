@@ -121,8 +121,15 @@ const resetTime = () => {
 
 const nowLabel = computed(() => {
   const d = effectiveNow.value
+  const hours = d.getHours()
+  const minutes = d.getMinutes()
+  
+  // Formato 12 horas
+  const hours12 = hours % 12 || 12
+  const ampm = hours >= 12 ? 'PM' : 'AM'
   const pad = (n: number) => String(n).padStart(2, '0')
-  return `${d.toLocaleDateString()} ${pad(d.getHours())}:${pad(d.getMinutes())}`
+  
+  return `${d.toLocaleDateString()} ${hours12}:${pad(minutes)} ${ampm}`
 })
 
 const diaActual = computed(() => {
@@ -144,12 +151,16 @@ const parseToMinutes = (hhmm: string) => {
 const currentPeriods = computed<Period[]>(() => {
   if (periods.items.length === 0) return []
   const minutes = effectiveNow.value.getHours() * 60 + effectiveNow.value.getMinutes()
-  return periods.activas.filter(p => {
-    const s = parseToMinutes(p.start_time)
-    const e = parseToMinutes(p.end_time)
-    // Inclusivo al inicio, exclusivo al final
-    return minutes >= s && minutes < e
-  })
+  
+  // Filtrar directamente sobre items para evitar cacheo del getter
+  return periods.items
+    .filter(p => p.is_active) // Solo períodos activos
+    .filter(p => {
+      const s = parseToMinutes(p.start_time)
+      const e = parseToMinutes(p.end_time)
+      // Inclusivo al inicio, exclusivo al final
+      return minutes >= s && minutes < e
+    })
 })
 
 const currentPeriodRange = computed(() => {
