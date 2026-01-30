@@ -117,17 +117,24 @@ export const useChatStore = defineStore('chat', {
             this.conversations.forEach(conversation => {
                 $echo.private(`chat.${conversation.id}`)
                     .listen('.MessageSent', (e: any) => {
-                        console.log(`Event on chat.${conversation.id}:`, e)
+                        console.log(`[Chat] Event on chat.${conversation.id}:`, e)
+
+                        // Skip if this is our own message (already added optimistically)
+                        if (e.message.user_id === authStore.user?.id) {
+                            console.log('[Chat] Skipping own message from WebSocket')
+                            return
+                        }
 
                         // 1. If inside this chat, push to messages
                         if (this.activeConversation?.id === conversation.id) {
+                            console.log('[Chat] Adding message to active conversation')
                             this.messages.push(e.message)
                             if (this.showChatWindow) {
                                 this.markAsRead(conversation.id)
                             }
                         } else {
-                            // 2. If outside, increment unread count (Frontend only for now)
-                            // We need to find the conversation in the array and update it
+                            // 2. If outside, increment unread count
+                            console.log('[Chat] Incrementing unread count')
                             const conv = this.conversations.find(c => c.id === conversation.id)
                             if (conv) {
                                 conv.unread_count = (conv.unread_count || 0) + 1
@@ -178,6 +185,34 @@ export const useChatStore = defineStore('chat', {
 
                 if (response) {
                     this.conversations.unshift(response)
+
+                    // Subscribe to the new conversation's WebSocket channel
+                    const { $echo } = useNuxtApp()
+                    const authStore = useAuthStore()
+
+                    $echo.private(`chat.${response.id}`)
+                        .listen('.MessageSent', (e: any) => {
+                            console.log(`[Chat] Event on new chat.${response.id}:`, e)
+
+                            // Skip if this is our own message
+                            if (e.message.user_id === authStore.user?.id) {
+                                return
+                            }
+
+                            if (this.activeConversation?.id === response.id) {
+                                this.messages.push(e.message)
+                                if (this.showChatWindow) {
+                                    this.markAsRead(response.id)
+                                }
+                            } else {
+                                const conv = this.conversations.find(c => c.id === response.id)
+                                if (conv) {
+                                    conv.unread_count = (conv.unread_count || 0) + 1
+                                    conv.latest_message = e.message
+                                }
+                            }
+                        })
+
                     await this.selectConversation(response)
                 }
             } catch (error) {
