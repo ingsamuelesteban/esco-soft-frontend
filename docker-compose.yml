@@ -10,6 +10,10 @@ services:
       - NITRO_HOST=0.0.0.0
       - NITRO_PORT=3000
       - NUXT_PUBLIC_API_BASE=http://localhost:8010
+      - VITE_REVERB_APP_KEY=reverbappkey
+      - VITE_REVERB_HOST=localhost
+      - VITE_REVERB_PORT=8080
+      - VITE_REVERB_SCHEME=http
     volumes:
       - .:/app
       - /app/node_modules

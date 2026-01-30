@@ -109,6 +109,15 @@ export async function apiCall<T = any>(url: string, options: Parameters<typeof $
       }
     },
     onResponseError({ response }) {
+      // Manejo global de 401: Redirigir al login si la sesión expiró
+      if (response.status === 401) {
+        if (process.client) {
+          localStorage.removeItem('auth_token')
+          localStorage.removeItem('selected_tenant_id')
+          window.location.href = '/login'
+        }
+      }
+
       if (options.responseType === 'blob') {
         throw new Error(`Error ${response.status}: ${response.statusText}`)
       }
