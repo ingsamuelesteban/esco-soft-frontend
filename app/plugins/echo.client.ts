@@ -15,14 +15,15 @@ export default defineNuxtPlugin((nuxtApp) => {
     window.Pusher = Pusher
 
     const config = useRuntimeConfig()
+    const reverbConfig = config.public.reverb as { appKey: string, host: string, port: string, scheme: string }
 
     window.Echo = new Echo({
         broadcaster: 'reverb',
-        key: import.meta.env.VITE_REVERB_APP_KEY || 'reverbappkey',
-        wsHost: import.meta.env.VITE_REVERB_HOST || 'localhost',
-        wsPort: import.meta.env.VITE_REVERB_PORT || 8080,
-        wssPort: import.meta.env.VITE_REVERB_PORT || 8080,
-        forceTLS: (import.meta.env.VITE_REVERB_SCHEME || 'http') === 'https',
+        key: reverbConfig.appKey,
+        wsHost: reverbConfig.host,
+        wsPort: parseInt(reverbConfig.port),
+        wssPort: parseInt(reverbConfig.port),
+        forceTLS: reverbConfig.scheme === 'https',
         enabledTransports: ['ws', 'wss'],
         authEndpoint: config.public.apiBase + '/api/broadcasting/auth',
         auth: {

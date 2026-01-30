@@ -50,7 +50,14 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8010',
-      sanctumEndpoint: process.env.NUXT_PUBLIC_SANCTUM_ENDPOINT || 'http://localhost:8010/sanctum/csrf-cookie'
+      sanctumEndpoint: process.env.NUXT_PUBLIC_SANCTUM_ENDPOINT || 'http://localhost:8010/sanctum/csrf-cookie',
+      // Reverb WebSocket Configuration
+      reverb: {
+        appKey: process.env.NUXT_PUBLIC_REVERB_APP_KEY || 'm8ltbfspcqtzuj4girhc',
+        host: process.env.NUXT_PUBLIC_REVERB_HOST || 'api.escosoft.online',
+        port: process.env.NUXT_PUBLIC_REVERB_PORT || '443',
+        scheme: process.env.NUXT_PUBLIC_REVERB_SCHEME || 'https'
+      }
     }
   },
 
