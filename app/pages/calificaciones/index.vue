@@ -222,19 +222,34 @@
                           <div class="flex flex-col items-center space-y-1">
                             <div class="flex space-x-1">
                               <div v-for="p in 4" :key="p" class="flex flex-col space-y-1">
-                                <div class="flex items-center justify-center space-x-1 mb-1">
+                                <div class="flex items-center justify-center gap-1 mb-1">
                                   <span class="text-[10px] font-bold text-gray-400">P{{ p }}</span>
-                                  <!-- Botón Importar -->
-                                  <button v-if="!isReadOnly"
-                                    @click.stop="openImportModal('academic', { competencia: getCompetenciasPorBloque(bloque)[0], bloque, tipo: `P${p}` })"
-                                    class="text-blue-400 hover:text-blue-600 rounded-full hover:bg-blue-50 p-0.5"
-                                    title="Pegar notas desde Excel">
-                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                        d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
-                                      </path>
-                                    </svg>
-                                  </button>
+                                  <!-- Contenedor horizontal para botones -->
+                                  <div v-if="!isReadOnly" class="flex items-center gap-0.5 bg-gray-50 rounded px-1 py-0.5">
+                                    <!-- Botón Importar -->
+                                    <button
+                                      @click.stop="openImportModal('academic', { competencia: getCompetenciasPorBloque(bloque)[0], bloque, tipo: `P${p}` })"
+                                      class="text-blue-500 hover:text-blue-700 rounded hover:bg-blue-100 p-0.5 transition-colors"
+                                      title="Importar notas">
+                                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                                        </path>
+                                      </svg>
+                                    </button>
+                                    <!-- Separador visual -->
+                                    <div class="h-3 w-px bg-gray-300"></div>
+                                    <!-- Botón Eliminar -->
+                                    <button
+                                      @click.stop="eliminarCalificacionesPorLote('academic', { competencia: getCompetenciasPorBloque(bloque)[0], bloque, tipo: `P${p}` })"
+                                      class="text-red-500 hover:text-red-700 rounded hover:bg-red-100 p-0.5 transition-colors"
+                                      title="Eliminar todas las calificaciones">
+                                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                      </svg>
+                                    </button>
+                                  </div>
                                 </div>
                                 <button
                                   @click="abrirModalCompetencia(estudiante, getCompetenciasPorBloque(bloque)[0], bloque, `P${p}`)"
@@ -365,20 +380,37 @@
                       <td v-for="ra in Array.from({ length: moduloData.cantidad_ra }, (_, i) => i + 1)" :key="ra"
                         class="px-2 py-4 text-center">
 
-                        <!-- Header interno de oportunidades con Importar -->
+                        <!-- Header interno de oportunidades con Importar y Eliminar -->
                         <div class="flex justify-center space-x-1 mb-2 border-b pb-1">
-                          <div v-for="op in 4" :key="op" class="w-5 flex flex-col items-center">
-                            <span class="text-[9px] text-gray-400 font-bold mb-0.5">{{ op }}</span>
-                            <button v-if="!isReadOnly && moduloData?.valores_ra?.[`ra_${ra}`]"
-                              @click.stop="openImportModal('technical', { ra, oportunidad: op })"
-                              class="text-blue-300 hover:text-blue-600 rounded-full hover:bg-blue-50 p-0.5 -mt-0.5"
-                              title="Pegar notas">
-                              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
-                                </path>
-                              </svg>
-                            </button>
+                          <div v-for="op in 4" :key="op" class="flex flex-col items-center">
+                            <span class="text-[9px] text-gray-400 font-bold mb-1">{{ op }}</span>
+                            <!-- Contenedor horizontal para botones -->
+                            <div v-if="!isReadOnly && moduloData?.valores_ra?.[`ra_${ra}`]" 
+                                 class="flex items-center gap-0.5">
+                              <!-- Botón Importar -->
+                              <button
+                                @click.stop="openImportModal('technical', { ra, oportunidad: op })"
+                                class="text-blue-400 hover:text-blue-600 rounded hover:bg-blue-50 p-0.5 transition-colors"
+                                title="Importar notas">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01">
+                                  </path>
+                                </svg>
+                              </button>
+                              <!-- Separador visual -->
+                              <div class="h-3 w-px bg-gray-300"></div>
+                              <!-- Botón Eliminar -->
+                              <button
+                                @click.stop="eliminarCalificacionesPorLote('technical', { ra, oportunidad: op })"
+                                class="text-red-400 hover:text-red-600 rounded hover:bg-red-50 p-0.5 transition-colors"
+                                title="Eliminar todas las calificaciones">
+                                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                              </button>
+                            </div>
                           </div>
                         </div>
 
@@ -532,6 +564,7 @@ import CalificacionOportunidadModal from '~/components/calificaciones/Calificaci
 import { ref, computed, onMounted } from 'vue'
 import { api } from '~/utils/api'
 import { useAuthStore } from '~/stores/auth'
+import { showConfirm, showToast } from '~/utils/sweetalert'
 
 const authStore = useAuthStore()
 
@@ -922,6 +955,114 @@ const handleBulkSave = async (grades) => {
   } catch (error) {
     console.error('Bulk update error:', error)
     mostrarMensajeError('Error al importar calificaciones.')
+  } finally {
+    loadingCalificaciones.value = false
+  }
+}
+
+// Función para eliminar calificaciones por lote
+const eliminarCalificacionesPorLote = async (type, context) => {
+  // Obtener nombre descriptivo del contexto
+  const contextDescription = type === 'academic' 
+    ? `${context.competencia} - Bloque ${context.bloque} - ${context.tipo}`
+    : `RA ${context.ra} - Oportunidad ${context.oportunidad}`
+  
+  // Contar cuántas calificaciones existen realmente
+  let calificacionesExistentes = 0
+  
+  if (type === 'academic') {
+    // Contar calificaciones académicas existentes
+    calificacionesExistentes = estudiantes.value.filter(est => {
+      const nota = getNotaCompetencia(est.id, context.competencia, context.bloque, context.tipo)
+      return nota && nota !== ''
+    }).length
+  } else {
+    // Contar calificaciones técnicas existentes
+    calificacionesExistentes = estudiantes.value.filter(est => {
+      return tieneCalificacionEnOportunidad(est.id, context.ra, context.oportunidad)
+    }).length
+  }
+  
+  // Si no hay calificaciones, informar al usuario
+  if (calificacionesExistentes === 0) {
+    showToast('No hay calificaciones para eliminar en este contexto', 'info')
+    return
+  }
+  
+  // Confirmar con el usuario usando SweetAlert2
+  const result = await showConfirm(
+    `Esta acción eliminará ${calificacionesExistentes} calificación${calificacionesExistentes !== 1 ? 'es' : ''} y NO se puede deshacer.`,
+    `¿Eliminar calificaciones de ${contextDescription}?`,
+    'warning',
+    'Sí, eliminar',
+    'Cancelar'
+  )
+  
+  if (!result.isConfirmed) return
+  
+  loadingCalificaciones.value = true
+  
+  try {
+    // Validar que tenemos los datos necesarios
+    if (!moduloData.value?.materia_id) {
+      console.error('Error: moduloData no tiene materia_id', moduloData.value)
+      showToast('Error: No se encontró el ID del módulo', 'error')
+      loadingCalificaciones.value = false
+      return
+    }
+    
+    if (!aulaSeleccionada.value) {
+      showToast('Error: No hay aula seleccionada', 'error')
+      loadingCalificaciones.value = false
+      return
+    }
+    
+    // Obtener IDs de todos los estudiantes
+    const estudianteIds = estudiantes.value.map(e => e.id)
+    
+    if (estudianteIds.length === 0) {
+      showToast('No hay estudiantes en esta aula', 'info')
+      loadingCalificaciones.value = false
+      return
+    }
+    
+    const payload = {
+      materia_id: moduloData.value.materia_id,
+      aula_id: aulaSeleccionada.value,
+      estudiante_ids: estudianteIds,
+      ...(type === 'academic' ? {
+        competencia_codigo: context.competencia,
+        bloque: context.bloque,
+        tipo_periodo: context.tipo
+      } : {
+        ra_numero: context.ra,
+        oportunidad: context.oportunidad
+      })
+    }
+    
+    // Enviar el payload como body en options para DELETE
+    const response = await api.delete('/api/calificaciones/bulk', { body: payload })
+    
+    if (response.success) {
+      const deletedCount = response.deleted || 0
+      if (deletedCount > 0) {
+        showToast(`${deletedCount} calificación${deletedCount !== 1 ? 'es' : ''} eliminada${deletedCount !== 1 ? 's' : ''} correctamente`, 'success')
+      } else {
+        showToast('No se encontraron calificaciones para eliminar', 'info')
+      }
+      await cargarCalificaciones(true) // Refrescar datos
+    }
+  } catch (error) {
+    console.error('Bulk delete error:', error)
+    
+    // Mostrar errores de validación si existen
+    if (error.data?.errors) {
+      const errorMessages = Object.values(error.data.errors).flat().join(', ')
+      showToast(`Error de validación: ${errorMessages}`, 'error')
+    } else {
+      const errorMsg = error.data?.message || 'Error al eliminar calificaciones por lote'
+      showToast(errorMsg, 'error')
+    }
   } finally {
     loadingCalificaciones.value = false
   }
