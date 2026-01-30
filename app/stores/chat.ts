@@ -236,6 +236,13 @@ export const useChatStore = defineStore('chat', {
 
         toggleChatWindow() {
             this.showChatWindow = !this.showChatWindow
+
+            // Si se cierra el chat, limpiar conversación activa
+            // Esto permite que los nuevos mensajes incrementen unread_count en lugar de agregarse a messages
+            if (!this.showChatWindow) {
+                this.activeConversation = null
+                this.messages = []
+            }
         }
     }
 })
