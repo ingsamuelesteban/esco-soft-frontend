@@ -197,7 +197,7 @@
 
                </div>
 
-               <div class="pt-4">
+               <div class="pt-4 flex gap-3">
                   <button @click="generateClassroomReport" :disabled="!selectedAula || loadingGenerate"
                      class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">
                      <svg v-if="loadingGenerate" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none"
@@ -210,6 +210,54 @@
                      </svg>
                      Generar Sábana PDF
                   </button>
+
+                  <button @click="previewClassroomReport" :disabled="!selectedAula || loadingPreview"
+                     class="inline-flex items-center px-4 py-2 border border-green-600 shadow-sm text-sm font-medium rounded-md text-green-600 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                     <svg v-if="loadingPreview" class="animate-spin -ml-1 mr-2 h-4 w-4 text-green-600" fill="none"
+                        viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                     </svg>
+                     Vista Previa
+                  </button>
+               </div>
+
+               <!-- Classroom Report Preview -->
+               <div v-if="classroomPreview" class="border border-gray-300 rounded-lg p-6 bg-gray-50 mt-6 overflow-x-auto">
+                  <div class="text-center border-b border-gray-300 pb-4 mb-4">
+                     <h2 class="text-lg font-bold text-gray-900">{{ classroomPreview.tenant?.nombre }}</h2>
+                     <h3 class="font-bold mt-2">SÁBANA DE CALIFICACIONES - {{ classroomPreview.aula?.grado_cardinal }}° {{ classroomPreview.aula?.seccion }}</h3>
+                     <p class="text-xs text-gray-500 mt-1">Año {{ classroomPreview.year }} - Período: {{ classroomPreview.period }}</p>
+                  </div>
+
+                  <table class="min-w-full text-xs border-collapse border border-gray-400">
+                     <thead class="bg-gray-200">
+                        <tr>
+                           <th class="border border-gray-400 p-1 text-left sticky left-0 bg-gray-200 z-10">No.</th>
+                           <th class="border border-gray-400 p-1 text-left sticky left-12 bg-gray-200 z-10">Estudiante</th>
+                           <th v-for="subject in classroomPreview.subjects" :key="subject.id" class="border border-gray-400 p-1 text-center min-w-[60px]">
+                              <div class="font-medium">{{ subject.materia?.nombre }}</div>
+                              <div class="text-[10px] text-gray-500">{{ subject.materia?.tipo }}</div>
+                           </th>
+                        </tr>
+                     </thead>
+                     <tbody>
+                        <tr v-for="row in classroomPreview.data" :key="row.numero" class="bg-white hover:bg-gray-50">
+                           <td class="border border-gray-400 p-1 text-center sticky left-0 bg-white z-10">{{ row.numero }}</td>
+                           <td class="border border-gray-400 p-1 sticky left-12 bg-white z-10">{{ row.nombre }}</td>
+                           <td v-for="subject in classroomPreview.subjects" :key="subject.id" class="border border-gray-400 p-1 text-center font-bold">
+                              {{ row.notas[subject.id] ?? '-' }}
+                           </td>
+                        </tr>
+                     </tbody>
+                  </table>
+
+                  <div class="mt-4 text-[10px] text-center text-gray-500">
+                     Vista previa generada para consulta.
+                  </div>
                </div>
             </div>
 
@@ -253,7 +301,7 @@
              -->
                </div>
 
-               <div class="pt-4">
+               <div class="pt-4 flex gap-3">
                   <button @click="generateSubjectReport"
                      :disabled="!selectedAula || !selectedMateria || loadingGenerate"
                      class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed">
@@ -267,6 +315,84 @@
                      </svg>
                      Generar Planilla PDF
                   </button>
+
+                  <button @click="previewSubjectReport"
+                     :disabled="!selectedAula || !selectedMateria || loadingPreview"
+                     class="inline-flex items-center px-4 py-2 border border-purple-600 shadow-sm text-sm font-medium rounded-md text-purple-600 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                     <svg v-if="loadingPreview" class="animate-spin -ml-1 mr-2 h-4 w-4 text-purple-600" fill="none"
+                        viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
+                        </circle>
+                        <path class="opacity-75" fill="currentColor"
+                           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+                        </path>
+                     </svg>
+                     Vista Previa
+                  </button>
+               </div>
+
+               <!-- Subject Report Preview -->
+               <div v-if="subjectPreview" class="border border-gray-300 rounded-lg p-6 bg-gray-50 mt-6 overflow-x-auto">
+                  <div class="text-center border-b border-gray-300 pb-4 mb-4">
+                     <h2 class="text-lg font-bold text-gray-900">{{ subjectPreview.tenant?.nombre }}</h2>
+                     <h3 class="font-bold mt-2">PLANILLA DE CALIFICACIONES</h3>
+                     <p class="text-sm font-bold mt-1">{{ subjectPreview.materia?.nombre }} ({{ subjectPreview.materia?.tipo }})</p>
+                     <p class="text-xs text-gray-500">{{ subjectPreview.assignment?.aula?.grado_cardinal }}° {{ subjectPreview.assignment?.aula?.seccion }} - Profesor: {{ subjectPreview.assignment?.profesor?.nombre_completo }}</p>
+                  </div>
+
+                  <!-- Technical Subject Table -->
+                  <table v-if="subjectPreview.materia?.tipo === 'Tecnico'" class="min-w-full text-xs border-collapse border border-gray-400">
+                     <thead class="bg-gray-200">
+                        <tr>
+                           <th class="border border-gray-400 p-1 text-left sticky left-0 bg-gray-200 z-10">No.</th>
+                           <th class="border border-gray-400 p-1 text-left sticky left-12 bg-gray-200 z-10">Estudiante</th>
+                           <th v-for="i in subjectPreview.assignment?.cantidad_ra" :key="i" class="border border-gray-400 p-1 text-center">
+                              RA{{ i }}
+                           </th>
+                           <th class="border border-gray-400 p-1 text-center bg-yellow-100 font-bold">Total</th>
+                        </tr>
+                     </thead>
+                     <tbody>
+                        <tr v-for="row in subjectPreview.data" :key="row.estudiante.id" class="bg-white hover:bg-gray-50">
+                           <td class="border border-gray-400 p-1 text-center sticky left-0 bg-white z-10">{{ row.estudiante.numero_orden }}</td>
+                           <td class="border border-gray-400 p-1 sticky left-12 bg-white z-10">{{ row.estudiante.apellidos }} {{ row.estudiante.nombres }}</td>
+                           <td v-for="i in subjectPreview.assignment?.cantidad_ra" :key="i" class="border border-gray-400 p-1 text-center font-bold">
+                              {{ row.ras?.[i] ?? 0 }}
+                           </td>
+                           <td class="border border-gray-400 p-1 text-center font-bold bg-yellow-50">{{ row.total }}</td>
+                        </tr>
+                     </tbody>
+                  </table>
+
+                  <!-- Academic Subject Table -->
+                  <table v-else class="min-w-full text-xs border-collapse border border-gray-400">
+                     <thead class="bg-gray-200">
+                        <tr>
+                           <th class="border border-gray-400 p-1 text-left sticky left-0 bg-gray-200 z-10">No.</th>
+                           <th class="border border-gray-400 p-1 text-left sticky left-12 bg-gray-200 z-10">Estudiante</th>
+                           <th class="border border-gray-400 p-1 text-center">P1</th>
+                           <th class="border border-gray-400 p-1 text-center">P2</th>
+                           <th class="border border-gray-400 p-1 text-center">P3</th>
+                           <th class="border border-gray-400 p-1 text-center">P4</th>
+                           <th class="border border-gray-400 p-1 text-center bg-yellow-100 font-bold">Final</th>
+                        </tr>
+                     </thead>
+                     <tbody>
+                        <tr v-for="row in subjectPreview.data" :key="row.estudiante.id" class="bg-white hover:bg-gray-50">
+                           <td class="border border-gray-400 p-1 text-center sticky left-0 bg-white z-10">{{ row.estudiante.numero_orden }}</td>
+                           <td class="border border-gray-400 p-1 sticky left-12 bg-white z-10">{{ row.estudiante.apellidos }} {{ row.estudiante.nombres }}</td>
+                           <td class="border border-gray-400 p-1 text-center font-bold">{{ row.periodos?.[1] ?? '-' }}</td>
+                           <td class="border border-gray-400 p-1 text-center font-bold">{{ row.periodos?.[2] ?? '-' }}</td>
+                           <td class="border border-gray-400 p-1 text-center font-bold">{{ row.periodos?.[3] ?? '-' }}</td>
+                           <td class="border border-gray-400 p-1 text-center font-bold">{{ row.periodos?.[4] ?? '-' }}</td>
+                           <td class="border border-gray-400 p-1 text-center font-bold bg-yellow-50">{{ row.final }}</td>
+                        </tr>
+                     </tbody>
+                  </table>
+
+                  <div class="mt-4 text-[10px] text-center text-gray-500">
+                     Vista previa generada para consulta.
+                  </div>
                </div>
             </div>
 
@@ -364,6 +490,8 @@ const studentSearch = ref('')
 const studentJsonResults = ref<Estudiante[]>([])
 const selectedStudent = ref<Estudiante | null>(null)
 const reportPreview = ref<ReportPreview | null>(null) // Data for preview
+const classroomPreview = ref<any | null>(null) // Classroom report preview
+const subjectPreview = ref<any | null>(null) // Subject report preview
 let searchTimeout: any = null
 
 // Load Aulas
@@ -496,6 +624,38 @@ const generateSubjectReport = async () => {
       alert('Error generando planilla')
    } finally {
       loadingGenerate.value = false
+   }
+}
+
+const previewClassroomReport = async () => {
+   if (!selectedAula.value) return
+   loadingPreview.value = true
+   classroomPreview.value = null
+   try {
+      const url = `/api/reports/grades/classroom?aula_id=${selectedAula.value}&format=json`
+      const response = await api.get(url)
+      classroomPreview.value = response
+   } catch (e) {
+      console.error(e)
+      alert('Error cargando vista previa de sábana')
+   } finally {
+      loadingPreview.value = false
+   }
+}
+
+const previewSubjectReport = async () => {
+   if (!selectedAula.value || !selectedMateria.value) return
+   loadingPreview.value = true
+   subjectPreview.value = null
+   try {
+      const url = `/api/reports/grades/subject?aula_id=${selectedAula.value}&materia_id=${selectedMateria.value}&period=${selectedPeriod.value}&format=json`
+      const response = await api.get(url)
+      subjectPreview.value = response
+   } catch (e) {
+      console.error(e)
+      alert('Error cargando vista previa de planilla')
+   } finally {
+      loadingPreview.value = false
    }
 }
 
