@@ -168,7 +168,6 @@ import SignaturePad from '~/components/staff/SignaturePad.vue'
 import DropZone from '~/components/ui/DropZone.vue'
 import Swal from 'sweetalert2'
 import dayjs from 'dayjs'
-import printJS from 'print-js'
 import { api } from '~/utils/api'
 import { usePrint } from '~/composables/usePrint'
 
@@ -189,7 +188,7 @@ const signaturePadRef = ref<InstanceType<typeof SignaturePad> | null>(null)
 const submitting = ref(false)
 const signatureEmpty = ref(true)
 const signatureError = ref(false)
-const { printFile } = usePrint()
+const { printFile, printPdfBlob } = usePrint()
 
 const form = ref({
     review_notes: '',
@@ -358,14 +357,9 @@ const printRequest = async (id: number) => {
     try {
         const res = await api.getBlob(`/api/staff/leave-requests/${id}/print`)
         const blob = new Blob([res], { type: 'application/pdf' })
-        const fileURL = URL.createObjectURL(blob)
-
-        printJS({
-            printable: fileURL,
-            type: 'pdf',
-            showModal: true,
-            modalMessage: 'Generando documento...'
-        })
+        
+        printPdfBlob(blob, `solicitud_permiso_${id}.pdf`, 'Generando documento...')
+        
     } catch (e) {
         console.error('Error downloading PDF:', e)
         Swal.fire('Error', 'No se pudo generar el reporte para imprimir', 'error')

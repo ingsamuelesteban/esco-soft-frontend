@@ -79,7 +79,9 @@
 import { computed, ref } from 'vue'
 import { api } from '../../utils/api'
 import { useRuntimeConfig } from '#app'
-import printJS from 'print-js'
+import { usePrint } from '~/composables/usePrint'
+
+const { printPdfBlob } = usePrint()
 
 interface Credential {
   estudiante_id: number
@@ -119,20 +121,8 @@ const downloadPdf = async () => {
     // api.getBlob automatically handles tenant injection via apiCall wrapper
     const blob = await api.getBlob(`/api/estudiantes/credentials-pdf/${props.pdfToken}`)
     
-    // Create URL object
-    const url = URL.createObjectURL(blob)
+    printPdfBlob(blob, 'credenciales_estudiantes.pdf', 'Generando credenciales...')
     
-    printJS({
-      printable: url,
-      type: 'pdf',
-      showModal: true,
-      modalMessage: 'Generando documento para imprimir...',
-      onPrintDialogClose: () => URL.revokeObjectURL(url),
-      onError: (err: any) => {
-          console.error('PrintJS error:', err)
-          alert('Error al intentar imprimir el documento.')
-      }
-    })
   } catch (e) {
     console.error('Error fetching PDF:', e)
     alert('Error al descargar el PDF.')

@@ -2,6 +2,27 @@ import printJS from 'print-js'
 import Swal from 'sweetalert2'
 import { api } from '~/utils/api'
 
+/**
+ * Detect if the current device is a mobile device
+ */
+function isMobileDevice(): boolean {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+}
+
+/**
+ * Download a blob as a file
+ */
+function downloadBlob(blob: Blob, filename: string) {
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
+}
+
 export function usePrint() {
     const loading = ref(false)
 
@@ -24,7 +45,21 @@ export function usePrint() {
             })
             const fileURL = URL.createObjectURL(blob)
 
-            if (isImage) {
+            const isMobile = isMobileDevice()
+
+            if (isPdf && isMobile) {
+                // On mobile, download directly to avoid Print.js multi-page issues
+                const filename = path.split('/').pop() || 'documento.pdf'
+                downloadBlob(blob, filename)
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'PDF Descargado',
+                    text: 'El archivo se ha descargado. Revisa tu carpeta de descargas.',
+                    timer: 3000,
+                    showConfirmButton: false
+                })
+            } else if (isImage) {
                 printJS({
                     printable: fileURL,
                     type: 'image',
@@ -34,7 +69,7 @@ export function usePrint() {
                     onPrintDialogClose: () => URL.revokeObjectURL(fileURL)
                 })
             } else {
-                // Default to PDF/Generic
+                // Default to PDF/Generic on desktop
                 printJS({
                     printable: fileURL,
                     type: 'pdf',
@@ -56,8 +91,42 @@ export function usePrint() {
         }
     }
 
+    /**
+     * Print a PDF blob (for reports)
+     * On mobile: downloads the file
+     * On desktop: shows print dialog
+     */
+    const printPdfBlob = (blob: Blob, filename: string = 'reporte.pdf', modalMessage: string = 'Preparando documento...') => {
+        const isMobile = isMobileDevice()
+        
+        if (isMobile) {
+            // Download directly on mobile
+            downloadBlob(blob, filename)
+            
+            Swal.fire({
+                icon: 'success',
+                title: 'PDF Generado',
+                text: 'El reporte se ha descargado. Revisa tu carpeta de descargas.',
+                timer: 3000,
+                showConfirmButton: false
+            })
+        } else {
+            // Use Print.js on desktop
+            const blobUrl = URL.createObjectURL(blob)
+            printJS({
+                printable: blobUrl,
+                type: 'pdf',
+                showModal: true,
+                modalMessage: modalMessage,
+                onPrintDialogClose: () => URL.revokeObjectURL(blobUrl)
+            })
+        }
+    }
+
     return {
         printFile,
-        loading
+        printPdfBlob,
+        loading,
+        isMobileDevice
     }
 }

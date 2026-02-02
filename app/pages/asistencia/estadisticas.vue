@@ -319,9 +319,11 @@ import { useAuthStore } from '~/stores/auth'
 import { api } from '~/utils/api'
 import StatsBoard from '~/components/attendance/StatsBoard.vue'
 import { PrinterIcon, TableCellsIcon } from '@heroicons/vue/24/outline'
-import printJS from 'print-js'
+import { usePrint } from '~/composables/usePrint'
 import { isWeekend } from '~/utils/dateValidation'
 import Swal from 'sweetalert2'
+
+const { printPdfBlob } = usePrint()
 
 const aulasStore = useAulasStore()
 const authStore = useAuthStore()
@@ -541,13 +543,9 @@ const printGlobal = async () => {
             }
         })
 
-        const url = URL.createObjectURL(blob)
-        printJS({
-            printable: url,
-            type: 'pdf',
-            showModal: true,
-            onPrintDialogClose: () => URL.revokeObjectURL(url)
-        })
+        const filename = `asistencia_diaria_${filters.date}.pdf`
+        printPdfBlob(blob, filename, 'Generando reporte diario...')
+        
     } catch (e: any) {
         console.error('Error printing global:', e)
     } finally {
@@ -580,13 +578,9 @@ const printMonthly = async () => {
             return
         }
 
-        const url = URL.createObjectURL(blob)
-        printJS({
-            printable: url,
-            type: 'pdf',
-            showModal: true,
-            onPrintDialogClose: () => URL.revokeObjectURL(url)
-        })
+        const filename = `asistencia_mensual_${months[filters.month - 1]}_${filters.year}.pdf`
+        printPdfBlob(blob, filename, 'Generando reporte mensual...')
+        
     } catch (e: any) {
         console.error("Error printing monthly report", e)
         alert('Error al generar reporte')

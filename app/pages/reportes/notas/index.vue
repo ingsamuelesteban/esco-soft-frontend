@@ -279,7 +279,9 @@
 import { ref, onMounted } from 'vue'
 
 import { api } from '~/utils/api'
-import printJS from 'print-js'
+import { usePrint } from '~/composables/usePrint'
+
+const { printPdfBlob } = usePrint()
 
 // --- Interfaces ---
 interface Tenant {
@@ -431,15 +433,10 @@ const generateStudentReport = async () => {
       const url = `/api/reports/grades/student?estudiante_id=${selectedStudent.value.id}&period=${selectedPeriod.value}`
       // Fetch Blob directly
       const blob = await api.get(url, { responseType: 'blob' }) as Blob
-      const blobUrl = URL.createObjectURL(blob)
-
-      printJS({
-         printable: blobUrl,
-         type: 'pdf',
-         showModal: true,
-         modalMessage: 'Generando boletín...',
-         onPrintDialogClose: () => URL.revokeObjectURL(blobUrl)
-      })
+      
+      const filename = `boletin_${selectedStudent.value.apellidos}_${selectedStudent.value.nombres}.pdf`
+      printPdfBlob(blob, filename, 'Generando boletín...')
+      
    } catch (e) {
       console.error(e)
       alert('Error generando reporte')
@@ -470,15 +467,11 @@ const generateClassroomReport = async () => {
    try {
       const url = `/api/reports/grades/classroom?aula_id=${selectedAula.value}`
       const blob = await api.get(url, { responseType: 'blob' }) as Blob
-      const blobUrl = URL.createObjectURL(blob)
-
-      printJS({
-         printable: blobUrl,
-         type: 'pdf',
-         showModal: true,
-         modalMessage: 'Generando sábana...',
-         onPrintDialogClose: () => URL.revokeObjectURL(blobUrl)
-      })
+      
+      const selectedAulaObj = aulas.value.find(a => a.id === selectedAula.value)
+      const filename = `sabana_${selectedAulaObj?.grado_cardinal || ''}${selectedAulaObj?.seccion || ''}.pdf`
+      printPdfBlob(blob, filename, 'Generando sábana...')
+      
    } catch (e) {
       console.error(e)
       alert('Error generando sábana')
@@ -493,15 +486,11 @@ const generateSubjectReport = async () => {
    try {
       const url = `/api/reports/grades/subject?aula_id=${selectedAula.value}&materia_id=${selectedMateria.value}&period=${selectedPeriod.value}`
       const blob = await api.get(url, { responseType: 'blob' }) as Blob
-      const blobUrl = URL.createObjectURL(blob)
-
-      printJS({
-         printable: blobUrl,
-         type: 'pdf',
-         showModal: true,
-         modalMessage: 'Generando planilla...',
-         onPrintDialogClose: () => URL.revokeObjectURL(blobUrl)
-      })
+      
+      const selectedSubject = subjects.value.find(s => s.materia_id === selectedMateria.value)
+      const filename = `planilla_${selectedSubject?.nombre || 'materia'}.pdf`
+      printPdfBlob(blob, filename, 'Generando planilla...')
+      
    } catch (e) {
       console.error(e)
       alert('Error generando planilla')

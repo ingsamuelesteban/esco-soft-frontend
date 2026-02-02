@@ -155,7 +155,9 @@ import { ref, computed } from 'vue'
 import { PrinterIcon, TableCellsIcon } from '@heroicons/vue/24/outline'
 import StudentListCard from './StudentListCard.vue'
 import { api } from '~/utils/api'
-import printJS from 'print-js'
+import { usePrint } from '~/composables/usePrint'
+
+const { printPdfBlob } = usePrint()
 
 const props = defineProps<{
     title: string
@@ -204,13 +206,8 @@ const handlePrint = async () => {
             })
         }
 
-        const url = URL.createObjectURL(blob)
-        printJS({
-            printable: url,
-            type: 'pdf',
-            showModal: true,
-            onPrintDialogClose: () => URL.revokeObjectURL(url)
-        })
+        const filename = isGlobalSummary ? `reporte_global_${props.date}.pdf` : `reporte_asistencia_${props.date}_${props.assignmentId}.pdf`
+        printPdfBlob(blob, filename, 'Generando reporte...')
 
     } catch (e: any) {
         console.error('Error printing:', e)
