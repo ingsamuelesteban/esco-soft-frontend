@@ -20,9 +20,16 @@
                 class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
                 @click="$emit('select', caso)">
                 <div class="flex items-center space-x-3 mb-3">
-                    <div
-                        class="flex-shrink-0 h-10 w-10 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-700 font-bold">
-                        {{ getInitials(caso.student?.nombres, caso.student?.apellidos) }}
+                    <!-- Student Photo or Initials -->
+                    <div class="flex-shrink-0">
+                        <div v-if="caso.student?.user?.profile_photo_url" class="h-10 w-10 rounded-full overflow-hidden border-2 border-indigo-200">
+                            <img :src="caso.student.user.profile_photo_url" 
+                                 :alt="caso.student.nombres + ' ' + caso.student.apellidos" 
+                                 class="h-full w-full object-cover" />
+                        </div>
+                        <div v-else class="h-10 w-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white font-bold shadow-sm">
+                            {{ getInitials(caso.student?.nombres, caso.student?.apellidos) }}
+                        </div>
                     </div>
                     <div>
                         <h3 class="text-sm font-medium text-gray-900">{{ caso.student?.nombres }} {{

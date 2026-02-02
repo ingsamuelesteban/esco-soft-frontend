@@ -93,10 +93,18 @@
                 <div class="flex justify-between items-start">
                     <div class="flex-1">
                         <div class="flex items-center gap-3">
-                            <div class="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center">
-                                <span class="text-blue-600 font-semibold text-lg">
-                                    {{ getInitials(request.personal) }}
-                                </span>
+                            <!-- User Photo or Initials -->
+                            <div class="flex-shrink-0">
+                                <div v-if="request.personal?.user?.profile_photo_url" class="h-12 w-12 rounded-full overflow-hidden border-2 border-blue-200">
+                                    <img :src="request.personal.user.profile_photo_url" 
+                                         :alt="request.personal.nombre + ' ' + request.personal.apellido" 
+                                         class="h-full w-full object-cover" />
+                                </div>
+                                <div v-else class="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-sm">
+                                    <span class="text-white font-semibold text-lg">
+                                        {{ getInitials(request.personal) }}
+                                    </span>
+                                </div>
                             </div>
                             <div>
                                 <h3 class="text-lg font-semibold text-gray-900">
