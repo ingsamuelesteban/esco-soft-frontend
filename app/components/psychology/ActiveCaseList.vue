@@ -1,5 +1,16 @@
 <template>
     <div class="space-y-4">
+        <!-- Filter for Admin/Master -->
+        <div v-if="authStore.user?.role === 'admin' || authStore.user?.role === 'master'" class="flex justify-end">
+            <select v-model="selectedPsychologist" 
+                class="block w-64 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                <option :value="null">Todos los psicólogos</option>
+                <option v-for="psych in psychologists" :key="psych.id" :value="psych.id">
+                    {{ psych.name }}
+                </option>
+            </select>
+        </div>
+
         <div v-if="loading" class="text-center py-4">
             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
         </div>
@@ -94,14 +105,22 @@ const props = withDefaults(defineProps<{
     reportedByMe: false
 })
 
-const emit = defineEmits(['select'])
+const emit = defineEmits(['select', 'filter-change'])
 const store = usePsychologyStore()
 const authStore = useAuthStore()
 const cases = ref<any[]>([])
 const loading = ref(true)
 
+const psychologists = ref<any[]>([])
+const selectedPsychologist = ref<number | 'me' | null>(null)
+
 watch(() => props.status, () => {
     loadCases()
+})
+
+watch(selectedPsychologist, (newVal) => {
+    loadCases()
+    emit('filter-change', newVal)
 })
 
 const loadCases = async () => {
@@ -109,20 +128,41 @@ const loadCases = async () => {
     const userRole = authStore.user?.role?.toLowerCase()
     const isPowerful = userRole === 'admin' || userRole === 'master'
 
-    const filter: any = { status: props.status }
+    const filter: any = { 
+        status: props.status,
+        limit: 100 // Request more items to fix visibility issue
+    }
 
     if (props.reportedByMe) {
         filter.reported_by = 'me'
-    } else if (!isPowerful) {
+    } else if (isPowerful) {
+        // Admin/Master can filter by psychologist
+        if (selectedPsychologist.value) {
+             filter.assigned_to = selectedPsychologist.value
+        }
+    } else {
         // If not powerful and not asking for own reports, assume psychologist looking for assigned cases
         filter.assigned_to = 'me'
     }
 
     const res = await store.fetchCases(filter)
-    if (res.data) {
-        cases.value = res.data
+    if (res.data && res.data.data) {
+        // Pagination response structure: { data: [...], ... }
+        cases.value = res.data.data
+    } else if (res.data) {
+         // Fallback if no pagination or different structure
+        cases.value = Array.isArray(res.data) ? res.data : []
     }
     loading.value = false
+}
+
+const loadPsychologists = async () => {
+    const userRole = authStore.user?.role?.toLowerCase()
+    const isPowerful = userRole === 'admin' || userRole === 'master'
+    
+    if (isPowerful) {
+        psychologists.value = await store.fetchPsychologists()
+    }
 }
 
 const getInitials = (n: string, a: string) => {
@@ -135,6 +175,7 @@ const formatDate = (dateStr: string) => {
 }
 
 onMounted(() => {
+    loadPsychologists()
     loadCases()
 })
 

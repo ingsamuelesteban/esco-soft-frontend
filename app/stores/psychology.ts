@@ -153,10 +153,10 @@ export const usePsychologyStore = defineStore('psychology', () => {
         }
     }
 
-    const fetchStats = async () => {
+    const fetchStats = async (params: any = {}) => {
         loading.value = true
         try {
-            const res = await api.get('/api/psychology/stats')
+            const res = await api.get('/api/psychology/stats', { params })
             return res
         } catch (e: any) {
             return null
