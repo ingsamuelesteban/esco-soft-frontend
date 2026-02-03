@@ -36,7 +36,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useAuthStore } from '../stores/auth'
 import { api } from '../utils/api'
 
@@ -56,6 +56,7 @@ const authStore = useAuthStore()
 const loading = ref(true)
 const error = ref<string | null>(null)
 const dashboardData = ref<any>(null)
+let refreshInterval: any = null
 
 // Role Helpers
 const isAdminOrMaster = computed(() => authStore.isAdmin || authStore.isMaster || authStore.user?.role === 'coordinador')
@@ -75,8 +76,8 @@ const isPsychologist = computed(() => {
   return role.includes('psico')
 })
 
-const loadDashboard = async () => {
-  loading.value = true
+const loadDashboard = async (silent = false) => {
+  if (!silent) loading.value = true
   error.value = null
 
   try {
@@ -99,7 +100,8 @@ const loadDashboard = async () => {
 
   } catch (e: any) {
     console.error('Dashboard load error', e)
-    error.value = e.message || 'Error de conexión'
+    // Don't show error on silent refresh to avoid flickering / annoyance
+    if (!silent) error.value = e.message || 'Error de conexión'
   } finally {
     loading.value = false
   }
@@ -108,6 +110,15 @@ const loadDashboard = async () => {
 onMounted(() => {
   if (authStore.isAuthenticated) {
     loadDashboard()
+    
+    // Refresh every 30 seconds
+    refreshInterval = setInterval(() => {
+        loadDashboard(true)
+    }, 30000)
   }
+})
+
+onUnmounted(() => {
+    if (refreshInterval) clearInterval(refreshInterval)
 })
 </script>

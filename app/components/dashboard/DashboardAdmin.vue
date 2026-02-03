@@ -36,31 +36,34 @@
         :data="chartData"
       />
 
-      <!-- Alerts / Actions -->
+      <!-- Online Users -->
       <div class="bg-white shadow rounded-lg p-6">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">Alertas y Sugerencias</h3>
-        <div class="space-y-4">
-          <div v-if="alerts?.pending_leave_requests > 0" class="flex items-center p-4 bg-yellow-50 rounded-md border border-yellow-200">
-            <ExclamationTriangleIcon class="h-6 w-6 text-yellow-600 mr-3" />
-            <div class="flex-1">
-              <h4 class="text-sm font-bold text-yellow-800">Solicitudes de Permiso</h4>
-              <p class="text-sm text-yellow-700">Hay {{ alerts.pending_leave_requests }} solicitudes pendientes de revisión.</p>
-            </div>
-            <button class="text-xs bg-yellow-100 hover:bg-yellow-200 text-yellow-800 px-3 py-1 rounded" @click="navigateTo('/staff/leave-requests')">
-              Revisar
-            </button>
-          </div>
-
-          <div v-if="alerts?.recent_warnings > 0" class="flex items-center p-4 bg-red-50 rounded-md border border-red-200">
-             <ExclamationCircleIcon class="h-6 w-6 text-red-600 mr-3" />
-             <div class="flex-1">
-               <h4 class="text-sm font-bold text-red-800">Amonestaciones Recientes</h4>
-               <p class="text-sm text-red-700">{{ alerts.recent_warnings }} amonestaciones en los últimos 7 días.</p>
-             </div>
+        <h3 class="text-lg font-medium text-gray-900 mb-4">Usuarios en Línea</h3>
+        <div class="space-y-4 max-h-96 overflow-y-auto">
+          <div v-if="onlineUsers && onlineUsers.length > 0" class="flow-root">
+             <ul role="list" class="-my-4 divide-y divide-gray-200">
+                <li v-for="user in onlineUsers" :key="user.id" class="flex items-center space-x-3 py-4">
+                   <div class="flex-shrink-0">
+                      <img v-if="user.profile_photo_url" class="h-8 w-8 rounded-full" :src="user.profile_photo_url" :alt="user.name" />
+                      <span v-else class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-500">
+                        <span class="text-xs font-medium leading-none text-white">{{ user.initials }}</span>
+                      </span>
+                   </div>
+                   <div class="min-w-0 flex-1">
+                      <p class="truncate text-sm font-medium text-gray-900">{{ user.name }}</p>
+                      <p v-if="user.is_online" class="truncate text-xs text-green-600 font-medium">En línea</p>
+                      <p v-else class="truncate text-xs text-gray-500">Últ. vez {{ user.last_seen }}</p>
+                   </div>
+                   <div>
+                      <span v-if="user.is_online" class="inline-block h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-white"></span>
+                      <span v-else class="inline-block h-2.5 w-2.5 rounded-full bg-gray-300 ring-2 ring-white"></span>
+                   </div>
+                </li>
+             </ul>
           </div>
           
-           <div v-if="!alerts?.pending_leave_requests && !alerts?.recent_warnings" class="flex items-center justify-center p-8 text-gray-500 bg-gray-50 rounded border border-dashed border-gray-300">
-              <p>No hay alertas pendientes por ahora.</p>
+           <div v-else class="text-center py-6 text-gray-500">
+              <p>No hay otros usuarios en línea.</p>
            </div>
         </div>
       </div>
@@ -86,7 +89,7 @@ const props = defineProps<{
 }>()
 
 const metrics = computed(() => props.data?.metrics)
-const alerts = computed(() => props.data?.alerts)
+const onlineUsers = computed(() => props.data?.online_users)
 
 // Transform API chart data to Component format
 const chartData = computed(() => {
