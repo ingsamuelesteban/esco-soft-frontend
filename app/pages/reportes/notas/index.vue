@@ -852,8 +852,15 @@ const generateMeritReport = async () => {
 
       const blob = await api.get(url, { responseType: 'blob' }) as Blob
 
-      const selectedAulaObj = aulas.value.find(a => a.id === selectedAula.value)
-      const filename = `meritorios_${selectedAulaObj?.grado_cardinal || ''}${selectedAulaObj?.seccion || ''}.pdf`
+      let filename = 'meritorios.pdf';
+
+      if (selectedAula.value === 'all') {
+         filename = 'meritorios_todas_las_aulas.pdf';
+      } else {
+         const selectedAulaObj = aulas.value.find(a => String(a.id) === String(selectedAula.value))
+         filename = `meritorios_${selectedAulaObj?.grado_cardinal || ''}${selectedAulaObj?.seccion || ''}.pdf`
+      }
+
       printPdfBlob(blob, filename, 'Generando listado de meritorios...')
 
    } catch (e) {
@@ -866,6 +873,12 @@ const generateMeritReport = async () => {
 
 const previewMeritReport = async () => {
    if (!selectedAula.value) return
+
+   if (selectedAula.value === 'all') {
+      alert('La vista previa no está disponible para "Todas las Aulas". Por favor genere el reporte PDF directamente.')
+      return
+   }
+
    loadingPreview.value = true
    meritPreview.value = null
    try {
