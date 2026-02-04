@@ -268,7 +268,7 @@
                      <tbody>
                         <tr v-for="row in classroomPreview.data" :key="row.numero" class="bg-white hover:bg-gray-50">
                            <td class="border border-gray-400 p-1 text-center sticky left-0 bg-white z-10">{{ row.numero
-                           }}</td>
+                              }}</td>
                            <td class="border border-gray-400 p-1 sticky left-12 bg-white z-10">{{ row.nombre }}</td>
                            <td v-for="subject in classroomPreview.subjects" :key="subject.id"
                               class="border border-gray-400 p-1 text-center font-bold">
@@ -516,7 +516,7 @@
                               row.estudiante.nombres }}</td>
                            <td v-for="subject in meritPreview.subjects" :key="subject.id"
                               class="border border-gray-400 p-2 text-center">
-                              {{ row.grades[subject.id] ?? '-' }}
+                              {{ row.grades[subject.materia_id] ?? '-' }}
                            </td>
                            <td class="border border-gray-400 p-2 text-center font-bold bg-yellow-50 text-sm">
                               {{ row.average }}
