@@ -489,54 +489,61 @@
 
                <!-- Merit Report Preview -->
                <div v-if="meritPreview" class="border border-gray-300 rounded-lg p-6 bg-gray-50 mt-6 overflow-x-auto">
-                  <div class="text-center border-b border-gray-300 pb-4 mb-4">
-                     <h2 class="text-lg font-bold text-gray-900">{{ meritPreview.tenant?.nombre }}</h2>
-                     <h3 class="font-bold mt-2 text-yellow-700">LISTADO DE HONOR - MERITORIOS</h3>
-                     <p class="text-sm font-medium">{{ meritPreview.aula?.grado_cardinal }}° {{
-                        meritPreview.aula?.seccion }}</p>
-                  </div>
 
-                  <table class="min-w-full text-xs border-collapse border border-gray-400">
-                     <thead class="bg-gray-200">
-                        <tr>
-                           <th class="border border-gray-400 p-2 text-left bg-gray-200">No.</th>
-                           <th class="border border-gray-400 p-2 text-left bg-gray-200">Estudiante</th>
-                           <th v-for="subject in meritPreview.subjects" :key="subject.id"
-                              class="border border-gray-400 p-2 text-center min-w-[60px]">
-                              <div class="font-medium">{{ subject.materia?.nombre }}</div>
-                           </th>
-                           <th class="border border-gray-400 p-2 text-center bg-yellow-100 font-bold">Promedio</th>
-                           <th class="border border-gray-400 p-2 text-center bg-gray-200 font-bold">Estado</th>
-                        </tr>
-                     </thead>
-                     <tbody>
-                        <tr v-for="(row, idx) in meritPreview.data" :key="row.estudiante.id"
-                           class="bg-white hover:bg-gray-50">
-                           <td class="border border-gray-400 p-2 text-center">{{ Number(idx) + 1 }}</td>
-                           <td class="border border-gray-400 p-2 font-medium">{{ row.estudiante.apellidos }} {{
-                              row.estudiante.nombres }}</td>
-                           <td v-for="subject in meritPreview.subjects" :key="subject.id"
-                              class="border border-gray-400 p-2 text-center">
-                              {{ row.grades[subject.materia_id] ?? '-' }}
-                           </td>
-                           <td class="border border-gray-400 p-2 text-center font-bold bg-yellow-50 text-sm">
-                              {{ row.average }}
-                           </td>
-                           <td class="border border-gray-400 p-2 text-center">
-                              <span v-if="row.status === 'Excelencia Académica'"
-                                 class="px-2 py-1 rounded bg-green-100 text-green-800 border border-green-200 text-[10px] font-bold">Excelencia</span>
-                              <span v-else
-                                 class="px-2 py-1 rounded bg-blue-100 text-blue-800 border border-blue-200 text-[10px] font-bold">Meritorio</span>
-                           </td>
-                        </tr>
-                        <tr v-if="meritPreview.data && meritPreview.data.length === 0">
-                           <td :colspan="(meritPreview.subjects ? meritPreview.subjects.length : 0) + 4"
-                              class="p-4 text-center text-gray-500 italic">
-                              No se encontraron estudiantes meritorios (Promedio >= 97) en esta aula.
-                           </td>
-                        </tr>
-                     </tbody>
-                  </table>
+                  <div v-for="(report, reportIdx) in (meritPreview.reports || [meritPreview])" :key="reportIdx"
+                     class="mb-12 last:mb-0">
+
+                     <div class="text-center border-b border-gray-300 pb-4 mb-4">
+                        <h2 class="text-lg font-bold text-gray-900">{{ report.tenant?.nombre ||
+                           meritPreview.tenant?.nombre }}</h2>
+                        <h3 class="font-bold mt-2 text-yellow-700">LISTADO DE HONOR - MERITORIOS</h3>
+                        <p class="text-sm font-medium">{{ report.aula?.grado_cardinal }}° {{
+                           report.aula?.seccion }}</p>
+                     </div>
+
+                     <table class="min-w-full text-xs border-collapse border border-gray-400">
+                        <thead class="bg-gray-200">
+                           <tr>
+                              <th class="border border-gray-400 p-2 text-left bg-gray-200">No.</th>
+                              <th class="border border-gray-400 p-2 text-left bg-gray-200">Estudiante</th>
+                              <th v-for="subject in report.subjects" :key="subject.id"
+                                 class="border border-gray-400 p-2 text-center min-w-[60px]">
+                                 <div class="font-medium">{{ subject.materia?.nombre }}</div>
+                              </th>
+                              <th class="border border-gray-400 p-2 text-center bg-yellow-100 font-bold">Promedio</th>
+                              <th class="border border-gray-400 p-2 text-center bg-gray-200 font-bold">Estado</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           <tr v-for="(row, idx) in report.data" :key="row.estudiante.id"
+                              class="bg-white hover:bg-gray-50">
+                              <td class="border border-gray-400 p-2 text-center">{{ Number(idx) + 1 }}</td>
+                              <td class="border border-gray-400 p-2 font-medium">{{ row.estudiante.apellidos }} {{
+                                 row.estudiante.nombres }}</td>
+                              <td v-for="subject in report.subjects" :key="subject.id"
+                                 class="border border-gray-400 p-2 text-center">
+                                 {{ row.grades[subject.materia_id] ?? '-' }}
+                              </td>
+                              <td class="border border-gray-400 p-2 text-center font-bold bg-yellow-50 text-sm">
+                                 {{ row.average }}
+                              </td>
+                              <td class="border border-gray-400 p-2 text-center">
+                                 <span v-if="row.status === 'Excelencia Académica'"
+                                    class="px-2 py-1 rounded bg-green-100 text-green-800 border border-green-200 text-[10px] font-bold">Excelencia</span>
+                                 <span v-else
+                                    class="px-2 py-1 rounded bg-blue-100 text-blue-800 border border-blue-200 text-[10px] font-bold">Meritorio</span>
+                              </td>
+                           </tr>
+                           <tr v-if="report.data && report.data.length === 0">
+                              <td :colspan="(report.subjects ? report.subjects.length : 0) + 4"
+                                 class="p-4 text-center text-gray-500 italic">
+                                 No se encontraron estudiantes meritorios (Promedio >= 97) en esta aula.
+                              </td>
+                           </tr>
+                        </tbody>
+                     </table>
+
+                  </div>
 
                   <div class="mt-4 text-[10px] text-center text-gray-500">
                      Vista previa generada para consulta.
@@ -874,11 +881,6 @@ const generateMeritReport = async () => {
 
 const previewMeritReport = async () => {
    if (!selectedAula.value) return
-
-   if (selectedAula.value === 'all') {
-      alert('La vista previa no está disponible para "Todas las Aulas". Por favor genere el reporte PDF directamente.')
-      return
-   }
 
    loadingPreview.value = true
    meritPreview.value = null
