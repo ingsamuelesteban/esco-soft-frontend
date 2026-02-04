@@ -268,7 +268,7 @@
                      <tbody>
                         <tr v-for="row in classroomPreview.data" :key="row.numero" class="bg-white hover:bg-gray-50">
                            <td class="border border-gray-400 p-1 text-center sticky left-0 bg-white z-10">{{ row.numero
-                              }}</td>
+                           }}</td>
                            <td class="border border-gray-400 p-1 sticky left-12 bg-white z-10">{{ row.nombre }}</td>
                            <td v-for="subject in classroomPreview.subjects" :key="subject.id"
                               class="border border-gray-400 p-1 text-center font-bold">
@@ -448,6 +448,7 @@
                      <select v-model="selectedAula"
                         class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border">
                         <option value="">Seleccionar Aula...</option>
+                        <option value="all">Todas las Aulas</option>
                         <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
                            {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo ? aula.titulo.nombre : '' }}
                         </option>
