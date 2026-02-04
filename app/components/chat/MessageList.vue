@@ -38,7 +38,11 @@ const isMyMessage = (message: any) => {
 }
 
 const formatTime = (date: string) => {
-    return dayjs(date).format('HH:mm')
+    const d = dayjs(date)
+    if (d.isSame(dayjs(), 'day')) {
+        return d.format('HH:mm')
+    }
+    return d.format('DD/MM/YY HH:mm')
 }
 
 // Auto scroll to bottom
