@@ -38,10 +38,10 @@ export function usePrint() {
 
             // Fetch blob with auth headers
             const res = await api.getBlob(`/storage/${path}`)
-            
+
             // Create object URL
-            const blob = new Blob([res], { 
-                type: isImage ? `image/${extension === 'jpg' ? 'jpeg' : extension}` : 'application/pdf' 
+            const blob = new Blob([res], {
+                type: isImage ? `image/${extension === 'jpg' ? 'jpeg' : extension}` : 'application/pdf'
             })
             const fileURL = URL.createObjectURL(blob)
 
@@ -51,7 +51,7 @@ export function usePrint() {
                 // On mobile, download directly to avoid Print.js multi-page issues
                 const filename = path.split('/').pop() || 'documento.pdf'
                 downloadBlob(blob, filename)
-                
+
                 Swal.fire({
                     icon: 'success',
                     title: 'PDF Descargado',
@@ -98,11 +98,11 @@ export function usePrint() {
      */
     const printPdfBlob = (blob: Blob, filename: string = 'reporte.pdf', modalMessage: string = 'Preparando documento...') => {
         const isMobile = isMobileDevice()
-        
+
         if (isMobile) {
             // Download directly on mobile
             downloadBlob(blob, filename)
-            
+
             Swal.fire({
                 icon: 'success',
                 title: 'PDF Generado',

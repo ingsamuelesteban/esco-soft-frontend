@@ -266,16 +266,12 @@ const printRequest = async () => {
     try {
         // Use api.getBlob to handle tenant prefix and auth headers automatically
         const res = await api.getBlob(`/api/staff/leave-requests/${request.value.id}/print`)
-        // Force header type or just create new blob with correct type to ensure browser handles it as PDF
         const blob = new Blob([res], { type: 'application/pdf' })
-        const fileURL = URL.createObjectURL(blob)
+        
+        const filename = `solicitud_permiso_${request.value.id}.pdf`
+        const { printPdfBlob } = usePrint()
+        printPdfBlob(blob, filename, 'Generando documento para impresión...')
 
-        printJS({
-            printable: fileURL,
-            type: 'pdf',
-            showModal: true,
-            modalMessage: 'Generando documento para impresión...'
-        })
     } catch (e) {
         console.error('Error downloading PDF:', e)
         Swal.fire('Error', 'No se pudo generar el reporte', 'error')

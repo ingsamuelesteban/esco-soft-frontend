@@ -595,12 +595,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch } from 'vue'
+import { ref, onMounted, watch, computed } from 'vue'
 
 import { api } from '~/utils/api'
 import { usePrint } from '~/composables/usePrint'
+import { useAuthStore } from '~/stores/auth'
 
 const { printPdfBlob } = usePrint()
+const auth = useAuthStore()
 
 // --- Interfaces ---
 interface AnioLectivo {
@@ -670,12 +672,19 @@ interface ReportPreview {
 
 // --- State ---
 const currentTab = ref('student')
-const tabs = [
+const allTabs = [
    { id: 'student', name: 'Boletín por Estudiante' },
    { id: 'classroom', name: 'Sábana por Aula' },
    { id: 'subject', name: 'Planilla por Asignatura' },
    { id: 'merit', name: 'Meritorios' },
 ]
+
+const tabs = computed(() => {
+   if (auth.isProfesor) {
+      return allTabs.filter(t => t.id === 'subject')
+   }
+   return allTabs
+})
 
 const loadingGenerate = ref(false)
 const loadingPreview = ref(false)
@@ -700,6 +709,11 @@ let searchTimeout: any = null
 // Load Data
 onMounted(async () => {
    try {
+      // Set default tab for professor
+      if (auth.isProfesor) {
+         currentTab.value = 'subject'
+      }
+
       const resAulas = await api.get('/api/aulas')
       aulas.value = (resAulas as any) || []
 
