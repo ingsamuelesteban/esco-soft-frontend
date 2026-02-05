@@ -185,6 +185,9 @@
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                 Despachado Por
                             </th>
+                            <th scope="col" class="relative px-6 py-3">
+                                <span class="sr-only">Evidencia</span>
+                            </th>
                         </tr>
                     </thead>
                     <tbody class="bg-white divide-y divide-gray-200">
@@ -205,6 +208,14 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                                 {{ item.reporter?.name || 'Sistema' }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                                <button v-if="item.evidence_path" @click.stop="printFile(item.evidence_path)" 
+                                    class="text-gray-400 hover:text-indigo-600 transition-colors" title="Ver Evidencia">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                    </svg>
+                                </button>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                 <button @click="openDetailModal(item)" class="text-indigo-600 hover:text-indigo-900">
@@ -271,6 +282,12 @@
                                     <textarea v-model="dismissReason" rows="3"
                                         class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
                                         placeholder="Ingrese el motivo detallado..."></textarea>
+
+                                    <div class="mt-4">
+                                        <DropZone v-model="evidenceFile" label="Adjuntar Evidencia (Opcional)"
+                                            accept="image/jpeg,image/png,application/pdf" :max-size="50 * 1024 * 1024" />
+                                        <p class="text-xs text-gray-500 mt-1">Soporta PDF, JPEG, PNG hasta 50MB.</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -330,9 +347,20 @@
                                                 selectedDispatch?.reason }}</dd>
                                         </div>
                                         <div>
-                                            <dt class="text-sm font-medium text-gray-500">Despachado por</dt>
                                             <dd class="mt-1 text-sm text-gray-900">{{ selectedDispatch?.reporter?.name
                                                 || 'Sistema' }}</dd>
+                                        </div>
+                                        <div v-if="selectedDispatch?.evidence_path">
+                                            <dt class="text-sm font-medium text-gray-500">Evidencia</dt>
+                                            <dd class="mt-1">
+                                                <button @click="printFile(selectedDispatch.evidence_path)"
+                                                    class="inline-flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-800">
+                                                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
+                                                    </svg>
+                                                    Ver Documento
+                                                </button>
+                                            </dd>
                                         </div>
                                     </div>
                                 </div>
@@ -357,6 +385,10 @@ import { useAulasStore } from '~/stores/aulas'
 import { useEstudiantesStore } from '~/stores/estudiantes'
 import { usePsychologyStore } from '~/stores/psychology'
 import Swal from 'sweetalert2'
+import DropZone from '~/components/ui/DropZone.vue'
+import { usePrint } from '~/composables/usePrint'
+
+const { printFile } = usePrint()
 
 const aulasStore = useAulasStore()
 const estudiantesStore = useEstudiantesStore()
@@ -367,6 +399,7 @@ const selectedAulaId = ref('')
 const showModal = ref(false)
 const selectedStudent = ref<any>(null)
 const dismissReason = ref('')
+const evidenceFile = ref<File | null>(null)
 const submitting = ref(false)
 
 // Detail Modal State
@@ -477,6 +510,7 @@ const onAulaChange = async () => {
 const openDismissModal = (student: any) => {
     selectedStudent.value = student
     dismissReason.value = ''
+    evidenceFile.value = null
     showModal.value = true
 }
 
@@ -484,6 +518,7 @@ const closeModal = () => {
     showModal.value = false
     selectedStudent.value = null
     dismissReason.value = ''
+    evidenceFile.value = null
 }
 
 const confirmDismiss = async () => {
@@ -491,10 +526,15 @@ const confirmDismiss = async () => {
 
     submitting.value = true
     try {
-        const result = await psychologyStore.createDismissal({
-            student_id: selectedStudent.value.id,
-            reason: dismissReason.value
-        })
+        const formData = new FormData()
+        formData.append('student_id', selectedStudent.value.id)
+        formData.append('reason', dismissReason.value)
+        
+        if (evidenceFile.value) {
+            formData.append('evidence_file', evidenceFile.value)
+        }
+
+        const result = await psychologyStore.createDismissal(formData)
 
         if (result.success) {
             Swal.fire({

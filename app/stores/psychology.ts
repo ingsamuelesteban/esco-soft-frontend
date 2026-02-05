@@ -190,10 +190,11 @@ export const usePsychologyStore = defineStore('psychology', () => {
         }
     }
 
-    const createDismissal = async (data: { student_id: number, reason: string }) => {
+    const createDismissal = async (data: any) => {
         loading.value = true
         error.value = null
         try {
+            // api.post automatically handles FormData if passed
             const res = await api.post('/api/psychology/dismissals', data)
             return { success: true, data: res.data }
         } catch (e: any) {
