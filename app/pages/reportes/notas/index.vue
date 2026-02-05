@@ -378,6 +378,10 @@
                               RA{{ i }}
                            </th>
                            <th class="border border-gray-400 p-1 text-center bg-yellow-100 font-bold">Total</th>
+                           <template v-if="subjectPreview.data?.[0]?.is_fct">
+                              <th class="border border-gray-400 p-1 text-center bg-gray-200 font-bold">Promedio</th>
+                              <th class="border border-gray-400 p-1 text-center bg-gray-200 font-bold">Situación</th>
+                           </template>
                         </tr>
                      </thead>
                      <tbody>
@@ -390,10 +394,17 @@
                                  row.estudiante.nombres }}</td>
                            <td v-for="i in subjectPreview.assignment?.cantidad_ra" :key="i"
                               class="border border-gray-400 p-1 text-center font-bold">
-                              {{ row.ras?.[i] ?? 0 }}
+                              {{ row.is_fct ? (parseFloat(row.ras?.[i] ?? 0).toFixed(1)) : (row.ras?.[i] ?? 0) }}
                            </td>
                            <td class="border border-gray-400 p-1 text-center font-bold bg-yellow-50">{{ row.total }}
                            </td>
+                           <template v-if="row.is_fct">
+                              <td class="border border-gray-400 p-1 text-center font-bold">{{ row.promedio }}</td>
+                              <td class="border border-gray-400 p-1 text-center font-bold"
+                                 :class="row.promedio >= 6 ? 'text-green-700' : 'text-red-700'">
+                                 {{ row.situacion }}
+                              </td>
+                           </template>
                         </tr>
                      </tbody>
                   </table>

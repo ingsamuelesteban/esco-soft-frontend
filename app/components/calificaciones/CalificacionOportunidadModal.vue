@@ -35,8 +35,8 @@
                                 <span class="font-bold text-blue-900">{{ valorRa }} puntos</span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-blue-700 font-medium">Nota mínima (70%):</span>
-                                <span class="font-bold text-blue-900">{{ (valorRa * 0.7).toFixed(1) }}</span>
+                                <span class="text-blue-700 font-medium">Nota mínima {{ valorRa === 10 ? '(6.0)' : '(70%)' }}:</span>
+                                <span class="font-bold text-blue-900">{{ valorRa === 10 ? '6.0' : (valorRa * 0.7).toFixed(1) }}</span>
                             </div>
                         </div>
                     </div>

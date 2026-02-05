@@ -342,7 +342,21 @@
                           </button>
                         </div>
                       </th>
-                      <th
+                      <!-- FCT Columns -->
+                      <th v-if="moduloData?.calculation_mode === 'fct'"
+                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 top-0 bg-gray-50 border-l border-gray-200 z-30 shadow-sm">
+                        Total
+                      </th>
+                      <th v-if="moduloData?.calculation_mode === 'fct'"
+                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 top-0 bg-gray-50 border-l border-gray-200 z-30 shadow-sm">
+                        Promedio
+                      </th>
+                      <th v-if="moduloData?.calculation_mode === 'fct'"
+                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 top-0 bg-gray-50 border-l border-gray-200 z-30 shadow-sm">
+                        Situación
+                      </th>
+                      <!-- Standard Technical Column -->
+                      <th v-if="moduloData?.calculation_mode !== 'fct'"
                         class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 top-0 bg-gray-50 border-l border-gray-200 z-30 shadow-sm">
                         <div class="flex flex-col items-center space-y-1">
                           <span>Total</span>
@@ -427,7 +441,24 @@
                           </button>
                         </div>
                       </td>
-                      <td class="px-6 py-4 text-center sticky right-0 bg-white border-l border-gray-200">
+
+                      <!-- FCT Cells -->
+                      <td v-if="moduloData?.calculation_mode === 'fct'" class="px-6 py-4 text-center sticky right-0 bg-white border-l border-gray-200">
+                         <span class="font-bold text-gray-900">{{ calcularPuntosObtenidos(estudiante.id) }}</span>
+                      </td>
+                      <td v-if="moduloData?.calculation_mode === 'fct'" class="px-6 py-4 text-center sticky right-0 bg-white border-l border-gray-200">
+                         <span class="font-bold" :class="calcularPromedioFCT(estudiante.id) >= 6 ? 'text-green-700' : 'text-red-700'">
+                           {{ calcularPromedioFCT(estudiante.id) }}
+                         </span>
+                      </td>
+                      <td v-if="moduloData?.calculation_mode === 'fct'" class="px-6 py-4 text-center sticky right-0 bg-white border-l border-gray-200">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                          :class="getSituacionFCTClass(estudiante.id)">
+                          {{ getSituacionFCT(estudiante.id) }}
+                        </span>
+                      </td>
+                      <!-- Standard Cell -->
+                      <td v-if="moduloData?.calculation_mode !== 'fct'" class="px-6 py-4 text-center sticky right-0 bg-white border-l border-gray-200">
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                           :class="getEstadoGeneralClass(estudiante.id)">
                           {{ getEstadoGeneral(estudiante.id) }}
@@ -547,7 +578,7 @@
     <!-- Modal para calificar oportunidad (NUEVO COMPONENTE) -->
     <CalificacionOportunidadModal v-if="mostrarModalCalificarOportunidad" :estudiante="estudianteParaCalificar"
       :ra-numero="raParaCalificar" :oportunidad="oportunidadParaCalificar"
-      :valor-ra="moduloData?.valores_ra?.[`ra_${raParaCalificar}`] || 0" :nota-actual="calificacionActual"
+      :valor-ra="moduloData?.calculation_mode === 'fct' ? 10 : (moduloData?.valores_ra?.[`ra_${raParaCalificar}`] || 0)" :nota-actual="calificacionActual"
       :observaciones-actuales="observacionesActual" :loading="guardandoCalificacion"
       @close="cerrarModalCalificarOportunidad" @save="guardarCalificacion" @delete="eliminarCalificacionRA" />
 
@@ -732,7 +763,8 @@ const cargarModulosYEstudiantes = async () => {
       tipo: assignment.materia?.tipo,
       cantidad_ra: assignment.cantidad_ra, // Configuración del Assignment
       valores_ra: assignment.valores_ra, // Configuración del Assignment
-      fechas_ra: assignment.fechas_ra // Fechas guardadas
+      fechas_ra: assignment.fechas_ra, // Fechas guardadas
+      calculation_mode: assignment.materia?.calculation_mode || 'standard'
     }))
 
     // Limpiar selección de módulo
@@ -1296,7 +1328,8 @@ const getDisplayCalificacion = (estudianteId, raNumero, oportunidad) => {
   const notaMinima = getNotaMinima(raNumero)
 
   if (nota >= notaMinima || oportunidad === 4) {
-    return parseFloat(nota)
+    const val = parseFloat(nota)
+    return moduloData.value?.calculation_mode === 'fct' ? val.toFixed(1) : val
   } else {
     return 'NC' // NC (No Completó) si no aprobó
   }
@@ -1485,6 +1518,26 @@ const getPromedioClass = (nota) => {
   if (nota === null) return 'text-gray-400'
   if (nota >= 70) return 'text-green-700 font-bold'
   return 'text-red-700 font-bold'
+}
+
+// FCT Helpers
+const calcularPromedioFCT = (estudianteId) => {
+  if (!moduloData.value?.cantidad_ra) return 0
+  
+  const totalPuntos = calcularPuntosObtenidos(estudianteId)
+  // Average = Total / Count. Round to 1 decimal.
+  const promedio = totalPuntos / moduloData.value.cantidad_ra
+  return parseFloat(promedio.toFixed(1))
+}
+
+const getSituacionFCT = (estudianteId) => {
+  const promedio = calcularPromedioFCT(estudianteId)
+  return promedio >= 6 ? 'APTO' : 'NO APTO'
+}
+
+const getSituacionFCTClass = (estudianteId) => {
+  const promedio = calcularPromedioFCT(estudianteId)
+  return promedio >= 6 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
 }
 
 // Métodos para Modal de Competencias
