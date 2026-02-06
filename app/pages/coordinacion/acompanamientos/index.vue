@@ -23,6 +23,7 @@
               <th class="px-6 py-3">Maestro</th>
               <th class="px-6 py-3">Módulo / Aula</th>
               <th class="px-6 py-3">Observador</th>
+              <th class="px-6 py-3">Estado</th>
               <th class="px-6 py-3 text-center">Acciones</th>
             </tr>
           </thead>
@@ -42,11 +43,21 @@
                 <div class="text-xs text-gray-500">Maestro Técnico</div>
               </td>
               <td class="px-6 py-4">
-                <div class="text-gray-800">{{ obs.assignment?.modulo?.nombre || '-' }}</div>
+                <div class="text-gray-800">{{ obs.assignment?.materia?.nombre || '-' }}</div>
                 <div class="text-xs text-gray-500">{{ obs.assignment?.aula?.nombre || '-' }}</div>
               </td>
               <td class="px-6 py-4">
                 {{ obs.observer?.name }}
+              </td>
+              <td class="px-6 py-4">
+                <span v-if="obs.status === 'draft'"
+                  class="inline-flex items-center rounded-full bg-yellow-100 px-2.5 py-0.5 text-xs font-medium text-yellow-800">
+                  Borrador
+                </span>
+                <span v-else
+                  class="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                  Finalizado
+                </span>
               </td>
               <td class="px-6 py-4 text-center">
                 <button v-if="obs.status === 'draft'" @click="editObservation(obs)"
@@ -56,7 +67,8 @@
                       d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
                 </button>
-                <button class="text-gray-500 hover:text-primary-600 transition-colors" title="Ver Detalles">
+                <button class="text-gray-500 hover:text-primary-600 transition-colors" title="Ver Detalles"
+                  @click="$router.push({ path: '/coordinacion/acompanamientos/crear', query: { id: obs.id, mode: 'view' } })">
                   <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -64,9 +76,14 @@
                       d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                 </button>
-                <!-- <button class="ml-3 text-gray-500 hover:text-red-600" title="Descargar PDF">
-                    <Icon name="ph:file-pdf" size="20" />
-                 </button> -->
+                <button v-if="obs.status === 'finalized'" class="ml-3 text-gray-500 hover:text-red-600"
+                  title="Descargar PDF" @click="downloadPdf(obs.id)">
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                    stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                </button>
               </td>
             </tr>
           </tbody>
@@ -84,7 +101,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
-import { apiCall as useApi } from '@/utils/api';
+import { apiCall as useApi, api } from '@/utils/api';
+import { usePrint } from '@/composables/usePrint';
 
 const router = useRouter();
 
@@ -98,11 +116,25 @@ onMounted(() => {
 
 async function fetchObservations() {
   try {
-    const { data } = await useApi('/observations');
-    observations.value = data.data;
-    pagination.value = { total: data.total || 0 };
+    const response = await useApi('/observations');
+    // Handle both wrapped { data: { ... } } and direct structure
+    const data = response.data || response;
+
+    // Check if data is paginated (has data property array inside) or is direct array
+    if (Array.isArray(data)) {
+      observations.value = data;
+      pagination.value = { total: data.length };
+    } else if (data.data && Array.isArray(data.data)) {
+      observations.value = data.data;
+      pagination.value = { total: data.total || data.data.length };
+    } else {
+      observations.value = [];
+      pagination.value = { total: 0 };
+    }
+
   } catch (e) {
-    console.error(e);
+    console.error("Error fetching observations", e);
+    observations.value = [];
   } finally {
     loading.value = false;
   }
@@ -114,5 +146,17 @@ function formatDate(dateStr: string) {
 }
 function editObservation(obs: any) {
   router.push({ path: '/coordinacion/acompanamientos/crear', query: { id: obs.id } });
+}
+
+async function downloadPdf(id: number) {
+  try {
+    const { printPdfBlob } = usePrint();
+    const res = await api.getBlob(`/observations/${id}/pdf`);
+    const blob = new Blob([res], { type: 'application/pdf' });
+
+    printPdfBlob(blob, `acompanamiento_${id}.pdf`, 'Generando reporte...');
+  } catch (e) {
+    console.error("Error downloading PDF", e);
+  }
 }
 </script>
