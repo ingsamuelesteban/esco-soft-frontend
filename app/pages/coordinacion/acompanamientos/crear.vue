@@ -644,9 +644,12 @@ async function loadObservation(id: string) {
   }
 }
 
+const pdfLoading = ref(false);
+
 async function downloadPdf(id: number | null) {
   if (!id) return;
   try {
+    pdfLoading.value = true;
     const { printPdfBlob } = usePrint();
     const res = await api.getBlob(`/observations/${id}/pdf`);
     const blob = new Blob([res], { type: 'application/pdf' });
@@ -655,6 +658,8 @@ async function downloadPdf(id: number | null) {
   } catch (e) {
     console.error("Error downloading PDF", e);
     showToast('Error al descargar el PDF', 'error');
+  } finally {
+    pdfLoading.value = false;
   }
 }
 </script>

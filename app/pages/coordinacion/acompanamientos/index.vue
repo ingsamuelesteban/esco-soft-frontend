@@ -148,8 +148,11 @@ function editObservation(obs: any) {
   router.push({ path: '/coordinacion/acompanamientos/crear', query: { id: obs.id } });
 }
 
+const generatingPdfId = ref<number | null>(null);
+
 async function downloadPdf(id: number) {
   try {
+    generatingPdfId.value = id;
     const { printPdfBlob } = usePrint();
     const res = await api.getBlob(`/observations/${id}/pdf`);
     const blob = new Blob([res], { type: 'application/pdf' });
@@ -157,6 +160,8 @@ async function downloadPdf(id: number) {
     printPdfBlob(blob, `acompanamiento_${id}.pdf`, 'Generando reporte...');
   } catch (e) {
     console.error("Error downloading PDF", e);
+  } finally {
+    generatingPdfId.value = null;
   }
 }
 </script>
