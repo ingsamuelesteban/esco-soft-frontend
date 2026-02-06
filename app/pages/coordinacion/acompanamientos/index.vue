@@ -161,7 +161,10 @@ async function downloadPdf(id: number) {
   } catch (e) {
     console.error("Error downloading PDF", e);
   } finally {
-    generatingPdfId.value = null;
+    // Small delay to ensure spinner is seen and to handle printJS async nature (it returns immediately)
+    setTimeout(() => {
+      generatingPdfId.value = null;
+    }, 1000);
   }
 }
 </script>

@@ -659,7 +659,10 @@ async function downloadPdf(id: number | null) {
     console.error("Error downloading PDF", e);
     showToast('Error al descargar el PDF', 'error');
   } finally {
-    pdfLoading.value = false;
+    // Small delay to ensure spinner is seen and to handle printJS async nature (it returns immediately)
+    setTimeout(() => {
+      pdfLoading.value = false;
+    }, 1000);
   }
 }
 </script>
