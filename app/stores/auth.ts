@@ -1,19 +1,7 @@
 import { defineStore } from 'pinia'
 import { api } from '../utils/api'
 
-export interface User {
-  id: number
-  name: string
-  username: string
-  email: string
-  role: 'admin' | 'profesor' | 'master' | 'estudiante' | 'coordinador'
-  personal_id?: number
-  active: boolean
-  profile_photo_path?: string
-  profile_photo_url?: string
-  initials?: string
-  digital_signature_path?: string
-}
+import type { User } from '@/types/user'
 
 export interface LoginCredentials {
   username: string
@@ -50,6 +38,13 @@ export interface LoginResponse {
   tenant?: Tenant
   requires_tenant_selection?: boolean
   tenants?: Tenant[]
+  director?: Director
+}
+
+export interface Director {
+  name: string
+  cargo: string
+  signature: string | null
 }
 
 export const useAuthStore = defineStore('auth', {
@@ -57,6 +52,7 @@ export const useAuthStore = defineStore('auth', {
     user: null as User | null,
     token: null as string | null,
     tenant: null as Tenant | null,
+    director: null as Director | null,
     availableTenants: [] as Tenant[],
     isAuthenticated: false as boolean,
     isLoading: false as boolean,
@@ -102,6 +98,7 @@ export const useAuthStore = defineStore('auth', {
         if (data.success) {
           this.user = data.data.user
           this.token = data.data.token
+          this.director = data.data.director || null
 
           if (process.client) {
             localStorage.setItem('auth_token', data.data.token)
@@ -188,6 +185,7 @@ export const useAuthStore = defineStore('auth', {
       this.user = null
       this.token = null
       this.tenant = null
+      this.director = null
       this.isAuthenticated = false
 
       if (process.client) {
@@ -254,7 +252,7 @@ export const useAuthStore = defineStore('auth', {
           this.token = savedToken
           try {
             // Usar api.get que ya incluye el token automáticamente
-            const response = await api.get<ApiResponse<{ user: User, isAuthenticated: boolean, tenant?: Tenant }>>('/api/me')
+            const response = await api.get<ApiResponse<{ user: User, isAuthenticated: boolean, tenant?: Tenant, director?: Director }>>('/api/me')
 
             let data: any = response
             if (typeof response === 'string') {
@@ -274,6 +272,7 @@ export const useAuthStore = defineStore('auth', {
               console.log('Auth initialized, tenant:', data.data.tenant)
               this.user = data.data.user
               this.tenant = data.data.tenant || null
+              this.director = data.data.director || null
 
               // Fix: Asegurar que se restaure el tenant ID en localStorage
               // PERO: Si ya hay uno seleccionado y somos master, no lo sobrescribamos con el default del backend (que suele ser localhost=tenant1)
@@ -336,6 +335,7 @@ export const useAuthStore = defineStore('auth', {
       }
       this.token = null
       this.user = null
+      this.director = null
       this.isAuthenticated = false
     },
 

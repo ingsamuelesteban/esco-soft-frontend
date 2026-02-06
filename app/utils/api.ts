@@ -71,7 +71,8 @@ export async function apiCall<T = any>(url: string, options: Parameters<typeof $
         // Fallback for paths without explicit 'api/' prefix if that ever happens
         // e.g. 'dashboard/stats' -> '{tenantId}/dashboard/stats' ? or 'api/{tenantId}/...'?
         // Safest is to inject at root if no api prefix found, assuming tenant prefix is at root of grouped routes
-        url = `${tenantId}/${cleanPath}`
+        // Prepend api/ to matching the standard API route structure: api/{tenantId}/resource
+        url = `api/${tenantId}/${cleanPath}`
       }
 
       // Ensure leading slash for consistency if original had it or if we want absolute path from base
