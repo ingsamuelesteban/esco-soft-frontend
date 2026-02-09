@@ -21,6 +21,7 @@ export interface Attendance {
   id: number
   estado: 'presente' | 'ausente' | 'excusa' | 'tardanza'
   observaciones?: string
+  auto_generated?: boolean
 }
 
 export interface AttendanceRecord {
@@ -123,6 +124,13 @@ export const useAttendanceStore = defineStore('attendance', {
 
         this.records = response.data || []
         this.holiday = response.holiday || null
+
+        // New Logic: Automatically mark "auto-generated" excuses as modified
+        this.records.forEach(record => {
+          if (record.asistencia?.estado === 'excusa' && record.asistencia.auto_generated) {
+            this.pendingChanges.add(record.estudiante.id)
+          }
+        })
 
       } catch (error: any) {
         this.error = error.message || 'Error al cargar la asistencia'
