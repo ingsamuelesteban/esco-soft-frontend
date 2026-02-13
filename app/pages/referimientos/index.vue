@@ -105,9 +105,9 @@
                                     </div>
                                     <div class="ml-4">
                                         <div class="text-sm font-medium text-gray-900">{{ record.estudiante.apellidos
-                                            }}, {{ record.estudiante.nombres }}</div>
+                                        }}, {{ record.estudiante.nombres }}</div>
                                         <div class="text-sm text-gray-500">{{ record.estudiante.cedula || 'Sin cédula'
-                                            }}</div>
+                                        }}</div>
                                     </div>
                                 </div>
                             </td>
@@ -144,7 +144,51 @@
                         </h3>
                         <div class="mt-4">
                             <form @submit.prevent="submitReferral" class="space-y-4">
+                                <!-- Selector de Tipo de Reporte -->
                                 <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-2">Tipo de Reporte</label>
+                                    <div class="grid grid-cols-2 gap-3">
+                                        <button type="button" @click="form.reportType = 'case'" :class="[
+                                            form.reportType === 'case'
+                                                ? 'bg-indigo-50 border-indigo-500 text-indigo-700'
+                                                : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50',
+                                            'relative border rounded-lg px-4 py-3 flex items-center justify-center text-sm font-medium focus:outline-none'
+                                        ]">
+                                            <span>Caso (Psicología)</span>
+                                        </button>
+                                        <button type="button" @click="form.reportType = 'warning'" :class="[
+                                            form.reportType === 'warning'
+                                                ? 'bg-amber-50 border-amber-500 text-amber-700'
+                                                : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50',
+                                            'relative border rounded-lg px-4 py-3 flex items-center justify-center text-sm font-medium focus:outline-none'
+                                        ]">
+                                            <span>Advertencia</span>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Tipo de Advertencia (para advertencias) -->
+                                <div v-if="form.reportType === 'warning'">
+                                    <label class="block text-sm font-medium text-gray-700">Tipo de Advertencia</label>
+                                    <select v-model="form.warning_type_id"
+                                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                        <option value="">Seleccione un tipo</option>
+                                        <option v-for="type in warningTypes" :key="type.id" :value="type.id">
+                                            {{ type.name }}
+                                        </option>
+                                    </select>
+                                </div>
+
+                                <!-- Título (para advertencias) -->
+                                <div v-if="form.reportType === 'warning'">
+                                    <label class="block text-sm font-medium text-gray-700">Título</label>
+                                    <input v-model="form.title" type="text" required
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        placeholder="Título breve de la advertencia" />
+                                </div>
+
+                                <!-- Prioridad (solo para casos) -->
+                                <div v-if="form.reportType === 'case'">
                                     <label class="block text-sm font-medium text-gray-700">Prioridad</label>
                                     <select v-model="form.priority"
                                         class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
@@ -153,7 +197,8 @@
                                         <option value="high">Alta</option>
                                     </select>
                                 </div>
-                                <div v-if="!isPsychologistRole">
+                                <!-- Asignar a (solo para casos) -->
+                                <div v-if="form.reportType === 'case' && !isPsychologistRole">
                                     <label class="block text-sm font-medium text-gray-700">Asignar a (Opcional)</label>
                                     <select v-model="form.assigned_to"
                                         class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
@@ -166,13 +211,16 @@
                                         automáticamente.</p>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">Motivo</label>
+                                    <label class="block text-sm font-medium text-gray-700">
+                                        {{ form.reportType === 'warning' ? 'Comentario Inicial' : 'Motivo' }}
+                                    </label>
                                     <textarea v-model="form.reason" rows="3" required
                                         class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 rounded-md"
                                         placeholder="Describa el motivo..."></textarea>
                                 </div>
 
-                                <div class="flex items-start">
+                                <!-- Enviar estudiante (solo para casos) -->
+                                <div v-if="form.reportType === 'case'" class="flex items-start">
                                     <div class="flex items-center h-5">
                                         <input id="send_student" v-model="form.send_student" type="checkbox"
                                             class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" />
@@ -211,9 +259,11 @@ import { ref, computed, onMounted, onUnmounted, watch, reactive } from 'vue'
 // Stores
 import { useAttendanceStore } from '~/stores/attendance'
 import { usePsychologyStore } from '~/stores/psychology'
+import { useStudentWarningsStore } from '~/stores/studentWarnings'
 import { useAuthStore } from '~/stores/auth'
 import { useEstudiantesStore } from '~/stores/estudiantes'
 import { useAulasStore } from '~/stores/aulas'
+import { api } from '~/utils/api'
 import Swal from 'sweetalert2'
 
 definePageMeta({
@@ -222,6 +272,7 @@ definePageMeta({
 
 const attendanceStore = useAttendanceStore()
 const psychologyStore = usePsychologyStore()
+const warningsStore = useStudentWarningsStore()
 const authStore = useAuthStore()
 const estudiantesStore = useEstudiantesStore()
 const aulasStore = useAulasStore()
@@ -234,8 +285,12 @@ const selectedStudents = ref<number[]>([]) // Array de IDs
 const showModal = ref(false)
 const submitting = ref(false)
 const psychologists = ref<any[]>([])
+const warningTypes = ref<any[]>([])
 
 const form = reactive({
+    reportType: 'case' as 'case' | 'warning',
+    warning_type_id: null as number | null,
+    title: '',
     priority: 'medium',
     reason: '',
     assigned_to: '' as string | number | null,
@@ -248,6 +303,23 @@ const isAdminOrPsychologist = computed(() => ['admin', 'master', 'psico', 'orien
 const isPsychologistRole = computed(() => ['psico', 'orien'].some(r => authStore.user?.role?.includes(r)))
 
 const isTeacher = computed(() => !isAdminOrPsychologist.value && (authStore.user?.role === 'profesor' || !!authStore.user?.personal_id))
+
+// Helper functions
+const loadPsychologists = async () => {
+    const res = await psychologyStore.fetchPsychologists()
+    if (Array.isArray(res)) {
+        psychologists.value = res
+    }
+}
+
+const loadWarningTypes = async () => {
+    try {
+        const res = await api.get('/api/warning-types')
+        warningTypes.value = Array.isArray(res) ? res : res.data || []
+    } catch (e) {
+        console.error('Error loading warning types:', e)
+    }
+}
 
 // Cargar clases del día al iniciar
 onMounted(async () => {
@@ -264,10 +336,9 @@ onMounted(async () => {
     // Cargar lista de psicólogos para Admin, Master y Profesores (todos los que NO son roles psico/orien)
     // Para que puedan asignar manualmente en el modal.
     if (!isPsychologistRole.value) {
-        psychologists.value = await psychologyStore.fetchPsychologists()
+        await loadPsychologists()
     }
-    // Cargar psicólogos
-    // ... (existing code)
+    await loadWarningTypes()
 })
 
 onUnmounted(() => {
@@ -357,6 +428,9 @@ const toggleSelectAll = () => {
 }
 
 const openReferralModal = () => {
+    form.reportType = 'case'
+    form.warning_type_id = null
+    form.title = ''
     form.reason = ''
     form.priority = 'medium'
     showModal.value = true
@@ -368,7 +442,12 @@ const closeModal = () => {
 
 const submitReferral = async () => {
     if (!form.reason.trim()) {
-        Swal.fire('Error', 'Debe escribir un motivo', 'warning')
+        Swal.fire('Error', `Debe escribir ${form.reportType === 'warning' ? 'un comentario' : 'un motivo'}`, 'warning')
+        return
+    }
+
+    if (form.reportType === 'warning' && !form.title.trim()) {
+        Swal.fire('Error', 'Debe escribir un título para la advertencia', 'warning')
         return
     }
 
@@ -376,16 +455,31 @@ const submitReferral = async () => {
     let successCount = 0
     let failCount = 0
 
-    for (const studentId of selectedStudents.value) {
-        const res = await psychologyStore.createReferral({
-            student_id: studentId,
-            reason: form.reason,
-            priority: form.priority,
-            assigned_to: form.assigned_to || null,
-            send_student: form.send_student
-        })
-        if (res.success) successCount++
-        else failCount++
+    if (form.reportType === 'warning') {
+        // Create warnings
+        for (const studentId of selectedStudents.value) {
+            const res = await warningsStore.createWarning({
+                student_id: studentId,
+                warning_type_id: form.warning_type_id,
+                title: form.title,
+                initial_comment: form.reason
+            })
+            if (res && res.success) successCount++
+            else failCount++
+        }
+    } else {
+        // Create cases (original logic)
+        for (const studentId of selectedStudents.value) {
+            const res = await psychologyStore.createReferral({
+                student_id: studentId,
+                reason: form.reason,
+                priority: form.priority,
+                assigned_to: form.assigned_to || null,
+                send_student: form.send_student
+            })
+            if (res.success) successCount++
+            else failCount++
+        }
     }
 
     submitting.value = false
@@ -395,7 +489,7 @@ const submitReferral = async () => {
         Swal.fire({
             icon: 'success',
             title: 'Proceso completado',
-            text: `Se enviaron ${successCount} reportes correctamente.` + (failCount > 0 ? ` Fallaron ${failCount}.` : '')
+            text: `Se ${form.reportType === 'warning' ? 'crearon' : 'enviaron'} ${successCount} ${form.reportType === 'warning' ? 'advertencias' : 'reportes'} correctamente.` + (failCount > 0 ? ` Fallaron ${failCount}.` : '')
         })
 
         // Refresh Data
@@ -416,7 +510,7 @@ const submitReferral = async () => {
 
         selectedStudents.value = [] // Reset selection
     } else {
-        Swal.fire('Error', 'No se pudieron enviar los reportes', 'error')
+        Swal.fire('Error', `No se pudieron ${form.reportType === 'warning' ? 'crear las advertencias' : 'enviar los reportes'}`, 'error')
     }
 }
 </script>
