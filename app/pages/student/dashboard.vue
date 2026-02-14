@@ -3,8 +3,8 @@
     <!-- Bienvenida -->
     <div class="glass-card p-6 rounded-xl flex justify-between items-center">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900">Hola, {{ dashboardData?.student?.nombres }}</h2>
-        <p class="text-gray-600 mt-1">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Hola, {{ dashboardData?.student?.nombres }}</h2>
+        <p class="text-gray-600 dark:text-gray-400 mt-1">
           Estudiante de {{ dashboardData?.student?.aula_grado }} "{{ dashboardData?.student?.aula_seccion }}" <span
             v-if="dashboardData?.student?.numero_orden">| #{{ dashboardData?.student?.numero_orden }}</span> | Año
           Lectivo: {{ dashboardData?.academic_year }}
@@ -31,8 +31,9 @@
 
       <!-- Calificaciones (3/5 ancho) -->
       <div class="lg:col-span-3 space-y-6">
-        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-          <svg class="w-5 h-5 mr-2 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+          <svg class="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
@@ -78,15 +79,16 @@
             <!-- TABLA DE CALIFICACIONES ACADÉMICAS -->
             <div v-if="academicSubjects.length > 0" class="glass-card p-0 overflow-hidden">
               <!-- ... content ... -->
-              <div class="px-6 py-4 border-b border-gray-100 bg-gray-50/50">
-                <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wide">Calificaciones Académicas</h3>
+              <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
+                <h3 class="text-sm font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">Calificaciones
+                  Académicas</h3>
               </div>
               <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                  <thead class="bg-gray-50">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead class="bg-gray-50 dark:bg-gray-800">
                     <tr>
                       <th scope="col"
-                        class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider min-w-[200px]">
+                        class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider min-w-[200px]">
                         Asignatura
                       </th>
                       <th scope="col"
@@ -111,11 +113,12 @@
                       </th>
                     </tr>
                   </thead>
-                  <tbody class="bg-white divide-y divide-gray-200">
-                    <tr v-for="subject in academicSubjects" :key="subject.materia_id" class="hover:bg-gray-50">
+                  <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tr v-for="subject in academicSubjects" :key="subject.materia_id"
+                      class="hover:bg-gray-50 dark:hover:bg-gray-800">
                       <!-- Subject Name -->
                       <td class="px-4 py-3 whitespace-normal">
-                        <div class="text-sm font-medium text-gray-900">{{ subject.materia }}</div>
+                        <div class="text-sm font-medium text-gray-900 dark:text-white">{{ subject.materia }}</div>
                       </td>
 
                       <!-- Period Averages PC1-PC4 -->
@@ -143,20 +146,21 @@
 
             <!-- MÓDULOS TÉCNICOS (Solo RAs) - Render como Cards -->
             <div v-if="technicalSubjects.length > 0">
-              <h3 class="text-sm font-bold text-gray-900 uppercase tracking-wide mb-3 pl-1">Módulos Técnicos</h3>
+              <h3 class="text-sm font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide mb-3 pl-1">Módulos
+                Técnicos</h3>
               <div class="space-y-4">
                 <div v-for="subject in technicalSubjects" :key="subject.materia_id"
                   class="glass-card p-5 hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-purple-500">
                   <div class="flex justify-between items-start mb-4">
                     <div>
-                      <h4 class="font-bold text-gray-800 text-lg">{{ subject.materia }}</h4>
+                      <h4 class="font-bold text-gray-800 dark:text-gray-100 text-lg">{{ subject.materia }}</h4>
 
                     </div>
                     <div class="text-right">
                       <div class="text-2xl font-bold" :class="getScoreColor(subject.promedio)">
                         {{ subject.promedio ? subject.promedio.toFixed(0) : '-' }}
                       </div>
-                      <div class="text-xs text-gray-500">Total</div>
+                      <div class="text-xs text-gray-500 dark:text-gray-400">Total</div>
                     </div>
                   </div>
 
@@ -189,8 +193,9 @@
 
       <!-- Horario (2/5 ancho) -->
       <div class="lg:col-span-2 space-y-6">
-        <h3 class="text-lg font-semibold text-gray-900 flex items-center">
-          <svg class="w-5 h-5 mr-2 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+          <svg class="w-5 h-5 mr-2 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -201,7 +206,7 @@
           <!-- Selector de día simple -->
           <div class="flex space-x-1 mb-4 overflow-x-auto pb-2">
             <button v-for="(dayName, index) in days" :key="index" @click="selectedDay = index + 1"
-              :class="selectedDay === index + 1 ? 'bg-purple-600 text-white shadow-md' : 'bg-white text-gray-600 hover:bg-gray-50'"
+              :class="selectedDay === index + 1 ? 'bg-purple-600 text-white shadow-md' : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'"
               class="px-3 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap border border-transparent flex-shrink-0">
               {{ dayName }}
             </button>
@@ -213,14 +218,16 @@
 
           <div v-else class="space-y-3">
             <div v-for="(clase, idx) in currentSchedule" :key="idx"
-              class="flex items-start p-3 rounded-lg border-l-4 border-purple-500 bg-purple-50/50">
+              class="flex items-start p-3 rounded-lg border-l-4 border-purple-500 bg-purple-50/50 dark:bg-purple-900/20">
               <div class="mr-3 text-center min-w-[3.5rem]">
-                <div class="text-xs font-bold text-purple-800">{{ formatTime(clase.period.start_time) }}</div>
-                <div class="text-[10px] text-gray-500">{{ formatTime(clase.period.end_time) }}</div>
+                <div class="text-xs font-bold text-purple-800 dark:text-purple-300">{{
+                  formatTime(clase.period.start_time) }}</div>
+                <div class="text-[10px] text-gray-500 dark:text-gray-400">{{ formatTime(clase.period.end_time) }}</div>
               </div>
               <div>
-                <p class="text-sm font-bold text-gray-900 leading-tight">{{ clase.materia.nombre }}</p>
-                <p class="text-xs text-gray-600 mt-0.5">{{ clase.docente.nombres }} {{ clase.docente.apellidos }}</p>
+                <p class="text-sm font-bold text-gray-900 dark:text-white leading-tight">{{ clase.materia.nombre }}</p>
+                <p class="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{{ clase.docente.nombres }} {{
+                  clase.docente.apellidos }}</p>
               </div>
             </div>
           </div>
@@ -299,6 +306,6 @@ onMounted(async () => {
 
 <style scoped>
 .glass-card {
-  @apply bg-white border border-gray-100 shadow-sm transition-all duration-300;
+  @apply bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm transition-all duration-300;
 }
 </style>
