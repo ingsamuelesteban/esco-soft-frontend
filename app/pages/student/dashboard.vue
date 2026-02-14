@@ -42,27 +42,28 @@
 
         <div v-if="dashboardData?.is_blocked"
           class="glass-card p-8 text-center flex flex-col items-center justify-center min-h-[400px] border-l-4 border-l-red-500">
-          <div class="bg-red-50 p-4 rounded-full mb-4">
-            <svg class="w-12 h-12 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div class="bg-red-50 dark:bg-red-900/20 p-4 rounded-full mb-4">
+            <svg class="w-12 h-12 text-red-500 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
             </svg>
           </div>
 
-          <h3 class="text-xl font-bold text-gray-900 mb-2">Acceso a Calificaciones Restringido</h3>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Acceso a Calificaciones Restringido</h3>
 
           <div class="max-w-md mx-auto space-y-3">
-            <p class="text-gray-600">
+            <p class="text-gray-600 dark:text-gray-400">
               Tu visualización de calificaciones ha sido bloqueada temporalmente.
             </p>
 
             <div v-if="dashboardData.lock_details?.reason"
-              class="bg-red-50 rounded p-3 text-sm text-red-700 font-medium">
+              class="bg-red-50 dark:bg-red-900/20 rounded p-3 text-sm text-red-700 dark:text-red-300 font-medium">
               Motivo: {{ dashboardData.lock_details.reason }}
             </div>
 
-            <p class="text-sm text-gray-500 pt-2">
-              Por favor contacta al <span class="font-bold text-gray-700">{{ dashboardData.lock_details?.contact ||
+            <p class="text-sm text-gray-500 dark:text-gray-400 pt-2">
+              Por favor contacta al <span class="font-bold text-gray-700 dark:text-gray-300">{{
+                dashboardData.lock_details?.contact ||
                 'Departamento de Psicología' }}</span> para regularizar tu situación.
             </p>
           </div>
@@ -127,7 +128,7 @@
                           :class="getGradeColor(subject.promedios_periodo[p])">
                           {{ subject.promedios_periodo[p] }}
                         </div>
-                        <div v-else class="text-xs text-gray-300">-</div>
+                        <div v-else class="text-xs text-gray-300 dark:text-gray-600">-</div>
                       </td>
 
                       <!-- Final Average -->
@@ -136,7 +137,7 @@
                           :class="getScoreColor(subject.promedio_academico)">
                           {{ subject.promedio_academico }}
                         </div>
-                        <div v-else class="text-xs text-gray-300">-</div>
+                        <div v-else class="text-xs text-gray-300 dark:text-gray-600">-</div>
                       </td>
                     </tr>
                   </tbody>
@@ -175,7 +176,7 @@
                         <div class="flex flex-wrap justify-center gap-1">
                           <span v-for="intento in raItem.intentos" :key="intento.id"
                             class="text-xs font-bold px-1.5 py-0.5 rounded border"
-                            :class="intento.is_nc ? 'bg-red-50 text-red-600 border-red-200' : 'bg-white text-gray-800 border-gray-200'">
+                            :class="intento.is_nc ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800' : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-600'">
                             {{ intento.nota }}
                           </span>
                         </div>
@@ -273,17 +274,17 @@ const technicalSubjects = computed(() => {
 
 
 const getScoreColor = (score: number | null) => {
-  if (score === null) return 'text-gray-400'
-  if (score >= 90) return 'text-green-600'
-  if (score >= 80) return 'text-blue-600'
-  if (score >= 70) return 'text-yellow-600'
-  return 'text-red-600'
+  if (score === null) return 'text-gray-400 dark:text-gray-500'
+  if (score >= 90) return 'text-green-600 dark:text-green-400'
+  if (score >= 80) return 'text-blue-600 dark:text-blue-400'
+  if (score >= 70) return 'text-yellow-600 dark:text-yellow-400'
+  return 'text-red-600 dark:text-red-400'
 }
 
 const getGradeColor = (score: number | null) => {
-  if (score === null) return 'text-gray-300'
-  if (score < 70) return 'text-red-600'
-  return 'text-gray-900'
+  if (score === null) return 'text-gray-300 dark:text-gray-600'
+  if (score < 70) return 'text-red-600 dark:text-red-400'
+  return 'text-gray-900 dark:text-white'
 }
 
 const formatTime = (time: string) => {
