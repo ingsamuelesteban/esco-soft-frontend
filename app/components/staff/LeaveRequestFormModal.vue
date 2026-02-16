@@ -398,70 +398,15 @@ onMounted(() => {
 // ... load signature logic
 const config = useRuntimeConfig()
 
-const loadStoredSignature = async () => {
+const loadStoredSignature = () => {
     const userAny = user.value as any
     if (!userAny?.digital_signature_path) return
 
-    try {
-        isLoadingSignature.value = true
-
-        // Create image element
-        const img = new Image()
-        img.crossOrigin = 'anonymous' // Enable CORS
-
-        // Create promise to handle image load
-        const imageLoaded = new Promise<string>((resolve, reject) => {
-            img.onload = () => {
-                try {
-                    // Create canvas
-                    const canvas = document.createElement('canvas')
-                    canvas.width = img.width
-                    canvas.height = img.height
-
-                    // Draw image on canvas
-                    const ctx = canvas.getContext('2d')
-                    if (!ctx) {
-                        reject(new Error('Could not get canvas context'))
-                        return
-                    }
-                    ctx.drawImage(img, 0, 0)
-
-                    // Convert to base64
-                    const base64data = canvas.toDataURL('image/png')
-                    resolve(base64data)
-                } catch (e) {
-                    reject(e)
-                }
-            }
-
-            img.onerror = () => {
-                reject(new Error('Failed to load image'))
-            }
-        })
-
-        // Set image source
-        img.src = `${config.public.apiBase}/storage/${userAny.digital_signature_path}`
-
-        // Wait for image to load and convert
-        const base64data = await imageLoaded
-
-        form.value.employee_signature = base64data
-        signatureEmpty.value = false
-        usingStoredSignature.value = true
-    } catch (e) {
-        console.error('Error loading signature:', e)
-        usingStoredSignature.value = false
-
-        // Show error to user
-        await Swal.fire({
-            icon: 'error',
-            title: 'Error al cargar firma',
-            text: 'No se pudo cargar la firma guardada. Por favor, firme manualmente.',
-            confirmButtonText: 'Entendido'
-        })
-    } finally {
-        isLoadingSignature.value = false
-    }
+    // Simply mark that we're using stored signature
+    // Backend will handle loading the actual signature
+    usingStoredSignature.value = true
+    signatureEmpty.value = false
+    form.value.employee_signature = 'USE_STORED_SIGNATURE' // Flag for backend
 }
 
 const useManualSignature = () => {
@@ -639,7 +584,13 @@ const handleSubmit = async () => {
             formData.append('end_time', form.value.end_time)
         }
         formData.append('reason', form.value.reason)
-        formData.append('employee_signature', form.value.employee_signature)
+
+        // Handle signature
+        if (usingStoredSignature.value) {
+            formData.append('use_stored_signature', 'true')
+        } else {
+            formData.append('employee_signature', form.value.employee_signature)
+        }
 
         // Agregar archivo si existe
         if (form.value.attachment) {
