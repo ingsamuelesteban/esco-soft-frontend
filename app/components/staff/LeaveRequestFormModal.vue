@@ -264,7 +264,7 @@
 
                     <p v-if="errors.employee_signature" class="mt-1 text-sm text-red-600">{{
                         errors.employee_signature
-                        }}</p>
+                    }}</p>
                 </div>
 
                 <!-- Actions -->
@@ -404,22 +404,61 @@ const loadStoredSignature = async () => {
 
     try {
         isLoadingSignature.value = true
-        // Fetch image as blob
-        const response = await fetch(`${config.public.apiBase}/storage/${userAny.digital_signature_path}`)
-        const blob = await response.blob()
 
-        // Convert to base64
-        const reader = new FileReader()
-        reader.readAsDataURL(blob)
-        reader.onloadend = () => {
-            const base64data = reader.result as string
-            form.value.employee_signature = base64data
-            signatureEmpty.value = false
-            usingStoredSignature.value = true
-        }
+        // Create image element
+        const img = new Image()
+        img.crossOrigin = 'anonymous' // Enable CORS
+
+        // Create promise to handle image load
+        const imageLoaded = new Promise<string>((resolve, reject) => {
+            img.onload = () => {
+                try {
+                    // Create canvas
+                    const canvas = document.createElement('canvas')
+                    canvas.width = img.width
+                    canvas.height = img.height
+
+                    // Draw image on canvas
+                    const ctx = canvas.getContext('2d')
+                    if (!ctx) {
+                        reject(new Error('Could not get canvas context'))
+                        return
+                    }
+                    ctx.drawImage(img, 0, 0)
+
+                    // Convert to base64
+                    const base64data = canvas.toDataURL('image/png')
+                    resolve(base64data)
+                } catch (e) {
+                    reject(e)
+                }
+            }
+
+            img.onerror = () => {
+                reject(new Error('Failed to load image'))
+            }
+        })
+
+        // Set image source
+        img.src = `${config.public.apiBase}/storage/${userAny.digital_signature_path}`
+
+        // Wait for image to load and convert
+        const base64data = await imageLoaded
+
+        form.value.employee_signature = base64data
+        signatureEmpty.value = false
+        usingStoredSignature.value = true
     } catch (e) {
         console.error('Error loading signature:', e)
         usingStoredSignature.value = false
+
+        // Show error to user
+        await Swal.fire({
+            icon: 'error',
+            title: 'Error al cargar firma',
+            text: 'No se pudo cargar la firma guardada. Por favor, firme manualmente.',
+            confirmButtonText: 'Entendido'
+        })
     } finally {
         isLoadingSignature.value = false
     }
