@@ -34,11 +34,15 @@
                         <nav class="-mb-px flex space-x-8" aria-label="Tabs">
                             <a href="#" @click.prevent="caseFilter = 'open'"
                                 :class="[caseFilter === 'open' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">
-                                Activos
+                                Activos <span v-if="stats?.summary"
+                                    class="ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-600">{{
+                                        stats.summary.open_cases }}</span>
                             </a>
                             <a href="#" @click.prevent="caseFilter = 'closed'"
                                 :class="[caseFilter === 'closed' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">
-                                Historial (Cerrados)
+                                Historial (Cerrados) <span v-if="stats?.summary"
+                                    class="ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">{{
+                                        stats.summary.closed_cases }}</span>
                             </a>
                         </nav>
                     </div>
@@ -122,6 +126,7 @@ import CaseDetail from '~/components/psychology/CaseDetail.vue'
 import WarningList from '~/components/warnings/WarningList.vue'
 import WarningDetail from '~/components/warnings/WarningDetail.vue'
 import { useStudentWarningsStore } from '~/stores/studentWarnings'
+import { usePsychologyStore } from '~/stores/psychology'
 
 useHead({
     title: 'Mis Casos - EscoSoft'
@@ -133,6 +138,8 @@ definePageMeta({
 })
 
 const warningsStore = useStudentWarningsStore()
+const psychologyStore = usePsychologyStore()
+const stats = ref<any>(null)
 
 // Main tab selector
 const mainTab = ref<'cases' | 'warnings'>('cases')
@@ -142,9 +149,25 @@ const warningSearch = ref('')
 const warningDateFrom = ref('')
 const warningDateTo = ref('')
 
-onMounted(() => {
+onMounted(async () => {
     warningsStore.fetchCounts()
+    await loadStats()
 })
+
+const loadStats = async () => {
+    try {
+        const res = await psychologyStore.fetchStats({ reported_by_me: true })
+        if (res && res.summary) {
+            stats.value = res
+        } else if (res && res.data && res.data.summary) {
+            stats.value = res.data
+        } else {
+            stats.value = res
+        }
+    } catch (e) {
+        console.error('Error loading stats', e)
+    }
+}
 
 // Cases state
 const activeCaseListRef = ref<any>(null)

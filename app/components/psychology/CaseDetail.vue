@@ -90,9 +90,35 @@
                 </div>
             </div>
 
+
             <div class="flex-1 flex overflow-hidden">
+
                 <!-- Columna Izquierda: Cronología / Entradas -->
                 <div class="flex-1 overflow-y-auto p-6 bg-white">
+                    <!-- Banner Sugerencia Unificación -->
+                    <div v-if="suggestedUnifiedCases.length > 0"
+                        class="bg-indigo-50 border-l-4 border-indigo-400 p-4 mb-4">
+                        <div class="flex">
+                            <div class="flex-shrink-0">
+                                <!-- Heroicon: information-circle -->
+                                <svg class="h-5 w-5 text-indigo-400" xmlns="http://www.w3.org/2000/svg"
+                                    viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                    <path fill-rule="evenodd"
+                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                        clip-rule="evenodd" />
+                                </svg>
+                            </div>
+                            <div class="ml-3">
+                                <p class="text-sm text-indigo-700">
+                                    Este estudiante tiene <strong>{{ suggestedUnifiedCases.length }} casos adicionales
+                                        activos</strong>.
+                                    <button @click="openUnifyModal" class="font-medium underline hover:text-indigo-600">
+                                        Unificar casos ahora
+                                    </button>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                     <div class="mb-6">
                         <button @click="showAddEntry = true"
                             class="w-full flex justify-center items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700">
@@ -138,7 +164,7 @@
                                             <div>
                                                 <p class="text-sm text-gray-500">
                                                     <span class="font-medium text-gray-900">{{ getTypeLabel(entry.type)
-                                                    }}</span>
+                                                        }}</span>
                                                     por <span class="font-medium text-gray-900">{{ entry.author?.name ||
                                                         'Usuario' }}</span>
                                                 </p>
@@ -148,7 +174,7 @@
                                             <div
                                                 class="text-right text-sm whitespace-nowrap text-gray-500 flex flex-col items-end">
                                                 <time :datetime="entry.date_of_event">{{ formatDate(entry.date_of_event)
-                                                }}</time>
+                                                    }}</time>
                                                 <button @click="openEditEntry(entry)"
                                                     class="mt-2 p-1.5 rounded-md text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-colors shadow-sm"
                                                     title="Editar entrada">
@@ -285,13 +311,67 @@
             </div>
         </div>
 
+
+
+    </div>
+
+    <!-- Unify Modal (Reused from UnifiedCaseList logic but adapted/simplified) -->
+    <div v-if="showUnifyModal" class="fixed inset-0 z-50 overflow-y-auto" aria-labelledby="modal-title" role="dialog"
+        aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
+                @click="showUnifyModal = false"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div
+                class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Unificar Casos</h3>
+                <p class="text-sm text-gray-500 mb-4">
+                    Seleccione los casos que desea unificar para {{ currentCase?.student?.nombres }} {{
+                        currentCase?.student?.apellidos }}.
+                </p>
+
+                <div class="space-y-2 mb-6">
+                    <!-- Include current case implicitly or explicitly? Let's show all available including current -->
+                    <div v-for="caso in suggestedUnifiedCases" :key="caso.id" class="flex items-start">
+                        <div class="flex items-center h-5">
+                            <input :id="'case-' + caso.id" v-model="selectedUnifyCaseIds" :value="caso.id"
+                                type="checkbox"
+                                class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" />
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label :for="'case-' + caso.id" class="font-medium text-gray-700">Caso #{{ caso.id }} - {{
+                                caso.title }}</label>
+                            <p class="text-gray-500">Reportado por: {{ caso.referral?.reporter?.name ?? 'Psicología' }}
+                            </p>
+                            <p class="text-gray-500" v-if="caso.assigned_to">Asignado a: <span class="font-medium">{{
+                                caso.assigned_to.name }}</span></p>
+                            <p v-if="caso.id === props.caseId" class="text-xs text-indigo-600 font-bold">(Caso Actual)
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end space-x-3">
+                    <button @click="showUnifyModal = false" type="button"
+                        class="px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+                        Cancelar
+                    </button>
+                    <button @click="confirmUnify" :disabled="selectedUnifyCaseIds.length < 2 || unifying" type="button"
+                        class="px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none disabled:opacity-50">
+                        {{ unifying ? 'Unificando...' : 'Unificar Casos' }}
+                    </button>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, watch, onMounted, computed } from 'vue'
 import { usePsychologyStore } from '../../stores/psychology'
 import { useAuthStore } from '../../stores/auth'
+import { useUnifiedCasesStore } from '../../stores/unified-cases'
+import { useRouter } from 'vue-router'
 import { api } from '~/utils/api'
 import Swal from 'sweetalert2'
 import { PencilSquareIcon } from '@heroicons/vue/20/solid'
@@ -303,6 +383,8 @@ const props = defineProps<{
 const emit = defineEmits(['back'])
 const store = usePsychologyStore()
 const authStore = useAuthStore()
+const unifiedStore = useUnifiedCasesStore()
+const router = useRouter()
 
 const isPsychologist = computed(() => {
     const role = authStore.user?.role?.toLowerCase() || ''
@@ -326,6 +408,12 @@ const allCategories = ref<any[]>([])
 const selectedCategories = ref<number[]>([])
 const savingCategories = ref(false)
 
+// Unification State
+const suggestedUnifiedCases = ref<any[]>([])
+const showUnifyModal = ref(false)
+const selectedUnifyCaseIds = ref<number[]>([])
+const unifying = ref(false)
+
 const loadCase = async () => {
     loading.value = true
     const res = await store.fetchCase(props.caseId)
@@ -335,8 +423,61 @@ const loadCase = async () => {
         if (currentCase.value.categories) {
             selectedCategories.value = currentCase.value.categories.map((c: any) => c.id)
         }
+
+        // Check for unification suggestions if psychologist and case is active
+        if (isPsychologist.value && currentCase.value.status === 'open' && currentCase.value.student_id) {
+            checkUnificationSuggestions(currentCase.value.student_id)
+        }
     }
     loading.value = false
+}
+
+const checkUnificationSuggestions = async (studentId: number) => {
+    // Only check if not already part of a unified case
+    if (currentCase.value.unified_case_id) return
+
+    const cases = await unifiedStore.fetchStudentCases(studentId)
+
+
+    // Filter to ensure we have > 1 case and they are actually open/unifiable
+    // The store returns all cases for the student from the suggestion endpoint
+    // We should ensure the current case is in there (it should be)
+    // and there is at least one OTHER case
+    if (cases && cases.length > 1) {
+        suggestedUnifiedCases.value = cases
+    } else {
+        suggestedUnifiedCases.value = []
+    }
+}
+
+const openUnifyModal = () => {
+    selectedUnifyCaseIds.value = suggestedUnifiedCases.value.map((c: any) => c.id)
+    showUnifyModal.value = true
+}
+
+const confirmUnify = async () => {
+    if (selectedUnifyCaseIds.value.length < 2) return
+    unifying.value = true
+    try {
+        const result = await unifiedStore.unifyCases({
+            student_id: currentCase.value.student_id,
+            case_ids: selectedUnifyCaseIds.value
+        })
+        showUnifyModal.value = false
+        Swal.fire('Unificado', 'Los casos han sido unificados correctamente.', 'success')
+
+        // Redirect to unified case
+        const unifiedId = result?.data?.id || result?.id
+        if (unifiedId) {
+            router.push(`/psicologia/casos-unificados/${unifiedId}`)
+        } else {
+            loadCase()
+        }
+    } catch (e: any) {
+        Swal.fire('Error', 'No se pudieron unificar los casos', 'error')
+    } finally {
+        unifying.value = false
+    }
 }
 
 const toggleInOffice = async () => {
