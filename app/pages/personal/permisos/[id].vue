@@ -95,8 +95,8 @@
                         <div>
                             <p class="text-sm text-gray-500 mb-2">Firma del Empleado</p>
                             <div class="border rounded-lg p-2 bg-white">
-                                <img :src="request.employee_signature" alt="Firma Empleado" class="max-h-24 mx-auto"
-                                    v-if="request.employee_signature" />
+                                <img :src="getSignatureUrl(request.employee_signature)" alt="Firma Empleado"
+                                    class="max-h-24 mx-auto" v-if="request.employee_signature" />
                                 <p v-else class="text-center text-gray-400 py-4">Sin firma</p>
                             </div>
                             <p class="text-xs text-gray-400 mt-1 text-center" v-if="request.employee_signed_at">
@@ -107,8 +107,8 @@
                         <div v-if="request.status !== 'pendiente'">
                             <p class="text-sm text-gray-500 mb-2">Firma del Administrador ({{ request.status }})</p>
                             <div class="border rounded-lg p-2 bg-white">
-                                <img :src="request.admin_signature" alt="Firma Admin" class="max-h-24 mx-auto"
-                                    v-if="request.admin_signature" />
+                                <img :src="getSignatureUrl(request.admin_signature)" alt="Firma Admin"
+                                    class="max-h-24 mx-auto" v-if="request.admin_signature" />
                                 <p v-else class="text-center text-gray-400 py-4">Sin firma</p>
                             </div>
                             <p class="text-xs text-gray-400 mt-1 text-center" v-if="request.reviewed_at">
@@ -267,7 +267,7 @@ const printRequest = async () => {
         // Use api.getBlob to handle tenant prefix and auth headers automatically
         const res = await api.getBlob(`/api/staff/leave-requests/${request.value.id}/print`)
         const blob = new Blob([res], { type: 'application/pdf' })
-        
+
         const filename = `solicitud_permiso_${request.value.id}.pdf`
         const { printPdfBlob } = usePrint()
         printPdfBlob(blob, filename, 'Generando documento para impresión...')
@@ -341,4 +341,15 @@ const getFileUrl = (path: string) => {
     if (!path) return '#'
     return `${config.public.apiBase}/storage/${path}`
 }
+
+const getSignatureUrl = (signature: string) => {
+    if (!signature) return ''
+    // Check if it's base64 (starts with data:image)
+    if (signature.startsWith('data:image')) {
+        return signature
+    }
+    // Otherwise it's a path, construct full URL
+    return `${config.public.apiBase}/storage/${signature}`
+}
+
 </script>
