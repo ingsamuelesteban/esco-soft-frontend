@@ -80,9 +80,9 @@
                         </div>
                     </div>
                     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
-                        <button type="submit" @click="updateProfile" :disabled="authStore.isLoading"
-                            class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                            {{ authStore.isLoading ? 'Guardando...' : 'Guardar' }}
+                        <button type="submit" @click="saveProfileInfo" :disabled="isLoadingProfile"
+                            class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                            {{ isLoadingProfile ? 'Guardando...' : 'Guardar Perfil' }}
                         </button>
                     </div>
                 </div>
@@ -110,43 +110,56 @@
                     <div class="px-4 py-5 space-y-6 sm:p-6">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-2">Firma Registrada</label>
-                            
+
                             <!-- Existing Signature Preview -->
                             <div v-if="existingSignatureUrl && !isEditingSignature" class="mb-4">
                                 <div class="border rounded-lg p-2 bg-gray-50 flex flex-col items-center">
                                     <img :src="existingSignatureUrl" alt="Firma Digital" class="h-32 object-contain" />
                                     <div class="mt-2 flex gap-2">
-                                        <button type="button" @click="editSignature" 
+                                        <button type="button" @click="editSignature"
                                             class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
                                             Cambiar Firma
                                         </button>
-                                        <button type="button" @click="deleteSignature" 
-                                             class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
+                                        <button type="button" @click="deleteSignature"
+                                            class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700">
                                             Eliminar
                                         </button>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Signature Pad -->
                             <div v-else>
                                 <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mb-4">
                                     <div class="flex">
                                         <div class="flex-shrink-0">
-                                            <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
-                                                <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd" />
+                                            <svg class="h-5 w-5 text-yellow-400" viewBox="0 0 20 20"
+                                                fill="currentColor">
+                                                <path fill-rule="evenodd"
+                                                    d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                                    clip-rule="evenodd" />
                                             </svg>
                                         </div>
                                         <div class="ml-3">
                                             <p class="text-sm text-yellow-700">
-                                                Esta Firma solo podrá ser utilizada desde su perfil, puede registrarla con seguridad.
+                                                Esta Firma solo podrá ser utilizada desde su perfil, puede registrarla
+                                                con seguridad.
                                             </p>
                                         </div>
                                     </div>
                                 </div>
-                                <SignaturePad ref="signaturePadRef" @update="handleSignatureUpdate" @change="handleSignatureChange" />
-                                <div class="mt-2 text-right" v-if="isEditingSignature && existingSignatureUrl">
-                                    <button type="button" @click="cancelEditSignature" class="text-sm text-gray-500 hover:text-gray-700">Cancelar cambio</button>
+                                <SignaturePad ref="signaturePadRef" @update="handleSignatureUpdate"
+                                    @change="handleSignatureChange" />
+                                <div class="mt-4 flex gap-2 justify-end">
+                                    <button v-if="isEditingSignature && existingSignatureUrl" type="button"
+                                        @click="cancelEditSignature"
+                                        class="inline-flex justify-center py-2 px-4 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                                        Cancelar
+                                    </button>
+                                    <button type="button" @click="saveSignature" :disabled="isLoadingSignature"
+                                        class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                                        {{ isLoadingSignature ? 'Guardando...' : 'Guardar Firma' }}
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -304,9 +317,9 @@
                     </div>
                     <div class="px-4 py-3 bg-gray-50 text-right sm:px-6">
                         <button type="submit" @click="updatePassword"
-                            :disabled="authStore.isLoading || !isPasswordLengthValid || !doPasswordsMatch"
+                            :disabled="isLoadingPassword || !isPasswordLengthValid || !doPasswordsMatch"
                             class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed">
-                            {{ authStore.isLoading ? 'Guardando...' : 'Guardar' }}
+                            {{ isLoadingPassword ? 'Guardando...' : 'Cambiar Contraseña' }}
                         </button>
                     </div>
                 </div>
@@ -349,6 +362,11 @@ const form = ref({
 const signaturePadRef = ref<InstanceType<typeof SignaturePad> | null>(null)
 const existingSignatureUrl = ref<string | null>(null)
 const isEditingSignature = ref(false)
+
+// Independent loading states
+const isLoadingProfile = ref(false)
+const isLoadingSignature = ref(false)
+const isLoadingPassword = ref(false)
 
 const passwordForm = ref({
     current_password: '',
@@ -490,46 +508,86 @@ const updatePhotoPreview = (event: Event) => {
     }
 }
 
-const updateProfile = async () => {
-    // Agregar cedula al payload si es necesario, aunque authStore.updateProfileInformation usa FormData
-    // Asegurémonos que el store maneje la cédula
-    // Asegurémonos que el store maneje la cédula
-    // Also handle signature deletion if needed? 
-    // If existingSignatureUrl is null and isEditingSignature is true and pad is empty... 
-    // Controller expects `digital_signature` to save new. To delete, we might need to send something else or change controller.
-    // For now, let's assume valid signature update.
-    
-    // Pass everything as an object, the store converts to FormData usually? 
-    // Check auth store. authStore.updateProfileInformation
-    
-    // We need to pass the form value with digital_signature
-    
-    const payload: any = { ...form.value }
-    if (!isEditingSignature.value) {
-        // If not editing, don't send signature (keep existing)
-        delete payload.digital_signature
+// Save profile info only (no signature)
+const saveProfileInfo = async () => {
+    isLoadingProfile.value = true
+    try {
+        const payload: any = {
+            cedula: form.value.cedula,
+            username: form.value.username,
+            email: form.value.email,
+            nombre: form.value.nombre,
+            apellido: form.value.apellido,
+            telefono: form.value.telefono,
+            photo: form.value.photo
+        }
+
+        const res: any = await authStore.updateProfileInformation(payload)
+        if (res.success) {
+            photoPreview.value = null // Reset preview
+            form.value.photo = null
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'Perfil actualizado',
+                timer: 2000,
+                showConfirmButton: false
+            })
+        } else {
+            let errorMessage = res.message
+            if (res.errors) {
+                const errorList = Object.values(res.errors).flat().map((err: any) => `<li>${err}</li>`).join('')
+                errorMessage = `<ul class="text-left text-sm">${errorList}</ul>`
+            }
+            Swal.fire({
+                title: 'Error al guardar perfil',
+                html: errorMessage,
+                icon: 'error'
+            })
+        }
+    } finally {
+        isLoadingProfile.value = false
     }
-    
-    const res: any = await authStore.updateProfileInformation(payload)
-    if (res.success) {
-        // Refresh local state
-        isEditingSignature.value = false
-        if (res.user && res.user.digital_signature_path) {
-            existingSignatureUrl.value = `${useRuntimeConfig().public.apiBase}/storage/${res.user.digital_signature_path}`
+}
+
+// Save signature only
+const saveSignature = async () => {
+    if (!form.value.digital_signature) {
+        Swal.fire('Error', 'Por favor firma en el recuadro', 'error')
+        return
+    }
+
+    isLoadingSignature.value = true
+    try {
+        const payload: any = {
+            digital_signature: form.value.digital_signature
         }
-        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Perfil actualizado', timer: 2000, showConfirmButton: false })
-    } else {
-        let errorMessage = res.message
-        if (res.errors) {
-            // Si hay errores de validación, mostrarlos en una lista
-            const errorList = Object.values(res.errors).flat().map((err: any) => `<li>${err}</li>`).join('')
-            errorMessage = `<ul class="text-left text-sm">${errorList}</ul>`
+
+        const res: any = await authStore.updateProfileInformation(payload)
+        if (res.success) {
+            isEditingSignature.value = false
+            if (res.user && res.user.digital_signature_path) {
+                existingSignatureUrl.value = `${useRuntimeConfig().public.apiBase}/storage/${res.user.digital_signature_path}`
+            }
+            form.value.digital_signature = ''
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'Firma guardada',
+                timer: 2000,
+                showConfirmButton: false
+            })
+        } else {
+            Swal.fire({
+                title: 'Error al guardar firma',
+                text: res.message,
+                icon: 'error'
+            })
         }
-        Swal.fire({
-            title: 'Error',
-            html: errorMessage,
-            icon: 'error'
-        })
+    } finally {
+        isLoadingSignature.value = false
     }
 }
 
@@ -539,13 +597,25 @@ const updatePassword = async () => {
         return
     }
 
-    const res = await authStore.updatePassword(passwordForm.value)
-    if (res.success) {
-        passwordForm.value = { current_password: '', password: '', password_confirmation: '' }
-        currentPasswordStatus.value = 'idle' // Reset status
-        Swal.fire({ toast: true, position: 'top-end', icon: 'success', title: 'Contraseña actualizada', timer: 2000, showConfirmButton: false })
-    } else {
-        Swal.fire('Error', res.message, 'error')
+    isLoadingPassword.value = true
+    try {
+        const res = await authStore.updatePassword(passwordForm.value)
+        if (res.success) {
+            passwordForm.value = { current_password: '', password: '', password_confirmation: '' }
+            currentPasswordStatus.value = 'idle'
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: 'Contraseña cambiada',
+                timer: 2000,
+                showConfirmButton: false
+            })
+        } else {
+            Swal.fire('Error al cambiar contraseña', res.message, 'error')
+        }
+    } finally {
+        isLoadingPassword.value = false
     }
 }
 

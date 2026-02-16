@@ -446,11 +446,12 @@ export const useAuthStore = defineStore('auth', {
       try {
         // Use FormData for file upload
         const formData = new FormData()
-        formData.append('username', profileData.username)
-        formData.append('email', profileData.email)
-        formData.append('nombre', profileData.nombre)
-        formData.append('apellido', profileData.apellido)
 
+        // Only append fields that are present in profileData
+        if (profileData.username) formData.append('username', profileData.username)
+        if (profileData.email) formData.append('email', profileData.email)
+        if (profileData.nombre) formData.append('nombre', profileData.nombre)
+        if (profileData.apellido) formData.append('apellido', profileData.apellido)
         if (profileData.telefono) formData.append('telefono', profileData.telefono)
         if (profileData.cedula) formData.append('cedula', profileData.cedula)
 
@@ -468,7 +469,7 @@ export const useAuthStore = defineStore('auth', {
           this.user = { ...this.user, ...response.user }
         }
 
-        return { success: true, message: 'Perfil actualizado correctamente' }
+        return { success: true, message: 'Perfil actualizado correctamente', user: response.user }
       } catch (error: any) {
         return {
           success: false,
