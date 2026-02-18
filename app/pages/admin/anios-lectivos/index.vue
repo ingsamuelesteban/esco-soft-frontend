@@ -47,11 +47,25 @@
                                 class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
                                 {{ hasPeriods(anio.id) ? 'Actualizar Periodos' : 'Configurar Periodos' }}
                             </button>
+
+                            <!-- Promover estudiantes -->
+                            <NuxtLink :to="`/admin/anios-lectivos/promover`"
+                                class="text-green-600 hover:text-green-900 text-sm font-medium">
+                                Promover
+                            </NuxtLink>
+
+                            <!-- Clonar año -->
+                            <button @click="openClonarModal(anio)"
+                                class="text-purple-600 hover:text-purple-900 text-sm font-medium">
+                                Clonar
+                            </button>
+
                             <button @click="openModal(anio)"
                                 class="text-blue-600 hover:text-blue-900 text-sm font-medium">Editar</button>
                             <button @click="confirmDelete(anio)"
                                 class="text-red-600 hover:text-red-900 text-sm font-medium">Eliminar</button>
                         </div>
+
                     </li>
                     <li v-if="items.length === 0" class="px-6 py-12 text-center text-gray-500">
                         No hay años lectivos registrados.
@@ -128,6 +142,67 @@
                 </form>
             </div>
         </div>
+        <!-- Clonar Modal -->
+        <div v-if="showClonarModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+            <div class="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden">
+                <div class="px-6 py-4 border-b flex justify-between items-center">
+                    <h3 class="text-lg font-medium text-gray-900">Clonar Año Lectivo: {{ anioParaClonar?.nombre }}</h3>
+                    <button @click="closeClonarModal" class="text-gray-400 hover:text-gray-500">
+                        <span class="sr-only">Cerrar</span>
+                        <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <form @submit.prevent="saveClonacion">
+                    <div class="px-6 py-4 space-y-4">
+                        <p class="text-sm text-gray-500">
+                            Se creará un nuevo año lectivo inactivo. Se copiarán todas las aulas, asignaciones de materias y horarios.
+                            Los estudiantes NO se copiarán (debes usar la función Promover).
+                        </p>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Nuevo Nombre</label>
+                            <input v-model="clonarForm.nombre" type="text" required placeholder="Ej. 2026-1"
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700">Nueva Descripción</label>
+                            <textarea v-model="clonarForm.descripcion" rows="2"
+                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"></textarea>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Fecha Inicio</label>
+                                <input v-model="clonarForm.fecha_inicio" type="date"
+                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700">Fecha Fin</label>
+                                <input v-model="clonarForm.fecha_fin" type="date"
+                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                            </div>
+                        </div>
+
+                        <div v-if="clonarError" class="text-red-600 text-sm">{{ clonarError }}</div>
+                    </div>
+                    <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3">
+                        <button type="button" @click="closeClonarModal" :disabled="loading"
+                            class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50">
+                            Cancelar
+                        </button>
+                        <button type="submit" :disabled="loading"
+                            class="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-purple-600 hover:bg-purple-700 disabled:opacity-50 inline-flex items-center">
+                            <svg v-if="loading" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            {{ loading ? 'Clonando...' : 'Clonar Año' }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -142,15 +217,6 @@ const periodsStore = useAcademicPeriodsStore()
 const loading = computed(() => store.loading)
 const error = computed(() => store.error)
 const items = computed(() => store.items)
-const allPeriods = computed(() => periodsStore.periods) // Accessing state directly might need fetchAll logic in store that populates 'periods' with everything or a separate list. 
-// Wait, store.periods in academic_periods.ts is rewritten by fetchByAnio. 
-// We need a way to get ALL periods to check existence without overwriting the specific one needed for the modal.
-// Or we just fetch all blindly into a separate state or just use an action that returns them.
-// Let's modify the store to support holding "all loaded periods" or just fetch them here locally/or in a new store property.
-// Given strict setup, let's look at academic_periods.ts again. 
-// It has `periods` state. `fetchByAnio` overwrites it.
-// I should probably add `fetchAll` to store or just use `api` call here to check.
-// Better: Add `checkConfiguredYears` action to store that returns list of year IDs that have periods.
 
 const configuredYears = ref<number[]>([])
 
@@ -160,14 +226,8 @@ onMounted(async () => {
 })
 
 async function loadConfiguredYears() {
-    // We can use the store to fetch all and process, but `fetchByAnio` overwrites `periods`.
-    // Let's use a direct API call here or add a dedicated method in store.
-    // Let's add `fetchAll` to store that populates a differnet list or just returns data.
-    // For now, I will use the store's `fetchAll` if I create it, or just use api directly here for simplicity to not break store pattern if complex.
-    // Actually, let's use the store. I'll uncomment the import and implementation below.
     try {
         const response = await periodsStore.getAll()
-        // response should be all periods from backend
         const periods: any[] = response || []
         const years = new Set(periods.map((p: any) => p.anio_lectivo_id))
         configuredYears.value = Array.from(years) as number[]
@@ -188,16 +248,23 @@ const editingId = ref<number | null>(null)
 const showConfigModal = ref(false)
 const selectedAnioId = ref<number | null>(null)
 
+// Clonar Modal State
+const showClonarModal = ref(false)
+const anioParaClonar = ref<AnioLectivo | null>(null)
+const clonarError = ref<string | null>(null)
+const clonarForm = reactive({
+    nombre: '',
+    descripcion: '',
+    fecha_inicio: '',
+    fecha_fin: ''
+})
+
 const form = reactive({
     nombre: '',
     descripcion: '' as string | null | undefined,
     fecha_inicio: null as string | null,
     fecha_fin: null as string | null,
     activo: true
-})
-
-onMounted(() => {
-    store.fetchAll()
 })
 
 function openConfigModal(anio: AnioLectivo) {
@@ -236,6 +303,40 @@ function closeModal() {
     showModal.value = false
 }
 
+// Clonar logic
+function openClonarModal(anio: AnioLectivo) {
+    clonarError.value = null
+    anioParaClonar.value = anio
+    clonarForm.nombre = `Copia de ${anio.nombre}`
+    clonarForm.descripcion = anio.descripcion || ''
+    clonarForm.fecha_inicio = ''
+    clonarForm.fecha_fin = ''
+    showClonarModal.value = true
+}
+
+function closeClonarModal() {
+    showClonarModal.value = false
+    anioParaClonar.value = null
+}
+
+async function saveClonacion() {
+    if (!anioParaClonar.value) return
+    clonarError.value = null
+    
+    try {
+        await store.clone(anioParaClonar.value.id, {
+            nombre: clonarForm.nombre,
+            descripcion: clonarForm.descripcion,
+            fecha_inicio: clonarForm.fecha_inicio || undefined,
+            fecha_fin: clonarForm.fecha_fin || undefined
+        })
+        alert('Año lectivo clonado exitosamente. Recuerda activarlo cuando estés listo.')
+        closeClonarModal()
+    } catch (e: any) {
+        clonarError.value = e.response?.data?.message || 'Error al clonar año lectivo'
+    }
+}
+
 async function save() {
     formError.value = null
     try {
@@ -261,25 +362,17 @@ async function confirmDelete(item: AnioLectivo) {
 }
 
 async function toggleActive(item: AnioLectivo) {
-    // Removed guard to allow re-activating an item which triggers the backend cleanup
-    // if (item.activo) return 
-
     // Optimistic UI Update:
-    // 1. Snapshot current state in case we need to revert
     const previousState = items.value.map(i => ({ id: i.id, activo: i.activo }))
 
-    // 2. Update local state immediately
     store.items.forEach(i => {
         i.activo = (i.id === item.id)
     })
 
     try {
-        // 3. Call backend
         await store.update(item.id, { activo: true })
-        // 4. Reload to be sure (optional if optimistic worked perfect, but good for consistency)
         await store.fetchAll()
     } catch (e: any) {
-        // Revert on error
         store.items.forEach(i => {
             const prev = previousState.find(p => p.id === i.id)
             if (prev) i.activo = prev.activo

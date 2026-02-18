@@ -77,6 +77,21 @@
               </select>
             </div>
 
+            <!-- Año Lectivo (Solo creación) -->
+            <div v-if="!isEdit">
+              <label class="block text-sm font-medium text-gray-700 mb-1">Año Lectivo de Ingreso</label>
+              <select v-model="form.anio_lectivo_id"
+                class="w-full border-gray-300 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                <option :value="undefined">Seleccionar año...</option>
+                <option v-for="anio in aniosStore.items" :key="anio.id" :value="anio.id">
+                  {{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}
+                </option>
+              </select>
+               <p class="text-xs text-gray-500 mt-1" v-if="anioSeleccionado && !anioSeleccionado.activo">
+                {{ anioSeleccionado.nombre }} es un año futuro o inactivo.
+              </p>
+            </div>
+
             <div>
               <label class="block text-sm font-medium text-gray-700 mb-1">Estado</label>
               <select v-model="form.estado"
@@ -170,6 +185,7 @@
 import { computed, reactive, ref, watch, onMounted } from 'vue'
 import { useEstudiantesStore, type Estudiante } from '../../stores/estudiantes'
 import { useAulasStore } from '../../stores/aulas'
+import { useAniosLectivosStore } from '../../stores/anios_lectivos'
 import CedulaInput from '../forms/CedulaInput.vue'
 
 const props = defineProps<{ open: boolean; model?: Estudiante | null }>()
@@ -177,9 +193,19 @@ const emit = defineEmits<{ close: []; saved: [item: Estudiante] }>()
 
 const store = useEstudiantesStore()
 const aulasStore = useAulasStore()
+const aniosStore = useAniosLectivosStore()
 
-onMounted(() => {
+onMounted(async () => {
   aulasStore.fetchAll()
+  await aniosStore.fetchAll()
+  
+  // Set default active year for new students
+  if (!props.model) {
+      const activeYear = aniosStore.activos[0]
+      if (activeYear) {
+          form.anio_lectivo_id = activeYear.id
+      }
+  }
 })
 
 interface EstudianteForm {
@@ -194,6 +220,7 @@ interface EstudianteForm {
   numero_orden?: number
   estado: string
   fecha_retiro?: string
+  anio_lectivo_id?: number
 }
 
 const form = reactive<EstudianteForm>({
@@ -207,7 +234,8 @@ const form = reactive<EstudianteForm>({
   orden_manual: false,
   numero_orden: undefined,
   estado: 'activo',
-  fecha_retiro: undefined
+  fecha_retiro: undefined,
+  anio_lectivo_id: undefined
 })
 
 function resetForm() {
@@ -222,7 +250,8 @@ function resetForm() {
     orden_manual: false,
     numero_orden: undefined,
     estado: 'activo',
-    fecha_retiro: undefined
+    fecha_retiro: undefined,
+    anio_lectivo_id: aniosStore.activos[0]?.id
   })
   errors.nombres = null
   errors.apellidos = null
@@ -267,6 +296,10 @@ watch(() => props.model, (m) => {
   }
 }, { immediate: true })
 
+const anioSeleccionado = computed(() => {
+    return aniosStore.items.find(a => a.id === form.anio_lectivo_id)
+})
+
 watch(() => form.estado, (newEstado) => {
   if (newEstado === 'retirado' && !form.fecha_retiro) {
     // Set default to today's date in YYYY-MM-DD format
@@ -306,7 +339,8 @@ const onSubmit = async () => {
       ...form,
       cedula: form.cedula.trim() || null,
       rne: form.rne.trim() || null,
-      aula_id: form.aula_id || null
+      aula_id: form.aula_id || null,
+      anio_lectivo_id: form.anio_lectivo_id
     }
 
     if (isEdit.value && props.model) {

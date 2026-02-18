@@ -101,6 +101,22 @@ export const useAniosLectivosStore = defineStore('anios_lectivos', {
                 this.loading = false
                 finishLoading()
             }
+        },
+
+        async clone(id: number, payload: { nombre: string; fecha_inicio?: string; fecha_fin?: string; descripcion?: string }) {
+            this.loading = true
+            startLoading()
+            try {
+                const response = await api.post<{ anio: AnioLectivo }>(`/api/anios-lectivos/${id}/clonar`, payload)
+                this.items.unshift(response.anio)
+                return response
+            } catch (e) {
+                console.error(e)
+                throw e
+            } finally {
+                this.loading = false
+                finishLoading()
+            }
         }
     }
 })

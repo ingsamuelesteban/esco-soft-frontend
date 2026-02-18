@@ -99,10 +99,12 @@ import { useAuthStore } from '../../stores/auth'
 
 const props = withDefaults(defineProps<{
     status?: 'open' | 'closed',
-    reportedByMe?: boolean
+    reportedByMe?: boolean,
+    anioLectivoId?: number | string
 }>(), {
     status: 'open',
-    reportedByMe: false
+    reportedByMe: false,
+    anioLectivoId: undefined
 })
 
 const emit = defineEmits(['select', 'filter-change'])
@@ -115,6 +117,10 @@ const psychologists = ref<any[]>([])
 const selectedPsychologist = ref<number | 'me' | null>(null)
 
 watch(() => props.status, () => {
+    loadCases()
+})
+
+watch(() => props.anioLectivoId, () => {
     loadCases()
 })
 
@@ -131,6 +137,10 @@ const loadCases = async () => {
     const filter: any = { 
         status: props.status,
         limit: 100 // Request more items to fix visibility issue
+    }
+
+    if (props.anioLectivoId) {
+        filter.anio_lectivo_id = props.anioLectivoId
     }
 
     if (props.reportedByMe) {

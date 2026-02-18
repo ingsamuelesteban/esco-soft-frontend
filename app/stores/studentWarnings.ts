@@ -94,9 +94,14 @@ export const useStudentWarningsStore = defineStore('studentWarnings', {
             }
         },
 
-        async fetchCounts() {
+        async fetchCounts(filters?: { anio_lectivo_id?: number | string }) {
             try {
-                const response = await api.get('/api/student-warnings/counts')
+                const params: any = {}
+                if (filters?.anio_lectivo_id) {
+                    params.anio_lectivo_id = filters.anio_lectivo_id
+                }
+
+                const response = await api.get('/api/student-warnings/counts', { params })
                 this.counts = response
                 return { success: true, data: response }
             } catch (error: any) {

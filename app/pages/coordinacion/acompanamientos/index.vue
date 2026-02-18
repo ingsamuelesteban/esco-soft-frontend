@@ -5,13 +5,22 @@
         <h1 class="text-2xl font-bold text-gray-800">Acompañamientos - Componente Técnico</h1>
         <p class="text-sm text-gray-500">Gestión de observaciones a maestros</p>
       </div>
-      <button @click="$router.push('/coordinacion/acompanamientos/crear')"
-        class="flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700">
-        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        Nuevo Acompañamiento
-      </button>
+      <div class="flex items-center space-x-3">
+        <select v-model="selectedAnioId" v-if="aniosStore.items.length > 0"
+          class="block w-48 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg shadow-sm">
+          <option :value="'all'">Todos los años</option>
+          <option v-for="anio in aniosStore.items" :key="anio.id" :value="anio.id">
+            {{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}
+          </option>
+        </select>
+        <button @click="$router.push('/coordinacion/acompanamientos/crear')"
+          class="flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-medium text-white hover:bg-primary-700">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Nuevo Acompañamiento
+        </button>
+      </div>
     </div>
 
     <div class="rounded-xl border border-gray-100 bg-white shadow-sm">
@@ -106,34 +115,67 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { apiCall as useApi, api } from '@/utils/api';
 import { usePrint } from '@/composables/usePrint';
+import { useAniosLectivosStore } from '~/stores/anios_lectivos';
 
 const router = useRouter();
+const aniosStore = useAniosLectivosStore();
 
 const loading = ref(true);
 const observations = ref<any[]>([]);
 const pagination = ref({ total: 0 });
+const selectedAnioId = ref<string | number | undefined>(undefined);
 
-onMounted(() => {
+onMounted(async () => {
+  await aniosStore.fetchAll();
+
+  // Set default active year
+  if (aniosStore.activos.length > 0) {
+    selectedAnioId.value = aniosStore.activos[0]?.id;
+  } else if (aniosStore.items.length > 0) {
+    selectedAnioId.value = aniosStore.items[0]?.id;
+  }
+
   fetchObservations();
 });
 
+watch(selectedAnioId, () => {
+  fetchObservations();
+})
+
 async function fetchObservations() {
+  loading.value = true;
   try {
-    const response = await useApi('/observations');
+    const params: any = {
+      anio_lectivo_id: selectedAnioId.value
+    };
+
+    const response = await api.get('/observations', { params });
     // Handle both wrapped { data: { ... } } and direct structure
     const data = response.data || response;
 
     // Check if data is paginated (has data property array inside) or is direct array
-    if (Array.isArray(data)) {
-      observations.value = data;
-      pagination.value = { total: data.length };
-    } else if (data.data && Array.isArray(data.data)) {
-      observations.value = data.data;
-      pagination.value = { total: data.total || data.data.length };
+    // The Controller returns { success: true, data: { ...paginate... } }
+    // Or sometimes directly pagination object.
+    // Let's adjust based on common pattern. 
+    // Usually response.data is the body. body.data is the pagination object?
+    // Let's inspect response structure safely.
+
+    // Adjusted logic based on controller return:
+    // return response()->json(['success' => true, 'data' => $observations]);
+    // So axios response.data = { success: true, data: { current_page: ..., data: [...] } }
+
+    const pageData = data.data || data; // This should be the paginator object
+
+    if (pageData && Array.isArray(pageData.data)) {
+      observations.value = pageData.data;
+      pagination.value = { total: pageData.total };
+    } else if (Array.isArray(pageData)) {
+      observations.value = pageData;
+      pagination.value = { total: pageData.length };
     } else {
       observations.value = [];
       pagination.value = { total: 0 };

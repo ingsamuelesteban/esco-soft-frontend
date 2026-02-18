@@ -109,6 +109,7 @@ const props = defineProps<{
     dateFrom?: string
     dateTo?: string
     reportedBy?: string
+    anioLectivoId?: number | string
 }>()
 
 const emit = defineEmits<{
@@ -123,6 +124,10 @@ const loadWarnings = async () => {
     loading.value = true
     const filters: any = {
         status: props.status || 'open'
+    }
+
+    if (props.anioLectivoId) {
+        filters.anio_lectivo_id = props.anioLectivoId
     }
 
     if (props.reportedByMe) {

@@ -7,6 +7,15 @@
                     <h1 class="text-2xl font-bold text-gray-900">Departamento de Psicología</h1>
                     <p class="text-sm text-gray-600 mt-1">Gestión de Casos de Psicología</p>
                 </div>
+                <div class="flex items-center space-x-4">
+                    <select v-model="selectedAnioId" v-if="aniosStore.items.length > 0"
+                        class="block w-48 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm">
+                        <option :value="'all'">Todos los años</option>
+                        <option v-for="anio in aniosStore.items" :key="anio.id" :value="anio.id">
+                            {{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}
+                        </option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -26,7 +35,7 @@
                             :class="[caseFilter === 'unified' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">
                             Unificados <span v-if="unifiedStore.unifiedCases"
                                 class="ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium bg-purple-100 text-purple-600">{{
-                                unifiedStore.unifiedCases.length }}</span>
+                                    unifiedStore.unifiedCases.length }}</span>
                         </a>
                         <a href="#" @click.prevent="caseFilter = 'closed'"
                             :class="[caseFilter === 'closed' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">
@@ -37,7 +46,7 @@
                     </nav>
                 </div>
                 <ActiveCaseList v-if="caseFilter !== 'unified'" ref="activeCaseListRef" @select="handleCaseSelected"
-                    @filter-change="handleFilterChange" :status="caseFilter" />
+                    @filter-change="handleFilterChange" :status="caseFilter" :anio-lectivo-id="selectedAnioId" />
                 <UnifiedCaseList v-else-if="caseFilter === 'unified'" @select="handleUnifiedCaseSelected" />
             </div>
 
@@ -51,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import ActiveCaseList from '~/components/psychology/ActiveCaseList.vue'
 import CaseDetail from '~/components/psychology/CaseDetail.vue'
 import UnifiedCaseList from '~/components/psychology/UnifiedCaseList.vue'
@@ -59,6 +68,7 @@ import UnifiedCaseDetail from '~/components/psychology/UnifiedCaseDetail.vue'
 import { usePsychologyStore } from '~/stores/psychology'
 import { useAuthStore } from '~/stores/auth'
 import { useUnifiedCasesStore } from '~/stores/unified-cases'
+import { useAniosLectivosStore } from '~/stores/anios_lectivos'
 
 useHead({
     title: 'Psicología - EscoSoft'
@@ -76,7 +86,10 @@ const caseFilter = ref<'open' | 'closed' | 'unified'>('open')
 const store = usePsychologyStore()
 const authStore = useAuthStore()
 const unifiedStore = useUnifiedCasesStore()
+const aniosStore = useAniosLectivosStore()
 const stats = ref<any>(null)
+
+const selectedAnioId = ref<number | string | undefined>(undefined)
 
 const isPsychologist = computed(() => {
     const role = authStore.user?.role?.toLowerCase() || ''
@@ -103,7 +116,10 @@ const backToCaseList = () => {
     selectedCaseId.value = null
     selectedUnifiedCaseId.value = null
     viewMode.value = 'list'
-    activeCaseListRef.value?.loadCases()
+    // Delay reload to let component re-mount if needed, although v-if keeps it
+    setTimeout(() => {
+        activeCaseListRef.value?.loadCases()
+    }, 100)
 }
 
 const loadStats = async (assignedTo?: any) => {
@@ -111,6 +127,9 @@ const loadStats = async (assignedTo?: any) => {
         const params: any = {}
         if (assignedTo) {
             params.assigned_to = assignedTo
+        }
+        if (selectedAnioId.value) {
+            params.anio_lectivo_id = selectedAnioId.value
         }
 
         const res = await store.fetchStats(params)
@@ -127,7 +146,19 @@ const loadStats = async (assignedTo?: any) => {
     }
 }
 
-onMounted(() => {
+watch(selectedAnioId, (newVal) => {
+    loadStats()
+})
+
+onMounted(async () => {
+    await aniosStore.fetchAll()
+    if (aniosStore.activos.length > 0) {
+        selectedAnioId.value = aniosStore.activos[0]?.id
+    } else if (aniosStore.items.length > 0) {
+        // Fallback to most recent if no active
+        selectedAnioId.value = aniosStore.items[0]?.id
+    }
+
     loadStats()
     if (isPsychologist.value) {
         unifiedStore.fetchUnifiedCases()

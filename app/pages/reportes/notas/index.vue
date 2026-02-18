@@ -1,23 +1,27 @@
 <template>
    <div>
-      <header class="bg-white border-b border-gray-200 px-6 py-4">
-         <h1 class="text-2xl font-bold text-gray-900">Reportes de Notas</h1>
-         <p class="text-sm text-gray-600 mt-1">Generación de boletines, sábanas y planillas</p>
-      </header>
+      <header class="bg-white border-b border-gray-200">
+         <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 px-6 py-4">
+            <div>
+               <h1 class="text-2xl font-bold text-gray-900 font-outfit">Reportes de Calificaciones</h1>
+               <p class="text-gray-500 text-sm mt-1">Generación de boletines, sábanas y actas</p>
+            </div>
 
-      <div class="p-6 max-w-7xl mx-auto">
-         <!-- Global Filters (Year) -->
-         <div class="mb-6 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Año Lectivo</label>
-            <div class="max-w-xs">
-               <select v-model="selectedAnio"
-                  class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border">
-                  <option v-for="anio in aniosLectivos" :key="anio.id" :value="anio.id">
+            <div class="w-full md:w-64">
+               <label class="block text-xs font-medium text-gray-700 mb-1">Año Lectivo</label>
+               <select v-model="selectedAnioId" v-if="aniosStore.items.length > 0"
+                  class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg shadow-sm">
+                  <option :value="null">Año Activo (Por defecto)</option>
+                  <option v-for="anio in aniosStore.items" :key="anio.id" :value="anio.id">
                      {{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}
                   </option>
                </select>
             </div>
          </div>
+      </header>
+
+      <div class="p-6 max-w-7xl mx-auto">
+
 
          <!-- Tabs -->
          <div class="mb-6 border-b border-gray-200">
@@ -606,9 +610,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
+import { apiCall as useApi, api } from '@/utils/api'
+import { useAniosLectivosStore } from '~/stores/anios_lectivos'
 
-import { api } from '~/utils/api'
+const config = useRuntimeConfig()
 import { usePrint } from '~/composables/usePrint'
 import { useAuthStore } from '~/stores/auth'
 
@@ -696,47 +702,81 @@ const tabs = computed(() => {
    }
    return allTabs
 })
+const aniosStore = useAniosLectivosStore()
 
+// State
+const loading = ref(false)
 const loadingGenerate = ref(false)
 const loadingPreview = ref(false)
-const aulas = ref<Aula[]>([])
-const subjects = ref<Subject[]>([])
-const aniosLectivos = ref<AnioLectivo[]>([])
-const selectedAnio = ref<number | ''>('')
-const selectedAula = ref<string | number>('')
-const selectedMateria = ref<string | number>('')
+const selectedAnioId = ref<number | null>(null)
+const activeTab = ref('boletin')
+
+// Data Lists
+const estudiantes = ref<any[]>([])
+const aulas = ref<any[]>([])
+const subjects = ref<any[]>([])
+
+// Form State
+const selectedStudent = ref<any>(null)
+const selectedAula = ref<any>(null)
+const selectedMateria = ref<any>(null)
 const selectedPeriod = ref('all')
 
 // Student Search State
 const studentSearch = ref('')
-const studentJsonResults = ref<Estudiante[]>([])
-const selectedStudent = ref<Estudiante | null>(null)
-const reportPreview = ref<ReportPreview | null>(null) // Data for preview
-const classroomPreview = ref<any | null>(null) // Classroom report preview
-const subjectPreview = ref<any | null>(null) // Subject report preview
-const meritPreview = ref<any | null>(null) // Merit report preview
-let searchTimeout: any = null
+const studentJsonResults = ref<any[]>([])
 
-// Load Data
-onMounted(async () => {
+const fetchAulas = async () => {
    try {
-      // Set default tab for professor
+      const res = await api.get('/api/aulas')
+      aulas.value = res.data || res || []
+   } catch (e) {
+      console.error('Error fetching aulas', e)
+      aulas.value = []
+   }
+}
+
+// Initialize
+onMounted(async () => {
+   loading.value = true
+   try {
       if (auth.isProfesor) {
          currentTab.value = 'subject'
       }
 
-      const resAulas = await api.get('/api/aulas')
-      aulas.value = (resAulas as any) || []
+      await Promise.all([
+         aniosStore.fetchAll(),
+         fetchAulas()
+      ])
 
-      const resYears = await api.get('/api/anios-lectivos')
-      aniosLectivos.value = (resYears as any) || []
-
-      const active = aniosLectivos.value.find(y => y.activo)
-      if (active) selectedAnio.value = active.id
-
+      // Set default active year
+      if (aniosStore.activos.length > 0) {
+         selectedAnioId.value = aniosStore.activos[0]?.id ?? null
+      } else if (aniosStore.items.length > 0) {
+         selectedAnioId.value = aniosStore.items[0]?.id ?? null
+      }
    } catch (e) {
       console.error(e)
+   } finally {
+      loading.value = false
    }
+})
+
+const reportPreview = ref<ReportPreview | null>(null)
+const classroomPreview = ref<any | null>(null)
+const subjectPreview = ref<any | null>(null)
+const meritPreview = ref<any | null>(null)
+let searchTimeout: any = null
+
+// Watchers
+watch(selectedAnioId, () => {
+   selectedStudent.value = null
+   selectedAula.value = null
+   selectedMateria.value = null
+   reportPreview.value = null
+   classroomPreview.value = null
+   subjectPreview.value = null
+   meritPreview.value = null
 })
 
 // Search Students
@@ -761,7 +801,7 @@ const selectStudent = (s: Estudiante) => {
    selectedStudent.value = s
    studentSearch.value = ''
    studentJsonResults.value = []
-   reportPreview.value = null // Clear preview on change
+   reportPreview.value = null
 }
 
 // Load Subjects when Aula changes
@@ -772,13 +812,12 @@ const loadSubjects = async () => {
    if (!selectedAula.value) return
 
    try {
-      // Fetch ClassAssignments for this Aula
       const res = await api.get(`/api/class-assignments?aula_id=${selectedAula.value}&only_active=true`)
       const data = res.data?.data || res.data || []
 
       subjects.value = data.map((a: any) => ({
          materia_id: a.materia_id,
-         materia: a.materia?.nombre, // For report mapping consistency if needed, but select uses 'nombre'
+         materia: a.materia?.nombre,
          nombre: a.materia?.nombre,
          tipo: a.materia?.tipo,
          profesor: a.profesor
@@ -802,9 +841,8 @@ const generateStudentReport = async () => {
    loadingGenerate.value = true
    try {
       let url = `/api/reports/grades/student?estudiante_id=${selectedStudent.value.id}&period=${selectedPeriod.value}`
-      if (selectedAnio.value) url += `&year_id=${selectedAnio.value}`
+      if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
-      // Fetch Blob directly
       const blob = await api.get(url, { responseType: 'blob' }) as Blob
 
       const filename = `boletin_${selectedStudent.value.apellidos}_${selectedStudent.value.nombres}.pdf`
@@ -824,7 +862,7 @@ const previewStudentReport = async () => {
    reportPreview.value = null
    try {
       let url = `/api/reports/grades/student?estudiante_id=${selectedStudent.value.id}&period=${selectedPeriod.value}&format=json`
-      if (selectedAnio.value) url += `&year_id=${selectedAnio.value}`
+      if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const res = await api.get(url)
       reportPreview.value = res as unknown as ReportPreview
@@ -841,7 +879,7 @@ const generateClassroomReport = async () => {
    loadingGenerate.value = true
    try {
       let url = `/api/reports/grades/classroom?aula_id=${selectedAula.value}`
-      if (selectedAnio.value) url += `&year_id=${selectedAnio.value}`
+      if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const blob = await api.get(url, { responseType: 'blob' }) as Blob
 
@@ -862,7 +900,7 @@ const generateSubjectReport = async () => {
    loadingGenerate.value = true
    try {
       let url = `/api/reports/grades/subject?aula_id=${selectedAula.value}&materia_id=${selectedMateria.value}&period=${selectedPeriod.value}`
-      if (selectedAnio.value) url += `&year_id=${selectedAnio.value}`
+      if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const blob = await api.get(url, { responseType: 'blob' }) as Blob
 
@@ -884,7 +922,7 @@ const previewClassroomReport = async () => {
    classroomPreview.value = null
    try {
       let url = `/api/reports/grades/classroom?aula_id=${selectedAula.value}&format=json`
-      if (selectedAnio.value) url += `&year_id=${selectedAnio.value}`
+      if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const response = await api.get(url)
       classroomPreview.value = response
@@ -902,10 +940,10 @@ const previewSubjectReport = async () => {
    subjectPreview.value = null
    try {
       let url = `/api/reports/grades/subject?aula_id=${selectedAula.value}&materia_id=${selectedMateria.value}&period=${selectedPeriod.value}&format=json`
-      if (selectedAnio.value) url += `&year_id=${selectedAnio.value}`
+      if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
-      const response = await api.get(url)
-      subjectPreview.value = response
+      const res = await api.get(url)
+      subjectPreview.value = res
    } catch (e) {
       console.error(e)
       alert('Error cargando vista previa de planilla')
@@ -919,7 +957,7 @@ const generateMeritReport = async () => {
    loadingGenerate.value = true
    try {
       let url = `/api/reports/grades/merit?aula_id=${selectedAula.value}`
-      if (selectedAnio.value) url += `&year_id=${selectedAnio.value}`
+      if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const blob = await api.get(url, { responseType: 'blob' }) as Blob
 
@@ -949,7 +987,7 @@ const previewMeritReport = async () => {
    meritPreview.value = null
    try {
       let url = `/api/reports/grades/merit?aula_id=${selectedAula.value}&format=json`
-      if (selectedAnio.value) url += `&year_id=${selectedAnio.value}`
+      if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const response = await api.get(url)
       meritPreview.value = response

@@ -7,6 +7,15 @@
                     <h1 class="text-2xl font-bold text-gray-900">Gestión de Advertencias</h1>
                     <p class="text-sm text-gray-600 mt-1">Supervisión y seguimiento de advertencias estudiantiles</p>
                 </div>
+                <div class="flex items-center space-x-4">
+                    <select v-model="selectedAnioId" v-if="aniosStore.items.length > 0"
+                        class="block w-48 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm">
+                        <option :value="'all'">Todos los años</option>
+                        <option v-for="anio in aniosStore.items" :key="anio.id" :value="anio.id">
+                            {{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}
+                        </option>
+                    </select>
+                </div>
             </div>
         </div>
 
@@ -84,7 +93,7 @@
                 </div>
 
                 <WarningList ref="warningListRef" @select="handleWarningSelected" :status="filter" :search="search"
-                    :date-from="dateFrom" :date-to="dateTo"
+                    :date-from="dateFrom" :date-to="dateTo" :anio-lectivo-id="selectedAnioId"
                     :reported-by="reportedBy ? String(reportedBy) : undefined" />
             </div>
 
@@ -95,10 +104,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import WarningList from '~/components/warnings/WarningList.vue'
 import WarningDetail from '~/components/warnings/WarningDetail.vue'
 import { useStudentWarningsStore } from '~/stores/studentWarnings'
+import { useAniosLectivosStore } from '~/stores/anios_lectivos'
 
 useHead({
     title: 'Gestión de Advertencias - EscoSoft'
@@ -110,6 +120,7 @@ definePageMeta({
 })
 
 const warningsStore = useStudentWarningsStore()
+const aniosStore = useAniosLectivosStore()
 const warningListRef = ref<any>(null)
 const selectedWarningId = ref<number | null>(null)
 const viewMode = ref<'list' | 'detail'>('list')
@@ -120,11 +131,49 @@ const search = ref('')
 const dateFrom = ref('')
 const dateTo = ref('')
 const reportedBy = ref('')
+const selectedAnioId = ref<number | string | undefined>(undefined)
 
-onMounted(() => {
-    warningsStore.fetchCounts()
+onMounted(async () => {
+    await aniosStore.fetchAll()
+    if (aniosStore.activos.length > 0) {
+        selectedAnioId.value = aniosStore.activos[0]?.id
+    } else if (aniosStore.items.length > 0) {
+        selectedAnioId.value = aniosStore.items[0]?.id
+    }
+
+    loadCounts()
     warningsStore.fetchReporters()
 })
+
+const loadCounts = () => {
+    const params: any = {}
+    if (selectedAnioId.value) {
+        params.anio_lectivo_id = selectedAnioId.value
+    } else {
+        // If "All years" selected ('undefined'), we might want to pass 'all' string if backed expects it,
+        // or undefined if we handled it in backend to mean "Current Active" (which we did).
+        // Wait, backend logic: 
+        // if (request->has('anio_lectivo_id')) { if !== 'all' ... } else { default active }
+        // So if I send undefined (key missing), it defaults to Active.
+        // If I want ALL years, I must send 'all'.
+        // So let's make sure 'undefined' in selector means 'all' in param?
+        // In my selector: <option :value="undefined">Todos los años</option>
+        // If selectedAnioId is undefined, I should send 'all' to backend if I want ALL years.
+        // But my backend logic says: if MISSING -> Active.
+        // So to see ALL, I must send 'all'.
+        params.anio_lectivo_id = 'all'
+    }
+
+    // Actually, let's look at my selector logic in `casos/index.vue`
+    // I used :value="undefined". And in loadStats: if (selectedAnioId.value) params...
+    // So if undefined, param is missing -> Backend defaults to Active.
+    // So "Todos los años" actually shows "Active Year" in my previous implementation?
+    // Let's correct this in both places if needed.
+    // If user selects "Todos los años", they expect ALL years.
+    // So I should send 'all'.
+
+    warningsStore.fetchCounts(params)
+}
 
 const handleWarningSelected = (warning: any) => {
     selectedWarningId.value = warning.id
@@ -136,6 +185,10 @@ const backToList = () => {
     viewMode.value = 'list'
     // Refresh list to show updates (e.g. if warning was closed)
     warningListRef.value?.loadWarnings()
-    warningsStore.fetchCounts()
+    loadCounts()
 }
+
+watch(selectedAnioId, () => {
+    loadCounts()
+})
 </script>

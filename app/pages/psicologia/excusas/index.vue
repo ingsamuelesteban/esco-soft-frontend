@@ -6,13 +6,23 @@
                 <h1 class="text-2xl font-bold text-gray-900 font-outfit">Excusas de Asistencia</h1>
                 <p class="text-gray-500 text-sm mt-1">Gestión de ausencias justificadas y licencias médicas</p>
             </div>
-            <button @click="openModal()"
-                class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center shadow-lg shadow-primary-500/30">
-                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-                </svg>
-                Nueva Excusa
-            </button>
+            <div class="flex items-center space-x-3">
+                <select v-model="selectedAnioId" v-if="aniosStore.items.length > 0"
+                    class="block w-48 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg shadow-sm">
+                    <option :value="'all'">Todos los años</option>
+                    <option v-for="anio in aniosStore.items" :key="anio.id" :value="anio.id">
+                        {{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}
+                    </option>
+                </select>
+
+                <button @click="openModal()"
+                    class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg font-medium transition-colors flex items-center shadow-lg shadow-primary-500/30">
+                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                    Nueva Excusa
+                </button>
+            </div>
         </div>
 
         <!-- Filters -->
@@ -142,8 +152,7 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <button v-if="excuse.file_path"
-                                    @click="printFile(excuse.file_path)"
+                                <button v-if="excuse.file_path" @click="printFile(excuse.file_path)"
                                     class="text-primary-600 hover:text-primary-900 flex items-center text-sm font-medium focus:outline-none">
                                     <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -260,7 +269,7 @@
                                             <dd class="mt-1 text-xs text-red-600 bg-red-50 p-2 rounded">
                                                 {{ selectedExcuse.cancellation_reason }}<br>
                                                 <span class="text-gray-400">{{ formatDate(selectedExcuse.cancelled_at)
-                                                    }}</span>
+                                                }}</span>
                                             </dd>
                                         </div>
                                     </div>
@@ -423,11 +432,14 @@ import debounce from 'lodash/debounce'
 import Swal from 'sweetalert2'
 import dayjs from 'dayjs'
 import { usePrint } from '~/composables/usePrint'
+import { useAniosLectivosStore } from '~/stores/anios_lectivos'
 
 const config = useRuntimeConfig()
 const { $api } = useNuxtApp()
 
 // State
+const aniosStore = useAniosLectivosStore()
+const selectedAnioId = ref(undefined)
 const excuses = ref([])
 const aulas = ref([])
 const loading = ref(false)
@@ -460,7 +472,20 @@ const errors = reactive({})
 // Setup
 onMounted(async () => {
     await fetchAulas()
+    await aniosStore.fetchAll()
+
+    // Set default active year
+    if (aniosStore.activos.length > 0) {
+        selectedAnioId.value = aniosStore.activos[0]?.id
+    } else if (aniosStore.items.length > 0) {
+        selectedAnioId.value = aniosStore.items[0]?.id
+    }
+
     await fetchExcuses()
+})
+
+watch(selectedAnioId, () => {
+    fetchExcuses()
 })
 
 // Validation
@@ -496,8 +521,14 @@ const fetchExcuses = async () => {
     try {
         const params = {
             page: page.value,
-            ...filters
+            ...filters,
+            anio_lectivo_id: selectedAnioId.value // Add year filter
         }
+
+        // Handle 'all' logic if needed, but backend expects 'all' string or specific ID.
+        // If undefined/null, backend defaults to active.
+        // Our selector has specific values, so it should be fine.
+
         const res = await $api.get('/api/psychology/attendance-excuses', { params })
         excuses.value = res.data || []
         lastPage.value = res.last_page || 1
