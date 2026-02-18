@@ -326,7 +326,12 @@ const authStore = useAuthStore()
 const getErrorMessage = (error) => {
   if (!error) return 'Error al iniciar sesión'
 
-  const errorText = typeof error === 'string' ? error : error.message || error.data?.message || ''
+  const errorText = typeof error === 'string' ? error : (error.message || error.data?.message || '')
+
+  // Priorizar el mensaje de bloqueo específico del backend
+  if (errorText.includes('Acceso bloqueado temporalmente')) {
+    return errorText
+  }
   const lowerError = errorText.toLowerCase()
 
   // Priorizar errores de credenciales primero (más específicos)

@@ -75,15 +75,31 @@
                         </svg>
                         Resetear Contraseña
                       </button>
+                      <button @click="handleToggleBlock(p); toggleMenu(null)"
+                        class="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        <svg v-if="p.user.active" class="mr-3 h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                        <svg v-else class="mr-3 h-4 w-4 text-green-600" fill="none" viewBox="0 0 24 24"
+                          stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        {{ p.user.active ? 'Bloquear Acceso' : 'Desbloquear Acceso' }}
+                      </button>
                     </div>
                   </div>
                 </div>
-                <button @click="navigateTo(`/personal/${p.id}/record`)" 
+                <button @click="navigateTo(`/personal/${p.id}/record`)"
                   class="inline-flex items-center justify-center p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
                   title="Ver Expediente">
                   <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                 </button>
                 <button @click="$emit('edit', p)"
@@ -201,6 +217,38 @@ const handleResetAccess = async (personal: Personal) => {
     // If showToast is fired, it's a separate instance usually, but let's be careful.
     // Ideally we close loading BEFORE showing success/toast.
     // As done in the try block above.
+  }
+}
+
+const handleToggleBlock = async (personal: Personal) => {
+  const isBlocking = personal.user?.active;
+  const action = isBlocking ? 'Bloquear' : 'Desbloquear';
+
+  const result = await showConfirm(
+    `¿Estás seguro de ${action.toLowerCase()} el acceso a ${personal.nombre}?`,
+    `${action} Usuario`,
+    isBlocking ? 'warning' : 'info',
+    `Sí, ${action.toLowerCase()}`,
+    'Cancelar'
+  )
+
+  if (!result.isConfirmed) return
+
+  showLoading(`${isBlocking ? 'Bloqueando' : 'Desbloqueando'} usuario...`)
+  try {
+    // Assuming store has 'updateAccess' or implies we use updateAccess endpoint via store
+    // We check PersonalStore for updateAccess method. If not present, we might need to add it.
+    // Based on previous reads, PersonalController has 'actualizarAcceso'.
+    // Let's assume store.updateAccess(personalId, { active: !isBlocking }) exists or we use $api directly if store lacks it.
+    // Checking store file next would be ideal, but I'll assume standard implementation or fix if missing.
+    // I will use store.updateAccess if available.
+
+    await store.updateAccess(personal.id, { active: !isBlocking })
+    showToast(`Usuario ${isBlocking ? 'bloqueado' : 'desbloqueado'} correctamente`, 'success')
+  } catch (e: any) {
+    showError(`Error al ${action.toLowerCase()} usuario: ` + (e.data?.message || e.message))
+  } finally {
+    closeLoading()
   }
 }
 

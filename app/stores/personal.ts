@@ -162,6 +162,21 @@ export const usePersonalStore = defineStore('personal', {
       }
     },
 
+    async updateAccess(id: number, data: { active?: boolean; role?: string }) {
+      try {
+        const response = await api.put<{ success: boolean; data: any; message: string }>(`/api/personal/${id}/actualizar-acceso`, data)
+        if (response.data) {
+          const item = this.items.find(p => p.id === id)
+          if (item) {
+            item.user = response.data
+          }
+        }
+        return response.data
+      } catch (e: any) {
+        throw e
+      }
+    },
+
     async resetPassword(id: number) {
       try {
         const response = await api.post<{ success: boolean; data: { nueva_password: string }; message: string }>(`/api/personal/${id}/resetear-password`)

@@ -119,6 +119,17 @@ export async function apiCall<T = any>(url: string, options: Parameters<typeof $
         }
       }
 
+      // Manejo global de 403 (Bloqueo de usuario): Redirigir al login
+      if (response.status === 403) {
+        const msg = response._data?.message || '';
+        if (msg.includes('Acceso bloqueado temporalmente')) {
+          // Redirigir a página de bloqueo sin cerrar sesión
+          if (window.location.pathname !== '/blocked') {
+            window.location.href = '/blocked'
+          }
+        }
+      }
+
       if (options.responseType === 'blob') {
         throw new Error(`Error ${response.status}: ${response.statusText}`)
       }
