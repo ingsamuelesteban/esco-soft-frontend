@@ -84,6 +84,40 @@
       </div>
     </header>
 
+    <!-- Navigation Menu for Students -->
+    <nav
+      class="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 transition-colors duration-300">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex space-x-8 overflow-x-auto">
+          <NuxtLink to="/student/dashboard"
+            class="inline-flex items-center px-1 pt-4 pb-3 border-b-2 text-sm font-medium transition-colors whitespace-nowrap"
+            :class="isActiveRoute('/student/dashboard')
+              ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+            </svg>
+            Dashboard
+          </NuxtLink>
+
+          <NuxtLink to="/student/tareas"
+            class="inline-flex items-center px-1 pt-4 pb-3 border-b-2 text-sm font-medium transition-colors whitespace-nowrap"
+            :class="isActiveRoute('/student/tareas')
+              ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+            </svg>
+            Tareas
+          </NuxtLink>
+
+
+        </div>
+      </div>
+    </nav>
+
     <!-- Profile Edit Modal -->
     <StudentProfileEditModal :is-open="profileModalOpen" @close="closeProfileModal" @updated="handleProfileUpdated" />
 
@@ -107,7 +141,7 @@
 
 <script setup lang="ts">
 import { useAuthStore } from '../stores/auth'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { ref, onMounted, onUnmounted } from 'vue'
 import StudentProfileEditModal from '../components/student/StudentProfileEditModal.vue'
@@ -140,6 +174,15 @@ const handleProfileUpdated = () => {
   // Profile was updated successfully
   // The user data in the store is already updated by the auth store
   console.log('Profile updated successfully')
+}
+
+// Helper function to check if route is active
+const route = useRoute()
+const isActiveRoute = (path: string) => {
+  if (path === '/student/dashboard') {
+    return route.path === '/student/dashboard' || route.path === '/'
+  }
+  return route.path.startsWith(path)
 }
 
 // Close dropdown when clicking outside
