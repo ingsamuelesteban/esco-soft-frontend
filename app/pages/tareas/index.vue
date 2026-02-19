@@ -184,7 +184,7 @@ async function fetchTeachers() {
             id: p.id, // This is personal_id
             name: `${p.nombre} ${p.apellido}`,
             personal_id: p.id
-        }))
+        })).sort((a: any, b: any) => a.name.localeCompare(b.name))
     } catch (error) {
         console.error('Error fetching teachers:', error)
     } finally {

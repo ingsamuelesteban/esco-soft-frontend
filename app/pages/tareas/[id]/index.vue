@@ -46,10 +46,11 @@
             <!-- Homework List -->
             <div v-else class="space-y-4">
                 <div v-for="homework in filteredHomeworks" :key="homework.id"
-                    class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                    @click="router.push(`/tareas/${classAssignmentId}/${homework.id}`)"
+                    class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors">
                                 {{ homework.title }}
                             </h3>
                             <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
@@ -80,20 +81,18 @@
 
                         <!-- Actions -->
                         <div class="ml-4 flex items-center gap-2">
-                            <NuxtLink :to="`/tareas/${classAssignmentId}/${homework.id}`"
-                                class="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-                                Ver Entregas
-                            </NuxtLink>
-                            <template v-if="!isReadOnly">
-                                <button @click="editHomework(homework)"
-                                    class="px-3 py-1.5 text-sm bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
-                                    Editar
-                                </button>
-                                <button @click="deleteHomework(homework)"
-                                    class="px-3 py-1.5 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
-                                    Eliminar
-                                </button>
-                            </template>
+                            <button v-if="!isReadOnly" @click.stop="editHomework(homework)"
+                                class="px-3 py-1.5 text-sm bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                                Editar
+                            </button>
+                            <button v-if="!isReadOnly" @click.stop="deleteHomework(homework)"
+                                class="px-3 py-1.5 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
+                                Eliminar
+                            </button>
+                            <!-- 'Ver Entregas' button is redundant if the whole card click works, but let's keep it for clarity or replace with chevron -->
+                            <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
                         </div>
                     </div>
                 </div>
