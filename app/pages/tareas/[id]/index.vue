@@ -16,7 +16,7 @@
                             {{ classAssignment?.aula?.grado_cardinal || '' }}{{ classAssignment?.aula?.seccion || '' }}
                         </p>
                     </div>
-                    <button @click="showCreateModal = true"
+                    <button v-if="!isReadOnly" @click="showCreateModal = true"
                         class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -84,14 +84,16 @@
                                 class="px-3 py-1.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
                                 Ver Entregas
                             </NuxtLink>
-                            <button @click="editHomework(homework)"
-                                class="px-3 py-1.5 text-sm bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
-                                Editar
-                            </button>
-                            <button @click="deleteHomework(homework)"
-                                class="px-3 py-1.5 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
-                                Eliminar
-                            </button>
+                            <template v-if="!isReadOnly">
+                                <button @click="editHomework(homework)"
+                                    class="px-3 py-1.5 text-sm bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+                                    Editar
+                                </button>
+                                <button @click="deleteHomework(homework)"
+                                    class="px-3 py-1.5 text-sm bg-red-600 text-white rounded hover:bg-red-700 transition-colors">
+                                    Eliminar
+                                </button>
+                            </template>
                         </div>
                     </div>
                 </div>
@@ -119,6 +121,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { useAuthStore } from '~/stores/auth'
 import { api } from '~/utils/api'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
@@ -129,11 +132,13 @@ dayjs.locale('es')
 
 definePageMeta({
     middleware: ['auth', 'role'],
-    roles: ['profesor', 'admin']
+    roles: ['profesor', 'admin', 'master']
 })
 
 const route = useRoute()
 const router = useRouter()
+const authStore = useAuthStore()
+
 interface ClassAssignment {
     id: number
     materia?: {
@@ -146,6 +151,7 @@ interface ClassAssignment {
         grado_cardinal?: string
         seccion?: string
     }
+    profesor_id?: number
 }
 
 interface Homework {
@@ -168,6 +174,26 @@ const homeworks = ref<Homework[]>([])
 const showCreateModal = ref(false)
 const editingHomework = ref<Homework | null>(null)
 const currentFilter = ref('all')
+
+const isReadOnly = computed(() => {
+    // Admin/Master can always view, but if they are not the assigned teacher, it's read-only
+    // Unless we assume admins can edit everything. 
+    // The requirement is "read access for admin and master to supervise".
+    // So let's enforcing read-only if not the assigned teacher, OR if we want admins to edit, we can relax this.
+    // The prompt says "darle acceso a las tareas a modo lectura a los admin y master".
+    // So explicit read-only (no edit).
+    
+    if (!classAssignment.value) return true // default safe
+    
+    const user = authStore.user
+    if (!user) return true
+
+    // If user is the assigned teacher, they can edit
+    if (user.personal_id === classAssignment.value.profesor_id) return false
+    
+    // Otherwise (Admin/Master supervising, or another teacher), read-only
+    return true
+})
 
 const filters = [
     { label: 'Todas', value: 'all' },

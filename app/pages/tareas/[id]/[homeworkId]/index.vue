@@ -131,7 +131,7 @@
                                         }" class="px-2 py-1 text-xs font-medium rounded-full">
                                             {{ getExtensionLabel(submission.extension_status) }}
                                         </span>
-                                        <button v-if="submission.extension_status === 'pending'"
+                                        <button v-if="submission.extension_status === 'pending' && !isReadOnly"
                                             @click="reviewExtension(submission)"
                                             class="ml-2 text-blue-600 hover:text-blue-800 text-xs font-medium underline">
                                             Revisar
@@ -147,7 +147,7 @@
                                         class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 mr-3">
                                         Ver
                                     </button>
-                                    <button v-if="submission.status === 'submitted'"
+                                    <button v-if="submission.status === 'submitted' && !isReadOnly"
                                         @click="gradeSubmission(submission)"
                                         class="text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-300">
                                         Calificar
@@ -182,16 +182,18 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
+import { useAuthStore } from '~/stores/auth'
 import { api } from '~/utils/api'
 import dayjs from 'dayjs'
 import SubmissionViewModal from '~/components/homework/SubmissionViewModal.vue'
 
 definePageMeta({
     middleware: ['auth', 'role'],
-    roles: ['profesor', 'admin']
+    roles: ['profesor', 'admin', 'master']
 })
 
 const route = useRoute()
+const authStore = useAuthStore()
 const classId = computed(() => route.params.id)
 const homeworkId = computed(() => route.params.homeworkId)
 
@@ -201,6 +203,7 @@ interface Homework {
     description?: string
     max_score: number
     end_date?: string
+    created_by?: number
     // add other fields as needed
 }
 
@@ -228,6 +231,7 @@ const submissions = ref<Submission[]>([])
 const selectedSubmission = ref(null)
 const gradingMode = ref(false)
 
+
 const pendingCount = computed(() => submissions.value.filter(s => s.status === 'submitted').length)
 const gradedCount = computed(() => submissions.value.filter(s => s.status === 'graded' || s.status === 'returned').length)
 const averageScore = computed(() => {
@@ -238,6 +242,13 @@ const averageScore = computed(() => {
 })
 
 const pendingExtensionsCount = computed(() => submissions.value.filter(s => s.extension_status === 'pending').length)
+
+const isReadOnly = computed(() => {
+    if (!homework.value) return true
+    // If user created the homework, they can grade.
+    // Otherwise read-only.
+    return homework.value.created_by !== authStore.user?.id
+})
 
 function filterPendingExtensions() {
     // Ideally we would add a filter state, but for now let's just sort them to top or filter the list
