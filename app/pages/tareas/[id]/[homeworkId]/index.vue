@@ -51,8 +51,8 @@
                 <!-- Stats -->
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-                        <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ submissions.length }}</p>
-                        <p class="text-sm text-gray-600 dark:text-gray-400">Total entregas</p>
+                        <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ totalSubmittedCount }} / {{ submissions.length }}</p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Total entregas / Asignados</p>
                     </div>
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
                         <p class="text-2xl font-bold text-orange-600 dark:text-orange-400">{{ pendingCount }}</p>
@@ -135,9 +135,9 @@
                                     </div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <span :class="getStatusBadgeClass(submission.status)"
+                                    <span :class="getStatusBadgeClass(submission.status || 'pending')"
                                         class="px-2 py-1 text-xs font-medium rounded-full">
-                                        {{ getStatusLabel(submission.status) }}
+                                        {{ getStatusLabel(submission.status || 'pending') }}
                                     </span>
                                     <span v-if="submission.is_late"
                                         class="ml-2 px-2 py-1 text-xs font-medium bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-full">
@@ -154,7 +154,7 @@
                                             'bg-green-100 text-green-800': submission.extension_status === 'approved',
                                             'bg-red-100 text-red-800': submission.extension_status === 'rejected'
                                         }" class="px-2 py-1 text-xs font-medium rounded-full">
-                                            {{ getExtensionLabel(submission.extension_status) }}
+                                            {{ getExtensionLabel(submission.extension_status || 'none') }}
                                         </span>
                                         <button v-if="submission.extension_status === 'pending' && !isReadOnly"
                                             @click="reviewExtension(submission)"
@@ -168,15 +168,18 @@
                                     {{ submission.score !== null ? `${submission.score}/${homework?.max_score}` : '-' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                    <button @click="viewSubmission(submission)"
+                                    <button v-if="submission.id" @click="viewSubmission(submission)"
                                         class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300 mr-3">
                                         Ver
                                     </button>
-                                    <button v-if="submission.status === 'submitted' && !isReadOnly"
+                                    <button v-if="submission.status === 'submitted' && !isReadOnly && submission.id"
                                         @click="gradeSubmission(submission)"
                                         class="text-green-600 dark:text-green-400 hover:text-green-900 dark:hover:text-green-300">
                                         Calificar
                                     </button>
+                                    <span v-if="!submission.id" class="text-gray-400 text-xs italic">
+                                        Sin entrega
+                                    </span>
                                 </td>
                             </tr>
                         </tbody>
@@ -259,6 +262,7 @@ const selectedSubmission = ref(null)
 const gradingMode = ref(false)
 
 
+const totalSubmittedCount = computed(() => submissions.value.filter(s => s.id).length)
 const pendingCount = computed(() => submissions.value.filter(s => s.status === 'submitted').length)
 const gradedCount = computed(() => submissions.value.filter(s => s.status === 'graded' || s.status === 'returned').length)
 const averageScore = computed(() => {
@@ -337,7 +341,8 @@ function getStatusLabel(status: string) {
         draft: 'Borrador',
         submitted: 'Enviada',
         graded: 'Calificada',
-        returned: 'Devuelta'
+        returned: 'Devuelta',
+        pending: 'No entregada'
     }
     return labels[status] || status
 }
@@ -357,7 +362,8 @@ function getStatusBadgeClass(status: string) {
         draft: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300',
         submitted: 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200',
         graded: 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200',
-        returned: 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200'
+        returned: 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200',
+        pending: 'bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400'
     }
     return classes[status] || ''
 }
