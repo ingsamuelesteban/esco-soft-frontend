@@ -23,6 +23,31 @@
                     </p>
                 </div>
 
+                <!-- Homework Details Card -->
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8 border-l-4 border-blue-500">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Detalles de la Tarea</h2>
+                            <p v-if="homework?.description" class="text-gray-700 dark:text-gray-300 mb-4">
+                                {{ homework.description }}
+                            </p>
+                            <div v-if="homework?.instructions" class="prose dark:prose-invert max-w-none mb-4 text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
+                                <h3 class="text-sm font-bold uppercase tracking-wider mb-2 text-gray-500">Instrucciones:</h3>
+                                <div class="whitespace-pre-wrap">{{ homework.instructions }}</div>
+                            </div>
+                        </div>
+                        <div v-if="homework?.attachment_path" class="ml-4">
+                            <button @click="downloadAttachment" 
+                               class="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                Descargar Adjunto
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Stats -->
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
@@ -201,6 +226,8 @@ interface Homework {
     id: number
     title: string
     description?: string
+    instructions?: string
+    attachment_path?: string
     max_score: number
     end_date?: string
     created_by?: number
@@ -386,5 +413,25 @@ function closeModal() {
 async function handleGraded() {
     closeModal()
     await fetchSubmissions()
+}
+
+async function downloadAttachment() {
+    if (!homework.value?.id) return
+    
+    try {
+        const response = await api.getBlob(`/api/homeworks/${homework.value.id}/download`)
+        const url = window.URL.createObjectURL(response)
+        const link = document.createElement('a')
+        link.href = url
+        // Try to guess filename or generic
+        const filename = homework.value.attachment_path?.split('/').pop() || 'archivo_adjunto'
+        link.setAttribute('download', filename)
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+    } catch (error) {
+        console.error('Error downloading attachment:', error)
+        Swal.fire('Error', 'No se pudo descargar el archivo adjunto', 'error')
+    }
 }
 </script>
