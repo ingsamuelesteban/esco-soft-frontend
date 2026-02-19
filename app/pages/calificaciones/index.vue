@@ -1325,14 +1325,9 @@ const getNotaMinima = (raNumero) => {
 // Función para mostrar la calificación en la casilla
 const getDisplayCalificacion = (estudianteId, raNumero, oportunidad) => {
   const nota = getNotaOportunidad(estudianteId, raNumero, oportunidad)
-  const notaMinima = getNotaMinima(raNumero)
-
-  if (nota >= notaMinima || oportunidad === 4) {
-    const val = parseFloat(nota)
-    return moduloData.value?.calculation_mode === 'fct' ? val.toFixed(1) : val
-  } else {
-    return 'NC' // NC (No Completó) si no aprobó
-  }
+  
+  const val = parseFloat(nota)
+  return moduloData.value?.calculation_mode === 'fct' ? val.toFixed(1) : val
 }
 
 // Función para el título del tooltip de cada casilla
