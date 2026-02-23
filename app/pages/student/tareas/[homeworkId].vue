@@ -202,7 +202,7 @@
                             <p v-if="submission?.file_path && !form.file"
                                 class="text-sm text-gray-500 dark:text-gray-400 mt-2 p-2 bg-gray-50 rounded border border-gray-200">
                                 Archivo enviado anteriormente: <strong>{{ submission.file_path.split('/').pop()
-                                    }}</strong>
+                                }}</strong>
                             </p>
                         </div>
 
@@ -268,7 +268,7 @@ import DropZone from '~/components/ui/DropZone.vue'
 
 definePageMeta({
     layout: 'student',
-    middleware: ['auth', 'role'],
+    middleware: ['auth', 'role', 'student-active'],
     roles: ['estudiante']
 })
 

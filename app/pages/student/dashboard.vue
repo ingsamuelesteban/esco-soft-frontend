@@ -11,8 +11,9 @@
         </p>
       </div>
       <div class="hidden sm:block">
-        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-          Estudiante Activo
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
+          :class="dashboardData?.is_preadmitted ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'">
+          {{ dashboardData?.is_preadmitted ? 'Estudiante-Preadmitido' : 'Estudiante Activo' }}
         </span>
       </div>
     </div>
@@ -25,6 +26,93 @@
           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
         </path>
       </svg>
+    </div>
+
+    <div v-else-if="dashboardData?.is_preadmitted" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <!-- Actividades de Admisión -->
+      <div class="space-y-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+          <CalendarIcon class="w-5 h-5 mr-2 text-amber-600 dark:text-amber-400" />
+          Mi Calendario de Admisión
+        </h3>
+
+        <div v-if="dashboardData.admission_activities?.length === 0" class="glass-card p-6 text-center text-gray-500">
+          No hay actividades programadas para tu número de folder aún.
+        </div>
+
+        <div v-else class="space-y-4">
+          <div v-for="act in dashboardData.admission_activities" :key="act.id"
+            class="glass-card p-5 border-l-4 border-l-amber-500 hover:shadow-md transition-all">
+            <div class="flex items-center justify-between">
+              <div>
+                <h4 class="font-bold text-gray-900 dark:text-white">{{ act.actividad }}</h4>
+                <div class="flex items-center mt-2 text-sm text-gray-600 dark:text-gray-400">
+                  <span class="flex items-center mr-4">
+                    <CalendarIcon class="w-4 h-4 mr-1" />
+                    {{ formatDate(act.fecha) }}
+                  </span>
+                  <span v-if="act.hora" class="flex items-center">
+                    <ClockIcon class="w-4 h-4 mr-1" />
+                    {{ act.hora }}
+                  </span>
+                </div>
+              </div>
+              <div class="bg-amber-50 dark:bg-amber-900/20 p-2 rounded-lg">
+                <CalendarIcon class="w-6 h-6 text-amber-600" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Info Card -->
+        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-5">
+          <div class="flex">
+            <InformationCircleIcon class="h-5 w-5 text-blue-400 mt-0.5 mr-3" />
+            <div>
+              <h4 class="text-sm font-bold text-blue-900 dark:text-blue-200 uppercase tracking-wide">Información de
+                Inscripción</h4>
+              <p class="mt-2 text-sm text-blue-700 dark:text-blue-300">
+                Tu número de folder asignado es el <span class="font-black">#{{ dashboardData.student.no_folder
+                }}</span>.
+                Las actividades mostradas corresponden al proceso de admisión del año <span
+                  class="font-bold text-blue-900 dark:text-blue-100">{{ dashboardData.academic_year }}</span>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Documentos Pendientes -->
+      <div class="space-y-6">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+          <DocumentTextIcon class="w-5 h-5 mr-2 text-red-600 dark:text-red-400" />
+          Documentos Pendientes
+        </h3>
+
+        <div class="glass-card p-6 bg-white dark:bg-gray-800">
+          <div v-if="dashboardData.pending_documents?.length === 0" class="text-center py-4">
+            <div
+              class="inline-flex items-center justify-center p-3 bg-green-100 dark:bg-green-900/30 rounded-full mb-3">
+              <CheckCircleIcon class="w-8 h-8 text-green-600" />
+            </div>
+            <p class="text-gray-900 dark:text-white font-bold">¡Expediente Completo!</p>
+            <p class="text-sm text-gray-500 mt-1">Has entregado todos los documentos requeridos.</p>
+          </div>
+          <div v-else>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+              Por favor entrega los siguientes documentos en el departamento de admisiones para completar tu
+              inscripción:
+            </p>
+            <ul class="space-y-3">
+              <li v-for="doc in dashboardData.pending_documents" :key="doc"
+                class="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                <XCircleIcon class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" />
+                {{ doc }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div v-else class="grid grid-cols-1 lg:grid-cols-5 gap-6">
@@ -242,6 +330,14 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { api } from '../../utils/api'
+import {
+  CalendarIcon,
+  ClockIcon,
+  InformationCircleIcon,
+  DocumentTextIcon,
+  XCircleIcon,
+  CheckCircleIcon
+} from '@heroicons/vue/24/outline'
 
 definePageMeta({
   layout: 'student',
@@ -285,6 +381,14 @@ const getGradeColor = (score: number | null) => {
   if (score === null) return 'text-gray-300 dark:text-gray-600'
   if (score < 70) return 'text-red-600 dark:text-red-400'
   return 'text-gray-900 dark:text-white'
+}
+
+const formatDate = (date: string) => {
+  if (!date) return ''
+  return new Date(date).toLocaleDateString('es-ES', {
+    day: 'numeric',
+    month: 'long'
+  })
 }
 
 const formatTime = (time: string) => {

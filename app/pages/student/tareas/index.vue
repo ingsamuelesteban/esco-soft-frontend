@@ -121,7 +121,7 @@ dayjs.locale('es')
 
 definePageMeta({
     layout: 'student',
-    middleware: ['auth', 'role'],
+    middleware: ['auth', 'role', 'student-active'],
     roles: ['estudiante']
 })
 

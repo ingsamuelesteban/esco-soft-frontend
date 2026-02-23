@@ -10,4 +10,5 @@ export interface User {
     profile_photo_url?: string
     initials?: string
     digital_signature_path?: string
+    is_preadmitted?: boolean
 }

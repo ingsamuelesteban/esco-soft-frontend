@@ -101,7 +101,7 @@
             Dashboard
           </NuxtLink>
 
-          <NuxtLink to="/student/tareas"
+          <NuxtLink v-if="!user?.is_preadmitted" to="/student/tareas"
             class="inline-flex items-center px-1 pt-4 pb-3 border-b-2 text-sm font-medium transition-colors whitespace-nowrap"
             :class="isActiveRoute('/student/tareas')
               ? 'border-blue-500 text-blue-600 dark:text-blue-400'

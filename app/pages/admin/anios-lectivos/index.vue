@@ -211,6 +211,7 @@ import { ref, computed, onMounted, reactive } from 'vue'
 import { useAniosLectivosStore, type AnioLectivo } from '../../../stores/anios_lectivos'
 import { useAcademicPeriodsStore } from '../../../stores/academic_periods'
 import AcademicPeriodsConfig from '../../../components/anios-lectivos/AcademicPeriodsConfig.vue'
+import Swal from 'sweetalert2'
 
 const store = useAniosLectivosStore()
 const periodsStore = useAcademicPeriodsStore()
@@ -327,10 +328,14 @@ async function saveClonacion() {
         await store.clone(anioParaClonar.value.id, {
             nombre: clonarForm.nombre,
             descripcion: clonarForm.descripcion,
-            fecha_inicio: clonarForm.fecha_inicio || undefined,
             fecha_fin: clonarForm.fecha_fin || undefined
         })
-        alert('Año lectivo clonado exitosamente. Recuerda activarlo cuando estés listo.')
+        Swal.fire({
+            title: '¡Clonado!',
+            text: 'Año lectivo clonado exitosamente. Recuerda activarlo cuando estés listo.',
+            icon: 'success',
+            confirmButtonColor: '#7c3aed' // purple-600
+        })
         closeClonarModal()
     } catch (e: any) {
         clonarError.value = e.response?.data?.message || 'Error al clonar año lectivo'
@@ -352,11 +357,23 @@ async function save() {
 }
 
 async function confirmDelete(item: AnioLectivo) {
-    if (confirm(`¿Estás seguro de eliminar el año lectivo "${item.nombre}"?`)) {
+    const result = await Swal.fire({
+        title: '¿Estás seguro?',
+        text: `Vas a eliminar el año lectivo "${item.nombre}". Esta acción no se puede deshacer.`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, eliminar',
+        cancelButtonText: 'Cancelar'
+    })
+
+    if (result.isConfirmed) {
         try {
             await store.delete(item.id)
+            Swal.fire('Eliminado', 'El año lectivo ha sido eliminado.', 'success')
         } catch (e: any) {
-            alert(e.response?.data?.message || 'Error al eliminar')
+            Swal.fire('Error', e.response?.data?.message || 'Error al eliminar', 'error')
         }
     }
 }
@@ -372,12 +389,19 @@ async function toggleActive(item: AnioLectivo) {
     try {
         await store.update(item.id, { activo: true })
         await store.fetchAll()
+        Swal.fire({
+            title: 'Año Activo',
+            text: `Se ha activado el año ${item.nombre} para toda la institución.`,
+            icon: 'success',
+            timer: 2000,
+            showConfirmButton: false
+        })
     } catch (e: any) {
         store.items.forEach(i => {
             const prev = previousState.find(p => p.id === i.id)
             if (prev) i.activo = prev.activo
         })
-        alert(e.response?.data?.message || 'Error al actualizar estado')
+        Swal.fire('Error', e.response?.data?.message || 'Error al actualizar estado', 'error')
     }
 }
 </script>
