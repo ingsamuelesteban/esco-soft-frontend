@@ -213,7 +213,9 @@ const fetchAniosLectivos = async () => {
         aniosLectivos.value = data
         if (data.length > 0) {
             const activeAnio = data.find(a => a.activo)
-            const nextAnio = data.find(a => !a.activo && new Date(a.fecha_inicio) > new Date())
+            // Seleccionar el "siguiente" (el primero que no sea el activo y tenga nombre mayor)
+            // Si no hay activo, simplemente el primero de la lista (que viene desc por nombre)
+            const nextAnio = data.find(a => !a.activo && (!activeAnio || a.nombre > activeAnio.nombre))
 
             if (nextAnio) {
                 selectedAnioLectivoId.value = nextAnio.id
