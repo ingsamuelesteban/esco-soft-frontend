@@ -101,7 +101,8 @@ function formatDate(date: string) {
 
 async function downloadFile(announcementId: number, attachmentPath: string) {
   try {
-    const blob = await api.getBlob(`/api/announcements/${announcementId}/download`)
+    const res = await api.getBlob(`/api/announcements/${announcementId}/download`)
+    const blob = new Blob([res])
     const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url

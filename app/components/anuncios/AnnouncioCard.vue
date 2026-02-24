@@ -74,7 +74,8 @@ defineEmits<{ delete: [id: number] }>()
 
 async function downloadFile() {
   try {
-    const blob = await api.getBlob(`/api/announcements/${props.announcement.id}/download`)
+    const res = await api.getBlob(`/api/announcements/${props.announcement.id}/download`)
+    const blob = new Blob([res])
     const url = window.URL.createObjectURL(blob)
     const link = document.createElement('a')
     link.href = url
