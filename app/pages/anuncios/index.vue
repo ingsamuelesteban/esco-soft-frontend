@@ -7,7 +7,7 @@
           <h1 class="text-2xl font-bold text-gray-900">Anuncios</h1>
           <p class="text-sm text-gray-600 mt-1">Publicaciones institucionales para el personal y estudiantes</p>
         </div>
-        <button @click="openModal"
+        <button v-if="authStore.user?.role === 'admin' || authStore.user?.role === 'master'" @click="openModal"
           class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -120,7 +120,7 @@
               Cancelar
             </button>
             <button type="submit" :disabled="saving"
-              class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors flex items-center gap-2">
+              class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2">
               <svg v-if="saving" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
@@ -137,7 +137,10 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { api } from '~/utils/api'
+import { useAuthStore } from '~/stores/auth'
 import AnnouncioCard from '~/components/anuncios/AnnouncioCard.vue'
+
+const authStore = useAuthStore()
 
 definePageMeta({
   middleware: ['auth', 'role'],
@@ -193,6 +196,7 @@ async function fetchAnnouncements() {
 }
 
 async function submitAnnouncement() {
+  if (saving.value) return
   saving.value = true
   formError.value = ''
   try {
