@@ -5,7 +5,9 @@
                 <!-- Header -->
                 <div class="flex items-center justify-between mb-6">
                     <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
-                        {{ gradingMode ? 'Calificar Entrega' : 'Ver Entrega' }}
+                        <span v-if="gradingMode && isRegrade">Editar Calificación</span>
+                        <span v-else-if="gradingMode">Calificar Entrega</span>
+                        <span v-else>Ver Entrega</span>
                     </h2>
                     <button @click="$emit('close')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -66,6 +68,15 @@
                 <!-- Grading Form (if in grading mode) -->
                 <form v-if="gradingMode" @submit.prevent="handleGrade"
                     class="space-y-4 pt-6 border-t border-gray-200 dark:border-gray-700">
+
+                    <!-- Aviso de re-calificación -->
+                    <div v-if="isRegrade" class="flex items-center gap-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg px-4 py-2 text-sm text-amber-800 dark:text-amber-200">
+                        <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01M12 3a9 9 0 110 18A9 9 0 0112 3z" />
+                        </svg>
+                        Calificación anterior: <strong class="ml-1">{{ submission.score }} / {{ homework.max_score }}</strong>
+                    </div>
+
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
@@ -93,7 +104,7 @@
                         </button>
                         <button type="submit" :disabled="saving"
                             class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50">
-                            {{ saving ? 'Guardando...' : 'Guardar Calificación' }}
+                            {{ saving ? 'Guardando...' : (isRegrade ? 'Actualizar Calificación' : 'Guardar Calificación') }}
                         </button>
                     </div>
                 </form>
@@ -133,9 +144,12 @@ const emit = defineEmits(['close', 'graded'])
 
 const saving = ref(false)
 
+// determinar si es una re-calificación
+const isRegrade = computed(() => props.submission.score !== null && props.submission.score !== undefined)
+
 const form = reactive({
-    score: 0,
-    teacher_feedback: ''
+    score: 0 as number,
+    teacher_feedback: '' as string
 })
 
 onMounted(() => {
