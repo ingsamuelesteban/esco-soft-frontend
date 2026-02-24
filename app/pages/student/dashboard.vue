@@ -18,6 +18,9 @@
       </div>
     </div>
 
+    <!-- Announcements Banner -->
+    <AnnouncementsBanner />
+
     <div v-if="loading" class="flex justify-center py-12">
       <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none"
         viewBox="0 0 24 24">
@@ -324,12 +327,14 @@
       </div>
 
     </div>
+
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { api } from '../../utils/api'
+import AnnouncementsBanner from '~/components/anuncios/AnnouncementsBanner.vue'
 import {
   CalendarIcon,
   ClockIcon,
@@ -399,8 +404,6 @@ onMounted(async () => {
   try {
     const response = await api.get('/api/student/dashboard')
     dashboardData.value = response.data
-    console.log('Dashboard Data Received:', dashboardData.value) // DEBUG
-    console.log('Grades:', dashboardData.value.grades) // DEBUG
   } catch (e) {
     console.error("Dashboard error:", e)
   } finally {

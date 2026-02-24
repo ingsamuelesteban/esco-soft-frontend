@@ -1,5 +1,8 @@
 <template>
   <div class="space-y-6">
+    <!-- Announcements Banner (top priority) -->
+    <AnnouncementsBanner />
+
     <!-- Teacher Metrics -->
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
       <StatCard title="Mis Clases" :value="metrics?.total_classes || 0" footer="Asignaciones activas"
@@ -103,6 +106,7 @@ import {
   PencilSquareIcon
 } from '@heroicons/vue/24/outline'
 import StatCard from './StatCard.vue'
+import AnnouncementsBanner from '~/components/anuncios/AnnouncementsBanner.vue'
 
 const props = defineProps<{
   data: any
@@ -113,8 +117,6 @@ const schedule = computed(() => props.data?.schedule_today)
 const nextClass = computed(() => props.data?.next_class)
 
 const isClassActive = (cls: any) => {
-  // Simple check if current time is within class range could be done here if needed
-  // For now just green icon
   return true
 }
 </script>

@@ -1,5 +1,8 @@
 <template>
   <div class="space-y-6">
+    <!-- Announcements Banner (top priority) -->
+    <AnnouncementsBanner />
+
     <!-- Psychology Metrics -->
     <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
       <StatCard title="Total Casos" :value="summary?.total_cases || 0" footer="Histórico" :icon="FolderIcon" />
@@ -75,6 +78,7 @@ import {
 } from '@heroicons/vue/24/outline'
 import StatCard from './StatCard.vue'
 import SimpleBarChart from './SimpleBarChart.vue'
+import AnnouncementsBanner from '~/components/anuncios/AnnouncementsBanner.vue'
 
 const props = defineProps<{
   data: any
