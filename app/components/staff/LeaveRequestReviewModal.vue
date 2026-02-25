@@ -52,7 +52,7 @@
                             <span
                                 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 block">Evidencia
                                 del Empleado</span>
-                            <button @click="printFile(request.attachment_path)"
+                            <button @click="printFile('/api/staff/leave-requests/' + request.id + '/download?type=request')"
                                 class="inline-flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm hover:bg-blue-100 transition-colors w-fit">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -66,7 +66,7 @@
                             <span
                                 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 block">Adjunto
                                 de Aprobación</span>
-                            <button @click="printFile(request.approval_attachment_path)"
+                            <button @click="printFile('/api/staff/leave-requests/' + request.id + '/download?type=approval')"
                                 class="inline-flex items-center gap-2 px-3 py-2 bg-green-50 text-green-700 rounded-lg text-sm hover:bg-green-100 transition-colors w-fit">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

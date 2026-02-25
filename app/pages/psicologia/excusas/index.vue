@@ -152,7 +152,7 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <button v-if="excuse.file_path" @click="printFile(excuse.file_path)"
+                                <button v-if="excuse.file_path" @click="printFile('/api/psychology/attendance-excuses/' + excuse.id + '/download')"
                                     class="text-primary-600 hover:text-primary-900 flex items-center text-sm font-medium focus:outline-none">
                                     <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

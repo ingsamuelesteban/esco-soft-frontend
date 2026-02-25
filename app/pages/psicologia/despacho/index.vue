@@ -210,7 +210,7 @@
                                 {{ item.reporter?.name || 'Sistema' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
-                                <button v-if="item.evidence_path" @click.stop="printFile(item.evidence_path)" 
+                                <button v-if="item.evidence_path" @click.stop="printFile('/api/psychology/dismissals/' + item.id + '/download')" 
                                     class="text-gray-400 hover:text-indigo-600 transition-colors" title="Ver Evidencia">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
@@ -353,7 +353,7 @@
                                         <div v-if="selectedDispatch?.evidence_path">
                                             <dt class="text-sm font-medium text-gray-500">Evidencia</dt>
                                             <dd class="mt-1">
-                                                <button @click="printFile(selectedDispatch.evidence_path)"
+                                                <button @click="printFile('/api/psychology/dismissals/' + selectedDispatch.id + '/download')"
                                                     class="inline-flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-800">
                                                     <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />

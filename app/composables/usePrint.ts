@@ -37,7 +37,8 @@ export function usePrint() {
             const isPdf = extension === 'pdf'
 
             // Fetch blob with auth headers
-            const res = await api.getBlob(`/storage/${path}`)
+            const url = path.startsWith('/api/') ? path : `/storage/${path}`;
+            const res = await api.getBlob(url);
 
             // Create object URL
             const blob = new Blob([res], {

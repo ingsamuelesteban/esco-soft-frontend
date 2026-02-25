@@ -64,7 +64,7 @@
 
                     <div v-if="request.attachment_path" class="mt-6">
                         <p class="text-sm text-gray-500 mb-2">Documento Adjunto (Empleado)</p>
-                        <button v-if="request.attachment_path" @click="printFile(request.attachment_path)"
+                        <button v-if="request.attachment_path" @click="printFile('/api/staff/leave-requests/' + request.id + '/download?type=request')"
                             class="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -77,7 +77,7 @@
                     <div v-if="request.approval_attachment_path" class="mt-6">
                         <p class="text-sm text-gray-500 mb-2">Adjunto de Aprobación</p>
                         <button v-if="request.approval_attachment_path"
-                            @click="printFile(request.approval_attachment_path)"
+                            @click="printFile('/api/staff/leave-requests/' + request.id + '/download?type=approval')"
                             class="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
