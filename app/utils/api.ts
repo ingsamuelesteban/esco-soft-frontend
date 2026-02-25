@@ -94,8 +94,7 @@ export async function apiCall<T = any>(url: string, options: Parameters<typeof $
       // Si esperamos un blob, no intentamos parsear errores como JSON structurado del backend
       if (options.responseType === 'blob') {
         if (!response.ok) {
-          // Si falla (ej 404), igual lanzamos error
-          throw new Error('Error descargando archivo')
+          throw new Error(`Error descargando archivo (HTTP ${response.status})`)
         }
         return
       }
@@ -149,7 +148,7 @@ export const api = {
     apiCall<T>(url, { ...options, method: 'GET' }),
 
   post: <T = any>(url: string, body?: any, options?: Parameters<typeof $fetch>[1]) =>
-    apiCall<T>(url, { ...options, method: 'POST', body }),
+    apiCall<T>(url, { method: 'POST', body, ...options }),
 
   put: <T = any>(url: string, body?: any, options?: Parameters<typeof $fetch>[1]) =>
     apiCall<T>(url, { ...options, method: 'PUT', body }),

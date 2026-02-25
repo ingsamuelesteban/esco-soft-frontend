@@ -1,6 +1,7 @@
 <template>
   <!-- Nothing if loading and no announcements yet -->
-  <div v-if="loadingAnnouncements && announcements.length === 0" class="animate-pulse h-24 rounded-xl bg-gradient-to-r from-blue-100 to-indigo-100" />
+  <div v-if="loadingAnnouncements && announcements.length === 0"
+    class="animate-pulse h-24 rounded-xl bg-gradient-to-r from-blue-100 to-indigo-100" />
 
   <!-- Nothing if no announcements and not loading -->
   <div v-else-if="!loadingAnnouncements && announcements.length === 0" />
@@ -29,8 +30,8 @@
       <!-- Refresh indicator -->
       <span v-if="loadingAnnouncements" class="text-xs text-white/60 flex items-center gap-1">
         <svg class="animate-spin h-3 w-3" fill="none" viewBox="0 0 24 24">
-          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
         </svg>
         Actualizando...
       </span>
@@ -38,11 +39,8 @@
 
     <!-- Cards scroll row -->
     <div class="relative flex gap-3 overflow-x-auto px-5 pb-4 pt-1 scrollbar-hide snap-x snap-mandatory">
-      <div
-        v-for="a in announcements"
-        :key="a.id"
-        class="snap-start flex-shrink-0 w-72 sm:w-80 bg-white/15 backdrop-blur-sm border border-white/20 rounded-xl p-4 hover:bg-white/20 transition-all cursor-default"
-      >
+      <div v-for="a in announcements" :key="a.id"
+        class="snap-start flex-shrink-0 w-72 sm:w-80 bg-white/15 backdrop-blur-sm border border-white/20 rounded-xl p-4 hover:bg-white/20 transition-all cursor-default">
         <!-- Card top: title + badge -->
         <div class="flex items-start justify-between gap-2 mb-2">
           <h4 class="text-sm font-bold text-white leading-snug line-clamp-2">{{ a.title }}</h4>
@@ -102,8 +100,7 @@ function formatDate(date: string) {
 async function downloadFile(announcementId: number, attachmentPath: string) {
   try {
     const res = await api.getBlob(`/api/announcements/${announcementId}/download`)
-    const blob = new Blob([res])
-    const url = window.URL.createObjectURL(blob)
+    const url = window.URL.createObjectURL(res)
     const link = document.createElement('a')
     link.href = url
     link.setAttribute('download', attachmentPath.split('/').pop() || 'adjunto')
@@ -128,6 +125,12 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.scrollbar-hide::-webkit-scrollbar { display: none; }
-.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
 </style>

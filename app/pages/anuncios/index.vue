@@ -53,13 +53,8 @@
 
       <!-- Grid of announcements -->
       <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        <AnnouncioCard
-          v-for="a in announcements"
-          :key="a.id"
-          :announcement="a"
-          :can-delete="true"
-          @delete="confirmDelete"
-        />
+        <AnnouncioCard v-for="a in announcements" :key="a.id" :announcement="a" :can-delete="true"
+          @delete="confirmDelete" />
       </div>
     </div>
 
@@ -84,7 +79,8 @@
           <!-- Title -->
           <div>
             <label class="block text-sm font-medium text-gray-700 mb-1">Título *</label>
-            <input v-model="form.title" type="text" required maxlength="255" placeholder="Ej: Reunión de docentes el viernes"
+            <input v-model="form.title" type="text" required maxlength="255"
+              placeholder="Ej: Reunión de docentes el viernes"
               class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
           </div>
 
@@ -104,7 +100,8 @@
           </div>
 
           <!-- Visible para estudiantes -->
-          <label class="flex items-center gap-3 cursor-pointer select-none bg-gray-50 rounded-lg p-3 border border-gray-200">
+          <label
+            class="flex items-center gap-3 cursor-pointer select-none bg-gray-50 rounded-lg p-3 border border-gray-200">
             <input v-model="form.visible_para_estudiantes" type="checkbox"
               class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
             <div>
@@ -138,6 +135,7 @@
 import { ref, onMounted } from 'vue'
 import { api } from '~/utils/api'
 import { useAuthStore } from '~/stores/auth'
+import Swal from 'sweetalert2'
 import AnnouncioCard from '~/components/anuncios/AnnouncioCard.vue'
 
 const authStore = useAuthStore()
@@ -218,7 +216,19 @@ async function submitAnnouncement() {
 }
 
 async function confirmDelete(id: number) {
-  if (!window.confirm('¿Eliminar este anuncio? Esta acción no se puede deshacer.')) return
+  const result = await Swal.fire({
+    title: '¿Eliminar este anuncio?',
+    text: 'Esta acción no se puede deshacer.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  })
+
+  if (!result.isConfirmed) return
+
   try {
     await api.delete(`/api/announcements/${id}`)
     announcements.value = announcements.value.filter(a => a.id !== id)
@@ -232,6 +242,14 @@ onMounted(fetchAnnouncements)
 </script>
 
 <style scoped>
-.fade-enter-active, .fade-leave-active { transition: opacity .3s, transform .3s; }
-.fade-enter-from, .fade-leave-to { opacity: 0; transform: translateY(0.5rem); }
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity .3s, transform .3s;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+  transform: translateY(0.5rem);
+}
 </style>
