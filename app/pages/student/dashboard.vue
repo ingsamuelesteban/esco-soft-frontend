@@ -104,7 +104,11 @@
           <div v-else>
             <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
               Por favor entrega los siguientes documentos en el departamento de admisiones para completar tu
-              inscripción:
+              inscripción.
+              <br><br>
+              <span class="font-medium text-blue-700 dark:text-blue-400">
+                Luego de completar el proceso de admisión, se le indicará la fecha en que debe traer estos documentos:
+              </span>
             </p>
             <ul class="space-y-3">
               <li v-for="doc in dashboardData.pending_documents" :key="doc"
