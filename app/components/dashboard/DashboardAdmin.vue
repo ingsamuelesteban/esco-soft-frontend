@@ -28,6 +28,9 @@
       />
     </div>
 
+    <!-- Permission Requests Banner -->
+    <PermissionRequestsBanner />
+
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Attendance Chart -->
       <SimpleBarChart 
@@ -83,6 +86,7 @@ import {
 } from '@heroicons/vue/24/outline'
 import StatCard from './StatCard.vue'
 import SimpleBarChart from './SimpleBarChart.vue'
+import PermissionRequestsBanner from './PermissionRequestsBanner.vue'
 
 const props = defineProps<{
   data: any
