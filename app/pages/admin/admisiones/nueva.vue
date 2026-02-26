@@ -116,13 +116,23 @@
           <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
             <div class="sm:col-span-3">
               <label class="block text-sm font-medium leading-6 text-gray-900">Provincia</label>
-              <input type="text" v-model="form.acta.provincia"
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+              <select v-model="form.acta.provincia" @change="fetchMunicipiosActa" required
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
+                <option value="" disabled>Seleccione provincia</option>
+                <option v-for="prov in provinciasList" :key="prov.id" :value="prov.nombre">
+                  {{ prov.nombre }}
+                </option>
+              </select>
             </div>
             <div class="sm:col-span-3">
               <label class="block text-sm font-medium leading-6 text-gray-900">Municipio</label>
-              <input type="text" v-model="form.acta.municipio"
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+              <select v-model="form.acta.municipio" required :disabled="!form.acta.provincia"
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
+                <option value="" disabled>Seleccione municipio</option>
+                <option v-for="mun in municipiosActaList" :key="mun.nombre" :value="mun.nombre">
+                  {{ mun.nombre }}
+                </option>
+              </select>
             </div>
             <div class="sm:col-span-2">
               <label class="block text-sm font-medium leading-6 text-gray-900">Oficialia</label>
@@ -169,14 +179,24 @@
                 class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
             </div>
             <div class="sm:col-span-2">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Municipio</label>
-              <input type="text" v-model="form.direccion.municipio" required
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+              <label class="block text-sm font-medium leading-6 text-gray-900">Provincia</label>
+              <select v-model="form.direccion.provincia" @change="fetchMunicipiosDireccion" required
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
+                <option value="" disabled>Seleccione provincia</option>
+                <option v-for="prov in provinciasList" :key="prov.id" :value="prov.nombre">
+                  {{ prov.nombre }}
+                </option>
+              </select>
             </div>
             <div class="sm:col-span-2">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Provincia</label>
-              <input type="text" v-model="form.direccion.provincia" required
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+              <label class="block text-sm font-medium leading-6 text-gray-900">Municipio</label>
+              <select v-model="form.direccion.municipio" required :disabled="!form.direccion.provincia"
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
+                <option value="" disabled>Seleccione municipio</option>
+                <option v-for="mun in municipiosDireccionList" :key="mun.nombre" :value="mun.nombre">
+                  {{ mun.nombre }}
+                </option>
+              </select>
             </div>
           </div>
         </div>
@@ -400,12 +420,14 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '~/utils/api'
 import { useAuthStore } from '~/stores/auth'
 import Swal from 'sweetalert2'
 import { usePrint } from '~/composables/usePrint'
+import provinciasData from '~/utils/provincias.json'
+import municipiosData from '~/utils/municipios.json'
 
 definePageMeta({
   middleware: ['auth']
@@ -421,6 +443,11 @@ const isDownloadingPdf = ref(false)
 
 // Stores and Composables
 const { printPdfBlob } = usePrint()
+
+// APIs list
+const provinciasList = ref(provinciasData)
+const municipiosActaList = ref([])
+const municipiosDireccionList = ref([])
 
 // Initial state
 const today = new Date().toISOString().split('T')[0]
@@ -512,6 +539,61 @@ const removeFamiliar = (index) => {
   }
 }
 
+const fetchProvincias = () => {
+  // Ya inicializado estáticamente en la declaración.
+  // applyTenantDefaults() ya se llama en el watch de authStore.tenant
+}
+
+const applyTenantDefaults = () => {
+  if (authStore.tenant?.provincia) {
+    if (!form.direccion.provincia) {
+      form.direccion.provincia = authStore.tenant.provincia
+      fetchMunicipiosDireccion()
+      if (authStore.tenant?.municipio) {
+        form.direccion.municipio = authStore.tenant.municipio
+      }
+    }
+
+    if (!form.acta.provincia) {
+      form.acta.provincia = authStore.tenant.provincia
+      fetchMunicipiosActa()
+      if (authStore.tenant?.municipio) {
+        form.acta.municipio = authStore.tenant.municipio
+      }
+    }
+  }
+}
+
+const fetchMunicipiosActa = () => {
+  if (!form.acta.provincia) {
+    municipiosActaList.value = []
+    return
+  }
+  const prov = provinciasList.value.find(p => p.nombre === form.acta.provincia)
+  if (prov) {
+    municipiosActaList.value = municipiosData.filter(m => m.provinciaId === prov.id)
+
+    if (form.acta.municipio && !municipiosActaList.value.some(m => m.nombre === form.acta.municipio)) {
+      form.acta.municipio = ''
+    }
+  }
+}
+
+const fetchMunicipiosDireccion = () => {
+  if (!form.direccion.provincia) {
+    municipiosDireccionList.value = []
+    return
+  }
+  const prov = provinciasList.value.find(p => p.nombre === form.direccion.provincia)
+  if (prov) {
+    municipiosDireccionList.value = municipiosData.filter(m => m.provinciaId === prov.id)
+
+    if (form.direccion.municipio && !municipiosDireccionList.value.some(m => m.nombre === form.direccion.municipio)) {
+      form.direccion.municipio = ''
+    }
+  }
+}
+
 const handleSignatureUpdate = (dataUrl) => {
   form.historia.firma_padre_path = dataUrl
 }
@@ -579,8 +661,7 @@ const downloadPdf = async () => {
 
   isDownloadingPdf.value = true
   try {
-    const config = useRuntimeConfig()
-    const downloadUrl = `${config.public.apiBase}/api/admisiones/download-pdf/${form.pdf_token}?token=${authStore.token}`
+    const downloadUrl = `/api/admisiones/download-pdf/${form.pdf_token}`
     const pdfBlob = await api.getBlob(downloadUrl)
     printPdfBlob(pdfBlob, `formulario_admision_${form.studentData.nombres}_${form.studentData.apellidos}.pdf`)
   } catch (error) {
@@ -637,9 +718,16 @@ const submitForm = async () => {
   }
 }
 
+watch(() => authStore.tenant, (newTenant) => {
+  if (newTenant) {
+    applyTenantDefaults()
+  }
+}, { immediate: true })
+
 onMounted(() => {
   fetchTitulos()
   fetchAniosLectivos()
   fetchCoordinadorRegistro()
+  fetchProvincias()
 })
 </script>

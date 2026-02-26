@@ -30,6 +30,8 @@ export interface Tenant {
   distrito?: string
   logo_departamento?: string
   abbreviation?: string
+  provincia?: string
+  municipio?: string
 }
 
 export interface LoginResponse {

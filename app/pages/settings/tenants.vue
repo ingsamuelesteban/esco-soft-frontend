@@ -119,6 +119,29 @@
                                 <input v-model="form.address" type="text"
                                     class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                             </div>
+
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Provincia</label>
+                                    <select v-model="form.provincia" @change="fetchMunicipiosConfig" required
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                        <option value="" disabled>Seleccione provincia</option>
+                                        <option v-for="prov in provinciasList" :key="prov.id" :value="prov.nombre">
+                                            {{ prov.nombre }}
+                                        </option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700">Municipio</label>
+                                    <select v-model="form.municipio" required :disabled="!form.provincia"
+                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                        <option value="" disabled>Seleccione municipio</option>
+                                        <option v-for="mun in municipiosList" :key="mun.nombre" :value="mun.nombre">
+                                            {{ mun.nombre }}
+                                        </option>
+                                    </select>
+                                </div>
+                            </div>
                             <div class="grid grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700">Teléfono</label>
@@ -216,6 +239,8 @@ import { ref, onMounted, reactive } from 'vue'
 import { api } from '../../utils/api'
 import type { Tenant } from '../../stores/auth'
 import Swal from 'sweetalert2'
+import provinciasData from '~/utils/provincias.json'
+import municipiosData from '~/utils/municipios.json'
 
 definePageMeta({
     layout: 'default',
@@ -240,8 +265,33 @@ const form = reactive({
     logo_url: '',
     departamento: '',
     distrito: '',
-    logo_departamento: ''
+    logo_departamento: '',
+    provincia: '',
+    municipio: ''
 })
+
+const provinciasList = ref<any[]>([])
+const municipiosList = ref<any[]>([])
+
+const fetchProvincias = () => {
+    provinciasList.value = provinciasData
+}
+
+const fetchMunicipiosConfig = () => {
+    if (!form.provincia) {
+        municipiosList.value = []
+        return
+    }
+    const prov = provinciasList.value.find(p => p.nombre === form.provincia)
+    if (prov) {
+        municipiosList.value = municipiosData.filter(m => m.provinciaId === prov.id)
+
+        // Check if current municipio is in the new list, if not clear it
+        if (form.municipio && !municipiosList.value.some((m: any) => m.nombre === form.municipio)) {
+            form.municipio = ''
+        }
+    }
+}
 
 const fetchTenants = async () => {
     loading.value = true
@@ -271,7 +321,9 @@ const openCreateModal = () => {
         logo_url: '',
         departamento: '',
         distrito: '',
-        logo_departamento: ''
+        logo_departamento: '',
+        provincia: '',
+        municipio: ''
     })
     logoFile.value = null
     logoPreview.value = null
@@ -294,8 +346,14 @@ const editTenant = (tenant: Tenant) => {
         logo_url: tenant.logo_url || '',
         departamento: tenant.departamento || '',
         distrito: tenant.distrito || '',
-        logo_departamento: tenant.logo_departamento || ''
+        logo_departamento: tenant.logo_departamento || '',
+        provincia: tenant.provincia || '',
+        municipio: tenant.municipio || ''
     })
+
+    if (form.provincia) {
+        fetchMunicipiosConfig()
+    }
     logoFile.value = null
     logoPreview.value = null
     logoDepartamentoFile.value = null
@@ -352,6 +410,8 @@ const saveTenant = async () => {
         if (form.website) formData.append('website', form.website)
         if (form.departamento) formData.append('departamento', form.departamento)
         if (form.distrito) formData.append('distrito', form.distrito)
+        if (form.provincia) formData.append('provincia', form.provincia)
+        if (form.municipio) formData.append('municipio', form.municipio)
 
         if (logoFile.value) {
             formData.append('logo', logoFile.value)
@@ -448,5 +508,6 @@ const deleteTenant = async (tenant: Tenant) => {
 
 onMounted(() => {
     fetchTenants()
+    fetchProvincias()
 })
 </script>
