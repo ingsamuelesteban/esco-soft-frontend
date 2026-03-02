@@ -50,9 +50,21 @@
                     class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow cursor-pointer">
                     <div class="flex items-start justify-between">
                         <div class="flex-1">
-                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors">
-                                {{ homework.title }}
-                            </h3>
+                            <div class="flex items-center gap-2">
+                                <h3
+                                    class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors">
+                                    {{ homework.title }}
+                                </h3>
+                                <span v-if="homework.published_at && dayjs(homework.published_at).isAfter(dayjs())"
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                    <svg class="-ml-0.5 mr-1.5 h-3 w-3 text-yellow-500 dark:text-yellow-300" fill="none"
+                                        stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                    Programada: {{ formatDate(homework.published_at) }}
+                                </span>
+                            </div>
                             <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 line-clamp-2">
                                 {{ homework.description }}
                             </p>
@@ -91,7 +103,8 @@
                             </button>
                             <!-- 'Ver Entregas' button is redundant if the whole card click works, but let's keep it for clarity or replace with chevron -->
                             <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M9 5l7 7-7 7" />
                             </svg>
                         </div>
                     </div>
@@ -157,6 +170,7 @@ interface Homework {
     id: number
     title: string
     description: string
+    published_at?: string
     due_date?: string
     submission_count?: number
     is_overdue?: boolean
@@ -181,15 +195,15 @@ const isReadOnly = computed(() => {
     // So let's enforcing read-only if not the assigned teacher, OR if we want admins to edit, we can relax this.
     // The prompt says "darle acceso a las tareas a modo lectura a los admin y master".
     // So explicit read-only (no edit).
-    
+
     if (!classAssignment.value) return true // default safe
-    
+
     const user = authStore.user
     if (!user) return true
 
     // If user is the assigned teacher, they can edit
     if (user.personal_id === classAssignment.value.profesor_id) return false
-    
+
     // Otherwise (Admin/Master supervising, or another teacher), read-only
     return true
 })

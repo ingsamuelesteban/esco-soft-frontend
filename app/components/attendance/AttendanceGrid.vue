@@ -69,12 +69,25 @@
           <!-- Botones de estado -->
           <div class="flex items-center space-x-2">
             <template v-if="record.estudiante.estado !== 'retirado'">
-              <button v-for="estado in estados" :key="estado.value"
-                @click="updateAttendance(record.estudiante.id, estado.value)"
-                :class="getButtonClass(estado.value, record.asistencia?.estado)"
-                class="px-3 py-2 text-xs font-medium rounded-lg transition-colors border">
-                {{ estado.label }}
-              </button>
+
+              <!-- Si es tardanza forzada por psicología, en 'index.vue' y back end se envía forced_tardiness -->
+              <template v-if="(record.asistencia as any)?.forced_tardiness">
+                <span
+                  class="px-3 py-2 text-xs font-medium rounded-lg bg-orange-100 text-orange-800 border border-orange-200 shadow-sm flex items-center gap-1"
+                  title="Tardanza registrada y bloqueada por Departamento de Psicología">
+                  <i class="fas fa-lock text-orange-500"></i> Tardanza por Psicología
+                </span>
+              </template>
+
+              <template v-else>
+                <button v-for="estado in estados" :key="estado.value"
+                  @click="updateAttendance(record.estudiante.id, estado.value)"
+                  :class="getButtonClass(estado.value, record.asistencia?.estado, (record.asistencia as any)?.forced_tardiness)"
+                  class="px-3 py-2 text-xs font-medium rounded-lg transition-colors border"
+                  :disabled="record.asistencia?.auto_generated || (record.asistencia as any)?.forced_tardiness">
+                  {{ estado.label }}
+                </button>
+              </template>
             </template>
             <span v-else class="px-3 py-2 text-xs font-medium rounded-lg bg-red-100 text-red-800 border border-red-200">
               Retirado
@@ -83,13 +96,14 @@
         </div>
 
         <!-- Campo de observaciones -->
-        <div v-if="record.asistencia && ['ausente', 'excusa', 'tardanza'].includes(record.asistencia.estado)"
+        <div
+          v-if="record.asistencia && ['ausente', 'excusa', 'tardanza'].includes(record.asistencia.estado) && !(record.asistencia as any)?.forced_tardiness"
           class="mt-3">
           <textarea v-model="localObservaciones[record.estudiante.id]"
             @input="updateObservaciones(record.estudiante.id, ($event.target as HTMLTextAreaElement).value)"
             :placeholder="`Observaciones para ${record.asistencia.estado}...`"
             class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500 resize-none disabled:bg-gray-100 disabled:text-gray-500"
-            :disabled="props.readOnly" rows="2"></textarea>
+            :disabled="props.readOnly || record.asistencia?.auto_generated" rows="2"></textarea>
         </div>
       </div>
     </div>
@@ -184,12 +198,12 @@ const updateObservaciones = (estudianteId: number, observaciones: string) => {
   }
 }
 
-const getButtonClass = (estado: string, estadoActual?: string) => {
+const getButtonClass = (estado: string, estadoActual?: string, forcedTardiness?: boolean) => {
   const isActive = estado === estadoActual
   const estadoConfig = estados.find(e => e.value === estado)
   let baseClass = 'px-3 py-2 text-xs font-medium rounded-lg transition-colors border'
 
-  if (props.readOnly) {
+  if (props.readOnly || forcedTardiness) {
     baseClass += ' cursor-not-allowed opacity-75'
     if (!isActive) baseClass += ' opacity-50'
   }

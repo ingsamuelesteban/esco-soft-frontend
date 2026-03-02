@@ -50,6 +50,16 @@
                     <!-- Due Date and Max Score -->
                     <div class="grid grid-cols-2 gap-4">
                         <div>
+                            <label
+                                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 flex justify-between">
+                                <span>Programar Publicación</span>
+                                <span class="text-xs text-gray-500 font-normal self-end">(Opcional)</span>
+                            </label>
+                            <input v-model="form.published_at" type="datetime-local"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                                title="Si se deja vacío, la tarea se publicará inmediatamente." />
+                        </div>
+                        <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 Fecha de entrega
                             </label>
@@ -105,14 +115,13 @@
                     <div class="flex items-center justify-between">
                         <span class="flex flex-col">
                             <span class="text-sm font-medium text-gray-900 dark:text-white">Asignar a todos</span>
-                            <span class="text-sm text-gray-500 dark:text-gray-400">Si se desactiva, podrás seleccionar estudiantes específicos</span>
+                            <span class="text-sm text-gray-500 dark:text-gray-400">Si se desactiva, podrás seleccionar
+                                estudiantes específicos</span>
                         </span>
-                        <button type="button" 
-                            @click="form.assign_to_all = !form.assign_to_all"
+                        <button type="button" @click="form.assign_to_all = !form.assign_to_all"
                             :class="form.assign_to_all ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'"
                             class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2">
-                            <span aria-hidden="true" 
-                                :class="form.assign_to_all ? 'translate-x-5' : 'translate-x-0'"
+                            <span aria-hidden="true" :class="form.assign_to_all ? 'translate-x-5' : 'translate-x-0'"
                                 class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
                         </button>
                     </div>
@@ -123,8 +132,10 @@
                             Seleccionar Estudiantes
                         </label>
                         <div v-if="loadingStudents" class="text-sm text-gray-500">Cargando estudiantes...</div>
-                        <div v-else class="max-h-48 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-lg p-2 space-y-1">
-                            <label v-for="student in students" :key="student.id" class="flex items-center p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded cursor-pointer">
+                        <div v-else
+                            class="max-h-48 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-lg p-2 space-y-1">
+                            <label v-for="student in students" :key="student.id"
+                                class="flex items-center p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded cursor-pointer">
                                 <input type="checkbox" :value="student.id" v-model="form.student_ids"
                                     class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
                                 <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">
@@ -175,6 +186,7 @@ const form = reactive({
     title: '',
     description: '',
     instructions: '',
+    published_at: '',
     due_date: '',
     max_score: 100,
     submission_type: 'any',
@@ -192,19 +204,20 @@ onMounted(async () => {
         form.title = props.homework.title || ''
         form.description = props.homework.description || ''
         form.instructions = props.homework.instructions || ''
+        form.published_at = props.homework.published_at ? formatDateTimeLocal(props.homework.published_at) : ''
         form.due_date = props.homework.due_date ? formatDateTimeLocal(props.homework.due_date) : ''
         form.max_score = props.homework.max_score || 100
         form.submission_type = props.homework.submission_type || 'any'
         form.allow_late_submission = props.homework.allow_late_submission ?? true
         // Backend returns 1/0 for boolean sometimes, so ensure types
         form.assign_to_all = props.homework.assign_to_all !== false && props.homework.assign_to_all !== 0
-        
+
         // If not assigned to all, we need to populate student_ids
         if (!form.assign_to_all && props.homework.assignees) {
             form.student_ids = props.homework.assignees.map((s: any) => s.id)
         }
     }
-    
+
     await fetchStudents()
 })
 
@@ -217,13 +230,13 @@ async function fetchStudents() {
         // Actually, existing endpoints like /api/estudiantes might filter by aula.
         // Let's assume we can fetch the class assignment first to get the aula_id if we don't have it.
         // Or simpler: add an endpoint /api/class-assignments/{id}/students
-        
+
         // For now, let's fetch class assignment details to get aula_id, then fetch students.
         // Optimization: pass class details as props? 
         // Let's fetch class assignment first.
         const classResponse = await api.get(`/api/class-assignments/${props.classAssignmentId}`)
         const aulaId = classResponse.aula_id || classResponse.data?.aula_id
-        
+
         if (aulaId) {
             const response = await api.get('/api/estudiantes', {
                 params: {
@@ -254,7 +267,7 @@ function formatDateTimeLocal(dateString: string) {
 async function handleSubmit() {
     try {
         saving.value = true
-        
+
         // Validation: if not assign_to_all, must select at least one student
         if (!form.assign_to_all && form.student_ids.length === 0) {
             alert('Por favor selecciona al menos un estudiante')
@@ -267,12 +280,13 @@ async function handleSubmit() {
         formData.append('title', form.title)
         if (form.description) formData.append('description', form.description)
         if (form.instructions) formData.append('instructions', form.instructions)
+        if (form.published_at) formData.append('published_at', form.published_at)
         if (form.due_date) formData.append('due_date', form.due_date)
         formData.append('max_score', String(form.max_score))
         formData.append('submission_type', form.submission_type)
         formData.append('allow_late_submission', form.allow_late_submission ? '1' : '0')
         if (form.attachment) formData.append('attachment', form.attachment)
-        
+
         // New fields
         formData.append('assign_to_all', form.assign_to_all ? '1' : '0')
         if (!form.assign_to_all) {

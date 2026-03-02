@@ -22,6 +22,7 @@ export interface Attendance {
   estado: 'presente' | 'ausente' | 'excusa' | 'tardanza'
   observaciones?: string
   auto_generated?: boolean
+  forced_tardiness?: boolean
 }
 
 export interface AttendanceRecord {
@@ -171,13 +172,18 @@ export const useAttendanceStore = defineStore('attendance', {
       this.loading = true
       this.error = null
 
-      // Build payload from pendingChanges
-      const asistencias = Array.from(this.pendingChanges).map(estudianteId => {
-        const record = this.records.find((r: any) => r.estudiante.id === estudianteId)
-        if (!record?.asistencia) return null
+      // Build payload combining pendingChanges and those locked by psychology (forced_tardiness)
+      const recordsToSave = this.records.filter((r: any) => {
+        const isPending = this.pendingChanges.has(r.estudiante.id)
+        const isForcedTardiness = r.asistencia && (r.asistencia as any).forced_tardiness
+        return isPending || isForcedTardiness
+      })
+
+      const asistencias = recordsToSave.map((record: any) => {
+        if (!record.asistencia) return null
 
         return {
-          estudiante_id: estudianteId,
+          estudiante_id: record.estudiante.id,
           estado: record.asistencia.estado,
           observaciones: record.asistencia.observaciones || null
         }
@@ -260,7 +266,8 @@ export const useAttendanceStore = defineStore('attendance', {
 
     markRemainingAsPresent() {
       this.records.forEach(record => {
-        if (!record.asistencia && record.estudiante.estado !== 'retirado') {
+        // Skip students who already have an attendance record or are marked with forced_tardiness (Psychology feature)
+        if (!record.asistencia && record.estudiante.estado !== 'retirado' && !(record.asistencia as any)?.forced_tardiness) {
           this.updateLocalAttendance(record.estudiante.id, 'presente')
         }
       })
