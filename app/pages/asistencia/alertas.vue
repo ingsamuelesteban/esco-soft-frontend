@@ -19,7 +19,7 @@
 
     <!-- Filtros y Opciones -->
     <div class="bg-white shadow-sm rounded-lg p-6">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
         <div>
           <label class="block text-sm font-medium text-gray-700 mb-2">Mes</label>
           <select v-model="selectedMonth"
@@ -36,6 +36,30 @@
             class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
             <option v-for="year in years" :key="year" :value="year">
               {{ year }}
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Aula</label>
+          <select v-model="selectedAula"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50"
+            :disabled="loadingAulas">
+            <option :value="null">Todas las aulas</option>
+            <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
+              {{ aula.grado_cardinal }} - {{ aula.seccion }}
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">Asignatura / Materia</label>
+          <select v-model="selectedAssignment"
+            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50"
+            :disabled="loadingAssignments || !selectedAula">
+            <option :value="null">{{ selectedAula ? 'Todas las asignaturas' : 'Seleccione un aula primero' }}</option>
+            <option v-for="assignment in assignments" :key="assignment.id" :value="assignment.id">
+              {{ assignment.materia?.nombre || 'Materia Desconocida' }}
             </option>
           </select>
         </div>
@@ -190,7 +214,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useAuthStore } from '~/stores/auth'
 import { useNuxtApp } from '#app'
 import Swal from 'sweetalert2'
@@ -233,10 +257,16 @@ const years = Array.from({ length: 5 }, (_, i) => currentYear - i)
 // Estado Reactivo
 const selectedMonth = ref(new Date().getMonth() === 0 ? 12 : new Date().getMonth()) // Por defecto el mes anterior
 const selectedYear = ref(new Date().getMonth() === 0 ? currentYear - 1 : currentYear)
+const selectedAula = ref<number | null>(null)
+const selectedAssignment = ref<number | null>(null)
 
 const loading = ref(false)
+const loadingAulas = ref(false)
+const loadingAssignments = ref(false)
 const hasSearched = ref(false)
 const alerts = ref<any[]>([])
+const aulas = ref<any[]>([])
+const assignments = ref<any[]>([])
 const pagination = ref({
   current_page: 1,
   last_page: 1,
@@ -249,11 +279,63 @@ const { printPdfBlob } = usePrint()
 const printing = ref(false)
 
 // Protección en cliente
-onMounted(() => {
+onMounted(async () => {
   if (!authStore.isAdmin && !authStore.isMaster) {
     Swal.fire('Acceso Denegado', 'Solo administradores pueden ver esta sección.', 'error')
     navigateTo('/asistencia')
+    return
   }
+  
+  await fetchAulas()
+})
+
+// Obtener listado de aulas
+const fetchAulas = async () => {
+  loadingAulas.value = true
+  try {
+    const data = await $api.get('/api/aulas')
+    if (data) {
+       aulas.value = Array.isArray(data) ? data : (data.data || [])
+    }
+  } catch (error) {
+    console.error('Error fetching aulas:', error)
+  } finally {
+    loadingAulas.value = false
+  }
+}
+
+// Obtener asignaturas del aula
+const fetchAssignments = async () => {
+  if (!selectedAula.value) {
+    assignments.value = []
+    return
+  }
+  
+  loadingAssignments.value = true
+  try {
+    const data = await $api.get('/api/class-assignments', {
+      params: { aula_id: selectedAula.value }
+    })
+    
+    if (data) {
+       let arr = Array.isArray(data) ? data : (data.data || [])
+       arr.sort((a: any, b: any) => {
+         const nameA = a.materia?.nombre?.toLowerCase() || ''
+         const nameB = b.materia?.nombre?.toLowerCase() || ''
+         return nameA.localeCompare(nameB)
+       })
+       assignments.value = arr
+    }
+  } catch (error) {
+    console.error('Error fetching assignments:', error)
+  } finally {
+    loadingAssignments.value = false
+  }
+}
+
+watch(selectedAula, () => {
+  selectedAssignment.value = null
+  fetchAssignments()
 })
 
 // Acciones
@@ -265,13 +347,23 @@ const fetchAlerts = async (page = 1) => {
   alerts.value = []
 
   try {
+    const params: any = {
+      month: selectedMonth.value,
+      year: selectedYear.value,
+      page: page,
+      per_page: 25
+    }
+    
+    if (selectedAula.value) {
+      params.aula_id = selectedAula.value
+    }
+    
+    if (selectedAssignment.value) {
+      params.assignment_id = selectedAssignment.value
+    }
+
     const data = await $api.get('/api/attendance/monthly-alerts', {
-      params: {
-        month: selectedMonth.value,
-        year: selectedYear.value,
-        page: page,
-        per_page: 25
-      }
+      params: params
     })
 
     if (data && data.success) {
@@ -311,11 +403,21 @@ const printReport = async () => {
 
   printing.value = true
   try {
+    const params: any = {
+      month: selectedMonth.value,
+      year: selectedYear.value
+    }
+    
+    if (selectedAula.value) {
+      params.aula_id = selectedAula.value
+    }
+    
+    if (selectedAssignment.value) {
+      params.assignment_id = selectedAssignment.value
+    }
+
     const blob = await api.getBlob('/api/attendance/monthly-alerts/pdf', {
-      params: {
-        month: selectedMonth.value,
-        year: selectedYear.value
-      }
+      params: params
     })
     
     // Generar nombre descriptivo
