@@ -234,7 +234,7 @@
                                     class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
                                     <td
                                         class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white font-medium">
-                                        {{ formatDate(record.fecha) }}
+                                        {{ record.fecha_formateada || formatDate(record.fecha) }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="text-sm font-medium text-gray-900 dark:text-white">
