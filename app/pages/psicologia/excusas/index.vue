@@ -152,7 +152,7 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <button v-if="excuse.file_path" @click="printFile('/api/psychology/attendance-excuses/' + excuse.id + '/download')"
+                                <button v-if="excuse.file_path" @click="viewAttachment(excuse)"
                                     class="text-primary-600 hover:text-primary-900 flex items-center text-sm font-medium focus:outline-none">
                                     <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -439,7 +439,6 @@ import DropZone from '~/components/ui/DropZone.vue'
 import debounce from 'lodash/debounce'
 import Swal from 'sweetalert2'
 import dayjs from 'dayjs'
-import { usePrint } from '~/composables/usePrint'
 import { useAniosLectivosStore } from '~/stores/anios_lectivos'
 
 const config = useRuntimeConfig()
@@ -451,7 +450,6 @@ const selectedAnioId = ref(undefined)
 const excuses = ref([])
 const aulas = ref([])
 const loading = ref(false)
-const { printFile } = usePrint()
 const page = ref(1)
 const lastPage = ref(1)
 
@@ -685,6 +683,36 @@ const submitForm = async () => {
 }
 
 
+
+// File Viewing Logic
+const viewAttachment = async (excuse) => {
+    try {
+        const response = await $api.get(`/api/psychology/attendance-excuses/${excuse.id}/download`, {
+            responseType: 'blob'
+        })
+        
+        // $api might return the data directly or the full response object
+        const blobData = response.data || response
+        
+        // If we don't have explicit headers because of an interceptor, just use the blob's native type or default
+        const fileType = response.headers ? response.headers['content-type'] : (blobData.type || 'application/octet-stream')
+        const file = new Blob([blobData], { type: fileType })
+        
+        const fileURL = URL.createObjectURL(file)
+        
+        window.open(fileURL, '_blank')
+        
+        // Clean up object URL after a delay
+        setTimeout(() => URL.revokeObjectURL(fileURL), 10000)
+    } catch (e) {
+        console.error('Error loading attachment', e)
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: 'No se pudo cargar el archivo adjunto.'
+        })
+    }
+}
 
 const cancelExcuse = async (excuse) => {
     const { value: text } = await Swal.fire({

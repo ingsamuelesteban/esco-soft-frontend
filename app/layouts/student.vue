@@ -113,6 +113,17 @@
             Tareas
           </NuxtLink>
 
+          <NuxtLink v-if="!user?.is_preadmitted" to="/student/tienda"
+            class="inline-flex items-center px-1 pt-4 pb-3 border-b-2 text-sm font-medium transition-colors whitespace-nowrap"
+            :class="isActiveRoute('/student/tienda')
+              ? 'border-blue-500 text-blue-600 dark:text-blue-400'
+              : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300'">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+            </svg>
+            Uniformes
+          </NuxtLink>
 
         </div>
       </div>
@@ -132,7 +143,7 @@
       class="bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 mt-auto transition-colors duration-300">
       <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <p class="text-center text-sm text-gray-500 dark:text-gray-400">
-          &copy; {{ new Date().getFullYear() }} EscoSoft. Todos los derechos reservados.
+          &copy; 2026 EscoSoft. Todos los derechos reservados, Ing. Samuel Esteban.
         </p>
       </div>
     </footer>

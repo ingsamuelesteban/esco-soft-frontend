@@ -4,8 +4,8 @@
       <div class="flex flex-col sm:flex-row justify-between items-center space-y-2 sm:space-y-0">
         <!-- Copyright -->
         <div class="text-sm text-gray-500">
-          © {{ currentYear }} <span class="font-semibold text-gray-700">EscoSoft</span>. Todos los derechos reservados,
-          Ing. Samuel Esteban.
+          © 2026 <span class="font-semibold text-gray-700">EscoSoft</span>. Todos los derechos reservados, Ing. Samuel
+          Esteban.
         </div>
 
         <!-- Links y versión -->
