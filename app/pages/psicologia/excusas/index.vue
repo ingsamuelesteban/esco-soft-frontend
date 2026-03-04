@@ -172,6 +172,14 @@
                                             d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                     </svg>
                                 </button>
+                                <button v-if="!excuse.cancelled_at" @click="openEditModal(excuse)"
+                                    title="Editar Excusa"
+                                    class="text-blue-600 hover:text-blue-900 bg-blue-50 hover:bg-blue-100 p-2 rounded-full transition-colors mr-2">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                    </svg>
+                                </button>
                                 <button v-if="!excuse.cancelled_at" @click="cancelExcuse(excuse)"
                                     title="Finalizar/Cancelar Excusa"
                                     class="text-orange-600 hover:text-orange-900 bg-orange-50 hover:bg-orange-100 p-2 rounded-full transition-colors">
@@ -305,7 +313,7 @@
                                 class="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all border border-gray-100">
 
                                 <DialogTitle as="h3" class="text-lg font-bold leading-6 text-gray-900 mb-4 font-outfit">
-                                    Registrar Nueva Excusa
+                                    {{ isEditing ? 'Editar Excusa' : 'Registrar Nueva Excusa' }}
                                 </DialogTitle>
 
                                 <form @submit.prevent="submitForm" class="space-y-4">
@@ -384,7 +392,7 @@
 
                                     <!-- File -->
                                     <div>
-                                        <DropZone v-model="form.file" label="Archivo Adjunto (Opcional)"
+                                        <DropZone v-model="form.file" :label="isEditing ? 'Reemplazar Archivo Adjunto (Opcional)' : 'Archivo Adjunto (Opcional)'"
                                             accept=".pdf,.jpg,.jpeg,.png" :max-size="10 * 1024 * 1024" />
                                         <p class="text-xs text-gray-500 mt-1">Formatos: PDF, JPEG, PNG. Max: 10MB.</p>
                                         <p v-if="errors.file" class="text-red-500 text-xs mt-1">{{ errors.file }}</p>
@@ -408,7 +416,7 @@
                                                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                                 </path>
                                             </svg>
-                                            {{ submitting ? 'Guardando...' : 'Guardar Excusa' }}
+                                            {{ submitting ? 'Guardando...' : (isEditing ? 'Actualizar Excusa' : 'Guardar Excusa') }}
                                         </button>
                                     </div>
                                 </form>
@@ -454,6 +462,8 @@ const filters = reactive({
 })
 
 const isOpen = ref(false)
+const isEditing = ref(false)
+const editingId = ref(null)
 const submitting = ref(false)
 const studentSearch = ref('')
 const studentResults = ref([])
@@ -554,8 +564,25 @@ const changePage = (newPage) => {
 
 // Modal logic
 const openModal = () => {
-    isOpen.value = true
+    isEditing.value = false
+    editingId.value = null
     resetForm()
+    isOpen.value = true
+}
+
+const openEditModal = (excuse) => {
+    isEditing.value = true
+    editingId.value = excuse.id
+    resetForm()
+    
+    // Populate form
+    selectedStudent.value = excuse.estudiante
+    form.student_id = excuse.student_id
+    form.start_date = dayjs(excuse.start_date).format('YYYY-MM-DD')
+    form.end_date = dayjs(excuse.end_date).format('YYYY-MM-DD')
+    form.concept = excuse.concept
+    
+    isOpen.value = true
 }
 
 const closeModal = () => {
@@ -620,12 +647,17 @@ const submitForm = async () => {
             formData.append('file', form.file)
         }
 
-        await $api.post('/api/psychology/attendance-excuses', formData)
+        if (isEditing.value) {
+            formData.append('_method', 'PUT')
+            await $api.post(`/api/psychology/attendance-excuses/${editingId.value}`, formData)
+        } else {
+            await $api.post('/api/psychology/attendance-excuses', formData)
+        }
 
         await Swal.fire({
             icon: 'success',
-            title: 'Excusa Registrada',
-            text: 'La excusa ha sido guardada correctamente y se aplicará automáticamente a la asistencia.',
+            title: isEditing.value ? 'Excusa Actualizada' : 'Excusa Registrada',
+            text: isEditing.value ? 'La excusa se ha actualizado correctamente.' : 'La excusa ha sido guardada correctamente y se aplicará automáticamente a la asistencia.',
             timer: 2000,
             showConfirmButton: false
         })
