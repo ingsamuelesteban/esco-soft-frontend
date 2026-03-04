@@ -202,9 +202,9 @@ const isActive = (path) => {
       }
     }
 
-    // Fix: Evitar que /admin/admisiones coincida con /admin/admisiones/fechas
+    // Fix: Evitar que /admin/admisiones coincida con sub-rutas ajenas
     if (path === '/admin/admisiones') {
-      if (remainder.startsWith('/fechas')) {
+      if (remainder.startsWith('/fechas') || remainder.startsWith('/uniformes') || remainder.startsWith('/facturas-uniformes')) {
         return false
       }
     }
