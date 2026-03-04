@@ -567,17 +567,15 @@ const registerAbono = async () => {
         const response = await $api.post(`/api/student-invoices/${selectedInvoice.value.id}/pay`, {
             amount: parseFloat(abonoAmount.value)
         })
-        const index = invoices.value.findIndex(i => i.id === selectedInvoice.value.id)
-        if (index > -1) {
-            // Actualizar solo las propiedades cambiadas para no perder la relación de estudiante cargada
-            invoices.value[index].amount_paid = response.invoice.amount_paid
-            invoices.value[index].payment_status = response.invoice.payment_status
-            selectedInvoice.value.amount_paid = response.invoice.amount_paid
-            selectedInvoice.value.payment_status = response.invoice.payment_status
-        }
+        // Se actualiza localmente el invoice del modal activo
+        selectedInvoice.value.amount_paid = response.invoice.amount_paid
+        selectedInvoice.value.payment_status = response.invoice.payment_status
+        
         abonoAmount.value = ''
         Swal.fire('Éxito', 'Abono registrado exitosamente', 'success')
-        fetchInvoices(pagination.value.current_page) // Refresh list to update payment status
+        
+        // Se fuerza la recarga estricta de la tabla desde la base de datos (respetando filtros)
+        await fetchInvoices(pagination.value.current_page)
     } catch (e) {
         console.error(e)
         Swal.fire('Error', e.response?.data?.message || 'Error al registrar el abono', 'error')
@@ -613,15 +611,11 @@ const submitDeliveries = async () => {
         // Actualizar estados reactivos
         selectedInvoice.value = resp.invoice // Update locally
 
-        const index = invoices.value.findIndex(i => i.id === resp.invoice.id)
-        if (index > -1) {
-            invoices.value[index].delivery_status = resp.invoice.delivery_status
-            invoices.value[index].details = resp.invoice.details
-        }
+        // Se fuerza la recarga estricta de la tabla desde BD (respetando filtros)
+        await fetchInvoices(pagination.value.current_page)
+        
         deliveries.value = {}
         selectedInvoice.value.details.forEach(d => { deliveries.value[d.id] = 0 })
-
-        fetchInvoices(pagination.value.current_page)
     } catch (e) {
         Swal.fire('Error', e.response?.data?.message || 'Error al registrar entregas', 'error')
     }
