@@ -167,7 +167,6 @@ import { Dialog, DialogPanel, DialogTitle, TransitionRoot, TransitionChild } fro
 import Swal from 'sweetalert2'
 
 definePageMeta({
-    layout: 'admin',
     middleware: ['auth']
 })
 
