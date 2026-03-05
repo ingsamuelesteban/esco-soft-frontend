@@ -84,7 +84,7 @@
                   @click="updateAttendance(record.estudiante.id, estado.value)"
                   :class="getButtonClass(estado.value, record.asistencia?.estado, (record.asistencia as any)?.forced_tardiness)"
                   class="px-3 py-2 text-xs font-medium rounded-lg transition-colors border"
-                  :disabled="record.asistencia?.auto_generated || (record.asistencia as any)?.forced_tardiness">
+                  :disabled="(record.asistencia as any)?.forced_tardiness">
                   {{ estado.label }}
                 </button>
               </template>
@@ -95,7 +95,6 @@
           </div>
         </div>
 
-        <!-- Campo de observaciones -->
         <div
           v-if="record.asistencia && ['ausente', 'excusa', 'tardanza'].includes(record.asistencia.estado) && !(record.asistencia as any)?.forced_tardiness"
           class="mt-3">
@@ -103,7 +102,7 @@
             @input="updateObservaciones(record.estudiante.id, ($event.target as HTMLTextAreaElement).value)"
             :placeholder="`Observaciones para ${record.asistencia.estado}...`"
             class="w-full px-3 py-2 text-sm border border-gray-300 rounded-md focus:ring-primary-500 focus:border-primary-500 resize-none disabled:bg-gray-100 disabled:text-gray-500"
-            :disabled="props.readOnly || record.asistencia?.auto_generated" rows="2"></textarea>
+            :disabled="props.readOnly" rows="2"></textarea>
         </div>
       </div>
     </div>
