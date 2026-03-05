@@ -75,7 +75,7 @@
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
                     <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Tu Entrega</h2>
 
-                    <!-- Graded Submission View -->
+                    <!-- Graded Submission View (Score & Feedback) -->
                     <div v-if="submission && ['graded', 'returned'].includes(submission.status)">
                         <div
                             class="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-4">
@@ -89,38 +89,49 @@
                                 <strong>Retroalimentación:</strong> {{ submission.teacher_feedback }}
                             </p>
                         </div>
+                    </div>
 
-                        <!-- Show submitted content (read-only) -->
-                        <div class="space-y-4">
-                            <div v-if="submission.text_content">
-                                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tu respuesta:</h4>
-                                <p
-                                    class="text-gray-900 dark:text-white whitespace-pre-wrap bg-gray-50 dark:bg-gray-700 p-4 rounded">
-                                    {{ submission.text_content }}
-                                </p>
-                            </div>
-                            <div v-if="submission.link_url">
-                                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Enlace enviado:
-                                </h4>
-                                <a :href="submission.link_url" target="_blank"
-                                    class="text-blue-600 dark:text-blue-400 hover:underline">
-                                    {{ submission.link_url }}
-                                </a>
-                            </div>
-                            <div v-if="submission.file_path">
-                                <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Archivo enviado:
-                                </h4>
-                                <a href="#"
-                                    @click.prevent="downloadFile(`/api/homework-submissions/${submission.id}/download`, submission.file_path)"
-                                    class="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                            d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                    </svg>
-                                    Descargar mi archivo
-                                </a>
-                            </div>
+                    <!-- Show submitted content (read-only) for submitted/graded/returned -->
+                    <div v-if="submission && ['submitted', 'graded', 'returned'].includes(submission.status)" class="space-y-4 mb-6">
+                        <div v-if="submission.text_content">
+                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tu respuesta:</h4>
+                            <p
+                                class="text-gray-900 dark:text-white whitespace-pre-wrap bg-gray-50 dark:bg-gray-700 p-4 rounded">
+                                {{ submission.text_content }}
+                            </p>
                         </div>
+                        <div v-if="submission.link_url">
+                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Enlace enviado:
+                            </h4>
+                            <a :href="submission.link_url" target="_blank"
+                                class="text-blue-600 dark:text-blue-400 hover:underline">
+                                {{ submission.link_url }}
+                            </a>
+                        </div>
+                        <div v-if="submission.file_path">
+                            <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Archivo enviado:
+                            </h4>
+                            <a href="#"
+                                @click.prevent="downloadFile(`/api/homework-submissions/${submission.id}/download`, submission.file_path)"
+                                class="inline-flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:underline">
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                Descargar mi archivo
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Form actions for submitted but NOT graded -->
+                    <div v-if="submission && submission.status === 'submitted'" class="flex gap-3 mt-4 border-t pt-4 dark:border-gray-700">
+                        <span class="px-4 py-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-lg">
+                            ✓ Tarea enviada
+                        </span>
+                        <button type="button" @click="handleUnsubmit" :disabled="saving"
+                            class="px-4 py-2 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300 rounded-lg hover:bg-red-200 dark:hover:bg-red-800/50 transition-colors disabled:opacity-50">
+                            {{ saving ? 'Procesando...' : 'Anular entrega' }}
+                        </button>
                     </div>
 
                     <!-- Extension Status -->
@@ -217,21 +228,17 @@
                         </div>
 
                         <!-- Actions -->
-                        <div class="flex gap-3 pt-4">
-                            <button v-if="!submission || submission.status === 'draft'" type="button" @click="saveDraft"
+                        <div class="flex gap-3 pt-4 border-t dark:border-gray-700">
+                            <button type="button" @click="saveDraft"
                                 :disabled="saving"
                                 class="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors disabled:opacity-50">
                                 {{ saving ? 'Guardando...' : 'Guardar borrador' }}
                             </button>
-                            <button v-if="!submission || submission.status === 'draft'" type="submit"
+                            <button type="submit"
                                 :disabled="saving || !hasContent"
                                 class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
                                 {{ saving ? 'Enviando...' : 'Enviar tarea' }}
                             </button>
-                            <span v-if="submission && submission.status === 'submitted'"
-                                class="px-4 py-2 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-lg">
-                                ✓ Tarea enviada
-                            </span>
                         </div>
                     </form>
 
@@ -485,6 +492,42 @@ async function saveSubmission(submit: boolean) {
         )
     } finally {
         saving.value = false
+    }
+}
+
+async function handleUnsubmit() {
+    const result = await Swal.fire({
+        title: '¿Estás seguro de anular la entrega?',
+        text: "La tarea volverá a estar en borrador y tendrás que enviarla nuevamente. Si el plazo vence, podría calificar como entrega tardía.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Sí, anular',
+        cancelButtonText: 'Cancelar'
+    })
+
+    if (result.isConfirmed) {
+        try {
+            saving.value = true
+            await api.post(`/api/homework-submissions/${submission.value?.id}/unsubmit`)
+            await fetchHomework() // Reload the data
+            
+            Swal.fire(
+                'Entrega anulada',
+                'Puedes editar tu tarea y volver a enviarla.',
+                'success'
+            )
+        } catch (error: any) {
+            console.error('Error unsubmitting:', error)
+            Swal.fire(
+                'Error',
+                error.response?.data?.message || 'Hubo un problema al anular la entrega.',
+                'error'
+            )
+        } finally {
+            saving.value = false
+        }
     }
 }
 
