@@ -62,6 +62,11 @@
                 </option>
               </select>
             </div>
+            <div class="sm:col-span-6 flex items-center gap-2 mt-4">
+              <input type="checkbox" id="pago_folleto" v-model="form.admision.pago"
+                class="h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-600" />
+              <label for="pago_folleto" class="text-sm text-gray-900 font-medium">Pago de folleto y derecho a examen $100.00</label>
+            </div>
           </div>
         </div>
       </div>
@@ -462,7 +467,8 @@ const form = reactive({
     fecha: today,
     centro_procedencia: '',
     titulo_id: '',
-    anio_lectivo_id: ''
+    anio_lectivo_id: '',
+    pago: false
   },
   acta: {
     provincia: '',
@@ -684,7 +690,7 @@ const submitForm = async () => {
     const response = await api.post('/api/admisiones', form)
 
     if (response.success && response.pdf_token) {
-      form.studentData = response.studentData
+      form.studentData = response.data
       form.credentials = response.credentials
       form.pdf_token = response.pdf_token
 
@@ -695,9 +701,9 @@ const submitForm = async () => {
         confirmButtonText: 'Aceptar',
         confirmButtonColor: '#0ea5e9',
         allowOutsideClick: false
-      }).then((result) => {
+      }).then(async (result) => {
         // Trigger download via downloadPdf function which has everything it needs
-        downloadPdf()
+        await downloadPdf()
         // Redirect to admission list
         router.push('/admin/admisiones')
       })
