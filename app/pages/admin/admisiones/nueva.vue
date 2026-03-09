@@ -62,10 +62,17 @@
                 </option>
               </select>
             </div>
-            <div class="sm:col-span-6 flex items-center gap-2 mt-4">
-              <input type="checkbox" id="pago_folleto" v-model="form.admision.pago"
-                class="h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-600" />
-              <label for="pago_folleto" class="text-sm text-gray-900 font-medium">Pago de folleto y derecho a examen $100.00</label>
+            <div class="sm:col-span-6 flex flex-col gap-3 mt-4">
+              <div class="flex items-center gap-2">
+                <input type="checkbox" id="pago_folleto" v-model="form.admision.pago"
+                  class="h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-600" />
+                <label for="pago_folleto" class="text-sm text-gray-900 font-medium">Pago de folleto y derecho a examen $100.00</label>
+              </div>
+              <div class="flex items-center gap-2">
+                <input type="checkbox" id="recomendado" v-model="form.admision.recomendado"
+                  class="h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-600" />
+                <label for="recomendado" class="text-sm text-gray-900 font-medium">¿Recomendado? (Uso interno)</label>
+              </div>
             </div>
           </div>
         </div>
@@ -287,39 +294,28 @@
         </div>
       </div>
 
-      <!-- Sección 6: Historia Clínica (Oculto por ahora para pre-admisión) -->
-      <!--
+      <!-- Sección 6: Historia Clínica -->
       <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
         <div class="px-4 py-6 sm:p-8">
           <h2 class="text-lg font-semibold leading-7 text-gray-900 mb-4 border-b pb-2">6. Historia Clínica</h2>
           
           <div class="mb-4">
-            <h3 class="text-sm font-medium text-gray-900 mb-2">Padece alguna de las siguientes enfermedades:</h3>
-            <div class="flex flex-wrap gap-4">
-              <label class="flex items-center gap-2" v-for="enf in ['Alergia', 'Diabetes', 'Asma', 'Hepatitis']" :key="enf">
-                <input type="checkbox" :value="enf" v-model="form.historia.enfermedades" class="rounded border-gray-300 text-primary-600 focus:ring-primary-600">
-                <span class="text-sm text-gray-700">{{ enf }}</span>
+            <h3 class="text-sm font-medium text-gray-900 mb-2">Discapacidades o Necesidades Especiales:</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 border p-4 rounded-lg bg-gray-50">
+              <label class="flex items-start gap-2 cursor-pointer" v-for="disc in ['Auditiva', 'Visual', 'Motora', 'Intelectual', 'Trastorno del Espectro Autista (TEA)', 'Trastorno de Déficit de Atención (TDAH)', 'Otra']" :key="disc">
+                <input type="checkbox" :value="disc" v-model="form.historia.discapacidades" class="mt-1 h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-600">
+                <span class="text-sm text-gray-700 leading-snug">{{ disc }}</span>
               </label>
             </div>
-          </div>
-
-          <div>
-            <h3 class="text-sm font-medium text-gray-900 mb-2">Vacunas aplicadas:</h3>
-            <div class="flex flex-wrap gap-4">
-              <label class="flex items-center gap-2" v-for="vacuna in ['Polio', 'Sarampión', 'Tétano 1', 'Tétano 2', 'Tétano 3', 'Influenza', 'Hepatitis', 'Meningitis', 'Tuberculosis']" :key="vacuna">
-                <input type="checkbox" :value="vacuna" v-model="form.historia.vacunas" class="rounded border-gray-300 text-primary-600 focus:ring-primary-600">
-                <span class="text-sm text-gray-700">{{ vacuna }}</span>
-              </label>
-            </div>
+            <p class="text-xs text-gray-500 mt-2">Seleccione todas las que apliquen. Si no padece ninguna, deje esta sección en blanco.</p>
           </div>
         </div>
       </div>
-      -->
 
       <!-- Sección 7: Documentos Entregados -->
       <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
         <div class="px-4 py-6 sm:p-8">
-          <h2 class="text-lg font-semibold leading-7 text-gray-900 mb-4 border-b pb-2">6. Documentos Entregados</h2>
+          <h2 class="text-lg font-semibold leading-7 text-gray-900 mb-4 border-b pb-2">7. Documentos Entregados</h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <label
               class="flex items-center gap-2 border p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
@@ -376,7 +372,7 @@
       <!-- Sección 8: Firmas -->
       <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
         <div class="px-4 py-6 sm:p-8">
-          <h2 class="text-lg font-semibold leading-7 text-gray-900 mb-4 border-b pb-2">7. Firmas de Inscripción</h2>
+          <h2 class="text-lg font-semibold leading-7 text-gray-900 mb-4 border-b pb-2">8. Firmas de Inscripción</h2>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <!-- Firma del Padre o Tutor -->
@@ -468,7 +464,8 @@ const form = reactive({
     centro_procedencia: '',
     titulo_id: '',
     anio_lectivo_id: '',
-    pago: false
+    pago: false,
+    recomendado: false
   },
   acta: {
     provincia: '',
@@ -501,6 +498,7 @@ const form = reactive({
   historia: {
     enfermedades: [],
     vacunas: [],
+    discapacidades: [],
     documento_record_notas: false,
     documento_certificado_sigerd: false,
     documento_buena_conducta: false,

@@ -20,6 +20,14 @@
             class="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
         </div>
 
+        <button type="button" @click="promptPrintListado"
+          class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 sm:w-auto transition-colors">
+          <svg class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+          </svg>
+          Imprimir Listado
+        </button>
+
         <NuxtLink to="/admin/admisiones/nueva"
           class="inline-flex items-center justify-center rounded-lg border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 sm:w-auto transition-colors">
           <svg class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -38,10 +46,10 @@
             <tr>
               <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">Estudiante
                 Aspirante</th>
-              <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Documento</th>
+              <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-48">Centro Procedencia</th>
               <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">No. Folder</th>
               <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Sexo</th>
-              <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Área Solicitada</th>
+              <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 w-48">Área Solicitada</th>
               <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">Fecha de Registro</th>
               <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6 whitespace-nowrap">
                 <span class="sr-only">Acciones</span>
@@ -76,8 +84,8 @@
               <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
                 {{ estudiante.nombres }} {{ estudiante.apellidos }}
               </td>
-              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
-                {{ estudiante.cedula || 'N/A' }}
+              <td class="px-3 py-4 text-sm text-gray-500 w-48 whitespace-normal break-words">
+                {{ estudiante.admision?.centro_procedencia || 'N/A' }}
               </td>
               <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 font-bold text-primary-700">
                 {{ estudiante.admision?.no_folder || '-' }}
@@ -85,7 +93,7 @@
               <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                 {{ estudiante.sexo }}
               </td>
-              <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+              <td class="px-3 py-4 text-sm text-gray-500 w-48 whitespace-normal break-words">
                 {{ estudiante.admision?.titulo?.nombre || 'General' }}
               </td>
               <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
@@ -149,16 +157,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, watch } from 'vue'
+import { ref, onMounted, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { api } from '~/utils/api'
 import Swal from 'sweetalert2'
 import { usePrint } from '~/composables/usePrint'
-import { useAuthStore } from '~/stores/auth'
 
 definePageMeta({
   middleware: ['auth']
 })
 
+const router = useRouter()
 const { printPdfBlob } = usePrint()
 
 const estudiantes = ref([])
@@ -218,93 +227,61 @@ const formatDate = (dateString) => {
 }
 
 const viewDetails = (estudiante) => {
-  const config = useRuntimeConfig()
-  const token = localStorage.getItem('auth_token')
-  const pdfToken = estudiante.admision?.pdf_token || estudiante.pdf_token
+  router.push(`/admin/admisiones/${estudiante.id}`)
+}
 
-
-  let reprintHtml = ''
-  if (pdfToken) {
-    reprintHtml = `
-      <div class="mt-6 text-center">
-        <button onclick="window.printAdmisionPdf('${pdfToken}', '${estudiante.nombres}', '${estudiante.apellidos}')" class="inline-flex justify-center items-center bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-md shadow-sm w-full transition-colors">
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
-          Re-imprimir Formulario PDF
-        </button>
-      </div>`
-  }
-
-  // Construir Familiares HTML
-  let familiaresHtml = ''
-  if (estudiante.familiares && estudiante.familiares.length > 0) {
-    familiaresHtml = '<div class="mt-4"><strong>Familiares Registrados:</strong><ul class="list-disc pl-5 mt-1 space-y-1">'
-    estudiante.familiares.forEach(f => {
-      familiaresHtml += `<li>${f.nombres} ${f.apellidos} (${f.parentesco}) - Tel: ${f.celular}</li>`
-    })
-    familiaresHtml += '</ul></div>'
-  }
-
-  // Direccion
-  const dir = estudiante.direccion ? `${estudiante.direccion.calle}, ${estudiante.direccion.sector}, ${estudiante.direccion.municipio}, ${estudiante.direccion.provincia}` : 'No registrada'
-
-  Swal.fire({
-    title: `Perfil de Admisión`,
-    html: `
-      <div class="text-left text-sm mt-4 space-y-3">
-        <h3 class="text-lg font-bold text-gray-900 border-b pb-1">${estudiante.nombres} ${estudiante.apellidos}</h3>
-        <div class="grid grid-cols-2 gap-2">
-          <p><strong>Estado:</strong> <span class="bg-blue-100 text-blue-800 px-2.5 py-0.5 rounded-full text-xs font-semibold">${estudiante.estado.toUpperCase()}</span></p>
-          <p><strong>Cédula:</strong> ${estudiante.cedula || 'N/A'}</p>
-          <p><strong>Sexo:</strong> ${estudiante.sexo}</p>
-          <p><strong>No. Folder:</strong> <span class="text-primary-700 font-bold">${estudiante.admision?.no_folder || 'N/A'}</span></p>
-          <p><strong>Fecha Nacimiento:</strong> ${new Date(estudiante.fecha_nacimiento).toLocaleDateString('es-DO')}</p>
-        </div>
-        
-        <p class="mt-2"><strong>Área Solicitada:</strong> ${estudiante.admision?.titulo?.nombre || 'General'}</p>
-        <p><strong>Centro Procedencia:</strong> ${estudiante.admision?.centro_procedencia || 'N/A'}</p>
-        <p><strong>Dirección:</strong> ${dir}</p>
-        
-        ${familiaresHtml}
-        
-        <p class="mt-4 text-xs text-gray-500 text-right">Registrado el: ${formatDate(estudiante.created_at)}</p>
-        
-        ${reprintHtml}
-      </div>
-    `,
-    icon: 'info',
-    showCloseButton: true,
-    showConfirmButton: false,
-    width: '600px'
+const promptPrintListado = async () => {
+  const { value: formValues } = await Swal.fire({
+    title: 'Imprimir Listado',
+    html:
+      '<div class="text-sm text-left mb-4">Ingrese el rango de números de folder a imprimir. Deje en blanco para incluir todos.</div>' +
+      '<div class="flex gap-4">' +
+      '<div class="flex-1"><label class="block text-xs font-medium text-gray-700 mb-1">Desde Folder No.</label><input id="swal-input1" type="number" class="swal2-input !m-0 !w-full" placeholder="Ej. 1"></div>' +
+      '<div class="flex-1"><label class="block text-xs font-medium text-gray-700 mb-1">Hasta Folder No.</label><input id="swal-input2" type="number" class="swal2-input !m-0 !w-full" placeholder="Ej. 100"></div>' +
+      '</div>',
+    focusConfirm: false,
+    showCancelButton: true,
+    confirmButtonText: 'Generar PDF',
+    cancelButtonText: 'Cancelar',
+    preConfirm: () => {
+      return {
+        desde: document.getElementById('swal-input1').value,
+        hasta: document.getElementById('swal-input2').value
+      }
+    }
   })
+
+  if (formValues) {
+    printListadoUrl(formValues.desde, formValues.hasta)
+  }
+}
+
+const printListadoUrl = async (desde, hasta) => {
+  try {
+    Swal.fire({
+      title: 'Generando documento...',
+      text: 'Por favor espere',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading()
+      }
+    })
+
+    let url = '/api/admisiones/listado-pdf?'
+    if (desde) url += `folder_desde=${desde}&`
+    if (hasta) url += `folder_hasta=${hasta}`
+
+    const blob = await api.getBlob(url)
+    printPdfBlob(blob, `listado_admisiones.pdf`, 'Preparando impresión...')
+    
+    Swal.close()
+  } catch (error) {
+    console.error('Error al generar PDF del listado:', error)
+    Swal.fire('Error', 'No se pudo generar el listado. Intenta nuevamente.', 'error')
+  }
 }
 
 onMounted(() => {
   fetchAdmitidos()
-
-  // Expose function to window for SweetAlert HTML to call
-  window.printAdmisionPdf = async (token, nombres, apellidos) => {
-    try {
-      const config = useRuntimeConfig()
-      const authStore = useAuthStore() // we import it or get from localstorage token as you prefer, 
-      // but API handles auth via interceptor if we use api.getBlob 
-
-      const popup = Swal.getPopup()
-      if (popup) {
-        Swal.showLoading()
-      }
-
-      const blob = await api.getBlob(`/api/admisiones/download-pdf/${token}`)
-      printPdfBlob(blob, `formulario_admision_${nombres}_${apellidos}.pdf`, 'Preparando re-impresión...')
-
-      Swal.close()
-    } catch (e) {
-      console.error('Error re-printing PDF:', e)
-      Swal.fire('Error', 'No se pudo descargar el formulario. Intenta nuevamente.', 'error')
-    }
-  }
-})
-
-onUnmounted(() => {
-  delete window.printAdmisionPdf
 })
 </script>
