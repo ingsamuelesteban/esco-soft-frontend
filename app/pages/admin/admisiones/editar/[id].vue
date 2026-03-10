@@ -447,12 +447,8 @@ import { usePrint } from '~/composables/usePrint'
 import provinciasData from '~/utils/provincias.json'
 import municipiosData from '~/utils/municipios.json'
 
-// Watcher para filtrar títulos al cambiar el año lectivo
-watch(() => form.admision?.anio_lectivo_id, (newAnioId) => {
-  if (newAnioId) {
-    fetchTitulos(newAnioId)
-  }
-})
+// El watcher se moverá después de la declaración de 'form' para evitar problemas de inicialización
+
 
 definePageMeta({
   middleware: ['auth']
@@ -540,6 +536,14 @@ const form = reactive({
   credentials: null,
   pdf_token: null
 })
+
+// Watcher para filtrar títulos al cambiar el año lectivo
+watch(() => form.admision?.anio_lectivo_id, (newAnioId) => {
+  if (newAnioId) {
+    fetchTitulos(newAnioId)
+  }
+}, { immediate: false }) // No immediate para esperar a que los datos se carguen
+
 
 const edadCalculada = computed(() => {
   if (!form.fecha_nacimiento) return ''
@@ -834,17 +838,20 @@ watch(() => authStore.tenant, (newTenant) => {
 }, { immediate: true })
 
 onMounted(async () => {
-  // First fetch base data needed for dropdowns
+  // Solo cargamos años lectivos y provincias al inicio
   await Promise.all([
-    fetchTitulos(),
     fetchAniosLectivos(),
     fetchProvincias()
   ])
   
-  // Then load the student data (which populates historia.firma_coordinador from DB)
+  // Cargamos los datos del estudiante
   await fetchEstudianteData()
 
-  // Only fetch coordinator if it wasn't already populated from the student's saved record
+  // Si después de cargar el estudiante tenemos un año lectivo, cargamos sus títulos
+  if (form.admision?.anio_lectivo_id) {
+    await fetchTitulos(form.admision.anio_lectivo_id)
+  }
+
   await fetchCoordinadorRegistro()
 })
 </script>
