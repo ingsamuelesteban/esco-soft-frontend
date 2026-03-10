@@ -47,6 +47,56 @@
       </div>
     </div>
 
+    <!-- Stats Section -->
+    <div v-if="stats" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+      <!-- Total Card -->
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-center">
+        <div class="p-3 bg-primary-50 rounded-lg mr-4 text-primary-600">
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+        </div>
+        <div>
+          <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Total Aspirantes</p>
+          <h3 class="text-2xl font-black text-gray-900">{{ stats.total }}</h3>
+        </div>
+      </div>
+
+      <!-- Sexo Card -->
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-center">
+        <div class="p-3 bg-pink-50 rounded-lg mr-4 text-pink-600">
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+          </svg>
+        </div>
+        <div class="flex-1">
+          <p class="text-xs text-gray-500 font-bold uppercase tracking-wider">Por Sexo</p>
+          <div class="flex gap-4 mt-1">
+            <div class="flex items-center">
+              <span class="w-3 h-3 bg-blue-500 rounded-full mr-2 shadow-sm"></span>
+              <span class="text-sm font-bold text-gray-700">{{ stats.por_sexo?.Masculino || 0 }} M</span>
+            </div>
+            <div class="flex items-center">
+              <span class="w-3 h-3 bg-pink-500 rounded-full mr-2 shadow-sm"></span>
+              <span class="text-sm font-bold text-gray-700">{{ stats.por_sexo?.Femenino || 0 }} F</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Areas Card -->
+      <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 col-span-1 md:col-span-2">
+        <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2">Conteo por Áreas</p>
+        <div class="flex flex-wrap gap-2 overflow-y-auto max-h-20 pr-1 custom-scrollbar">
+          <div v-for="item in stats.por_area" :key="item.area" 
+            class="flex items-center px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-100 hover:border-primary-200 transition-colors">
+            <span class="text-[11px] font-bold text-gray-600 truncate max-w-[140px]">{{ item.area }}:</span>
+            <span class="ml-2 text-[11px] font-black text-primary-700 bg-white px-1.5 rounded-md shadow-sm border border-gray-100">{{ item.total }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Data Table -->
     <div class="bg-white rounded-xl shadow ring-1 ring-black ring-opacity-5 overflow-hidden">
       <div class="overflow-x-auto">
@@ -195,6 +245,7 @@ const loading = ref(true)
 const searchQuery = ref('')
 const tituloFilter = ref('')
 const titulos = ref([])
+const stats = ref(null)
 
 const fetchTitulos = async () => {
   try {
@@ -224,6 +275,11 @@ const fetchAdmitidos = async (page = 1) => {
       totalPages.value = res.data.last_page
       totalItems.value = res.data.total
       perPage.value = res.data.per_page
+      
+      // Update stats from response
+      if (res.stats) {
+        stats.value = res.stats
+      }
     }
   } catch (error) {
     console.error('Error fetching admisiones:', error)
