@@ -20,6 +20,15 @@
             class="block w-full rounded-md border-0 py-1.5 pl-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
         </div>
 
+        <!-- Filtro por Área Solicitada -->
+        <select v-model="tituloFilter" @change="handleSearch"
+          class="block rounded-md border-0 py-1.5 pl-3 pr-8 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
+          <option value="">Todas las áreas</option>
+          <option v-for="titulo in titulos" :key="titulo.id" :value="titulo.id">
+            {{ titulo.nombre }}
+          </option>
+        </select>
+
         <button type="button" @click="promptPrintListado"
           class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 sm:w-auto transition-colors">
           <svg class="h-5 w-5 mr-2 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -184,6 +193,17 @@ const { printPdfBlob } = usePrint()
 const estudiantes = ref([])
 const loading = ref(true)
 const searchQuery = ref('')
+const tituloFilter = ref('')
+const titulos = ref([])
+
+const fetchTitulos = async () => {
+  try {
+    const res = await api.get('/api/titulos')
+    titulos.value = Array.isArray(res) ? res : (res.data ?? [])
+  } catch (e) {
+    console.error('Error fetching titulos:', e)
+  }
+}
 
 // Pagination
 const currentPage = ref(1)
@@ -194,7 +214,9 @@ const perPage = ref(15)
 const fetchAdmitidos = async (page = 1) => {
   try {
     loading.value = true
-    const res = await api.get(`/api/admisiones?page=${page}&search=${searchQuery.value}`)
+    let url = `/api/admisiones?page=${page}&search=${searchQuery.value}`
+    if (tituloFilter.value) url += `&titulo_id=${tituloFilter.value}`
+    const res = await api.get(url)
 
     if (res.success && res.data) {
       estudiantes.value = res.data.data
@@ -297,6 +319,7 @@ const printListadoUrl = async (desde, hasta) => {
 }
 
 onMounted(() => {
+  fetchTitulos()
   fetchAdmitidos()
 })
 </script>
