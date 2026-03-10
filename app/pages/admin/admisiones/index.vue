@@ -99,11 +99,22 @@
               <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                 {{ formatDate(estudiante.created_at) }}
               </td>
-              <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                <!-- Por ahora un botón placeholder en caso se necesite ver el perfil completo más tarde -->
-                <button type="button" @click="viewDetails(estudiante)"
-                  class="text-primary-600 hover:text-primary-900 font-semibold bg-primary-50 px-3 py-1.5 rounded-md">Ver
-                  Perfil</button>
+              <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 min-w-[120px]">
+                <div class="flex items-center justify-end gap-2">
+                  <button type="button" @click="viewDetails(estudiante)" title="Ver Perfil"
+                    class="text-primary-600 hover:text-primary-900 hover:bg-primary-50 p-2 rounded-md transition-colors">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  </button>
+                  <button type="button" @click="editAdmission(estudiante)" title="Editar"
+                    class="text-blue-600 hover:text-blue-900 hover:bg-blue-50 p-2 rounded-md transition-colors">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -228,6 +239,10 @@ const formatDate = (dateString) => {
 
 const viewDetails = (estudiante) => {
   router.push(`/admin/admisiones/${estudiante.id}`)
+}
+
+const editAdmission = (estudiante) => {
+  router.push(`/admin/admisiones/editar/${estudiante.id}`)
 }
 
 const promptPrintListado = async () => {

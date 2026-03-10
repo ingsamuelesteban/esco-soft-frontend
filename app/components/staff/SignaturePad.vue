@@ -33,6 +33,10 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 import SignaturePad from 'signature_pad'
 
+const props = defineProps<{
+    initialSignature?: string
+}>()
+
 const emit = defineEmits<{
     update: [signature: string]
     change: [isEmpty: boolean]
@@ -62,7 +66,29 @@ onMounted(() => {
             emit('change', isEmpty.value)
         })
 
+        if (props.initialSignature && props.initialSignature.startsWith('data:image')) {
+            setTimeout(() => {
+                if (signaturePad) {
+                    signaturePad.fromDataURL(props.initialSignature)
+                    isEmpty.value = false
+                    emit('update', props.initialSignature)
+                }
+            }, 100)
+        }
+
         window.addEventListener('resize', resizeCanvas)
+    }
+})
+
+import { watch } from 'vue'
+watch(() => props.initialSignature, (newSig) => {
+    if (signaturePad && newSig && newSig.startsWith('data:image') && isEmpty.value) {
+        setTimeout(() => {
+            if (signaturePad) {
+                signaturePad.fromDataURL(newSig)
+                isEmpty.value = false
+            }
+        }, 100)
     }
 })
 
