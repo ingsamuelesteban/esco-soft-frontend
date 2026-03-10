@@ -306,7 +306,8 @@ const printListadoUrl = async (desde, hasta) => {
 
     let url = '/api/admisiones/listado-pdf?'
     if (desde) url += `folder_desde=${desde}&`
-    if (hasta) url += `folder_hasta=${hasta}`
+    if (hasta) url += `folder_hasta=${hasta}&`
+    if (tituloFilter.value) url += `titulo_id=${tituloFilter.value}`
 
     const blob = await api.getBlob(url)
     printPdfBlob(blob, `listado_admisiones.pdf`, 'Preparando impresión...')
