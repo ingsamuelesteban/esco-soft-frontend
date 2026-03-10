@@ -31,96 +31,169 @@
       </svg>
     </div>
 
-    <div v-else-if="dashboardData?.is_preadmitted" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-      <!-- Actividades de Admisión -->
-      <div class="space-y-6">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-          <CalendarIcon class="w-5 h-5 mr-2 text-amber-600 dark:text-amber-400" />
-          Mi Calendario de Admisión
-        </h3>
+    <div v-else-if="dashboardData?.is_preadmitted" class="space-y-6">
+      <!-- Top 2-col: Actividades + documentos checklist -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Actividades de Admisión -->
+        <div class="space-y-6">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+            <CalendarIcon class="w-5 h-5 mr-2 text-amber-600 dark:text-amber-400" />
+            Mi Calendario de Admisión
+          </h3>
 
-        <div v-if="dashboardData.admission_activities?.length === 0" class="glass-card p-6 text-center text-gray-500">
-          No hay actividades programadas para tu número de folder aún.
-        </div>
+          <div v-if="dashboardData.admission_activities?.length === 0" class="glass-card p-6 text-center text-gray-500">
+            No hay actividades programadas para tu número de folder aún.
+          </div>
 
-        <div v-else class="space-y-4">
-          <div v-for="act in dashboardData.admission_activities" :key="act.id"
-            class="glass-card p-5 border-l-4 border-l-amber-500 hover:shadow-md transition-all">
-            <div class="flex items-center justify-between">
-              <div>
-                <h4 class="font-bold text-gray-900 dark:text-white">{{ act.actividad }}</h4>
-                <div class="flex items-center mt-2 text-sm text-gray-600 dark:text-gray-400">
-                  <span class="flex items-center mr-4">
-                    <CalendarIcon class="w-4 h-4 mr-1" />
-                    {{ formatDate(act.fecha) }}
-                  </span>
-                  <span v-if="act.hora" class="flex items-center">
-                    <ClockIcon class="w-4 h-4 mr-1" />
-                    {{ act.hora }}
-                  </span>
+          <div v-else class="space-y-4">
+            <div v-for="act in dashboardData.admission_activities" :key="act.id"
+              class="glass-card p-5 border-l-4 border-l-amber-500 hover:shadow-md transition-all">
+              <div class="flex items-center justify-between">
+                <div>
+                  <h4 class="font-bold text-gray-900 dark:text-white">{{ act.actividad }}</h4>
+                  <div class="flex items-center mt-2 text-sm text-gray-600 dark:text-gray-400">
+                    <span class="flex items-center mr-4">
+                      <CalendarIcon class="w-4 h-4 mr-1" />
+                      {{ formatDate(act.fecha) }}
+                    </span>
+                    <span v-if="act.hora" class="flex items-center">
+                      <ClockIcon class="w-4 h-4 mr-1" />
+                      {{ act.hora }}
+                    </span>
+                  </div>
+                </div>
+                <div class="bg-amber-50 dark:bg-amber-900/20 p-2 rounded-lg">
+                  <CalendarIcon class="w-6 h-6 text-amber-600" />
                 </div>
               </div>
-              <div class="bg-amber-50 dark:bg-amber-900/20 p-2 rounded-lg">
-                <CalendarIcon class="w-6 h-6 text-amber-600" />
+            </div>
+          </div>
+
+          <!-- Info Card -->
+          <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-5">
+            <div class="flex">
+              <InformationCircleIcon class="h-5 w-5 text-blue-400 mt-0.5 mr-3" />
+              <div>
+                <h4 class="text-sm font-bold text-blue-900 dark:text-blue-200 uppercase tracking-wide">Información de
+                  Inscripción</h4>
+                <p class="mt-2 text-sm text-blue-700 dark:text-blue-300">
+                  Tu número de folder asignado es el <span class="font-black">#{{ dashboardData.student.no_folder
+                  }}</span>.
+                  Las actividades mostradas corresponden al proceso de admisión del año <span
+                    class="font-bold text-blue-900 dark:text-blue-100">{{ dashboardData.academic_year }}</span>.
+                </p>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Info Card -->
-        <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-5">
-          <div class="flex">
-            <InformationCircleIcon class="h-5 w-5 text-blue-400 mt-0.5 mr-3" />
-            <div>
-              <h4 class="text-sm font-bold text-blue-900 dark:text-blue-200 uppercase tracking-wide">Información de
-                Inscripción</h4>
-              <p class="mt-2 text-sm text-blue-700 dark:text-blue-300">
-                Tu número de folder asignado es el <span class="font-black">#{{ dashboardData.student.no_folder
-                }}</span>.
-                Las actividades mostradas corresponden al proceso de admisión del año <span
-                  class="font-bold text-blue-900 dark:text-blue-100">{{ dashboardData.academic_year }}</span>.
+        <!-- Documentos Pendientes (checklist) -->
+        <div class="space-y-6">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+            <DocumentTextIcon class="w-5 h-5 mr-2 text-red-600 dark:text-red-400" />
+            Documentos Pendientes
+          </h3>
+
+          <div class="glass-card p-6 bg-white dark:bg-gray-800">
+            <div v-if="dashboardData.pending_documents?.length === 0" class="text-center py-4">
+              <div
+                class="inline-flex items-center justify-center p-3 bg-green-100 dark:bg-green-900/30 rounded-full mb-3">
+                <CheckCircleIcon class="w-8 h-8 text-green-600" />
+              </div>
+              <p class="text-gray-900 dark:text-white font-bold">¡Expediente Completo!</p>
+              <p class="text-sm text-gray-500 mt-1">Has entregado todos los documentos requeridos.</p>
+            </div>
+            <div v-else>
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+                Por favor entrega los siguientes documentos en el departamento de admisiones para completar tu
+                inscripción.
+                <br><br>
+                <span class="font-medium text-blue-700 dark:text-blue-400">
+                  Luego de completar el proceso de admisión, se le indicará la fecha en que debe traer estos documentos:
+                </span>
               </p>
+              <ul class="space-y-3">
+                <li v-for="doc in dashboardData.pending_documents" :key="doc"
+                  class="flex items-center text-sm text-gray-700 dark:text-gray-300">
+                  <XCircleIcon class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" />
+                  {{ doc }}
+                </li>
+              </ul>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Documentos Pendientes -->
-      <div class="space-y-6">
+      <!-- Documentos Solicitados (uploads) -->
+      <div v-if="dashboardData.document_requests?.length > 0" class="space-y-4">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
-          <DocumentTextIcon class="w-5 h-5 mr-2 text-red-600 dark:text-red-400" />
-          Documentos Pendientes
+          <ArrowUpTrayIcon class="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400" />
+          Documentos Solicitados por Administración
         </h3>
 
-        <div class="glass-card p-6 bg-white dark:bg-gray-800">
-          <div v-if="dashboardData.pending_documents?.length === 0" class="text-center py-4">
-            <div
-              class="inline-flex items-center justify-center p-3 bg-green-100 dark:bg-green-900/30 rounded-full mb-3">
-              <CheckCircleIcon class="w-8 h-8 text-green-600" />
-            </div>
-            <p class="text-gray-900 dark:text-white font-bold">¡Expediente Completo!</p>
-            <p class="text-sm text-gray-500 mt-1">Has entregado todos los documentos requeridos.</p>
-          </div>
-          <div v-else>
-            <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
-              Por favor entrega los siguientes documentos en el departamento de admisiones para completar tu
-              inscripción.
-              <br><br>
-              <span class="font-medium text-blue-700 dark:text-blue-400">
-                Luego de completar el proceso de admisión, se le indicará la fecha en que debe traer estos documentos:
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div v-for="req in dashboardData.document_requests" :key="req.id"
+            class="glass-card p-5 border-l-4 transition-all"
+            :class="{
+              'border-l-amber-400': req.status === 'pending',
+              'border-l-blue-500': req.status === 'uploaded',
+              'border-l-green-500': req.status === 'received',
+              'border-l-red-500': req.status === 'rejected',
+            }">
+            <!-- Title & Status -->
+            <div class="flex items-start justify-between mb-3">
+              <h4 class="font-semibold text-gray-900 dark:text-white text-sm leading-tight pr-2">{{ req.titulo }}</h4>
+              <span class="shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold"
+                :class="{
+                  'bg-amber-100 text-amber-800': req.status === 'pending',
+                  'bg-blue-100 text-blue-800': req.status === 'uploaded',
+                  'bg-green-100 text-green-800': req.status === 'received',
+                  'bg-red-100 text-red-800': req.status === 'rejected',
+                }">
+                {{ ({ pending: 'Pendiente', uploaded: 'Enviado', received: 'Recibido ✓', rejected: 'Rechazado' } as Record<string,string>)[req.status] }}
               </span>
-            </p>
-            <ul class="space-y-3">
-              <li v-for="doc in dashboardData.pending_documents" :key="doc"
-                class="flex items-center text-sm text-gray-700 dark:text-gray-300">
-                <XCircleIcon class="w-5 h-5 text-red-500 mr-2 flex-shrink-0" />
-                {{ doc }}
-              </li>
-            </ul>
+            </div>
+
+            <p v-if="req.descripcion" class="text-xs text-gray-500 dark:text-gray-400 mb-3 line-clamp-2">
+              {{ req.descripcion }}</p>
+
+            <div v-if="req.status === 'rejected' && req.notes" class="mb-3 p-3 bg-red-50 text-red-700 text-xs rounded border border-red-100">
+              <span class="font-bold block mb-1">Motivo del rechazo:</span>
+              {{ req.notes }}
+            </div>
+
+            <!-- Pending / Rejected: show upload button -->
+            <div v-if="req.status === 'pending' || req.status === 'rejected'" class="mt-2">
+              <label :for="`file-upload-${req.id}`"
+                class="cursor-pointer flex items-center justify-center gap-2 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg px-3 py-2 transition-colors">
+                <ArrowUpTrayIcon class="w-4 h-4" />
+                {{ uploadingId === req.id ? 'Subiendo...' : 'Subir Archivo' }}
+              </label>
+              <input :id="`file-upload-${req.id}`" type="file" class="hidden"
+                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                @change="(e) => uploadFile(e, req.id)" />
+              <p class="text-[10px] text-gray-400 mt-1 text-center">PDF, imagen o Word (máx. 10 MB)</p>
+            </div>
+
+            <!-- Uploaded -->
+            <div v-else-if="req.status === 'uploaded'"
+              class="mt-2 flex items-center gap-1.5 text-xs text-blue-600 dark:text-blue-400">
+              <DocumentTextIcon class="w-4 h-4 shrink-0" />
+              <span class="truncate">{{ req.file_name }}</span>
+            </div>
+
+            <!-- Received -->
+            <div v-else-if="req.status === 'received'"
+              class="mt-2 flex items-center gap-1.5 text-xs text-green-600 font-medium">
+              <CheckCircleIcon class="w-4 h-4" />
+              Recibido por administración
+            </div>
           </div>
         </div>
       </div>
     </div>
+
+
 
     <div v-else class="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
@@ -339,13 +412,15 @@
 import { ref, onMounted, computed } from 'vue'
 import { api } from '../../utils/api'
 import AnnouncementsBanner from '~/components/anuncios/AnnouncementsBanner.vue'
+import Swal from 'sweetalert2'
 import {
   CalendarIcon,
   ClockIcon,
   InformationCircleIcon,
   DocumentTextIcon,
   XCircleIcon,
-  CheckCircleIcon
+  CheckCircleIcon,
+  ArrowUpTrayIcon,
 } from '@heroicons/vue/24/outline'
 
 definePageMeta({
@@ -356,6 +431,7 @@ definePageMeta({
 const loading = ref(true)
 const dashboardData = ref<any>(null)
 const selectedDay = ref<number>(new Date().getDay() || 1) // Default to today (or Mon if Sun)
+const uploadingId = ref<number | null>(null)
 
 const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']
 
@@ -402,6 +478,35 @@ const formatDate = (date: string) => {
 
 const formatTime = (time: string) => {
   return time.substring(0, 5)
+}
+
+const uploadFile = async (event: Event, uploadId: number) => {
+  const input = event.target as HTMLInputElement
+  if (!input.files || !input.files[0]) return
+  const file = input.files[0]
+  if (file.size > 10 * 1024 * 1024) {
+    return Swal.fire('Archivo muy grande', 'El archivo no puede superar los 10 MB.', 'warning')
+  }
+  uploadingId.value = uploadId
+  try {
+    const formData = new FormData()
+    formData.append('file', file)
+    const res = await api.post(`/api/student/solicitudes-documentos/${uploadId}/upload`, formData)
+    if (res.success) {
+      // Update local state reactively
+      const req = dashboardData.value?.document_requests?.find((r: any) => r.id === uploadId)
+      if (req) {
+        req.status = 'uploaded'
+        req.file_name = file.name
+      }
+      Swal.fire({ icon: 'success', title: 'Archivo enviado', toast: true, position: 'top-end', showConfirmButton: false, timer: 2500 })
+    }
+  } catch (e: any) {
+    Swal.fire('Error', e?.message || 'No se pudo subir el archivo.', 'error')
+  } finally {
+    uploadingId.value = null
+    input.value = '' // reset input
+  }
 }
 
 onMounted(async () => {
