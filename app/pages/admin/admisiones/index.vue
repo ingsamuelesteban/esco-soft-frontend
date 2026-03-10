@@ -1,12 +1,12 @@
 <template>
   <div class="space-y-6 max-w-7xl mx-auto pb-12">
     <!-- Header Page -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-      <div>
-        <h1 class="text-2xl font-bold text-gray-900">Pre-admisiones</h1>
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 flex-wrap">
+      <div class="min-w-0">
+        <h1 class="text-2xl font-bold text-gray-900 truncate">Pre-admisiones</h1>
         <p class="text-sm text-gray-500 mt-1">Gestión de nuevas inscripciones pendientes de revisión</p>
       </div>
-      <div class="flex gap-4 items-center">
+      <div class="flex flex-wrap gap-2 items-center flex-shrink-0">
         <!-- Barra de búsqueda -->
         <div class="relative rounded-md shadow-sm sm:w-64">
           <div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
@@ -22,7 +22,7 @@
 
         <!-- Filtro por Área Solicitada -->
         <select v-model="tituloFilter" @change="handleSearch"
-          class="block rounded-md border-0 py-1.5 pl-3 pr-8 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
+          class="w-48 block rounded-md border-0 py-1.5 pl-3 pr-8 text-gray-900 ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
           <option value="">Todas las áreas</option>
           <option v-for="titulo in titulos" :key="titulo.id" :value="titulo.id">
             {{ titulo.nombre }}
