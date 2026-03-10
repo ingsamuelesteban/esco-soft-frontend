@@ -48,7 +48,15 @@
     </div>
 
     <!-- Stats Section -->
-    <div v-if="stats" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div v-if="stats" class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6 relative group">
+      <!-- Botón de Imprimir Estadísticas -->
+      <button type="button" @click="promptPrintEstadisticas" title="Imprimir Estadísticas"
+        class="absolute -top-3 -right-3 z-10 bg-white p-2 rounded-full shadow-md border border-gray-200 text-gray-500 hover:text-primary-600 hover:bg-primary-50 transition-all opacity-0 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-primary-500">
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+        </svg>
+      </button>
+
       <!-- Total Card -->
       <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 flex items-center">
         <div class="p-3 bg-primary-50 rounded-lg mr-4 text-primary-600">
@@ -248,13 +256,24 @@ definePageMeta({
 
 const router = useRouter()
 const { printPdfBlob } = usePrint()
+const authStore = useAuthStore()
 
 const estudiantes = ref([])
 const loading = ref(true)
 const searchQuery = ref('')
 const tituloFilter = ref('')
+const selectedFolder = ref('')
 const titulos = ref([])
 const stats = ref(null)
+
+const isPrinting = ref(false)
+
+// Pagination
+const page = ref(1)
+const currentPage = ref(1)
+const totalPages = ref(1)
+const totalItems = ref(0)
+const perPage = ref(15)
 
 const fetchTitulos = async () => {
   try {
@@ -269,12 +288,6 @@ const calculatePercentage = (count) => {
   if (!stats.value || !stats.value.total) return 0
   return ((count / stats.value.total) * 100).toFixed(1)
 }
-
-// Pagination
-const currentPage = ref(1)
-const totalPages = ref(1)
-const totalItems = ref(0)
-const perPage = ref(15)
 
 const fetchAdmitidos = async (page = 1) => {
   try {
