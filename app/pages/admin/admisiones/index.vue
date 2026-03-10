@@ -87,11 +87,12 @@
       <div class="bg-white p-5 rounded-xl shadow-sm border border-gray-100 col-span-1 md:col-span-2">
         <p class="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2">Conteo por Áreas</p>
         <div class="flex flex-wrap gap-2 overflow-y-auto max-h-20 pr-1 custom-scrollbar">
-          <div v-for="item in stats.por_area" :key="item.area" :title="item.area"
-            class="flex items-center px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-100 hover:border-primary-200 hover:bg-primary-50 transition-colors cursor-help">
-            <span class="text-[11px] font-bold text-gray-600 truncate max-w-[140px]">{{ item.area }}:</span>
-            <span class="ml-2 text-[11px] font-black text-primary-700 bg-white px-1.5 rounded-md shadow-sm border border-gray-100">{{ item.total }}</span>
-          </div>
+          <UiTooltip v-for="item in stats.por_area" :key="item.area" :text="item.area">
+            <div class="flex items-center px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-100 hover:border-primary-200 hover:bg-primary-50 transition-colors cursor-help">
+              <span class="text-[11px] font-bold text-gray-600 truncate max-w-[140px]">{{ item.area }}:</span>
+              <span class="ml-2 text-[11px] font-black text-primary-700 bg-white px-1.5 rounded-md shadow-sm border border-gray-100">{{ item.total }}</span>
+            </div>
+          </UiTooltip>
         </div>
       </div>
     </div>
