@@ -74,11 +74,17 @@
           <div class="flex gap-4 mt-1">
             <div class="flex items-center">
               <span class="w-3 h-3 bg-blue-500 rounded-full mr-2 shadow-sm"></span>
-              <span class="text-sm font-bold text-gray-700">{{ stats.por_sexo?.Masculino || 0 }} M</span>
+              <span class="text-sm font-bold text-gray-700">
+                {{ stats.por_sexo?.Masculino || 0 }} M
+                <span class="text-[10px] font-normal text-gray-500 ml-0.5">({{ calculatePercentage(stats.por_sexo?.Masculino || 0) }}%)</span>
+              </span>
             </div>
             <div class="flex items-center">
               <span class="w-3 h-3 bg-pink-500 rounded-full mr-2 shadow-sm"></span>
-              <span class="text-sm font-bold text-gray-700">{{ stats.por_sexo?.Femenino || 0 }} F</span>
+              <span class="text-sm font-bold text-gray-700">
+                {{ stats.por_sexo?.Femenino || 0 }} F
+                <span class="text-[10px] font-normal text-gray-500 ml-0.5">({{ calculatePercentage(stats.por_sexo?.Femenino || 0) }}%)</span>
+              </span>
             </div>
           </div>
         </div>
@@ -90,7 +96,10 @@
           <UiTooltip v-for="item in stats.por_area" :key="item.area" :text="item.area">
             <div class="flex items-center px-3 py-1.5 bg-gray-50 rounded-lg border border-gray-100 hover:border-primary-200 hover:bg-primary-50 transition-colors cursor-help">
               <span class="text-[11px] font-bold text-gray-600 truncate max-w-[140px]">{{ item.area }}:</span>
-              <span class="ml-2 text-[11px] font-black text-primary-700 bg-white px-1.5 rounded-md shadow-sm border border-gray-100">{{ item.total }}</span>
+              <span class="ml-2 text-[11px] font-black text-primary-700 bg-white px-1.5 rounded-md shadow-sm border border-gray-100">
+                {{ item.total }}
+                <span class="text-[9px] font-normal text-gray-400 ml-0.5">{{ calculatePercentage(item.total) }}%</span>
+              </span>
             </div>
           </UiTooltip>
         </div>
@@ -254,6 +263,11 @@ const fetchTitulos = async () => {
   } catch (e) {
     console.error('Error fetching titulos:', e)
   }
+}
+
+const calculatePercentage = (count) => {
+  if (!stats.value || !stats.value.total) return 0
+  return ((count / stats.value.total) * 100).toFixed(1)
 }
 
 // Pagination
