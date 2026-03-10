@@ -402,6 +402,72 @@ const printListadoUrl = async (desde, hasta) => {
   }
 }
 
+const promptPrintEstadisticas = async () => {
+  const { value: formValues } = await Swal.fire({
+    title: 'Imprimir Estadísticas',
+    html: `
+      <div class="text-sm text-gray-500 mb-4 text-left">Seleccione un rango de fechas de admisión. Deje en blanco para incluir todo el histórico.</div>
+      <div class="space-y-4 text-left">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Inicio</label>
+          <input type="date" id="swal-fecha-inicio" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+        </div>
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Fecha de Fin</label>
+          <input type="date" id="swal-fecha-fin" class="w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+        </div>
+      </div>
+    `,
+    showCancelButton: true,
+    confirmButtonText: '<svg class="h-4 w-4 mr-2 inline" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg> Imprimir',
+    cancelButtonText: 'Cancelar',
+    confirmButtonColor: '#0ea5e9',
+    focusConfirm: false,
+    preConfirm: () => {
+      const inicio = document.getElementById('swal-fecha-inicio').value
+      const fin = document.getElementById('swal-fecha-fin').value
+
+      if (inicio && fin && new Date(inicio) > new Date(fin)) {
+        Swal.showValidationMessage('La fecha de inicio no puede ser mayor que la de fin')
+        return false
+      }
+
+      return {
+        inicio,
+        fin
+      }
+    }
+  })
+
+  if (formValues) {
+    try {
+      Swal.fire({
+        title: 'Generando documento...',
+        text: 'Por favor espere',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading()
+        }
+      })
+
+      let url = '/api/admisiones/estadisticas-pdf?'
+      const params = new URLSearchParams()
+      
+      if (formValues.inicio) params.append('fecha_inicio', formValues.inicio)
+      if (formValues.fin) params.append('fecha_fin', formValues.fin)
+      
+      url += params.toString()
+      const blob = await api.getBlob(url)
+      printPdfBlob(blob, 'Estadísticas de Admisiones.pdf', 'Preparando impresión...')
+      
+      Swal.close()
+    } catch (error) {
+      console.error('Error al generar PDF de estadísticas:', error)
+      Swal.fire('Error', 'No se pudieron generar las estadísticas. Intenta nuevamente.', 'error')
+    }
+  }
+}
+
 onMounted(() => {
   fetchTitulos()
   fetchAdmitidos()
