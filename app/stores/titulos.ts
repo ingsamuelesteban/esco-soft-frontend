@@ -9,6 +9,7 @@ export interface Titulo {
   codigo: string
   activo: boolean
   familia?: { id: number; nombre: string }
+  anios_lectivos?: any[]
 }
 
 export const useTitulosStore = defineStore('titulos', {
@@ -24,7 +25,7 @@ export const useTitulosStore = defineStore('titulos', {
     activas: (s) => s.items.filter(t => t.activo),
   },
   actions: {
-    async fetchAll(params?: { familiaId?: number; search?: string }) {
+    async fetchAll(params?: { familiaId?: number; search?: string; anio_lectivo_id?: number }) {
       this.loading = true
       this.error = null
       startLoading()
@@ -32,6 +33,7 @@ export const useTitulosStore = defineStore('titulos', {
         const query = new URLSearchParams()
         if (params?.familiaId) query.set('familia_id', String(params.familiaId))
         if (params?.search) query.set('search', params.search)
+        if (params?.anio_lectivo_id) query.set('anio_lectivo_id', String(params.anio_lectivo_id))
         const url = `/api/titulos${query.toString() ? `?${query.toString()}` : ''}`
         const data = await api.get<{ count: number; data: Titulo[] }>(url)
         this.items = data.data
@@ -98,5 +100,21 @@ export const useTitulosStore = defineStore('titulos', {
         finishLoading()
       }
     },
+    
+    async bulkCopyToYear(payload: { titulo_ids: number[], anio_lectivo_id: number }) {
+      this.loading = true
+      this.error = null
+      startLoading()
+      try {
+        await api.post('/api/titulos/bulk-copy', payload)
+      } catch (e: any) {
+        this.error = e.data?.message || 'Error al copiar títulos'
+        console.error(e)
+        throw e
+      } finally {
+        this.loading = false
+        finishLoading()
+      }
+    }
   },
 })

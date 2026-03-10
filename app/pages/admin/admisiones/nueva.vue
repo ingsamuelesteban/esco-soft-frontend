@@ -602,9 +602,12 @@ const handleSignatureUpdate = (dataUrl) => {
   form.historia.firma_padre_path = dataUrl
 }
 
-const fetchTitulos = async () => {
+const fetchTitulos = async (anioId = null) => {
   try {
-    const res = await api.get('/api/titulos')
+    const params = {}
+    if (anioId) params.anio_lectivo_id = anioId
+    
+    const res = await api.get('/api/titulos', { params })
     titulos.value = res.data || []
   } catch (e) {
     console.error('Error fetching titulos', e)
@@ -721,6 +724,12 @@ const submitForm = async () => {
     loading.value = false
   }
 }
+
+watch(() => form.admision.anio_lectivo_id, (newAnioId) => {
+  if (newAnioId) {
+    fetchTitulos(newAnioId)
+  }
+})
 
 watch(() => authStore.tenant, (newTenant) => {
   if (newTenant) {

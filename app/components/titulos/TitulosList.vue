@@ -6,23 +6,49 @@
       <div class="ml-4 text-sm text-gray-500" v-if="!loading">Total: {{ filtered.length }}</div>
     </div>
 
+    <div v-if="selectedIds.length > 0" class="p-4 bg-blue-50 border-b border-blue-100 flex items-center justify-between">
+      <span class="text-sm font-medium text-blue-700">{{ selectedIds.length }} títulos seleccionados</span>
+      <button @click="openBulkCopyModal" 
+        class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+        Habilitar en otro Año Lectivo
+      </button>
+    </div>
+
     <div class="overflow-x-auto">
       <table class="min-w-full divide-y divide-gray-200">
         <thead class="bg-gray-50">
           <tr>
+            <th class="px-4 py-3 text-left">
+              <input type="checkbox" :checked="allSelected" @change="toggleSelectAll" 
+                class="rounded border-gray-300 text-primary-600 focus:ring-primary-600" />
+            </th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Familia</th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Código</th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Años Vigentes</th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
           </tr>
         </thead>
         <tbody class="bg-white divide-y divide-gray-200">
           <tr v-for="t in filtered" :key="t.id">
+            <td class="px-4 py-3 whitespace-nowrap">
+              <input type="checkbox" :value="t.id" v-model="selectedIds"
+                class="rounded border-gray-300 text-primary-600 focus:ring-primary-600" />
+            </td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">{{ t.familia?.nombre ||
               familiaNombre(t.familia_profesional_id) }}</td>
             <td class="px-4 py-3 whitespace-nowrap text-sm font-mono">{{ t.codigo }}</td>
             <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900">{{ t.nombre }}</td>
+            <td class="px-4 py-3 whitespace-nowrap text-[10px]">
+              <div class="flex flex-wrap gap-1">
+                <span v-for="a in t.anios_lectivos" :key="a.id" 
+                  class="px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded border border-gray-200">
+                  {{ a.nombre }}
+                </span>
+                <span v-if="!t.anios_lectivos?.length" class="text-gray-400 italic">Ninguno</span>
+              </div>
+            </td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">
               <span :class="t.activo ? 'text-green-600' : 'text-red-600'">{{ t.activo ? 'Activo' : 'Inactivo' }}</span>
             </td>
@@ -67,6 +93,8 @@
 import { computed, onMounted, ref } from 'vue'
 import { useTitulosStore, type Titulo } from '../../stores/titulos'
 import { useFamiliasProfesionalesStore } from '../../stores/familias_profesionales'
+import { api } from '../../utils/api'
+import Swal from 'sweetalert2'
 
 const emit = defineEmits<{ edit: [titulo: Titulo]; delete: [id: number] }>()
 
@@ -74,6 +102,7 @@ const titulos = useTitulosStore()
 const familias = useFamiliasProfesionalesStore()
 
 const query = ref('')
+const selectedIds = ref<number[]>([])
 
 onMounted(async () => {
   await familias.fetchAll()
@@ -92,4 +121,62 @@ const filtered = computed(() => {
     familiaNombre(t.familia_profesional_id).toLowerCase().includes(q)
   )
 })
+
+const allSelected = computed(() => {
+  return filtered.value.length > 0 && selectedIds.value.length === filtered.value.length
+})
+
+const toggleSelectAll = () => {
+  if (allSelected.value) {
+    selectedIds.value = []
+  } else {
+    selectedIds.value = filtered.value.map(t => t.id)
+  }
+}
+
+const openBulkCopyModal = async () => {
+  try {
+    const res = await api.get('/api/anios-lectivos')
+    const anios = Array.isArray(res) ? res : (res.data || [])
+    
+    const { value: anioId } = await Swal.fire({
+      title: 'Habilitar Títulos en otro Año Lectivo',
+      text: `Se habilitarán los ${selectedIds.value.length} títulos seleccionados.`,
+      input: 'select',
+      inputOptions: anios.reduce((acc: any, a: any) => {
+        acc[a.id] = a.nombre + (a.activo ? ' (Activo)' : '')
+        return acc
+      }, {}),
+      inputPlaceholder: 'Seleccione Año Lectivo Destino',
+      showCancelButton: true,
+      confirmButtonText: 'Habilitar',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#0ea5e9',
+      inputValidator: (value: string) => {
+        if (!value) return 'Debes seleccionar un año lectivo'
+        return null
+      }
+    })
+
+    if (anioId) {
+      await titulos.bulkCopyToYear({
+        titulo_ids: selectedIds.value,
+        anio_lectivo_id: parseInt(anioId)
+      })
+      
+      selectedIds.value = []
+      await titulos.fetchAll()
+      
+      await Swal.fire({
+        icon: 'success',
+        title: 'Completado',
+        text: 'Los títulos han sido habilitados para el año seleccionado.',
+        timer: 2000,
+        showConfirmButton: false
+      })
+    }
+  } catch (e) {
+    console.error('Error in bulk copy', e)
+  }
+}
 </script>

@@ -447,6 +447,13 @@ import { usePrint } from '~/composables/usePrint'
 import provinciasData from '~/utils/provincias.json'
 import municipiosData from '~/utils/municipios.json'
 
+// Watcher para filtrar títulos al cambiar el año lectivo
+watch(() => form.admision?.anio_lectivo_id, (newAnioId) => {
+  if (newAnioId) {
+    fetchTitulos(newAnioId)
+  }
+})
+
 definePageMeta({
   middleware: ['auth']
 })
@@ -620,9 +627,12 @@ const handleSignatureUpdate = (dataUrl) => {
   form.historia.firma_padre_path = dataUrl
 }
 
-const fetchTitulos = async () => {
+const fetchTitulos = async (anioId = null) => {
   try {
-    const res = await api.get('/api/titulos')
+    const params = {}
+    if (anioId) params.anio_lectivo_id = anioId
+    
+    const res = await api.get('/api/titulos', { params })
     titulos.value = res.data || []
   } catch (e) {
     console.error('Error fetching titulos', e)

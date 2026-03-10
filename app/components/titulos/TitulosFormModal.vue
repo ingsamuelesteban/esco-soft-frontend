@@ -29,6 +29,17 @@
                   class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
               </div>
               <div>
+                <label class="block text-sm font-medium text-gray-700">Años Lectivos de Vigencia</label>
+                <div class="mt-2 grid grid-cols-2 gap-2 border p-3 rounded-md bg-gray-50 max-h-40 overflow-y-auto">
+                  <label v-for="anio in aniosStore" :key="anio.id" class="flex items-center gap-2 cursor-pointer">
+                    <input type="checkbox" :value="anio.id" v-model="form.anio_lectivo_ids"
+                      class="rounded border-gray-300 text-primary-600 focus:ring-primary-600" />
+                    <span class="text-xs text-gray-700">{{ anio.nombre }}</span>
+                  </label>
+                </div>
+                <p class="mt-1 text-[10px] text-gray-500 italic">Los estudiantes solo podrán inscribirse en este título si está habilitado para el año seleccionado en la admisión.</p>
+              </div>
+              <div>
                 <label class="flex items-center">
                   <input v-model="form.activo" type="checkbox"
                     class="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-offset-0 focus:ring-primary-200 focus:ring-opacity-50" />
@@ -61,6 +72,7 @@ const emit = defineEmits<{ close: []; saved: [] }>()
 
 const titulos = useTitulosStore()
 const familiasStore = useFamiliasProfesionalesStore()
+const aniosStore = ref<any[]>([])
 
 const familias = computed(() => familiasStore.items)
 const isEdit = computed(() => !!props.titulo)
@@ -69,12 +81,22 @@ const loading = ref(false)
 const error = ref<string | null>(null)
 const initialInput = ref<HTMLSelectElement | null>(null)
 
-const form = ref<Omit<Titulo, 'id' | 'familia'>>({
+const form = ref<any>({
   familia_profesional_id: 0,
   nombre: '',
   codigo: '',
   activo: true,
+  anio_lectivo_ids: []
 })
+
+const fetchAnios = async () => {
+  try {
+    const res = await api.get('/api/anios-lectivos')
+    aniosStore.value = Array.isArray(res) ? res : (res.data || [])
+  } catch (e) {
+    console.error('Error fetching anios', e)
+  }
+}
 
 watch(() => props.titulo, (val) => {
   if (val) {
@@ -83,11 +105,21 @@ watch(() => props.titulo, (val) => {
       nombre: val.nombre,
       codigo: val.codigo,
       activo: val.activo,
+      anio_lectivo_ids: val.anios_lectivos?.map(a => a.id) || []
+    }
+  } else {
+    form.value = {
+      familia_profesional_id: 0,
+      nombre: '',
+      codigo: '',
+      activo: true,
+      anio_lectivo_ids: []
     }
   }
 }, { immediate: true })
 
 onMounted(() => {
+  fetchAnios()
   setTimeout(() => {
     initialInput.value?.focus()
   }, 100)
