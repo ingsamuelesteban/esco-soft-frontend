@@ -93,6 +93,20 @@
         </button>
         <h2 class="text-xl font-bold text-gray-900">{{ detail?.solicitud?.titulo }}</h2>
         <span class="text-sm text-gray-400">| Folders {{ detail?.solicitud?.folder_desde }} – {{ detail?.solicitud?.folder_hasta }}</span>
+        
+        <div class="ml-auto">
+          <button @click="refreshSolicitud(detail?.solicitud?.id)" type="button" :disabled="isRefreshing"
+            class="flex items-center justify-center w-8 h-8 rounded-full bg-blue-50 text-blue-600 hover:bg-blue-100 hover:text-blue-700 transition-colors tooltip-target"
+            title="Refrescar (buscar estudiantes faltantes en el rango)">
+            <svg v-if="isRefreshing" class="animate-spin w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor"
+                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+              </path>
+            </svg>
+            <ArrowPathIcon v-else class="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       <div v-if="detailLoading" class="flex justify-center py-10">
@@ -291,6 +305,7 @@ import {
   ArrowDownTrayIcon,
   XMarkIcon,
   XCircleIcon,
+  ArrowPathIcon,
 } from '@heroicons/vue/24/outline'
 
 definePageMeta({ middleware: ['auth'] })
@@ -298,6 +313,7 @@ definePageMeta({ middleware: ['auth'] })
 const loading = ref(true)
 const saving = ref(false)
 const detailLoading = ref(false)
+const isRefreshing = ref(false)
 const showCreateModal = ref(false)
 const solicitudes = ref<any[]>([])
 const selectedSolicitud = ref<number | null>(null)
@@ -327,6 +343,44 @@ const loadDetail = async (id: number) => {
     if (res.success) detail.value = res.data
   } catch (e) { console.error(e) }
   finally { detailLoading.value = false }
+}
+
+const refreshSolicitud = async (id: number) => {
+  if (!id || isRefreshing.value) return
+
+  isRefreshing.value = true
+  try {
+    const res = await api.post(`/api/admision-solicitudes/${id}/refresh`, {})
+    if (res.success) {
+      if (res.generados > 0) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Actualización Completa',
+          text: `Se agregaron ${res.generados} nuevos estudiantes faltantes asignados a esta solicitud.`,
+          confirmButtonColor: '#0ea5e9'
+        })
+      } else {
+        Swal.fire({
+          icon: 'info',
+          title: 'Al Día',
+          text: 'No se encontraron nuevos estudiantes dentro de este rango de folders.',
+          confirmButtonColor: '#0ea5e9'
+        })
+      }
+      await loadDetail(id)
+      await loadSolicitudes()
+    }
+  } catch (e) {
+    console.error('Error refreshing solicitud', e)
+    Swal.fire({
+      icon: 'error',
+      title: 'Error',
+      text: 'Ocurrió un error al intentar refrescar la solicitud.',
+      confirmButtonColor: '#f43f5e'
+    })
+  } finally {
+    isRefreshing.value = false
+  }
 }
 
 const createSolicitud = async () => {
