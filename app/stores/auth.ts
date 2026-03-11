@@ -32,6 +32,7 @@ export interface Tenant {
   abbreviation?: string
   provincia?: string
   municipio?: string
+  sello_institucional?: string
 }
 
 export interface LoginResponse {

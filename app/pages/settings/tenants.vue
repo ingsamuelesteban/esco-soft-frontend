@@ -213,6 +213,25 @@
                                             " />
                                     </div>
                                 </div>
+
+                                <div class="mt-4">
+                                    <label class="block text-sm font-medium text-gray-700">Sello Institucional
+                                        (Derecha)</label>
+                                    <div class="mt-1 flex items-center">
+                                        <span v-if="selloInstitucionalPreview || form.sello_institucional"
+                                            class="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100 mr-4 border border-gray-200">
+                                            <img :src="selloInstitucionalPreview || form.sello_institucional"
+                                                alt="Sello Inst" class="h-full w-full object-contain">
+                                        </span>
+                                        <input type="file" @change="onSelloInstitucionalChange" accept="image/*" class="block w-full text-sm text-gray-500
+                                              file:mr-4 file:py-2 file:px-4
+                                              file:rounded-full file:border-0
+                                              file:text-sm file:font-semibold
+                                              file:bg-primary-50 file:text-primary-700
+                                              hover:file:bg-primary-100
+                                            " />
+                                    </div>
+                                </div>
                             </div>
 
                         </div>
@@ -267,7 +286,8 @@ const form = reactive({
     distrito: '',
     logo_departamento: '',
     provincia: '',
-    municipio: ''
+    municipio: '',
+    sello_institucional: ''
 })
 
 const provinciasList = ref<any[]>([])
@@ -323,12 +343,15 @@ const openCreateModal = () => {
         distrito: '',
         logo_departamento: '',
         provincia: '',
-        municipio: ''
+        municipio: '',
+        sello_institucional: ''
     })
     logoFile.value = null
     logoPreview.value = null
     logoDepartamentoFile.value = null
     logoDepartamentoPreview.value = null
+    selloInstitucionalFile.value = null
+    selloInstitucionalPreview.value = null
     showModal.value = true
 }
 
@@ -348,7 +371,8 @@ const editTenant = (tenant: Tenant) => {
         distrito: tenant.distrito || '',
         logo_departamento: tenant.logo_departamento || '',
         provincia: tenant.provincia || '',
-        municipio: tenant.municipio || ''
+        municipio: tenant.municipio || '',
+        sello_institucional: tenant.sello_institucional || ''
     })
 
     if (form.provincia) {
@@ -358,6 +382,8 @@ const editTenant = (tenant: Tenant) => {
     logoPreview.value = null
     logoDepartamentoFile.value = null
     logoDepartamentoPreview.value = null
+    selloInstitucionalFile.value = null
+    selloInstitucionalPreview.value = null
     showModal.value = true
 }
 
@@ -370,6 +396,9 @@ const logoPreview = ref<string | null>(null)
 
 const logoDepartamentoFile = ref<File | null>(null)
 const logoDepartamentoPreview = ref<string | null>(null)
+
+const selloInstitucionalFile = ref<File | null>(null)
+const selloInstitucionalPreview = ref<string | null>(null)
 
 const onLogoChange = (event: Event) => {
     const input = event.target as HTMLInputElement
@@ -384,6 +413,14 @@ const onLogoDepartamentoChange = (event: Event) => {
     if (input.files && input.files[0]) {
         logoDepartamentoFile.value = input.files[0]
         logoDepartamentoPreview.value = URL.createObjectURL(input.files[0])
+    }
+}
+
+const onSelloInstitucionalChange = (event: Event) => {
+    const input = event.target as HTMLInputElement
+    if (input.files && input.files[0]) {
+        selloInstitucionalFile.value = input.files[0]
+        selloInstitucionalPreview.value = URL.createObjectURL(input.files[0])
     }
 }
 
@@ -419,6 +456,10 @@ const saveTenant = async () => {
 
         if (logoDepartamentoFile.value) {
             formData.append('logo_departamento', logoDepartamentoFile.value)
+        }
+
+        if (selloInstitucionalFile.value) {
+            formData.append('sello_institucional', selloInstitucionalFile.value)
         }
 
         let url = '/api/tenants'
