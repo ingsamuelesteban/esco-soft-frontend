@@ -123,9 +123,30 @@
       <!-- Sección 3: Datos de Acta de Nacimiento -->
       <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
         <div class="px-4 py-6 sm:p-8">
-          <h2 class="text-lg font-semibold leading-7 text-gray-900 mb-4 border-b pb-2">3. Datos del Acta de Nacimiento
-          </h2>
-          <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
+          <div class="flex justify-between items-center mb-4 border-b pb-2">
+            <h2 class="text-lg font-semibold leading-7 text-gray-900">3. Datos de Origen y Acta de Nacimiento</h2>
+            <div class="flex items-center gap-2">
+              <input type="checkbox" id="es_extranjero" v-model="form.es_extranjero"
+                @change="handleExtranjeroChange"
+                class="h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-600" />
+              <label for="es_extranjero" class="text-sm text-gray-900 font-medium">Estudiante Extranjero</label>
+            </div>
+          </div>
+
+          <!-- Campos si ES extranjero -->
+          <div v-if="form.es_extranjero" class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6 mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+            <div class="sm:col-span-6">
+              <label class="block text-sm font-medium leading-6 text-gray-900">Nacionalidad</label>
+              <input type="text" v-model="form.nacionalidad" required placeholder="Ej. Venezolana, Colombiana, Estadounidense..."
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+            </div>
+            <div class="sm:col-span-6">
+              <p class="text-sm text-gray-500 italic">Al ser estudiante extranjero, los campos del acta de nacimiento se completarán con "EX" automáticamente en el sistema.</p>
+            </div>
+          </div>
+
+          <!-- Campos si NO ES extranjero -->
+          <div v-else class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
             <div class="sm:col-span-3">
               <label class="block text-sm font-medium leading-6 text-gray-900">Provincia</label>
               <select v-model="form.acta.provincia" @change="fetchMunicipiosActa" required
@@ -459,6 +480,8 @@ const form = reactive({
   fecha_nacimiento: '',
   cedula: '',
   sexo: 'Masculino',
+  es_extranjero: false,
+  nacionalidad: '',
   admision: {
     fecha: today,
     centro_procedencia: '',
@@ -579,6 +602,32 @@ const fetchMunicipiosActa = () => {
 
     if (form.acta.municipio && !municipiosActaList.value.some(m => m.nombre === form.acta.municipio)) {
       form.acta.municipio = ''
+    }
+  }
+}
+
+const handleExtranjeroChange = () => {
+  if (form.es_extranjero) {
+    // Si se marca como extranjero, limpiamos los campos del acta para evitar envío accidental,
+    // pero el backend los va a ignorar/sobrescribir de todas formas
+    form.acta = {
+      provincia: '',
+      municipio: '',
+      oficialia: '',
+      libro: '',
+      folio: '',
+      acta_numero: '',
+      anio: ''
+    }
+  } else {
+    // Si se desmarca, limpiamos la nacionalidad y restauramos valores del tenant
+    form.nacionalidad = ''
+    if (authStore.tenant?.provincia) {
+      form.acta.provincia = authStore.tenant.provincia
+      fetchMunicipiosActa()
+      if (authStore.tenant?.municipio) {
+        form.acta.municipio = authStore.tenant.municipio
+      }
     }
   }
 }

@@ -238,10 +238,22 @@
         <!-- Tarjeta: Acta de Nacimiento -->
         <div class="bg-white shadow rounded-xl overflow-hidden">
           <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
-            <h3 class="text-base font-semibold text-gray-900">Acta de Nacimiento</h3>
+            <h3 class="text-base font-semibold text-gray-900">Origen y Acta de Nacimiento</h3>
           </div>
           <div class="p-6">
-            <template v-if="estudiante.acta">
+            <template v-if="estudiante.es_extranjero">
+              <dl class="space-y-3">
+                <div class="flex justify-between border-b pb-1 border-gray-100">
+                  <dt class="text-xs text-gray-500 font-medium">Estudiante Extranjero</dt>
+                  <dd class="text-xs font-semibold text-primary-700 text-right">SÍ</dd>
+                </div>
+                <div class="flex justify-between">
+                  <dt class="text-xs text-gray-500 font-medium">Nacionalidad</dt>
+                  <dd class="text-xs text-gray-900 text-right">{{ estudiante.nacionalidad || 'N/A' }}</dd>
+                </div>
+              </dl>
+            </template>
+            <template v-else-if="estudiante.acta">
               <dl class="space-y-3">
                 <div class="flex justify-between border-b pb-1 border-gray-100">
                   <dt class="text-xs text-gray-500 font-medium">Provincia/Mun.</dt>
