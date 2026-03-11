@@ -153,7 +153,7 @@
                 </td>
                 <td class="px-4 py-3 text-center">
                   <div class="flex items-center justify-center gap-2">
-                    <button v-if="u.status === 'uploaded'" @click="downloadUpload(u.id, u.file_name)" type="button"
+                    <button v-if="['uploaded', 'received'].includes(u.status)" @click="downloadUpload(u.id, u.file_name)" type="button"
                       class="flex items-center gap-1 text-xs bg-blue-50 hover:bg-blue-100 text-blue-700 font-medium rounded px-2 py-1 transition-colors">
                       <ArrowDownTrayIcon class="w-3.5 h-3.5" /> Descargar
                     </button>
