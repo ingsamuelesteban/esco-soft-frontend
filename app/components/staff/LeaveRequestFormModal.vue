@@ -210,11 +210,16 @@
                     <label class="block text-sm font-medium text-gray-700 mb-2">
                         Motivo del Permiso <span class="text-red-500">*</span>
                     </label>
-                    <textarea v-model="form.reason" required rows="4"
+                    <textarea v-model="form.reason" required rows="4" maxlength="1000"
                         placeholder="Describa el motivo de la solicitud..."
                         class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"
                         :class="{ 'border-red-500': errors.reason }"></textarea>
-                    <p class="mt-1 text-xs text-gray-500">Mínimo 10 caracteres</p>
+                    <div class="mt-1 flex justify-between items-center">
+                        <p class="text-xs text-gray-500">Mínimo 10 caracteres</p>
+                        <p class="text-xs" :class="form.reason.length >= 1000 ? 'text-red-600 font-bold' : 'text-gray-500'">
+                            {{ form.reason.length }} / 1000
+                        </p>
+                    </div>
                     <p v-if="errors.reason" class="mt-1 text-sm text-red-600">{{ errors.reason }}</p>
                 </div>
 
