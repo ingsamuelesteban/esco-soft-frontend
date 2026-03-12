@@ -148,8 +148,8 @@
           <!-- Campos si NO ES extranjero -->
           <div v-else class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
             <div class="sm:col-span-3">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Provincia</label>
-              <select v-model="form.acta.provincia" @change="fetchMunicipiosActa" required
+              <label class="block text-sm font-medium leading-6 text-gray-900">Provincia (Opcional)</label>
+              <select v-model="form.acta.provincia" @change="fetchMunicipiosActa" 
                 class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
                 <option value="" disabled>Seleccione provincia</option>
                 <option v-for="prov in provinciasList" :key="prov.id" :value="prov.nombre">
@@ -158,8 +158,8 @@
               </select>
             </div>
             <div class="sm:col-span-3">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Municipio</label>
-              <select v-model="form.acta.municipio" required :disabled="!form.acta.provincia"
+              <label class="block text-sm font-medium leading-6 text-gray-900">Municipio (Opcional)</label>
+              <select v-model="form.acta.municipio" :disabled="!form.acta.provincia"
                 class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
                 <option value="" disabled>Seleccione municipio</option>
                 <option v-for="mun in municipiosActaList" :key="mun.nombre" :value="mun.nombre">
@@ -168,29 +168,35 @@
               </select>
             </div>
             <div class="sm:col-span-2">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Oficialia</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900">Oficialia (Opcional)</label>
               <input type="text" v-model="form.acta.oficialia"
                 class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
             </div>
             <div class="sm:col-span-1">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Libro</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900">Libro (Op.)</label>
               <input type="text" v-model="form.acta.libro"
                 class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
             </div>
             <div class="sm:col-span-1">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Folio</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900">Folio (Op.)</label>
               <input type="text" v-model="form.acta.folio"
                 class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
             </div>
             <div class="sm:col-span-1">
-              <label class="block text-sm font-medium leading-6 text-gray-900">N° de Acta</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900">N° de Acta (Op.)</label>
               <input type="text" v-model="form.acta.acta_numero"
                 class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
             </div>
             <div class="sm:col-span-1">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Año</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900">Año (Op.)</label>
               <input type="text" v-model="form.acta.anio" maxlength="4"
                 class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+            </div>
+            <div class="sm:col-span-6">
+              <label class="block text-sm font-medium leading-6 text-gray-900">Observaciones del Acta (Opcional)</label>
+              <textarea v-model="form.acta.observaciones" rows="2"
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
+                placeholder="Notas adicionales sobre el acta de nacimiento..."></textarea>
             </div>
           </div>
         </div>
@@ -285,22 +291,20 @@
                   class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
               </div>
               <div class="sm:col-span-2">
-                <label class="block text-sm font-medium leading-6 text-gray-900">Teléfono Casa</label>
-                <input type="text" v-model="familiar.telefono_casa"
-                  class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+                <label class="block text-sm font-medium leading-6 text-gray-900">Teléfono Casa (Opcional)</label>
+                <TelefonoInput v-model="familiar.telefono_casa" />
               </div>
               <div class="sm:col-span-2">
                 <label class="block text-sm font-medium leading-6 text-gray-900">Celular</label>
-                <input type="text" v-model="familiar.celular" required
-                  class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+                <TelefonoInput v-model="familiar.celular" required />
               </div>
               <div class="sm:col-span-3">
-                <label class="block text-sm font-medium leading-6 text-gray-900">Nivel Académico</label>
+                <label class="block text-sm font-medium leading-6 text-gray-900">Nivel Académico (Opcional)</label>
                 <input type="text" v-model="familiar.nivel_academico" placeholder="Ej. Universitario, Bachiller..."
                   class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
               </div>
               <div class="sm:col-span-3">
-                <label class="block text-sm font-medium leading-6 text-gray-900">Profesión u Oficio</label>
+                <label class="block text-sm font-medium leading-6 text-gray-900">Profesión u Oficio (Opcional)</label>
                 <input type="text" v-model="familiar.profesion_oficio"
                   class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
               </div>
@@ -450,6 +454,7 @@ import Swal from 'sweetalert2'
 import { usePrint } from '~/composables/usePrint'
 import provinciasData from '~/utils/provincias.json'
 import municipiosData from '~/utils/municipios.json'
+import TelefonoInput from '~/components/forms/TelefonoInput.vue'
 
 definePageMeta({
   middleware: ['auth']
@@ -497,7 +502,8 @@ const form = reactive({
     libro: '',
     folio: '',
     acta_numero: '',
-    anio: ''
+    anio: '',
+    observaciones: ''
   },
   direccion: {
     calle: '',
