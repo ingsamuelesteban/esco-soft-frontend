@@ -408,6 +408,7 @@ const markReceived = async (upload: any) => {
     if (res.success) {
       upload.status = 'received'
       upload.received_at = res.data?.received_at
+      await loadSolicitudes()
     }
   } catch (e) {
     Swal.fire('Error', 'No se pudo marcar como recibido.', 'error')
@@ -436,6 +437,7 @@ const rejectUpload = async () => {
         upload.notes = res.data?.notes
       }
       showRejectModal.value = false
+      await loadSolicitudes()
       Swal.fire('Rechazado', 'El estudiante ha sido notificado y podrá volver a subir el archivo.', 'success')
     }
   } catch (e: any) {
