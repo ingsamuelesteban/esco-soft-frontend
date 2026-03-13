@@ -59,9 +59,9 @@
           </div>
 
           <div class="text-sm">
-            <a href="#" class="font-medium text-blue-600 hover:text-blue-500">
+            <button type="button" @click="showForgotPassword = true" class="font-medium text-blue-600 hover:text-blue-500">
               ¿Olvidaste tu contraseña?
-            </a>
+            </button>
           </div>
         </div>
 
@@ -266,6 +266,62 @@
           </div>
         </div>
       </div>
+
+      <!-- Modal de Olvidé mi contraseña -->
+      <div v-if="showForgotPassword" 
+        class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+        <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-gray-900">
+                Recuperar acceso
+              </h3>
+              <button @click="showForgotPassword = false; resetForgotForm()" class="text-gray-400 hover:text-gray-600">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+
+            <div v-if="forgotStatus.message" :class="[
+              'mb-4 p-4 rounded-md',
+              forgotStatus.success ? 'bg-green-50 text-green-800' : 'bg-red-50 text-red-800'
+            ]">
+              <p class="text-sm">{{ forgotStatus.message }}</p>
+            </div>
+
+            <p class="text-sm text-gray-600 mb-6">
+              Ingresa tu nombre de usuario y el correo electrónico asociado a tu cuenta. Te enviaremos un enlace para restablecer tu contraseña.
+            </p>
+
+            <form @submit.prevent="handleForgotPassword" class="space-y-4">
+              <div>
+                <label for="forgot-username" class="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
+                <input id="forgot-username" v-model="forgotForm.username" type="text" required
+                  class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Tu nombre de usuario" :disabled="forgotStatus.loading" />
+              </div>
+              <div>
+                <label for="forgot-email" class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
+                <input id="forgot-email" v-model="forgotForm.email" type="email" required
+                  class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="ejemplo@correo.com" :disabled="forgotStatus.loading" />
+              </div>
+
+              <div class="pt-4">
+                <button type="submit" :disabled="forgotStatus.loading || (forgotStatus.success && !forgotStatus.error)"
+                  class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50">
+                  <span v-if="forgotStatus.loading" class="inline-flex items-center">
+                    <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                    Enviando...
+                  </span>
+                  <span v-else>Enviar instrucciones</span>
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -293,6 +349,16 @@ const logoError = ref(false)
 const isSuccess = ref(false)
 const showPassword = ref(false)
 const showPasswordChange = ref(false)
+const showForgotPassword = ref(false)
+const forgotForm = reactive({
+  username: '',
+  email: ''
+})
+const forgotStatus = reactive({
+  loading: false,
+  message: '',
+  success: false
+})
 const passwordChangeData = ref({
   userId: null,
   currentPassword: '',
@@ -440,6 +506,45 @@ const handleLogin = async () => {
   } finally {
     isLoading.value = false
   }
+}
+
+// Manejar el olvido de contraseña
+const handleForgotPassword = async () => {
+  forgotStatus.loading = true
+  forgotStatus.message = ''
+  forgotStatus.success = false
+
+  try {
+    const config = useRuntimeConfig()
+    // Asumiendo que el store de auth o una utilidad tiene acceso a fetch con base URL
+    const response = await $fetch('/api/password/email', {
+      method: 'POST',
+      body: forgotForm,
+      baseURL: config.public.apiBase
+    })
+
+    forgotStatus.success = response.success
+    forgotStatus.message = response.message
+    
+    if (response.success) {
+      // Limpiar formulario después de éxito
+      forgotForm.username = ''
+      forgotForm.email = ''
+    }
+  } catch (err) {
+    forgotStatus.success = false
+    forgotStatus.message = err.data?.message || 'Error al procesar la solicitud. Intenta más tarde.'
+  } finally {
+    forgotStatus.loading = false
+  }
+}
+
+const resetForgotForm = () => {
+  forgotForm.username = ''
+  forgotForm.email = ''
+  forgotStatus.message = ''
+  forgotStatus.success = false
+  forgotStatus.loading = false
 }
 
 // Manejar el cambio de contraseña obligatorio

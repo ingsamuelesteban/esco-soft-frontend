@@ -28,7 +28,7 @@
                 : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
               'w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm transition-colors'
             ]">
-              Foto de Perfil
+              Mi Perfil
             </button>
             <button @click="activeTab = 'password'" :class="[
               activeTab === 'password'
@@ -75,6 +75,22 @@
               <p class="mt-1 text-xs text-gray-500">JPG, PNG. Máximo 1MB</p>
             </div>
 
+            <!-- Email Input -->
+            <div class="pt-2">
+              <label for="profile_email" class="block text-sm font-medium text-gray-700 mb-1">
+                Correo Electrónico
+              </label>
+              <input 
+                id="profile_email" 
+                v-model="profileEmail" 
+                type="email" 
+                required
+                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                placeholder="tu@correo.com"
+                :disabled="photoLoading"
+              />
+            </div>
+
             <!-- Error Message -->
             <div v-if="photoError" class="rounded-md bg-red-50 p-3">
               <p class="text-sm text-red-800">{{ photoError }}</p>
@@ -91,8 +107,8 @@
                 class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
                 Cancelar
               </button>
-              <button @click="savePhoto" :disabled="!selectedFile || photoLoading" type="button" :class="[
-                !selectedFile || photoLoading
+              <button @click="saveProfile" :disabled="photoLoading" type="button" :class="[
+                photoLoading
                   ? 'bg-gray-300 cursor-not-allowed'
                   : 'bg-blue-600 hover:bg-blue-700',
                 'px-4 py-2 text-sm font-medium text-white rounded-md transition-colors inline-flex items-center'
@@ -104,7 +120,7 @@
                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                   </path>
                 </svg>
-                {{ photoLoading ? 'Guardando...' : 'Guardar Foto' }}
+                {{ photoLoading ? 'Guardando...' : 'Guardar Cambios' }}
               </button>
             </div>
           </div>
@@ -202,6 +218,7 @@ const activeTab = ref<'photo' | 'password'>('photo')
 const fileInput = ref<HTMLInputElement | null>(null)
 const selectedFile = ref<File | null>(null)
 const photoPreview = ref<string | null>(null)
+const profileEmail = ref('')
 
 // Photo state
 const photoLoading = ref(false)
@@ -224,6 +241,9 @@ watch(() => props.isOpen, (newVal) => {
     resetPhotoState()
     resetPasswordState()
     activeTab.value = 'photo'
+  } else {
+    // Initialize email when modal opens
+    profileEmail.value = user.value?.email || ''
   }
 })
 
@@ -267,8 +287,7 @@ const handleFileChange = (event: Event) => {
   reader.readAsDataURL(file)
 }
 
-const savePhoto = async () => {
-  if (!selectedFile.value) return
+const saveProfile = async () => {
 
   photoLoading.value = true
   photoError.value = ''
@@ -277,14 +296,14 @@ const savePhoto = async () => {
   try {
     const result = await authStore.updateProfileInformation({
       username: user.value?.username,
-      email: user.value?.email,
+      email: profileEmail.value,
       nombre: user.value?.name?.split(' ')[0] || '',
       apellido: user.value?.name?.split(' ').slice(1).join(' ') || '',
       photo: selectedFile.value
     })
 
     if (result.success) {
-      photoSuccess.value = 'Foto de perfil actualizada correctamente'
+      photoSuccess.value = 'Perfil actualizado correctamente'
       emit('updated')
       
       // Reset after short delay
@@ -292,10 +311,10 @@ const savePhoto = async () => {
         resetPhotoState()
       }, 2000)
     } else {
-      photoError.value = result.message || 'Error al actualizar la foto'
+      photoError.value = result.message || 'Error al actualizar el perfil'
     }
   } catch (error: any) {
-    photoError.value = error.message || 'Error al actualizar la foto'
+    photoError.value = error.message || 'Error al actualizar el perfil'
   } finally {
     photoLoading.value = false
   }
