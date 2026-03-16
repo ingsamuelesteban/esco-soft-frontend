@@ -308,10 +308,6 @@ const getCentroProcedenciaName = (estudiante) => {
         return nombre
       }
     }
-    // Si no, intenta usar el string antiguo
-    if (estudiante?.admision?.centro_procedencia) {
-      return estudiante.admision.centro_procedencia
-    }
     // Default
     return 'N/A'
   } catch (e) {
