@@ -89,7 +89,7 @@
               
               <div>
                 <dt class="text-sm font-medium text-gray-500">Centro de Procedencia</dt>
-                <dd class="mt-1 text-sm text-gray-900">{{ estudiante.admision?.centro_procedencia || 'N/A' }}</dd>
+                <dd class="mt-1 text-sm text-gray-900">{{ getCentroProcedenciaName() }}</dd>
               </div>
               <div>
                 <dt class="text-sm font-medium text-gray-500">Área Solicitada</dt>
@@ -375,6 +375,29 @@ const edadCalculada = computed(() => {
   const age_dt = new Date(diff_ms)
   return Math.abs(age_dt.getUTCFullYear() - 1970) + ' años'
 })
+
+const getCentroProcedenciaName = () => {
+  try {
+    // Si existe centroProcedenciaRel y tiene nombre
+    if (estudiante.value?.admision?.centro_procedencia_rel !== null && 
+        estudiante.value?.admision?.centro_procedencia_rel !== undefined && 
+        typeof estudiante.value.admision.centro_procedencia_rel === 'object') {
+      const nombre = estudiante.value.admision.centro_procedencia_rel.nombre
+      if (nombre) {
+        return nombre
+      }
+    }
+    // Si no, intenta usar el string antiguo
+    if (estudiante.value?.admision?.centro_procedencia) {
+      return estudiante.value.admision.centro_procedencia
+    }
+    // Default
+    return 'N/A'
+  } catch (e) {
+    console.error('Error getting centro procedencia name:', e, estudiante.value?.admision)
+    return 'N/A'
+  }
+}
 
 const downloadBasicPdf = async () => {
   if (!estudiante.value?.admision?.pdf_token) return

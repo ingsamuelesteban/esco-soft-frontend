@@ -39,8 +39,12 @@
             </div>
             <div class="sm:col-span-2">
               <label class="block text-sm font-medium leading-6 text-gray-900">Centro de Procedencia</label>
-              <input type="text" v-model="form.admision.centro_procedencia" required
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+              <CentroProcedenciaAutocomplete 
+                v-model="form.admision.centro_procedencia_id"
+                @centro-selected="handleCentroSelected"
+                @centro-created="handleCentroCreated"
+                required
+              />
             </div>
             <div class="sm:col-span-2">
               <label class="block text-sm font-medium leading-6 text-gray-900">Año Lectivo Admisión</label>
@@ -455,6 +459,7 @@ import { usePrint } from '~/composables/usePrint'
 import provinciasData from '~/utils/provincias.json'
 import municipiosData from '~/utils/municipios.json'
 import TelefonoInput from '~/components/forms/TelefonoInput.vue'
+import CentroProcedenciaAutocomplete from '~/components/forms/CentroProcedenciaAutocomplete.vue'
 
 definePageMeta({
   middleware: ['auth']
@@ -489,7 +494,7 @@ const form = reactive({
   nacionalidad: '',
   admision: {
     fecha: today,
-    centro_procedencia: '',
+    centro_procedencia_id: '',
     titulo_id: '',
     anio_lectivo_id: '',
     pago: false,
@@ -778,6 +783,23 @@ const submitForm = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const handleCentroSelected = (centro) => {
+  // El centro ya fue asignado a form.admision.centro_procedencia_id por el v-model
+  console.log('Centro de procedencia seleccionado:', centro)
+}
+
+const handleCentroCreated = (newCentro) => {
+  // Mostrar notificación de éxito
+  Swal.fire({
+    icon: 'success',
+    title: 'Centro creado',
+    text: `El centro "${newCentro.nombre}" ha sido creado exitosamente.`,
+    timer: 2000,
+    showConfirmButton: false,
+    confirmButtonColor: '#0ea5e9'
+  })
 }
 
 watch(() => form.admision.anio_lectivo_id, (newAnioId) => {

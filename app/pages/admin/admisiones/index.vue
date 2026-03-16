@@ -169,7 +169,7 @@
                 {{ estudiante.nombres }} {{ estudiante.apellidos }}
               </td>
               <td class="px-3 py-4 text-sm text-gray-500 w-48 whitespace-normal break-words">
-                {{ estudiante.admision?.centro_procedencia || 'N/A' }}
+                {{ getCentroProcedenciaName(estudiante) }}
               </td>
               <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 font-bold text-primary-700">
                 {{ estudiante.admision?.no_folder || '-' }}
@@ -295,6 +295,29 @@ const fetchTitulos = async () => {
 const calculatePercentage = (count) => {
   if (!stats.value || !stats.value.total) return 0
   return ((count / stats.value.total) * 100).toFixed(1)
+}
+
+const getCentroProcedenciaName = (estudiante) => {
+  try {
+    // Si existe centroProcedenciaRel y tiene nombre
+    if (estudiante?.admision?.centro_procedencia_rel !== null && 
+        estudiante?.admision?.centro_procedencia_rel !== undefined && 
+        typeof estudiante.admision.centro_procedencia_rel === 'object') {
+      const nombre = estudiante.admision.centro_procedencia_rel.nombre
+      if (nombre) {
+        return nombre
+      }
+    }
+    // Si no, intenta usar el string antiguo
+    if (estudiante?.admision?.centro_procedencia) {
+      return estudiante.admision.centro_procedencia
+    }
+    // Default
+    return 'N/A'
+  } catch (e) {
+    console.error('Error getting centro procedencia name:', e, estudiante?.admision)
+    return 'N/A'
+  }
 }
 
 const fetchAdmitidos = async (page = 1) => {
