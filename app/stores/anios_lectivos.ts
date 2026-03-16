@@ -26,6 +26,12 @@ export const useAniosLectivosStore = defineStore('anios_lectivos', {
                 value: item.id,
                 label: item.nombre,
                 object: item
+            })),
+        todosParaSelect: (state) => state.items
+            .map(item => ({
+                value: item.id,
+                label: item.nombre,
+                object: item
             }))
     },
     actions: {

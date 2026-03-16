@@ -5,7 +5,7 @@
         <label class="text-sm text-gray-600">Año lectivo</label>
         <select v-model.number="anioId" class="border rounded px-2 py-1 text-sm h-8">
           <option :value="undefined">Seleccionar...</option>
-          <option v-for="a in aniosLectivosStore.activos" :key="a.id" :value="a.id">
+          <option v-for="a in aniosLectivosStore.items" :key="a.id" :value="a.id">
             {{ a.nombre }}
           </option>
         </select>
