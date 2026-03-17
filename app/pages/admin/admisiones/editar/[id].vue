@@ -777,6 +777,18 @@ const fetchEstudianteData = async () => {
     if (res.success && res.data) {
       const data = res.data
       
+      if (data.admision?.betado) {
+        Swal.fire({
+          title: 'Aspirante Betado',
+          text: 'Este aspirante ha sido betado y no se puede editar su perfil.',
+          icon: 'warning',
+          confirmButtonText: 'Regresar'
+        }).then(() => {
+          router.push('/admin/admisiones')
+        })
+        return
+      }
+
       form.nombres = data.nombres
       form.apellidos = data.apellidos
       form.fecha_nacimiento = data.fecha_nacimiento ? data.fecha_nacimiento.split('T')[0] : ''

@@ -166,7 +166,17 @@
             </tr>
             <tr v-for="estudiante in estudiantes" :key="estudiante.id" class="hover:bg-gray-50">
               <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
-                {{ estudiante.nombres }} {{ estudiante.apellidos }}
+                <div>{{ estudiante.nombres }} {{ estudiante.apellidos }}</div>
+                <div v-if="estudiante.admision?.betado" class="mt-1 flex items-center">
+                  <UiTooltip :text="estudiante.admision?.razon_betado || 'No hay razón especificada'">
+                    <span class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-[10px] font-medium text-red-700 ring-1 ring-inset ring-red-600/10 cursor-help">
+                      <svg class="mr-1 h-3 w-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.28 7.22a.75.75 0 00-1.06 1.06L8.94 10l-1.72 1.72a.75.75 0 101.06 1.06L10 11.06l1.72 1.72a.75.75 0 101.06-1.06L11.06 10l1.72-1.72a.75.75 0 00-1.06-1.06L10 8.94 8.28 7.22z" clip-rule="evenodd" />
+                      </svg>
+                      Betado por {{ estudiante.admision?.betado_por_rel?.name || 'Admin' }}
+                    </span>
+                  </UiTooltip>
+                </div>
               </td>
               <td class="px-3 py-4 text-sm text-gray-500 w-48 whitespace-normal break-words">
                 {{ getCentroProcedenciaName(estudiante) }}
@@ -192,10 +202,16 @@
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                     </svg>
                   </button>
-                  <button type="button" @click="editAdmission(estudiante)" title="Editar"
+                  <button v-if="!estudiante.admision?.betado" type="button" @click="editAdmission(estudiante)" title="Editar"
                     class="text-blue-600 hover:text-blue-900 hover:bg-blue-50 p-2 rounded-md transition-colors">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                  </button>
+                  <button v-if="authStore.isAdmin || authStore.isMaster" type="button" @click="handleVeto(estudiante)" :title="estudiante.admision?.betado ? 'Editar razón de veto' : 'Betar aspirante'"
+                    class="text-red-600 hover:text-red-900 hover:bg-red-50 p-2 rounded-md transition-colors">
+                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
                     </svg>
                   </button>
                 </div>
@@ -375,6 +391,53 @@ const viewDetails = (estudiante) => {
 
 const editAdmission = (estudiante) => {
   router.push(`/admin/admisiones/editar/${estudiante.id}`)
+}
+
+const handleVeto = async (estudiante) => {
+  const { value: razon } = await Swal.fire({
+    title: estudiante.admision?.betado ? 'Actualizar Razón de Veto' : 'Betar Aspirante',
+    input: 'textarea',
+    inputLabel: 'Razón del veto',
+    inputValue: estudiante.admision?.razon_betado || '',
+    inputPlaceholder: 'Ingrese una razón sencilla...',
+    inputAttributes: {
+      'aria-label': 'Razón del veto'
+    },
+    showCancelButton: true,
+    confirmButtonText: 'Guardar',
+    cancelButtonText: 'Cancelar',
+    confirmButtonColor: '#d33',
+    inputValidator: (value) => {
+      if (!value) {
+        return 'Debes ingresar una razón'
+      }
+    }
+  })
+
+  if (razon) {
+    try {
+      Swal.fire({
+        title: 'Procesando...',
+        didOpen: () => {
+          Swal.showLoading()
+        }
+      })
+      
+      const res = await api.post(`/api/admisiones/${estudiante.id}/veto`, {
+        razon_betado: razon
+      })
+
+      if (res.success) {
+        Swal.fire('Guardado', 'El aspirante ha sido betado exitosamente.', 'success')
+        fetchAdmitidos(currentPage.value)
+      } else {
+        Swal.fire('Error', res.message || 'No se pudo realizar la acción', 'error')
+      }
+    } catch (error) {
+      console.error('Error in veto action:', error)
+      Swal.fire('Error', 'Hubo un problema al procesar la solicitud.', 'error')
+    }
+  }
 }
 
 const promptPrintListado = async () => {
