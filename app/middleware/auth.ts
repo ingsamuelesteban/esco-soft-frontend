@@ -1,7 +1,9 @@
 import { useAuthStore } from '../stores/auth'
+import { useDomain } from '../composables/useDomain'
 
 export default defineNuxtRouteMiddleware((to, from) => {
   const authStore = useAuthStore()
+  const { isPublicSite } = useDomain()
 
   if (to.path === '/login' && authStore.isAuthenticated) {
     if (authStore.user?.role === 'estudiante') {
@@ -10,7 +12,13 @@ export default defineNuxtRouteMiddleware((to, from) => {
     return navigateTo('/')
   }
 
+  // Si es un sitio público (subdominio) y vamos a la raíz o a una página de noticias pública, NO redirigir a login
+  const isPublicRoute = to.path === '/' || to.path.startsWith('/noticias/')
+  
   if (to.path !== '/login' && !authStore.isAuthenticated) {
+    if (isPublicSite.value && isPublicRoute) {
+      return // Permitir acceso
+    }
     return navigateTo('/login')
   }
 
