@@ -33,6 +33,18 @@ export interface Tenant {
   provincia?: string
   municipio?: string
   sello_institucional?: string
+  public_pages_enabled?: boolean | number
+  public_description?: string
+  hero_image_url?: string
+  director_name?: string
+  director_bio?: string
+  director_image_url?: string
+  social_media?: {
+    facebook?: string
+    instagram?: string
+    twitter?: string
+    youtube?: string
+  }
 }
 
 export interface LoginResponse {

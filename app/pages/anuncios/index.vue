@@ -106,7 +106,18 @@
               class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
             <div>
               <span class="text-sm font-medium text-gray-800">Visible para estudiantes</span>
-              <p class="text-xs text-gray-500 mt-0.5">Si no se marca, sólo el personal verá este anuncio</p>
+              <p class="text-xs text-gray-500 mt-0.5">Aparecerá en el portal de alumnos</p>
+            </div>
+          </label>
+
+          <!-- Visible en la web pública -->
+          <label
+            class="flex items-center gap-3 cursor-pointer select-none bg-blue-50/50 rounded-lg p-3 border border-blue-100">
+            <input v-model="form.visible_en_web" type="checkbox"
+              class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+            <div>
+              <span class="text-sm font-medium text-blue-900">Mostrar en la web pública</span>
+              <p class="text-xs text-blue-600/70 mt-0.5">Aparecerá en la página principal (Landing Page)</p>
             </div>
           </label>
 
@@ -162,11 +173,12 @@ const form = ref({
   title: '',
   body: '',
   visible_para_estudiantes: true,
+  visible_en_web: false,
   file: null as File | null
 })
 
 function openModal() {
-  form.value = { title: '', body: '', visible_para_estudiantes: true, file: null }
+  form.value = { title: '', body: '', visible_para_estudiantes: true, visible_en_web: false, file: null }
   formError.value = ''
   showModal.value = true
 }
@@ -202,6 +214,7 @@ async function submitAnnouncement() {
     formData.append('title', form.value.title)
     formData.append('body', form.value.body)
     formData.append('visible_para_estudiantes', form.value.visible_para_estudiantes ? '1' : '0')
+    formData.append('visible_en_web', form.value.visible_en_web ? '1' : '0')
     if (form.value.file) formData.append('attachment', form.value.file)
 
     await api.post('/api/announcements', formData)

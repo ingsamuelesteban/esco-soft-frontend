@@ -5,21 +5,53 @@
   <!-- Global API loading bar -->
   <GlobalLoadingBar />
 
-  <NuxtLayout>
-    <NuxtPage />
-  </NuxtLayout>
+  <div v-if="isPublicSite" class="font-inter text-gray-900 bg-white min-h-screen">
+    <NuxtLayout :name="(layout_name as any)">
+      <PublicLanding v-if="$route.path === '/'" />
+      <NuxtPage v-else />
+    </NuxtLayout>
+  </div>
+
+  <div v-else>
+    <NuxtLayout>
+      <NuxtPage />
+    </NuxtLayout>
+  </div>
 </template>
 
 <script setup lang="ts">
 import { useAuthStore } from '~/stores/auth'
+import { useDomain } from '~/composables/useDomain'
+import { usePublicStore } from '~/stores/public'
+import PublicLanding from '~/components/public/PublicLanding.vue'
 
 const authStore = useAuthStore()
+const publicStore = usePublicStore()
+const { isPublicSite, subdomain } = useDomain()
+const layout_name = 'public'
+
+// Si estamos en un sitio público, cargar los datos inmediatamente
+const loadPublicInfo = () => {
+  if (isPublicSite.value && subdomain.value) {
+    publicStore.fetchPublicData(subdomain.value)
+  }
+}
 
 onMounted(() => {
+  loadPublicInfo()
+  
   if (authStore.isAuthenticated) {
     authStore.initActivityTracker()
   }
+  window.addEventListener('beforeunload', handleBeforeUnload)
 })
+
+// Watch for subdomain changes (essential for SPA navigation or late detection)
+watch(() => subdomain.value, (newSub) => {
+  if (newSub) {
+    loadPublicInfo()
+  }
+}, { immediate: true })
 
 // Watch for auth changes (e.g. login) to start tracker
 watch(() => authStore.isAuthenticated, (newVal) => {
@@ -85,14 +117,10 @@ const handleBeforeUnload = () => {
   }
 }
 
-onMounted(() => {
-  if (authStore.isAuthenticated) {
-    authStore.initActivityTracker()
-  }
-  window.addEventListener('beforeunload', handleBeforeUnload)
-})
-
 onUnmounted(() => {
     window.removeEventListener('beforeunload', handleBeforeUnload)
+    if (authStore.isAuthenticated) {
+        authStore.stopActivityTracker()
+    }
 })
 </script>

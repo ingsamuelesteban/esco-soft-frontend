@@ -146,6 +146,10 @@
                   class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                   Configuración
                 </NuxtLink>
+                <NuxtLink v-else-if="authStore.isAdmin" to="/director"
+                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  Configuración
+                </NuxtLink>
               </div>
               <div class="py-1">
                 <button @click="logout" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
