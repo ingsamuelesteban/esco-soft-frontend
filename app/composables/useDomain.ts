@@ -1,10 +1,7 @@
 export const useDomain = () => {
   const config = useRuntimeConfig()
-  const hostname = ref('')
-  
-  if (process.client) {
-    hostname.value = window.location.hostname
-  }
+  const url = useRequestURL()
+  const hostname = computed(() => url.hostname)
 
   const isMainDomain = computed(() => {
     // Es dominio principal si es exactamente localhost o escosoft.online (sin subdominio)
@@ -15,6 +12,8 @@ export const useDomain = () => {
     if (!hostname.value) return null
     
     const parts = hostname.value.split('.')
+    console.log('DEBUG [useDomain]: hostname =', hostname.value, 'parts =', parts.length)
+
     // Caso: pnsa.localhost (length 2)
     if (hostname.value.endsWith('.localhost') && parts.length >= 2) {
       return parts[0]
@@ -27,8 +26,10 @@ export const useDomain = () => {
   })
 
   const isPublicSite = computed(() => {
-    // Si hay un subdominio y no es el dominio principal directo
-    return !!subdomain.value && hostname.value !== 'api.escosoft.online'
+    const sub = subdomain.value
+    const isPublic = !!sub && hostname.value !== 'api.escosoft.online' && sub !== 'www'
+    console.log('DEBUG [useDomain]: isPublicSite =', isPublic, 'subdomain =', sub)
+    return isPublic
   })
 
   return {
