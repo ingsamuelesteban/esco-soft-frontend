@@ -3,9 +3,15 @@ export const useDomain = () => {
   const url = useRequestURL()
   const hostname = computed(() => url.hostname)
 
+  // Debug logs de la URL real en el cliente
+  if (process.client) {
+    console.log('[DEBUG useDomain] FULL URL (HREF):', window.location.href)
+    console.log('[DEBUG useDomain] HOSTNAME:', window.location.hostname)
+  }
+
   const isMainDomain = computed(() => {
-    // Es dominio principal si es exactamente localhost o escosoft.online (sin subdominio)
-    return hostname.value === 'localhost' || hostname.value === 'escosoft.online'
+    const rawHost = hostname.value || ''
+    return rawHost === 'localhost' || rawHost === 'escosoft.online' || rawHost === 'www.escosoft.online'
   })
 
   const subdomain = computed(() => {
@@ -13,25 +19,25 @@ export const useDomain = () => {
     if (!rawHostname) return null
     
     const parts = rawHostname.split('.')
-    console.log('[DEBUG useDomain] hostname:', rawHostname, 'parts:', parts.length)
-
-    // Caso: pnsa.localhost (length 2)
+    
+    // Caso: localhost subdomains (pnsa.localhost)
     if (rawHostname.endsWith('.localhost') && parts.length >= 2) {
-      console.log('[DEBUG useDomain] Detected localhost subdomain:', parts[0])
       return parts[0]
     }
-    // Caso: colegio.escosoft.online (length 3)
-    if (parts.length >= 3) {
-      console.log('[DEBUG useDomain] Detected production subdomain:', parts[0])
+
+    // Caso: produccion (ej. pnsa.escosoft.online)
+    // Si tiene 3 partes y no es el dominio base ww.escosoft.online
+    if (parts.length >= 3 && parts[0] !== 'www' && parts[0] !== 'api') {
+      console.log('[DEBUG useDomain] SUBDOMINIO DETECTADO:', parts[0])
       return parts[0]
     }
-    console.log('[DEBUG useDomain] No subdomain detected')
+
     return null
   })
 
   const isPublicSite = computed(() => {
     const sub = subdomain.value
-    const isPublic = !!sub && hostname.value !== 'api.escosoft.online' && sub !== 'www'
+    const isPublic = !!sub
     console.log('[DEBUG useDomain] isPublicSite:', isPublic, '| subdomain:', sub)
     return isPublic
   })
@@ -39,7 +45,7 @@ export const useDomain = () => {
   return {
     hostname,
     subdomain,
-    isMainDomain,
-    isPublicSite
+    isPublicSite,
+    isMainDomain
   }
 }
