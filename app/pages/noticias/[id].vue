@@ -174,8 +174,8 @@ async function downloadFile() {
     const contentDisposition = response.headers.get('content-disposition')
     let fileName = 'adjunto-noticia'
     if (contentDisposition && contentDisposition.indexOf('filename=') !== -1) {
-      fileName = contentDisposition.split('filename=')[1].replace(/['"]/g, '')
-    } else if (news.value.attachment_path) {
+      fileName = contentDisposition.split('filename=')[1]?.replace(/['"]/g, '') || fileName
+    } else if (news.value?.attachment_path) {
       fileName = news.value.attachment_path.split('/').pop() || fileName
     }
     
