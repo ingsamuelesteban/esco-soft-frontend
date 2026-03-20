@@ -5,6 +5,11 @@ export default defineNuxtRouteMiddleware((to, from) => {
   const authStore = useAuthStore()
   const { isPublicSite } = useDomain()
 
+  // Si es un sitio público (subdominio) y vamos a la raíz o a una página de noticias pública, NO redirigir a login
+  const isPublicRoute = to.path === '/' || to.path.startsWith('/noticias/')
+  
+  console.log('[DEBUG auth middleware] path:', to.path, '| isPublicSite:', isPublicSite.value, '| isPublicRoute:', isPublicRoute)
+
   if (to.path === '/login' && authStore.isAuthenticated) {
     if (authStore.user?.role === 'estudiante') {
       return navigateTo('/student/dashboard')
@@ -12,13 +17,12 @@ export default defineNuxtRouteMiddleware((to, from) => {
     return navigateTo('/')
   }
 
-  // Si es un sitio público (subdominio) y vamos a la raíz o a una página de noticias pública, NO redirigir a login
-  const isPublicRoute = to.path === '/' || to.path.startsWith('/noticias/')
-  
   if (to.path !== '/login' && !authStore.isAuthenticated) {
     if (isPublicSite.value && isPublicRoute) {
+      console.log('[DEBUG auth middleware] Public access allowed')
       return // Permitir acceso
     }
+    console.log('[DEBUG auth middleware] Redirecting to /login')
     return navigateTo('/login')
   }
 

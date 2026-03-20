@@ -9,26 +9,30 @@ export const useDomain = () => {
   })
 
   const subdomain = computed(() => {
-    if (!hostname.value) return null
+    const rawHostname = hostname.value
+    if (!rawHostname) return null
     
-    const parts = hostname.value.split('.')
-    console.log('DEBUG [useDomain]: hostname =', hostname.value, 'parts =', parts.length)
+    const parts = rawHostname.split('.')
+    console.log('[DEBUG useDomain] hostname:', rawHostname, 'parts:', parts.length)
 
     // Caso: pnsa.localhost (length 2)
-    if (hostname.value.endsWith('.localhost') && parts.length >= 2) {
+    if (rawHostname.endsWith('.localhost') && parts.length >= 2) {
+      console.log('[DEBUG useDomain] Detected localhost subdomain:', parts[0])
       return parts[0]
     }
     // Caso: colegio.escosoft.online (length 3)
     if (parts.length >= 3) {
+      console.log('[DEBUG useDomain] Detected production subdomain:', parts[0])
       return parts[0]
     }
+    console.log('[DEBUG useDomain] No subdomain detected')
     return null
   })
 
   const isPublicSite = computed(() => {
     const sub = subdomain.value
     const isPublic = !!sub && hostname.value !== 'api.escosoft.online' && sub !== 'www'
-    console.log('DEBUG [useDomain]: isPublicSite =', isPublic, 'subdomain =', sub)
+    console.log('[DEBUG useDomain] isPublicSite:', isPublic, '| subdomain:', sub)
     return isPublic
   })
 
