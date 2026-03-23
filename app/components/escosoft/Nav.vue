@@ -19,6 +19,9 @@
 
       <!-- Navegación derecha -->
       <div class="flex items-center space-x-4">
+        <!-- Tareas -->
+        <EscosoftTaskDropdown v-if="authStore.isAdmin || authStore.isMaster" />
+
         <!-- Notificaciones -->
         <div class="relative notifications-container">
           <button @click="toggleNotifications"
