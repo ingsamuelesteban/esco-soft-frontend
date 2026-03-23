@@ -86,6 +86,48 @@
             </div>
           </div>
         </div>
+
+        <!-- Misión, Visión y Valores Cards -->
+        <div v-if="store.info?.mission || store.info?.vision || store.info?.values" 
+          class="grid grid-cols-1 md:grid-cols-3 gap-8 mt-24">
+          
+          <div v-if="store.info?.mission" class="group p-10 bg-slate-50 rounded-[2.5rem] border border-slate-100 hover:bg-blue-600 hover:border-blue-500 transition-all duration-500 hover:-translate-y-2">
+            <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-200 group-hover:bg-white group-hover:text-blue-600 group-hover:shadow-none transition-colors">
+              <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-900 mb-4 font-outfit group-hover:text-white transition-colors">Misión</h3>
+            <p class="text-slate-600 leading-relaxed group-hover:text-blue-50 transition-colors">
+              {{ store.info.mission }}
+            </p>
+          </div>
+
+          <div v-if="store.info?.vision" class="group p-10 bg-slate-50 rounded-[2.5rem] border border-slate-100 hover:bg-blue-600 hover:border-blue-500 transition-all duration-500 hover:-translate-y-2">
+            <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-200 group-hover:bg-white group-hover:text-blue-600 group-hover:shadow-none transition-colors">
+              <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-900 mb-4 font-outfit group-hover:text-white transition-colors">Visión</h3>
+            <p class="text-slate-600 leading-relaxed group-hover:text-blue-50 transition-colors">
+              {{ store.info.vision }}
+            </p>
+          </div>
+
+          <div v-if="store.info?.values" class="group p-10 bg-slate-50 rounded-[2.5rem] border border-slate-100 hover:bg-blue-600 hover:border-blue-500 transition-all duration-500 hover:-translate-y-2">
+            <div class="w-14 h-14 bg-blue-600 text-white rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-200 group-hover:bg-white group-hover:text-blue-600 group-hover:shadow-none transition-colors">
+              <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
+              </svg>
+            </div>
+            <h3 class="text-2xl font-bold text-slate-900 mb-4 font-outfit group-hover:text-white transition-colors">Valores</h3>
+            <p class="text-slate-600 leading-relaxed group-hover:text-blue-50 transition-colors">
+              {{ store.info.values }}
+            </p>
+          </div>
+        </div>
       </div>
     </section>
 

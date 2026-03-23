@@ -12,6 +12,9 @@ export interface PublicInfo {
   director_name: string
   director_bio: string
   director_image_url: string
+  mission?: string
+  vision?: string
+  values?: string
   sello: string
   sello_institucional: string
   contact: {

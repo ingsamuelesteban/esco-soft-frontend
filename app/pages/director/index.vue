@@ -136,6 +136,33 @@
 
           <hr class="border-gray-100" />
 
+          <!-- Sección: Misión, Visión y Valores -->
+          <div class="space-y-6">
+            <h3 class="text-lg font-bold text-gray-900 border-l-4 border-primary-600 pl-4">Identidad Institucional</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="space-y-2">
+                <label class="block text-sm font-bold text-gray-700 uppercase tracking-tight">Nuestra Misión</label>
+                <textarea v-model="form.mission" rows="4"
+                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                  placeholder="Defina el propósito fundamental de la institución..."></textarea>
+              </div>
+              <div class="space-y-2">
+                <label class="block text-sm font-bold text-gray-700 uppercase tracking-tight">Nuestra Visión</label>
+                <textarea v-model="form.vision" rows="4"
+                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                  placeholder="¿Hacia dónde se proyecta la institución en el futuro?..."></textarea>
+              </div>
+              <div class="space-y-2">
+                <label class="block text-sm font-bold text-gray-700 uppercase tracking-tight">Nuestros Valores</label>
+                <textarea v-model="form.values" rows="4"
+                  class="block w-full rounded-lg border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                  placeholder="Mencione los principios que rigen la conducta institucional..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <hr class="border-gray-100" />
+
           <!-- Sección: Datos del Director -->
           <div class="space-y-6">
             <h3 class="text-lg font-bold text-gray-900 border-l-4 border-primary-600 pl-4">Información del Director</h3>
@@ -255,6 +282,11 @@ async function saveSettings() {
     
     formData.append('director_name', form.value.director_name || '')
     formData.append('director_bio', form.value.director_bio || '')
+    
+    // Misión, Visión y Valores
+    formData.append('mission', form.value.mission || '')
+    formData.append('vision', form.value.vision || '')
+    formData.append('values', form.value.values || '')
 
     // Archivos
     if (files.value.logo) formData.append('logo', files.value.logo)
