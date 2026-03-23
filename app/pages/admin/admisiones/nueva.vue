@@ -77,6 +77,14 @@
                   class="h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-600" />
                 <label for="recomendado" class="text-sm text-gray-900 font-medium">¿Recomendado? (Uso interno)</label>
               </div>
+
+              <!-- Campo de nombre de quien recomienda -->
+              <div v-if="form.admision.recomendado" class="ml-7 animate-in fade-in slide-in-from-top-1 duration-200">
+                <label class="block text-sm font-medium leading-6 text-gray-900">¿Quién recomienda?</label>
+                <input type="text" v-model="form.admision.recomendado_por" required
+                  placeholder="Nombre de la persona que recomienda"
+                  class="mt-1 block w-full max-w-md rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+              </div>
             </div>
           </div>
         </div>
@@ -498,7 +506,8 @@ const form = reactive({
     titulo_id: '',
     anio_lectivo_id: '',
     pago: false,
-    recomendado: false
+    recomendado: false,
+    recomendado_por: ''
   },
   acta: {
     provincia: '',

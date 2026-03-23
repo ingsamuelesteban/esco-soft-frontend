@@ -100,6 +100,15 @@
                       d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                   </svg>
                 </button>
+                <button v-if="authStore.isAdmin || authStore.isMaster" 
+                  class="ml-3 text-red-500 hover:text-red-700 transition-colors" 
+                  title="Eliminar Acompañamiento"
+                  @click="deleteObservation(obs.id)">
+                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                  </svg>
+                </button>
               </td>
             </tr>
           </tbody>
@@ -120,9 +129,12 @@ import { useRouter } from 'vue-router';
 import { apiCall as useApi, api } from '@/utils/api';
 import { usePrint } from '@/composables/usePrint';
 import { useAniosLectivosStore } from '~/stores/anios_lectivos';
+import { useAuthStore } from '~/stores/auth';
+import { showConfirm, showSuccess, showError, showLoading, closeLoading } from '@/utils/sweetalert';
 
 const router = useRouter();
 const aniosStore = useAniosLectivosStore();
+const authStore = useAuthStore();
 
 const loading = ref(true);
 const observations = ref<any[]>([]);
@@ -214,6 +226,30 @@ async function downloadPdf(id: number) {
     setTimeout(() => {
       generatingPdfId.value = null;
     }, 1000);
+  }
+}
+
+async function deleteObservation(id: number) {
+  const result = await showConfirm(
+    'Esta acción eliminará permanentemente el acompañamiento y no podrá ser recuperado.',
+    '¿Estás seguro?',
+    'warning',
+    'Sí, eliminar',
+    'Cancelar'
+  );
+
+  if (result.isConfirmed) {
+    showLoading('Eliminando acompañamiento...');
+    try {
+      await api.delete(`/observations/${id}`);
+      await fetchObservations();
+      showSuccess('El acompañamiento ha sido eliminado permanentemente.');
+    } catch (e: any) {
+      console.error("Error deleting observation", e);
+      showError(e.data?.message || 'Error al eliminar el acompañamiento');
+    } finally {
+      closeLoading();
+    }
   }
 }
 </script>

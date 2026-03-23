@@ -102,7 +102,12 @@
               <div>
                 <dt class="text-sm font-medium text-gray-500">Recomendado</dt>
                 <dd class="mt-1 text-sm text-gray-900">
-                  <span v-if="estudiante.admision?.recomendado" class="text-green-600 font-medium">Sí</span>
+                  <div v-if="estudiante.admision?.recomendado">
+                    <span class="text-green-600 font-medium">Sí</span>
+                    <span v-if="estudiante.admision?.recomendado_por" class="ml-2 text-xs text-gray-500 font-normal italic">
+                      (Por: {{ estudiante.admision.recomendado_por }})
+                    </span>
+                  </div>
                   <span v-else class="text-gray-400">No</span>
                 </dd>
               </div>
