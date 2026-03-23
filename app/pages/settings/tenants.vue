@@ -234,6 +234,26 @@
                                     </div>
                                 </div>
 
+                                <!-- Identity Section -->
+                                <div class="border-t border-gray-200 pt-4 space-y-4">
+                                    <h4 class="text-sm font-semibold text-gray-900">Identidad Institucional</h4>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Misión</label>
+                                        <textarea v-model="form.mission" rows="2"
+                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"></textarea>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Visión</label>
+                                        <textarea v-model="form.vision" rows="2"
+                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"></textarea>
+                                    </div>
+                                    <div>
+                                        <label class="block text-sm font-medium text-gray-700">Valores</label>
+                                        <textarea v-model="form.values" rows="2"
+                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"></textarea>
+                                    </div>
+                                </div>
+
                                 <!-- Director Section -->
                                 <div class="border-t border-gray-200 pt-4">
                                     <h4 class="text-sm font-semibold text-gray-900 mb-3">Perfil del Director</h4>
@@ -396,6 +416,9 @@ const form = reactive({
     director_name: '',
     director_bio: '',
     director_image_url: '',
+    mission: '',
+    vision: '',
+    values: '',
     social_media: {
         facebook: '',
         instagram: '',
@@ -466,6 +489,9 @@ const openCreateModal = () => {
         director_name: '',
         director_bio: '',
         director_image_url: '',
+        mission: '',
+        vision: '',
+        values: '',
         social_media: {
             facebook: '',
             instagram: '',
@@ -511,6 +537,9 @@ const editTenant = (tenant: Tenant) => {
         director_name: tenant.director_name || '',
         director_bio: tenant.director_bio || '',
         director_image_url: tenant.director_image_url || '',
+        mission: tenant.mission || '',
+        vision: tenant.vision || '',
+        values: tenant.values || '',
         social_media: tenant.social_media || {
             facebook: '',
             instagram: '',
@@ -624,6 +653,10 @@ const saveTenant = async () => {
         if (form.public_description) formData.append('public_description', form.public_description)
         if (form.director_name) formData.append('director_name', form.director_name)
         if (form.director_bio) formData.append('director_bio', form.director_bio)
+        
+        if (form.mission) formData.append('mission', form.mission)
+        if (form.vision) formData.append('vision', form.vision)
+        if (form.values) formData.append('values', form.values)
         
         formData.append('social_media', JSON.stringify(form.social_media))
 

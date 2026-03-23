@@ -39,6 +39,9 @@ export interface Tenant {
   director_name?: string
   director_bio?: string
   director_image_url?: string
+  mission?: string
+  vision?: string
+  values?: string
   social_media?: {
     facebook?: string
     instagram?: string
