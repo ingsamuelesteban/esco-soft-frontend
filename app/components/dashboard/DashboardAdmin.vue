@@ -28,8 +28,29 @@
       />
     </div>
 
-    <!-- Permission Requests Banner -->
-    <PermissionRequestsBanner />
+    <!-- Alertas Generales y Solicitudes -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <PermissionRequestsBanner />
+
+      <!-- Alerta de Nuevas Incidencias de Aula -->
+      <NuxtLink v-if="alerts?.new_incidents > 0" to="/reportes-aulas/gestion"
+        class="bg-orange-50 border border-orange-200 rounded-lg p-4 flex items-center justify-between hover:bg-orange-100 transition-colors">
+        <div class="flex items-center gap-3">
+          <div class="flex-shrink-0 bg-orange-100 rounded-full p-2">
+            <ExclamationTriangleIcon class="w-6 h-6 text-orange-600" />
+          </div>
+          <div>
+            <h3 class="text-sm font-bold text-orange-900">
+              Hay {{ alerts.new_incidents }} {{ alerts.new_incidents === 1 ? 'incidencia' : 'incidencias' }} de aula sin procesar
+            </h3>
+            <p class="text-xs text-orange-700 mt-0.5">Pendientes de revisión y asignación</p>
+          </div>
+        </div>
+        <svg class="w-5 h-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </NuxtLink>
+    </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
       <!-- Attendance Chart -->
@@ -93,6 +114,7 @@ const props = defineProps<{
 }>()
 
 const metrics = computed(() => props.data?.metrics)
+const alerts = computed(() => props.data?.alerts)
 const onlineUsers = computed(() => props.data?.online_users)
 
 // Transform API chart data to Component format
