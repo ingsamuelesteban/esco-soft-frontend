@@ -40,7 +40,7 @@
     <!-- Cards scroll row -->
     <div class="relative flex gap-3 overflow-x-auto px-5 pb-4 pt-1 scrollbar-hide snap-x snap-mandatory">
       <div v-for="a in announcements" :key="a.id"
-        class="snap-start flex-shrink-0 w-72 sm:w-80 bg-white dark:bg-gray-800/15 backdrop-blur-sm border border-white/20 rounded-xl p-4 hover:bg-white dark:bg-gray-800/20 transition-all cursor-default">
+        class="snap-start flex-shrink-0 w-72 sm:w-80 bg-white/10 dark:bg-gray-800/30 backdrop-blur-sm border border-white/20 rounded-xl p-4 hover:bg-white/20 dark:hover:bg-gray-800/40 transition-all cursor-default">
         <!-- Card top: title + badge -->
         <div class="flex items-start justify-between gap-2 mb-2">
           <h4 class="text-sm font-bold text-white leading-snug line-clamp-2">{{ a.title }}</h4>
@@ -55,7 +55,7 @@
         <div class="mt-3 flex items-center justify-between">
           <span class="text-[11px] text-white/60">{{ formatDate(a.created_at) }}</span>
           <button v-if="a.attachment_path" @click="downloadFile(a.id, a.attachment_path)"
-            class="inline-flex items-center gap-1 text-[11px] font-semibold text-white/90 hover:text-white bg-white dark:bg-gray-800/20 hover:bg-white dark:bg-gray-800/30 px-2 py-1 rounded transition-colors">
+            class="inline-flex items-center gap-1 text-[11px] font-semibold text-white/90 hover:text-white bg-white/10 dark:bg-gray-800/30 hover:bg-white/20 dark:hover:bg-gray-800/40 px-2 py-1 rounded transition-colors">
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />

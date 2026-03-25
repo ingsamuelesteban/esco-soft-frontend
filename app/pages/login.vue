@@ -21,7 +21,7 @@
           <div>
             <label for="username" class="sr-only">Usuario</label>
             <input id="username" v-model="form.username" name="username" type="text" autocomplete="username" required
-              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 text-gray-900 dark:text-gray-100 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
               placeholder="Usuario" :disabled="isLoading" />
           </div>
           <div>
@@ -29,7 +29,7 @@
             <div class="relative">
               <input id="password" v-model="form.password" name="password" :type="showPassword ? 'text' : 'password'"
                 autocomplete="current-password" required
-                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 text-gray-900 dark:text-gray-100 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm pr-10"
+                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm pr-10"
                 placeholder="Contraseña" :disabled="isLoading" />
               <button type="button" @click="showPassword = !showPassword"
                 class="absolute inset-y-0 right-0 pr-3 flex items-center z-20 text-gray-400 hover:text-gray-600 dark:text-gray-400 focus:outline-none">
@@ -52,7 +52,7 @@
         <div class="flex items-center justify-between">
           <div class="flex items-center">
             <input id="remember" v-model="form.remember" name="remember" type="checkbox"
-              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded" />
+              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 rounded" />
             <label for="remember" class="ml-2 block text-sm text-gray-900 dark:text-gray-100">
               Recordarme
             </label>
@@ -173,7 +173,7 @@
                 <div class="relative">
                   <input id="new-password" v-model="passwordChangeData.newPassword"
                     :type="showNewPassword ? 'text' : 'password'" required
-                    class="block w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 pr-10"
+                    class="block w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 pr-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     :class="{ 'border-red-300': passwordChangeData.newPassword && !isPasswordLengthValid, 'border-green-300': isPasswordLengthValid, 'border-gray-300 dark:border-gray-600': !passwordChangeData.newPassword }"
                     placeholder="Mínimo 8 caracteres" :disabled="isLoading" />
                   <button type="button" @click="showNewPassword = !showNewPassword"
@@ -213,7 +213,7 @@
                 <div class="relative">
                   <input id="confirm-password" v-model="passwordChangeData.newPasswordConfirmation"
                     :type="showConfirmPassword ? 'text' : 'password'" required
-                    class="block w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 pr-10"
+                    class="block w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 pr-10 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     :class="{ 'border-red-300': passwordChangeData.newPasswordConfirmation && !doPasswordsMatch, 'border-green-300': doPasswordsMatch, 'border-gray-300 dark:border-gray-600': !passwordChangeData.newPasswordConfirmation }"
                     placeholder="Confirma tu nueva contraseña" :disabled="isLoading" />
                   <button type="button" @click="showConfirmPassword = !showConfirmPassword"
@@ -298,13 +298,13 @@
               <div>
                 <label for="forgot-username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Usuario</label>
                 <input id="forgot-username" v-model="forgotForm.username" type="text" required
-                  class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Tu nombre de usuario" :disabled="forgotStatus.loading" />
               </div>
               <div>
                 <label for="forgot-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Correo electrónico</label>
                 <input id="forgot-email" v-model="forgotForm.email" type="email" required
-                  class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="ejemplo@correo.com" :disabled="forgotStatus.loading" />
               </div>
 
