@@ -1,27 +1,27 @@
 ﻿<template>
-  <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+  <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
     <div class="p-4">
       <div class="flex items-center gap-3 flex-wrap">
-        <input v-model="query" type="text" class="w-full md:w-64 rounded-md border-gray-300 text-sm"
+        <input v-model="query" type="text" class="w-full md:w-64 rounded-md border-gray-300 dark:border-gray-600 text-sm"
           placeholder="Buscar por título, grado o sección..." />
-        <div class="ml-auto text-sm text-gray-500" v-if="!loading">Total: {{ filtered.length }}</div>
+        <div class="ml-auto text-sm text-gray-500 dark:text-gray-400" v-if="!loading">Total: {{ filtered.length }}</div>
       </div>
     </div>
     <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-900/50">
           <tr>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Título</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grado</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estudiantes</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Título</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Grado</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estudiantes</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
           <tr v-for="a in filtered" :key="a.id">
             <td class="px-4 py-3 whitespace-nowrap text-sm">{{ a.titulo?.nombre || '' }}</td>
-            <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900">
+            <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
               <div class="flex items-center">
                 <span class="text-base font-semibold">{{ gradoLabel(a.grado_cardinal) }}</span>
                 <span v-if="a.seccion" class="ml-2 px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">
@@ -36,11 +36,11 @@
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                   </svg>
-                  <span class="font-medium text-gray-900">{{ getEstudiantesCount(a) }}</span>
+                  <span class="font-medium text-gray-900 dark:text-gray-100">{{ getEstudiantesCount(a) }}</span>
                 </div>
                 <div v-if="a.capacidad" class="flex items-center">
                   <span class="text-gray-400">/</span>
-                  <span class="text-gray-600 ml-1">{{ a.capacidad }}</span>
+                  <span class="text-gray-600 dark:text-gray-400 ml-1">{{ a.capacidad }}</span>
                 </div>
                 <div v-if="a.capacidad" class="ml-2">
                   <div class="w-16 h-2 bg-gray-200 rounded-full overflow-hidden"
@@ -91,10 +91,10 @@
             </td>
           </tr>
           <tr v-if="!loading && filtered.length === 0">
-            <td colspan="5" class="px-4 py-6 text-center text-sm text-gray-500">Sin resultados</td>
+            <td colspan="5" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Sin resultados</td>
           </tr>
           <tr v-if="loading">
-            <td colspan="5" class="px-4 py-6 text-center text-sm text-gray-500">Cargando...</td>
+            <td colspan="5" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Cargando...</td>
           </tr>
         </tbody>
       </table>

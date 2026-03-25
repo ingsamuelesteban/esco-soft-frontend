@@ -1,29 +1,29 @@
 <template>
   <div class="space-y-6">
     <!-- Header -->
-    <div class="bg-white shadow-sm rounded-lg p-6">
+    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
       <div class="flex items-center justify-between">
         <div class="flex items-center">
-          <button @click="navigateTo('/asistencia')" class="mr-4 text-gray-400 hover:text-gray-600">
+          <button @click="navigateTo('/asistencia')" class="mr-4 text-gray-400 hover:text-gray-600 dark:text-gray-400">
             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </button>
           <div>
-            <h1 class="text-2xl font-bold text-gray-900">Asistencia Baja Mensual</h1>
-            <p class="text-sm text-gray-600 mt-1">Identificar estudiantes con menos del 80% de asistencia.</p>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Asistencia Baja Mensual</h1>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Identificar estudiantes con menos del 80% de asistencia.</p>
           </div>
         </div>
       </div>
     </div>
 
     <!-- Filtros y Opciones -->
-    <div class="bg-white shadow-sm rounded-lg p-6">
+    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
       <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Mes</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mes</label>
           <select v-model="selectedMonth"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
             <option v-for="month in months" :key="month.value" :value="month.value">
               {{ month.label }}
             </option>
@@ -31,9 +31,9 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Año</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Año</label>
           <select v-model="selectedYear"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
             <option v-for="year in years" :key="year" :value="year">
               {{ year }}
             </option>
@@ -41,9 +41,9 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Aula</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Aula</label>
           <select v-model="selectedAula"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50"
             :disabled="loadingAulas">
             <option :value="null">Todas las aulas</option>
             <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
@@ -53,9 +53,9 @@
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Asignatura / Materia</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Asignatura / Materia</label>
           <select v-model="selectedAssignment"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50"
             :disabled="loadingAssignments || !selectedAula">
             <option :value="null">{{ selectedAula ? 'Todas las asignaturas' : 'Seleccione un aula primero' }}</option>
             <option v-for="assignment in assignments" :key="assignment.id" :value="assignment.id">
@@ -79,8 +79,8 @@
           </button>
 
           <button v-if="alerts.length > 0" @click="printReport" :disabled="printing"
-            class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 transition-colors">
-            <svg v-if="printing" class="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24">
+            class="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 transition-colors">
+            <svg v-if="printing" class="animate-spin -ml-1 mr-2 h-4 w-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24">
               <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
               <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
             </svg>
@@ -94,49 +94,49 @@
     </div>
 
     <!-- Resultados -->
-    <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
       <div v-if="loading" class="p-12 flex justify-center items-center">
         <svg class="animate-spin h-8 w-8 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
-        <span class="ml-3 text-gray-600 font-medium">Buscando registros de asistencia baja...</span>
+        <span class="ml-3 text-gray-600 dark:text-gray-400 font-medium">Buscando registros de asistencia baja...</span>
       </div>
 
-      <div v-else-if="alerts.length === 0 && hasSearched" class="p-12 text-center text-gray-500">
+      <div v-else-if="alerts.length === 0 && hasSearched" class="p-12 text-center text-gray-500 dark:text-gray-400">
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
         </svg>
-        <h3 class="mt-2 text-sm font-medium text-gray-900">No hay estudiantes con asistencia baja</h3>
-        <p class="mt-1 text-sm text-gray-500">Todos los estudiantes registran más del 80% de asistencia en el período seleccionado.</p>
+        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No hay estudiantes con asistencia baja</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Todos los estudiantes registran más del 80% de asistencia en el período seleccionado.</p>
       </div>
 
       <div v-else-if="alerts.length > 0">
-        <div class="overflow-x-auto max-h-[60vh] relative border-b border-gray-200">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50 sticky top-0 z-10 shadow-sm">
+        <div class="overflow-x-auto max-h-[60vh] relative border-b border-gray-200 dark:border-gray-700">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-900/50 sticky top-0 z-10 shadow-sm">
               <tr>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estudiante</th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aula</th>
-              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Materia</th>
-              <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-red-50 text-red-800">% Asistencia</th>
-              <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Días Totales</th>
-              <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider text-red-600">Ausencias</th>
-              <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider text-orange-600">Tardanzas</th>
-              <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider text-yellow-600">Excusas</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estudiante</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Aula</th>
+              <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Materia</th>
+              <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-red-50 text-red-800">% Asistencia</th>
+              <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Días Totales</th>
+              <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider text-red-600">Ausencias</th>
+              <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider text-orange-600">Tardanzas</th>
+              <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider text-yellow-600">Excusas</th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="(alert, index) in alerts" :key="index" class="hover:bg-gray-50">
+          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tr v-for="(alert, index) in alerts" :key="index" class="hover:bg-gray-50 dark:bg-gray-900/50">
               <td class="px-6 py-4 whitespace-nowrap">
-                <div class="text-sm font-medium text-gray-900">{{ alert.student_name }}</div>
+                <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ alert.student_name }}</div>
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
                 <span class="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
                   {{ alert.aula_name }}
                 </span>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                 {{ alert.course_name }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
@@ -144,7 +144,7 @@
                   {{ alert.percentage }}%
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 text-center font-medium">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 text-center font-medium">
                 {{ alert.total_registered }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -168,37 +168,37 @@
         </div>
         
         <!-- Paginación -->
-        <div class="px-6 py-3 border-t border-gray-200 flex items-center justify-between" v-if="pagination.last_page > 1">
+        <div class="px-6 py-3 border-t border-gray-200 dark:border-gray-700 flex items-center justify-between" v-if="pagination.last_page > 1">
           <div class="flex-1 flex justify-between sm:hidden">
             <button @click="changePage(pagination.current_page - 1)" :disabled="pagination.current_page === 1"
-              class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 transition-colors">
+              class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50 disabled:opacity-50 transition-colors">
               Anterior
             </button>
             <button @click="changePage(pagination.current_page + 1)" :disabled="pagination.current_page === pagination.last_page"
-              class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50 transition-colors">
+              class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50 disabled:opacity-50 transition-colors">
               Siguiente
             </button>
           </div>
           <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
             <div>
-              <p class="text-sm text-gray-700">
+              <p class="text-sm text-gray-700 dark:text-gray-300">
                 Mostrando del <span class="font-medium">{{ pagination.from || 0 }}</span> al <span class="font-medium">{{ pagination.to || 0 }}</span> de <span class="font-medium">{{ pagination.total }}</span> resultados
               </p>
             </div>
             <div>
               <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
                 <button @click="changePage(pagination.current_page - 1)" :disabled="pagination.current_page === 1"
-                  class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 transition-colors">
+                  class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-900/50 disabled:opacity-50 transition-colors">
                   <span class="sr-only">Anterior</span>
                   <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                     <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
                   </svg>
                 </button>
-                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                <span class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300">
                   Página {{ pagination.current_page }} de {{ pagination.last_page }}
                 </span>
                 <button @click="changePage(pagination.current_page + 1)" :disabled="pagination.current_page === pagination.last_page"
-                  class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 transition-colors">
+                  class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-900/50 disabled:opacity-50 transition-colors">
                   <span class="sr-only">Siguiente</span>
                   <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                     <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />

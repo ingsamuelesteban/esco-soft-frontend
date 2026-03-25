@@ -1,17 +1,17 @@
 <template>
-    <div v-if="currentUnifiedCase" class="bg-white shadow overflow-hidden sm:rounded-lg">
+    <div v-if="currentUnifiedCase" class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg">
         <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
             <div>
-                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
                     Caso Unificado #{{ currentUnifiedCase.id }}
                 </h3>
-                <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                <p class="mt-1 max-w-2xl text-sm text-gray-500 dark:text-gray-400">
                     Estudiante: {{ currentUnifiedCase.student?.nombres }} {{ currentUnifiedCase.student?.apellidos }}
                 </p>
             </div>
             <div class="space-x-2">
                 <button @click="$emit('back')"
-                    class="bg-white border border-gray-300 rounded-md shadow-sm px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
+                    class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none">
                     Volver
                 </button>
                 <button v-if="currentUnifiedCase.status === 'open'" @click="openAddModal"
@@ -25,11 +25,11 @@
             </div>
         </div>
 
-        <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+        <div class="border-t border-gray-200 dark:border-gray-700 px-4 py-5 sm:px-6">
             <dl class="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
                 <div class="sm:col-span-1">
-                    <dt class="text-sm font-medium text-gray-500">Casos Vinculados</dt>
-                    <dd class="mt-1 text-sm text-gray-900">
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Casos Vinculados</dt>
+                    <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">
                         <ul class="list-disc pl-5 space-y-1">
                             <li v-for="caso in currentUnifiedCase.cases" :key="caso.id">
                                 Caso #{{ caso.id }} - {{ caso.title }} ({{ caso.referral?.teacher?.name ?? 'Psicología'
@@ -39,10 +39,10 @@
                     </dd>
                 </div>
                 <div class="sm:col-span-1">
-                    <dt class="text-sm font-medium text-gray-500">Estado</dt>
-                    <dd class="mt-1 text-sm text-gray-900">
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Estado</dt>
+                    <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">
                         <span :class="[
-                            currentUnifiedCase.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800',
+                            currentUnifiedCase.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200',
                             'px-2 inline-flex text-xs leading-5 font-semibold rounded-full'
                         ]">
                             {{ currentUnifiedCase.status === 'open' ? 'Abierto' : 'Cerrado' }}
@@ -53,8 +53,8 @@
         </div>
 
         <!-- Timeline -->
-        <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
-            <h4 class="text-lg font-medium text-gray-900 mb-4">Línea de Tiempo Unificada</h4>
+        <div class="border-t border-gray-200 dark:border-gray-700 px-4 py-5 sm:px-6">
+            <h4 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Línea de Tiempo Unificada</h4>
             <div class="flow-root">
                 <ul role="list" class="-mb-8">
                     <li v-for="(entry, entryIdx) in currentUnifiedCase.timeline" :key="entry.id">
@@ -75,20 +75,20 @@
                                 </div>
                                 <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
                                     <div>
-                                        <p class="text-sm text-gray-500">
-                                            {{ entry.type }} <span class="font-medium text-gray-900">por {{
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                                            {{ entry.type }} <span class="font-medium text-gray-900 dark:text-gray-100">por {{
                                                 entry.author?.name }}</span>
                                         </p>
                                         <p class="text-xs text-gray-400">
                                             Fuente: {{ entry.case_id ? (entry.case_source_title ?? 'Caso #' +
                                                 entry.case_id) : 'Caso Unificado' }}
                                         </p>
-                                        <div class="mt-2 text-sm text-gray-700">
+                                        <div class="mt-2 text-sm text-gray-700 dark:text-gray-300">
                                             <p class="font-semibold">{{ entry.title }}</p>
                                             <div class="whitespace-pre-wrap" v-html="entry.content"></div>
                                         </div>
                                     </div>
-                                    <div class="text-right text-sm whitespace-nowrap text-gray-500">
+                                    <div class="text-right text-sm whitespace-nowrap text-gray-500 dark:text-gray-400">
                                         <time :datetime="entry.date_of_event">{{ new
                                             Date(entry.date_of_event).toLocaleDateString() }}</time>
                                         <div class="mt-2" v-if="canEdit(entry)">
@@ -103,7 +103,7 @@
                         </div>
                     </li>
                     <li v-if="!currentUnifiedCase.timeline || currentUnifiedCase.timeline.length === 0">
-                        <p class="text-sm text-gray-500 italic">No hay entradas registradas en los casos vinculados.</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 italic">No hay entradas registradas en los casos vinculados.</p>
                     </li>
                 </ul>
             </div>
@@ -117,9 +117,9 @@
                     @click="showAddEntryModal = false"></div>
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                 <div
-                    class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                    class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
 
-                    <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">{{ isEditing ? 'Editar Entrada' :
+                    <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 mb-4">{{ isEditing ? 'Editar Entrada' :
                         'Nueva Entrada Unificada' }}</h3>
                     <p v-if="!isEditing" class="text-sm text-yellow-600 bg-yellow-50 p-3 rounded mb-4 flex">
                         <!-- Heroicon: exclamation-triangle -->
@@ -135,19 +135,19 @@
                     <form @submit.prevent="submitEntry">
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Título</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Título</label>
                                 <input v-model="newEntry.title" type="text" required
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                    class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Fecha del Evento</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha del Evento</label>
                                 <input v-model="newEntry.date_of_event" type="date" required
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                    class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Tipo</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo</label>
                                 <select v-model="newEntry.type" required
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                    class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                     <option value="Observación">Observación</option>
                                     <option value="Entrevista">Entrevista</option>
                                     <option value="Reunión">Reunión</option>
@@ -156,14 +156,14 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Descripción</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descripción</label>
                                 <textarea v-model="newEntry.description" rows="3" required
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                                    class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Visibilidad</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Visibilidad</label>
                                 <select v-model="newEntry.visibility" required
-                                    class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                    class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                     <option value="public">Visible para profesores</option>
                                     <option value="private">Privado (Solo Psicología)</option>
                                     <option value="restricted">Restringido</option>
@@ -176,7 +176,7 @@
                                 {{ isSaving ? 'Guardando...' : 'Guardar' }}
                             </button>
                             <button type="button" @click="showAddEntryModal = false"
-                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:col-start-1 sm:text-sm">
+                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none sm:mt-0 sm:col-start-1 sm:text-sm">
                                 Cancelar
                             </button>
                         </div>
@@ -193,8 +193,8 @@
                     @click="showCloseModal = false"></div>
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                 <div
-                    class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-                    <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Cerrar Caso Unificado</h3>
+                    class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                    <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 mb-4">Cerrar Caso Unificado</h3>
                     <p class="text-sm text-red-600 bg-red-50 p-3 rounded mb-4 flex">
                         <!-- Heroicon: exclamation-circle -->
                         <svg class="h-5 w-5 mr-2 text-red-500" xmlns="http://www.w3.org/2000/svg" fill="none"
@@ -208,7 +208,7 @@
                     </p>
                     <div class="mt-4 flex justify-end space-x-3">
                         <button @click="showCloseModal = false" type="button"
-                            class="px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+                            class="px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none">
                             Cancelar
                         </button>
                         <button @click="confirmClose" type="button"
@@ -230,7 +230,7 @@
                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
             </path>
         </svg>
-        <p class="mt-2 text-sm text-gray-500">Cargando detalles...</p>
+        <p class="mt-2 text-sm text-gray-500 dark:text-gray-400">Cargando detalles...</p>
     </div>
 </template>
 

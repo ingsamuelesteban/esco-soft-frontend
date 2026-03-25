@@ -1,16 +1,16 @@
 <template>
-  <header class="bg-white border-b border-gray-200 sticky top-0 z-40">
+  <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40 transition-colors duration-300">
     <div class="flex items-center justify-between h-16 px-4 sm:px-6 lg:px-8">
       <!-- Botón hamburguesa móvil -->
       <div class="flex items-center space-x-4">
         <button @click="toggleSidebar"
-          class="md:hidden p-2 rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700">
+          class="md:hidden p-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:bg-gray-800 hover:text-gray-700 dark:text-gray-300 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300 transition-colors">
           <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
         <!-- Nombre de la Institución -->
-        <div class="flex items-center text-gray-800 font-bold text-lg">
+        <div class="flex items-center text-gray-800 dark:text-gray-200 dark:text-gray-100 font-bold text-lg">
           <img v-if="tenantLogo" :src="tenantLogo" alt="Logo" class="h-8 w-auto mr-3 object-contain" />
           <span v-if="tenantName" class="hidden sm:block">{{ tenantName }}</span>
           <span v-if="tenantName" class="sm:hidden text-base truncate max-w-[150px]">{{ tenantName }}</span>
@@ -22,11 +22,26 @@
         <!-- Tareas -->
         <EscosoftTaskDropdown v-if="authStore.isAdmin || authStore.isMaster" />
 
+        <!-- Theme Toggle -->
+        <button @click="toggleTheme"
+          class="p-2 rounded-full text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-gray-700 focus:outline-none transition-colors">
+          <svg v-if="isDark" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          <svg v-else xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+            stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+        </button>
+
         <!-- Notificaciones -->
         <div class="relative notifications-container">
           <button @click="toggleNotifications"
-            class="p-2 rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700 relative focus:outline-none transition-colors duration-200"
-            :class="{ 'bg-gray-100 text-primary-600': isNotificationsOpen }">
+            class="p-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:bg-gray-800 hover:text-gray-700 dark:text-gray-300 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-gray-300 relative focus:outline-none transition-colors duration-200"
+            :class="{ 'bg-gray-100 dark:bg-gray-800 dark:bg-gray-700 text-primary-600 dark:text-primary-400': isNotificationsOpen }">
             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
@@ -46,37 +61,37 @@
             leave-from-class="transform opacity-100 scale-100 translate-y-0"
             leave-to-class="transform opacity-0 scale-95 -translate-y-2">
             <div v-if="isNotificationsOpen"
-              class="absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 z-50 overflow-hidden">
-              <div class="p-3 border-b border-gray-100 bg-gray-50 flex justify-between items-center">
-                <h3 class="text-sm font-semibold text-gray-700">Notificaciones</h3>
+              class="absolute right-0 mt-3 w-80 sm:w-96 bg-white dark:bg-gray-800 rounded-lg shadow-xl ring-1 ring-black ring-opacity-5 dark:ring-white dark:ring-opacity-10 z-50 overflow-hidden">
+              <div class="p-3 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 dark:bg-gray-800/50 flex justify-between items-center">
+                <h3 class="text-sm font-semibold text-gray-700 dark:text-gray-300">Notificaciones</h3>
                 <button v-if="notificationStore.hasUnread" @click="markAllRead"
-                  class="text-xs text-primary-600 hover:text-primary-800 font-medium">
+                  class="text-xs text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 font-medium">
                   Marcar todas como leídas
                 </button>
               </div>
 
               <div class="max-h-[calc(100vh-200px)] overflow-y-auto">
                 <div v-if="notificationStore.isLoading && notificationStore.notifications?.length === 0"
-                  class="p-4 text-center text-gray-500 text-sm">
+                  class="p-4 text-center text-gray-500 dark:text-gray-400 text-sm">
                   Cargando...
                 </div>
 
                 <div v-else-if="notificationStore.notifications?.length === 0"
-                  class="p-8 text-center text-gray-500 flex flex-col items-center">
-                  <svg class="h-8 w-8 text-gray-300 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  class="p-8 text-center text-gray-500 dark:text-gray-400 flex flex-col items-center">
+                  <svg class="h-8 w-8 text-gray-300 dark:text-gray-600 dark:text-gray-400 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                       d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
                   </svg>
                   <p class="text-sm">No tienes notificaciones</p>
                 </div>
 
-                <ul v-else class="divide-y divide-gray-100">
+                <ul v-else class="divide-y divide-gray-100 dark:divide-gray-700">
                   <li v-for="notification in notificationStore.notifications" :key="notification.id"
-                    class="hover:bg-gray-50 transition-colors duration-150 relative group">
+                    class="hover:bg-gray-50 dark:bg-gray-900/50 dark:hover:bg-gray-700 transition-colors duration-150 relative group">
                     <button @click="handleNotificationClick(notification)"
                       class="w-full text-left p-3 flex items-start space-x-3">
                       <div class="flex-shrink-0" :class="notification.read_at ? 'opacity-50' : ''">
-                        <div class="h-8 w-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center">
+                        <div class="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400 flex items-center justify-center">
                           <svg v-if="notification.data.icon === 'calendar'" class="h-4 w-4" fill="none"
                             viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -89,19 +104,19 @@
                         </div>
                       </div>
                       <div class="flex-1 min-w-0">
-                        <p class="text-sm font-medium text-gray-900" :class="{ 'font-bold': !notification.read_at }">
+                        <p class="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-white" :class="{ 'font-bold': !notification.read_at }">
                           {{ notification.data.title }}
                         </p>
-                        <p class="text-sm text-gray-600 line-clamp-2 mt-0.5"
-                          :class="{ 'text-gray-900': !notification.read_at }" :title="notification.data.message">
+                        <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mt-0.5"
+                          :class="{ 'text-gray-900 dark:text-gray-100 dark:text-gray-200': !notification.read_at }" :title="notification.data.message">
                           {{ notification.data.message }}
                         </p>
-                        <p class="text-xs text-gray-400 mt-1">
+                        <p class="text-xs text-gray-400 dark:text-gray-500 dark:text-gray-400 mt-1">
                           {{ dayjs(notification.created_at).fromNow() }}
                         </p>
                       </div>
                       <div v-if="!notification.read_at" class="flex-shrink-0 self-center">
-                        <span class="block h-2 w-2 rounded-full bg-blue-600 ring-2 ring-white"></span>
+                        <span class="block h-2 w-2 rounded-full bg-blue-600 dark:bg-blue-400 ring-2 ring-white dark:ring-gray-800"></span>
                       </div>
                     </button>
                   </li>
@@ -114,10 +129,10 @@
         <!-- Menú de usuario -->
         <div class="relative user-menu-container">
           <button @click="toggleUserMenu"
-            class="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-100 transition-colors duration-200"
-            :class="{ 'bg-gray-100': isUserMenuOpen }">
+            class="flex items-center space-x-3 p-2 rounded-md hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700 transition-colors duration-200"
+            :class="{ 'bg-gray-100 dark:bg-gray-800 dark:bg-gray-700': isUserMenuOpen }">
             <div v-if="authStore.user?.profile_photo_path"
-              class="h-8 w-8 rounded-full overflow-hidden border border-gray-200">
+              class="h-8 w-8 rounded-full overflow-hidden border border-gray-200 dark:border-gray-700 dark:border-gray-600">
               <img :src="`${$config.public.apiBase}/storage/${authStore.user.profile_photo_path}`" alt="Profile"
                 class="h-full w-full object-cover">
             </div>
@@ -126,10 +141,10 @@
               {{ userInitials }}
             </div>
             <div class="hidden md:block text-left">
-              <p class="text-sm font-medium text-gray-700">{{ userName }}</p>
-              <p class="text-xs text-gray-500">{{ userRole }}</p>
+              <p class="text-sm font-medium text-gray-700 dark:text-gray-300 dark:text-gray-200">{{ userName }}</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">{{ userRole }}</p>
             </div>
-            <svg class="h-5 w-5 text-gray-400 transition-transform duration-200"
+            <svg class="h-5 w-5 text-gray-400 dark:text-gray-500 dark:text-gray-400 transition-transform duration-200"
               :class="{ 'rotate-180': isUserMenuOpen }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
             </svg>
@@ -141,21 +156,21 @@
             leave-active-class="transition ease-in duration-75" leave-from-class="transform opacity-100 scale-100"
             leave-to-class="transform opacity-0 scale-95">
             <div v-if="isUserMenuOpen"
-              class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 divide-y divide-gray-100 z-50">
+              class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 dark:ring-white dark:ring-opacity-10 divide-y divide-gray-100 dark:divide-gray-700 z-50">
               <div class="py-1">
                 <NuxtLink to="/perfil" @click="closeUserMenu"
-                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Mi Perfil</NuxtLink>
+                  class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700">Mi Perfil</NuxtLink>
                 <NuxtLink v-if="authStore.isMaster" to="/settings/tenants"
-                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700">
                   Configuración
                 </NuxtLink>
                 <NuxtLink v-else-if="authStore.isAdmin" to="/director"
-                  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                  class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700">
                   Configuración
                 </NuxtLink>
               </div>
               <div class="py-1">
-                <button @click="logout" class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">
+                <button @click="logout" class="block w-full text-left px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700">
                   Cerrar Sesión
                 </button>
               </div>
@@ -171,6 +186,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useAuthStore } from '../../stores/auth'
 import { useNotificationStore } from '../../stores/notifications'
+import { useTheme } from '../../composables/useTheme'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import 'dayjs/locale/es'
@@ -184,6 +200,7 @@ const emit = defineEmits(['toggleSidebar'])
 // Stores
 const authStore = useAuthStore()
 const notificationStore = useNotificationStore()
+const { isDark, toggleTheme } = useTheme()
 
 // Estados
 const isUserMenuOpen = ref(false)

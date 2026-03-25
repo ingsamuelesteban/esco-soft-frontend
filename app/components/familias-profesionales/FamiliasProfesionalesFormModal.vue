@@ -9,12 +9,12 @@
 
       <!-- Modal content -->
       <div
-        class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+        class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
         <form @submit.prevent="handleSubmit">
-          <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+          <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div class="sm:flex sm:items-start">
               <div class="w-full mt-3 text-center sm:mt-0 sm:text-left">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 mb-4" id="modal-title">
                   {{ isEdit ? 'Editar Familia Profesional' : 'Añadir Familia Profesional' }}
                 </h3>
 
@@ -22,18 +22,18 @@
                 <div class="space-y-4">
                   <!-- Nombre -->
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Nombre *</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre *</label>
                     <input ref="initialInput" v-model.trim="form.nombre" type="text" required
-                      :class="['mt-1 block w-full rounded-md shadow-sm sm:text-sm', nombreError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500']"
+                      :class="['mt-1 block w-full rounded-md shadow-sm sm:text-sm', nombreError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 dark:border-gray-600 focus:border-primary-500 focus:ring-primary-500']"
                       placeholder="Ej: Informática y Comunicaciones" />
                     <p v-if="nombreError" class="mt-1 text-xs text-red-600">{{ nombreError }}</p>
                   </div>
 
                   <!-- Código -->
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Código *</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Código *</label>
                     <input v-model.trim="form.codigo" type="text" required maxlength="10"
-                      :class="['mt-1 block w-full rounded-md shadow-sm sm:text-sm', codigoError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 focus:border-primary-500 focus:ring-primary-500']"
+                      :class="['mt-1 block w-full rounded-md shadow-sm sm:text-sm', codigoError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : 'border-gray-300 dark:border-gray-600 focus:border-primary-500 focus:ring-primary-500']"
                       placeholder="Ej: IFC" />
                     <p v-if="codigoError" class="mt-1 text-xs text-red-600">{{ codigoError }}</p>
                   </div>
@@ -42,8 +42,8 @@
                   <div>
                     <label class="flex items-center">
                       <input v-model="form.activo" type="checkbox"
-                        class="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-offset-0 focus:ring-primary-200 focus:ring-opacity-50" />
-                      <span class="ml-2 text-sm text-gray-700">Activo</span>
+                        class="rounded border-gray-300 dark:border-gray-600 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-offset-0 focus:ring-primary-200 focus:ring-opacity-50" />
+                      <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Activo</span>
                     </label>
                   </div>
                 </div>
@@ -57,13 +57,13 @@
           </div>
 
           <!-- Botones -->
-          <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+          <div class="bg-gray-50 dark:bg-gray-900/50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
             <button type="submit" :disabled="loading"
               class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
               {{ loading ? 'Guardando...' : 'Guardar' }}
             </button>
             <button type="button" @click="$emit('close')" :disabled="loading"
-              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
+              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
               Cancelar
             </button>
           </div>

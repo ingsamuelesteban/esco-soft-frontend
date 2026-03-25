@@ -5,7 +5,7 @@
             <div v-for="message in chatStore.messages" :key="message.id" class="flex"
                 :class="isMyMessage(message) ? 'justify-end' : 'justify-start'">
                 <div class="max-w-[80%] rounded-lg p-3 text-sm"
-                    :class="isMyMessage(message) ? 'bg-blue-600 text-white rounded-br-none' : 'bg-white text-gray-800 border border-gray-200 rounded-bl-none shadow-sm'">
+                    :class="isMyMessage(message) ? 'bg-blue-600 text-white rounded-br-none' : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-bl-none shadow-sm'">
                     <div v-if="!isMyMessage(message) && chatStore.activeConversation?.is_general"
                         class="text-xs font-bold mb-1 opacity-75">
                         {{ message.sender?.name }}
@@ -19,7 +19,7 @@
         </div>
 
         <!-- Input Area -->
-        <div class="bg-white p-3 border-t border-gray-100">
+        <div class="bg-white dark:bg-gray-800 p-3 border-t border-gray-100 dark:border-gray-700">
             <MessageInput />
         </div>
     </div>

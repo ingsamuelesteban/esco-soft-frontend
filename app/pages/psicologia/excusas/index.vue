@@ -1,14 +1,14 @@
 <template>
     <div class="space-y-6">
         <!-- Header -->
-        <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+        <div class="flex justify-between items-center bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 font-outfit">Excusas de Asistencia</h1>
-                <p class="text-gray-500 text-sm mt-1">Gestión de ausencias justificadas y licencias médicas</p>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 font-outfit">Excusas de Asistencia</h1>
+                <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Gestión de ausencias justificadas y licencias médicas</p>
             </div>
             <div class="flex items-center space-x-3">
                 <select v-model="selectedAnioId" v-if="aniosStore.items.length > 0"
-                    class="block w-48 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg shadow-sm">
+                    class="block w-48 pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg shadow-sm">
                     <option :value="'all'">Todos los años</option>
                     <option v-for="anio in aniosStore.items" :key="anio.id" :value="anio.id">
                         {{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}
@@ -26,13 +26,13 @@
         </div>
 
         <!-- Filters -->
-        <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-wrap gap-4">
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-wrap gap-4">
             <div class="w-full sm:w-64">
-                <label class="block text-xs font-medium text-gray-700 mb-1">Buscar Estudiante</label>
+                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Buscar Estudiante</label>
                 <div class="relative">
                     <input v-model="filters.search" type="text" placeholder="Nombre o matrícula..."
                         @input="debouncedFetch"
-                        class="w-full pl-9 pr-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                        class="w-full pl-9 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
                     <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -42,9 +42,9 @@
             </div>
 
             <div class="w-full sm:w-64">
-                <label class="block text-xs font-medium text-gray-700 mb-1">Aula</label>
+                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Aula</label>
                 <select v-model="filters.aula_id" @change="fetchExcuses"
-                    class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
                     <option value="">Todas las aulas</option>
                     <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
                         {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.nivel }}
@@ -53,9 +53,9 @@
             </div>
 
             <div class="flex items-end">
-                <label class="flex items-center space-x-2 text-sm text-gray-700 cursor-pointer">
+                <label class="flex items-center space-x-2 text-sm text-gray-700 dark:text-gray-300 cursor-pointer">
                     <input type="checkbox" v-model="filters.active_only" @change="fetchExcuses"
-                        class="rounded text-primary-600 focus:ring-primary-500 border-gray-300">
+                        class="rounded text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600">
                     <span>Solo vigentes hoy</span>
                 </label>
             </div>
@@ -64,45 +64,45 @@
         <!-- Excuses List -->
         <div v-if="loading" class="text-center py-12">
             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600 mx-auto"></div>
-            <p class="mt-4 text-gray-500">Cargando excusas...</p>
+            <p class="mt-4 text-gray-500 dark:text-gray-400">Cargando excusas...</p>
         </div>
 
         <div v-else-if="excuses.length === 0"
-            class="text-center py-12 bg-white rounded-xl border border-dashed border-gray-300">
+            class="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-dashed border-gray-300 dark:border-gray-600">
             <div class="mx-auto h-12 w-12 text-gray-400">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
             </div>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">No hay excusas registradas</h3>
-            <p class="mt-1 text-sm text-gray-500">Comienza registrando una nueva excusa.</p>
+            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No hay excusas registradas</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Comienza registrando una nueva excusa.</p>
         </div>
 
-        <div v-else class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+        <div v-else class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-gray-50 dark:bg-gray-900/50">
                         <tr>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Estudiante</th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Fechas</th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Concepto</th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Archivo</th>
                             <th scope="col"
-                                class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Acciones</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        <tr v-for="excuse in excuses" :key="excuse.id" class="hover:bg-gray-50 transition-colors">
+                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        <tr v-for="excuse in excuses" :key="excuse.id" class="hover:bg-gray-50 dark:bg-gray-900/50 transition-colors">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="flex items-center">
                                     <div class="h-10 w-10 flex-shrink-0">
@@ -112,11 +112,11 @@
                                         </span>
                                     </div>
                                     <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">
+                                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
                                             {{ excuse.estudiante ? (excuse.estudiante.nombres + ' ' +
                                                 excuse.estudiante.apellidos) : 'Estudiante Desconocido' }}
                                         </div>
-                                        <div class="text-xs text-gray-500">
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">
                                             {{ excuse.estudiante && excuse.estudiante.aula ?
                                                 `${excuse.estudiante.aula.grado_cardinal}°
                                             ${excuse.estudiante.aula.seccion}` : 'Sin Aula' }}
@@ -125,10 +125,10 @@
                                 </div>
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm text-gray-900">
+                                <div class="text-sm text-gray-900 dark:text-gray-100">
                                     <span class="font-medium">Desde:</span> {{ formatDate(excuse.start_date) }}
                                 </div>
-                                <div class="text-sm text-gray-500">
+                                <div class="text-sm text-gray-500 dark:text-gray-400">
                                     <span class="font-medium">Hasta:</span> &nbsp;{{ formatDate(excuse.end_date) }}
                                 </div>
                                 <span v-if="excuse.cancelled_at"
@@ -141,13 +141,13 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4">
-                                <div class="text-sm text-gray-900 line-clamp-2" :title="excuse.concept">
+                                <div class="text-sm text-gray-900 dark:text-gray-100 line-clamp-2" :title="excuse.concept">
                                     {{ excuse.concept }}
                                 </div>
                                 <div v-if="excuse.cancelled_at" class="mt-1 text-xs text-red-600">
                                     <strong>Cancelación:</strong> {{ excuse.cancellation_reason }}
                                 </div>
-                                <div class="text-xs text-gray-500 mt-1">
+                                <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                     Reg. por: {{ excuse.user ? excuse.user.name : 'Desconocido' }}
                                 </div>
                             </td>
@@ -188,7 +188,7 @@
                                             d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
                                     </svg>
                                 </button>
-                                <span v-else class="text-xs text-gray-500 italic">Cancelada</span>
+                                <span v-else class="text-xs text-gray-500 dark:text-gray-400 italic">Cancelada</span>
                             </td>
                         </tr>
                     </tbody>
@@ -196,10 +196,10 @@
             </div>
 
             <!-- Pagination -->
-            <div v-if="lastPage > 1" class="px-6 py-4 border-t border-gray-200 flex justify-center">
+            <div v-if="lastPage > 1" class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-center">
                 <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
                     <button @click="changePage(page - 1)" :disabled="page === 1"
-                        class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed">
+                        class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-900/50 disabled:bg-gray-100 dark:bg-gray-800 disabled:cursor-not-allowed">
                         <span class="sr-only">Anterior</span>
                         <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                             aria-hidden="true">
@@ -209,11 +209,11 @@
                         </svg>
                     </button>
                     <span
-                        class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                        class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300">
                         Página {{ page }} de {{ lastPage }}
                     </span>
                     <button @click="changePage(page + 1)" :disabled="page === lastPage"
-                        class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed">
+                        class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-900/50 disabled:bg-gray-100 dark:bg-gray-800 disabled:cursor-not-allowed">
                         <span class="sr-only">Siguiente</span>
                         <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
                             aria-hidden="true">
@@ -234,8 +234,8 @@
                     @click="closeDetailModal"></div>
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                 <div
-                    class="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    class="relative inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                         <div class="sm:flex sm:items-start">
                             <div
                                 class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -246,30 +246,30 @@
                                 </svg>
                             </div>
                             <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                                <h3 class="text-lg leading-6 font-medium text-gray-900" id="detail-modal-title">Detalles
+                                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="detail-modal-title">Detalles
                                     de la Excusa</h3>
-                                <div class="mt-4 border-t border-gray-100 pt-4">
+                                <div class="mt-4 border-t border-gray-100 dark:border-gray-700 pt-4">
                                     <div class="grid grid-cols-1 gap-y-4">
                                         <div>
-                                            <dt class="text-sm font-medium text-gray-500">Estudiante</dt>
-                                            <dd class="mt-1 text-sm text-gray-900 font-semibold">{{
+                                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Estudiante</dt>
+                                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 font-semibold">{{
                                                 selectedExcuse?.estudiante?.nombres }} {{
                                                     selectedExcuse?.estudiante?.apellidos }}</dd>
                                         </div>
                                         <div>
-                                            <dt class="text-sm font-medium text-gray-500">Periodo</dt>
-                                            <dd class="mt-1 text-sm text-gray-900">Desde {{
+                                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Periodo</dt>
+                                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">Desde {{
                                                 formatDate(selectedExcuse?.start_date) }} hasta {{
                                                     formatDate(selectedExcuse?.end_date) }}</dd>
                                         </div>
                                         <div>
-                                            <dt class="text-sm font-medium text-gray-500">Concepto/Motivo</dt>
-                                            <dd class="mt-1 text-sm text-gray-900 bg-gray-50 p-3 rounded-md">{{
+                                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Concepto/Motivo</dt>
+                                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-900/50 p-3 rounded-md">{{
                                                 selectedExcuse?.concept }}</dd>
                                         </div>
                                         <div>
-                                            <dt class="text-sm font-medium text-gray-500">Registrado por</dt>
-                                            <dd class="mt-1 text-sm text-gray-900">{{ selectedExcuse?.user?.name ||
+                                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Registrado por</dt>
+                                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ selectedExcuse?.user?.name ||
                                                 'Desconocido' }}</dd>
                                         </div>
                                         <div v-if="selectedExcuse?.cancelled_at">
@@ -285,9 +285,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <div class="bg-gray-50 dark:bg-gray-900/50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                         <button type="button" @click="closeDetailModal"
-                            class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                            class="w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
                             Cerrar
                         </button>
                     </div>
@@ -310,33 +310,33 @@
                             enter-to="opacity-100 scale-100" leave="duration-200 ease-in"
                             leave-from="opacity-100 scale-100" leave-to="opacity-0 scale-95">
                             <DialogPanel
-                                class="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all border border-gray-100">
+                                class="w-full max-w-lg transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all border border-gray-100 dark:border-gray-700">
 
-                                <DialogTitle as="h3" class="text-lg font-bold leading-6 text-gray-900 mb-4 font-outfit">
+                                <DialogTitle as="h3" class="text-lg font-bold leading-6 text-gray-900 dark:text-gray-100 mb-4 font-outfit">
                                     {{ isEditing ? 'Editar Excusa' : 'Registrar Nueva Excusa' }}
                                 </DialogTitle>
 
                                 <form @submit.prevent="submitForm" class="space-y-4">
                                     <!-- Student Search -->
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Buscar Estudiante
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Buscar Estudiante
                                             *</label>
                                         <div class="relative">
                                             <input type="text" v-model="studentSearch" @input="searchStudents"
                                                 placeholder="Escribe el nombre del estudiante..."
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                                                 :class="{ 'border-red-300': errors.student_id }">
 
                                             <!-- Suggestion Dropdown -->
                                             <div v-if="studentResults.length > 0"
-                                                class="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-48 overflow-y-auto">
+                                                class="absolute z-10 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-lg max-h-48 overflow-y-auto">
                                                 <ul>
                                                     <li v-for="student in studentResults" :key="student.id"
                                                         @click="selectStudent(student)"
-                                                        class="px-4 py-2 hover:bg-gray-50 cursor-pointer text-sm">
+                                                        class="px-4 py-2 hover:bg-gray-50 dark:bg-gray-900/50 cursor-pointer text-sm">
                                                         <span class="font-bold">{{ student.nombres }} {{
                                                             student.apellidos }}</span>
-                                                        <span class="text-xs text-gray-500 ml-2" v-if="student.aula">
+                                                        <span class="text-xs text-gray-500 dark:text-gray-400 ml-2" v-if="student.aula">
                                                             ({{ student.aula.grado_cardinal }}° {{ student.aula.seccion
                                                             }})
                                                         </span>
@@ -356,19 +356,19 @@
                                     <!-- Dates -->
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Inicio
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha Inicio
                                                 *</label>
                                             <input type="date" v-model="form.start_date"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                                                 :class="{ 'border-red-300': errors.start_date }">
                                             <p v-if="errors.start_date" class="text-red-500 text-xs mt-1">{{
                                                 errors.start_date }}</p>
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Fin
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha Fin
                                                 *</label>
                                             <input type="date" v-model="form.end_date"
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                                                 :class="{ 'border-red-300': errors.end_date }">
                                             <p v-if="errors.end_date" class="text-red-500 text-xs mt-1">{{
                                                 errors.end_date }}</p>
@@ -377,10 +377,10 @@
 
                                     <!-- Concept -->
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700 mb-1">Concepto / Motivo
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Concepto / Motivo
                                             *</label>
                                         <textarea v-model="form.concept" rows="3" maxlength="1000"
-                                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
                                             placeholder="Describe el motivo de la excusa (ej. Licencia Médica)..."
                                             :class="{ 'border-red-300': errors.concept }"></textarea>
                                         <div class="flex justify-end mt-1">
@@ -394,15 +394,15 @@
                                     <div>
                                         <DropZone v-model="form.file" :label="isEditing ? 'Reemplazar Archivo Adjunto (Opcional)' : 'Archivo Adjunto (Opcional)'"
                                             accept=".pdf,.jpg,.jpeg,.png" :max-size="10 * 1024 * 1024" />
-                                        <p class="text-xs text-gray-500 mt-1">Formatos: PDF, JPEG, PNG. Max: 10MB.</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Formatos: PDF, JPEG, PNG. Max: 10MB.</p>
                                         <p v-if="errors.file" class="text-red-500 text-xs mt-1">{{ errors.file }}</p>
                                     </div>
 
 
                                     <!-- Footer Actions -->
-                                    <div class="mt-6 flex justify-end gap-3 pt-4 border-t border-gray-100">
+                                    <div class="mt-6 flex justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-700">
                                         <button type="button"
-                                            class="px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
+                                            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50"
                                             @click="closeModal">
                                             Cancelar
                                         </button>

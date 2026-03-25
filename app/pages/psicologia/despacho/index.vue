@@ -2,24 +2,24 @@
     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
         <div class="md:flex md:items-center md:justify-between mb-6">
             <div class="min-w-0 flex-1">
-                <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-gray-100 sm:truncate sm:text-3xl sm:tracking-tight">
                     Despacho de Estudiantes
                 </h2>
-                <p class="mt-1 text-sm text-gray-500">
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Envía estudiantes a casa y gestiona el historial de salidas.
                 </p>
             </div>
         </div>
 
         <!-- Tabs -->
-        <div class="border-b border-gray-200 mb-6">
+        <div class="border-b border-gray-200 dark:border-gray-700 mb-6">
             <nav class="-mb-px flex space-x-8" aria-label="Tabs">
                 <button @click="currentTab = 'new'"
-                    :class="[currentTab === 'new' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">
+                    :class="[currentTab === 'new' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">
                     Nuevo Despacho
                 </button>
                 <button @click="currentTab = 'history'"
-                    :class="[currentTab === 'history' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">
+                    :class="[currentTab === 'history' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">
                     Historial
                 </button>
             </nav>
@@ -28,10 +28,10 @@
         <!-- Tab: Nuevo Despacho -->
         <div v-if="currentTab === 'new'">
             <!-- Selector de Aula -->
-            <div class="bg-white p-4 rounded-lg shadow mb-6">
-                <label class="block text-sm font-medium text-gray-700 mb-2">Seleccionar Aula</label>
+            <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Seleccionar Aula</label>
                 <select v-model="selectedAulaId" @change="onAulaChange"
-                    class="mt-1 block w-full rounded-md border-gray-300 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
                     <option value="">-- Seleccione un aula --</option>
                     <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
                         {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo?.nombre }}
@@ -42,25 +42,25 @@
             <!-- Loading State -->
             <div v-if="estudiantesStore.loading" class="text-center py-12">
                 <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-                <p class="mt-2 text-gray-500">Cargando estudiantes...</p>
+                <p class="mt-2 text-gray-500 dark:text-gray-400">Cargando estudiantes...</p>
             </div>
 
             <!-- Lista de Estudiantes -->
             <div v-else-if="selectedAulaId && estudiantes.length > 0"
-                class="bg-white shadow-sm rounded-lg overflow-hidden">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-gray-50 dark:bg-gray-900/50">
                         <tr>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 #
                             </th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Estudiante
                             </th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Estado
                             </th>
                             <th scope="col" class="relative px-6 py-3">
@@ -68,9 +68,9 @@
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        <tr v-for="estudiante in estudiantes" :key="estudiante.id" class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        <tr v-for="estudiante in estudiantes" :key="estudiante.id" class="hover:bg-gray-50 dark:bg-gray-900/50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                 {{ estudiante.numero_orden }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
@@ -82,10 +82,10 @@
                                         </div>
                                     </div>
                                     <div class="ml-4">
-                                        <div class="text-sm font-medium text-gray-900">
+                                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
                                             {{ estudiante.apellidos }}, {{ estudiante.nombres }}
                                         </div>
-                                        <div class="text-sm text-gray-500">
+                                        <div class="text-sm text-gray-500 dark:text-gray-400">
                                             {{ estudiante.rne }}
                                         </div>
                                     </div>
@@ -103,7 +103,7 @@
                                     Despachar
                                 </button>
                                 <span v-else
-                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200">
                                     Despachado
                                 </span>
                             </td>
@@ -112,12 +112,12 @@
                 </table>
             </div>
 
-            <div v-else-if="selectedAulaId" class="text-center py-12 bg-white rounded-lg shadow">
-                <p class="text-gray-500">No hay estudiantes activos en esta aula.</p>
+            <div v-else-if="selectedAulaId" class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow">
+                <p class="text-gray-500 dark:text-gray-400">No hay estudiantes activos en esta aula.</p>
             </div>
 
-            <div v-else class="text-center py-12 bg-white rounded-lg shadow">
-                <p class="text-gray-500">Seleccione un aula para comenzar.</p>
+            <div v-else class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow">
+                <p class="text-gray-500 dark:text-gray-400">Seleccione un aula para comenzar.</p>
             </div>
         </div>
 
@@ -125,27 +125,27 @@
         <div v-else>
             <!-- Filtros -->
             <!-- Filtros -->
-            <div class="bg-gray-50 p-4 rounded-lg shadow-sm mb-6 flex flex-wrap gap-4 items-end">
+            <div class="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg shadow-sm mb-6 flex flex-wrap gap-4 items-end">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Filtrar por Fecha</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Filtrar por Fecha</label>
                     <input type="date" v-model="filters.date" @change="onDateChange"
-                        class="block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        class="block rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                 </div>
 
                 <div class="flex items-center text-gray-400 pb-2">o</div>
 
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Filtrar por Mes</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Filtrar por Mes</label>
                     <div class="flex space-x-2">
                         <select v-model="filters.month" @change="onMonthChange"
-                            class="block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            class="block rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                             <option value="">-- Mes --</option>
                             <option v-for="(mes, index) in meses" :key="index" :value="String(index + 1)">
                                 {{ mes }}
                             </option>
                         </select>
                         <select v-model="filters.year" @change="onMonthChange"
-                            class="block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            class="block rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                             <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
                         </select>
                     </div>
@@ -161,28 +161,28 @@
             <!-- Tabla de Historial -->
             <div v-if="psychologyStore.loading" class="text-center py-12">
                 <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-                <p class="mt-2 text-gray-500">Cargando historial...</p>
+                <p class="mt-2 text-gray-500 dark:text-gray-400">Cargando historial...</p>
             </div>
 
             <div v-else-if="historyData && historyData.length > 0"
-                class="bg-white shadow-sm rounded-lg overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                    <thead class="bg-gray-50 dark:bg-gray-900/50">
                         <tr>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Fecha y Hora
                             </th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Estudiante
                             </th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Motivo
                             </th>
                             <th scope="col"
-                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Despachado Por
                             </th>
                             <th scope="col" class="relative px-6 py-3">
@@ -190,23 +190,23 @@
                             </th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        <tr v-for="item in historyData" :key="item.id" class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                        <tr v-for="item in historyData" :key="item.id" class="hover:bg-gray-50 dark:bg-gray-900/50">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                                 {{ formatDate(item.dismissed_at) }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
-                                <div class="text-sm font-medium text-gray-900">
+                                <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
                                     {{ item.student.apellidos }}, {{ item.student.nombres }}
                                 </div>
-                                <div class="text-sm text-gray-500" v-if="item.student.aula">
+                                <div class="text-sm text-gray-500 dark:text-gray-400" v-if="item.student.aula">
                                     {{ item.student.aula.grado_cardinal }}° {{ item.student.aula.seccion }}
                                 </div>
                             </td>
-                            <td class="px-6 py-4 text-sm text-gray-500 max-w-xs truncate" :title="item.reason">
+                            <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate" :title="item.reason">
                                 {{ item.reason }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                 {{ item.reporter?.name || 'Sistema' }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
@@ -232,15 +232,15 @@
                 </table>
             </div>
 
-            <div v-else class="text-center py-12 bg-white rounded-lg shadow">
+            <div v-else class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow">
                 <div
-                    class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 text-gray-400 mb-4">
+                    class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-800 text-gray-400 mb-4">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round"
                             d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                 </div>
-                <p class="text-gray-500">No hay despachos registrados para este periodo.</p>
+                <p class="text-gray-500 dark:text-gray-400">No hay despachos registrados para este periodo.</p>
             </div>
         </div>
 
@@ -254,8 +254,8 @@
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
                 <div
-                    class="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    class="relative inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                         <div class="sm:flex sm:items-start">
                             <div
                                 class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-red-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -266,39 +266,39 @@
                                 </svg>
                             </div>
                             <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                                <h3 class="text-base font-semibold leading-6 text-gray-900" id="modal-title">
+                                <h3 class="text-base font-semibold leading-6 text-gray-900 dark:text-gray-100" id="modal-title">
                                     Despachar Estudiante
                                 </h3>
                                 <div class="mt-2">
-                                    <p class="text-sm text-gray-500 mb-4">
+                                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
                                         Estás a punto de despachar a <strong>{{ selectedStudent?.nombres }} {{
                                             selectedStudent?.apellidos }}</strong>.
                                         Esto generará una excusa automática para todas sus clases restantes de hoy.
                                     </p>
 
-                                    <label class="block text-sm font-medium text-gray-700 mb-1">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                         Motivo del despacho / Comentario <span class="text-red-500">*</span>
                                     </label>
                                     <textarea v-model="dismissReason" rows="3"
-                                        class="block w-full rounded-md border-gray-300 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
+                                        class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
                                         placeholder="Ingrese el motivo detallado..."></textarea>
 
                                     <div class="mt-4">
                                         <DropZone v-model="evidenceFile" label="Adjuntar Evidencia (Opcional)"
                                             accept="image/jpeg,image/png,application/pdf" :max-size="50 * 1024 * 1024" />
-                                        <p class="text-xs text-gray-500 mt-1">Soporta PDF, JPEG, PNG hasta 50MB.</p>
+                                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Soporta PDF, JPEG, PNG hasta 50MB.</p>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
+                    <div class="bg-gray-50 dark:bg-gray-900/50 px-4 py-3 sm:flex sm:flex-row-reverse sm:px-6">
                         <button type="button" @click="confirmDismiss" :disabled="!dismissReason.trim() || submitting"
                             class="inline-flex w-full justify-center rounded-md bg-red-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-red-500 sm:ml-3 sm:w-auto disabled:opacity-50 disabled:cursor-not-allowed">
                             {{ submitting ? 'Procesando...' : 'Confirmar Despacho' }}
                         </button>
                         <button type="button" @click="closeModal"
-                            class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">
+                            class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-gray-800 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:bg-gray-900/50 sm:mt-0 sm:w-auto">
                             Cancelar
                         </button>
                     </div>
@@ -314,8 +314,8 @@
                     @click="closeDetailModal"></div>
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                 <div
-                    class="relative inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    class="relative inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                         <div class="sm:flex sm:items-start">
                             <div
                                 class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -326,32 +326,32 @@
                                 </svg>
                             </div>
                             <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                                <h3 class="text-lg leading-6 font-medium text-gray-900" id="detail-modal-title">Detalles
+                                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="detail-modal-title">Detalles
                                     del Despacho</h3>
-                                <div class="mt-4 border-t border-gray-100 pt-4">
+                                <div class="mt-4 border-t border-gray-100 dark:border-gray-700 pt-4">
                                     <div class="grid grid-cols-1 gap-y-4">
                                         <div>
-                                            <dt class="text-sm font-medium text-gray-500">Estudiante</dt>
-                                            <dd class="mt-1 text-sm text-gray-900 font-semibold">{{
+                                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Estudiante</dt>
+                                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 font-semibold">{{
                                                 selectedDispatch?.student?.nombres }} {{
                                                     selectedDispatch?.student?.apellidos }}</dd>
                                         </div>
                                         <div>
-                                            <dt class="text-sm font-medium text-gray-500">Fecha y Hora</dt>
-                                            <dd class="mt-1 text-sm text-gray-900">{{
+                                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Fecha y Hora</dt>
+                                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{
                                                 formatDate(selectedDispatch?.dismissed_at) }}</dd>
                                         </div>
                                         <div>
-                                            <dt class="text-sm font-medium text-gray-500">Motivo</dt>
-                                            <dd class="mt-1 text-sm text-gray-900 bg-gray-50 p-3 rounded-md">{{
+                                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Motivo</dt>
+                                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100 bg-gray-50 dark:bg-gray-900/50 p-3 rounded-md">{{
                                                 selectedDispatch?.reason }}</dd>
                                         </div>
                                         <div>
-                                            <dd class="mt-1 text-sm text-gray-900">{{ selectedDispatch?.reporter?.name
+                                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ selectedDispatch?.reporter?.name
                                                 || 'Sistema' }}</dd>
                                         </div>
                                         <div v-if="selectedDispatch?.evidence_path">
-                                            <dt class="text-sm font-medium text-gray-500">Evidencia</dt>
+                                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Evidencia</dt>
                                             <dd class="mt-1">
                                                 <button @click="printFile('/api/psychology/dismissals/' + selectedDispatch.id + '/download')"
                                                     class="inline-flex items-center gap-2 text-sm text-indigo-600 hover:text-indigo-800">
@@ -367,9 +367,9 @@
                             </div>
                         </div>
                     </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <div class="bg-gray-50 dark:bg-gray-900/50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                         <button type="button" @click="closeDetailModal"
-                            class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                            class="w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
                             Cerrar
                         </button>
                     </div>

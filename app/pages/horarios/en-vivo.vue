@@ -2,12 +2,12 @@
   <section>
     <header class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-semibold text-gray-900">Horario en vivo</h1>
-        <p class="mt-1 text-sm text-gray-600">Clases en curso ahora mismo por período actual.</p>
+        <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Horario en vivo</h1>
+        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Clases en curso ahora mismo por período actual.</p>
       </div>
       <div class="flex items-center gap-2">
         <button
-          class="inline-flex items-center justify-center p-1.5 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-colors"
+          class="inline-flex items-center justify-center p-1.5 rounded-md text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800 transition-colors"
           @click="reload" title="Refrescar">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -18,29 +18,29 @@
     </header>
 
     <!-- Controles de depuración de tiempo -->
-    <div v-if="false" class="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+    <div v-if="false" class="mt-4 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700">
       <div class="flex flex-wrap items-end gap-4">
         <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1">Simular Fecha</label>
+          <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Simular Fecha</label>
           <input type="date" v-model="overrideDate"
-            class="text-sm border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            class="text-sm border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
         </div>
         <div>
-          <label class="block text-xs font-medium text-gray-700 mb-1">Simular Hora</label>
+          <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Simular Hora</label>
           <input type="time" v-model="overrideTime"
-            class="text-sm border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
+            class="text-sm border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500">
         </div>
         <button @click="resetTime"
-          class="px-3 py-2 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-md bg-white hover:bg-gray-50">
+          class="px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:text-gray-200 border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50">
           Restablecer a Ahora
         </button>
       </div>
     </div>
 
     <div class="mt-6">
-      <div class="flex items-center gap-3 text-sm text-gray-600">
+      <div class="flex items-center gap-3 text-sm text-gray-600 dark:text-gray-400">
         <span class="inline-flex items-center gap-2">
-          <svg class="h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg class="h-4 w-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -50,20 +50,20 @@
         <span v-if="currentPeriods.length" class="px-2 py-0.5 rounded" :class="statusClass">
           {{ statusLabel }}
         </span>
-        <span v-else class="px-2 py-0.5 rounded bg-gray-100 text-gray-600">Fuera de período</span>
+        <span v-else class="px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">Fuera de período</span>
       </div>
 
       <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
-        <div v-if="!currentEntries.length" class="col-span-full p-4 text-center text-gray-500 border rounded">
+        <div v-if="!currentEntries.length" class="col-span-full p-4 text-center text-gray-500 dark:text-gray-400 border rounded">
           No hay clases en curso en este momento.
         </div>
         <div v-for="e in currentEntries" :key="e.id" class="border rounded p-4 flex items-start justify-between">
           <div class="min-w-0">
             <div class="font-semibold truncate" :title="e.assignment?.materia?.nombre">{{ e.assignment?.materia?.nombre
               || '—' }}</div>
-            <div class="text-sm text-gray-600 truncate" :title="teacherName(e.assignment)">{{ teacherName(e.assignment)
+            <div class="text-sm text-gray-600 dark:text-gray-400 truncate" :title="teacherName(e.assignment)">{{ teacherName(e.assignment)
             }}</div>
-            <div class="text-xs text-gray-500 mt-1">
+            <div class="text-xs text-gray-500 dark:text-gray-400 mt-1">
               {{ aulaName(e.assignment?.aula) }}
               <span v-if="e.attendance_summary?.attendance_taken" class="ml-2 font-medium text-green-600">
                 Trabajando con {{ e.attendance_summary.present_count }}/{{ e.attendance_summary.total_students }}
@@ -73,7 +73,7 @@
               </span>
             </div>
           </div>
-          <div class="text-xs text-gray-500 ml-4 whitespace-nowrap">{{ currentPeriodRange }}</div>
+          <div class="text-xs text-gray-500 dark:text-gray-400 ml-4 whitespace-nowrap">{{ currentPeriodRange }}</div>
         </div>
       </div>
     </div>

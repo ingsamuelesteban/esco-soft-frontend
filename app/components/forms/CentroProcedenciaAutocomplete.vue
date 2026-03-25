@@ -9,7 +9,7 @@
       @blur="handleBlur"
       placeholder="Buscar o escribir centro de procedencia..."
       :class="[
-        'block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300',
+        'block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600',
         'focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6',
         errorMessage ? 'ring-red-500 focus:ring-red-500' : ''
       ]"
@@ -21,7 +21,7 @@
     <!-- Dropdown de resultados -->
     <div
       v-if="showDropdown && (searchResults.length > 0 || searchQuery.length >= 1)"
-      class="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-300 rounded-md shadow-lg z-10 max-h-64 overflow-y-auto"
+      class="absolute top-full left-0 right-0 mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg z-10 max-h-64 overflow-y-auto"
     >
       <!-- Resultados de búsqueda -->
       <button
@@ -31,8 +31,8 @@
         @click="selectCentro(centro)"
         class="w-full text-left px-4 py-2 hover:bg-blue-50 border-b last:border-b-0 transition-colors"
       >
-        <div class="font-medium text-gray-900">{{ centro.nombre }}</div>
-        <div v-if="centro.descripcion" class="text-xs text-gray-500">{{ centro.descripcion }}</div>
+        <div class="font-medium text-gray-900 dark:text-gray-100">{{ centro.nombre }}</div>
+        <div v-if="centro.descripcion" class="text-xs text-gray-500 dark:text-gray-400">{{ centro.descripcion }}</div>
       </button>
 
       <!-- Opción para crear nuevo -->
@@ -40,7 +40,7 @@
         <button
           type="button"
           @click="openCreateModal"
-          class="w-full text-left px-4 py-2 bg-blue-50 hover:bg-blue-100 border-t border-gray-300 text-blue-700 font-medium transition-colors flex items-center gap-2"
+          class="w-full text-left px-4 py-2 bg-blue-50 hover:bg-blue-100 border-t border-gray-300 dark:border-gray-600 text-blue-700 font-medium transition-colors flex items-center gap-2"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -50,7 +50,7 @@
       </div>
 
       <!-- Mensaje si no hay resultados -->
-      <div v-if="searchResults.length === 0 && searchQuery.length < 3" class="px-4 py-2 text-gray-500 text-sm">
+      <div v-if="searchResults.length === 0 && searchQuery.length < 3" class="px-4 py-2 text-gray-500 dark:text-gray-400 text-sm">
         Escriba al menos 3 caracteres para buscar
       </div>
     </div>
@@ -72,29 +72,29 @@
 
     <!-- Modal de creación -->
     <div v-if="showCreateModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div class="bg-white rounded-lg shadow-xl max-w-sm w-full">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h3 class="text-lg font-semibold text-gray-900">Crear nuevo centro de procedencia</h3>
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-sm w-full">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Crear nuevo centro de procedencia</h3>
         </div>
 
         <div class="px-6 py-4 space-y-4">
           <div>
-            <label class="block text-sm font-medium text-gray-900 mb-2">Nombre *</label>
+            <label class="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Nombre *</label>
             <input
               v-model="newCentroName"
               type="text"
               required
-              class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-primary-600 focus:outline-none focus:ring-primary-600"
+              class="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:border-primary-600 focus:outline-none focus:ring-primary-600"
               placeholder="Nombre del centro"
             />
           </div>
 
           <div>
-            <label class="block text-sm font-medium text-gray-900 mb-2">Descripción (opcional)</label>
+            <label class="block text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Descripción (opcional)</label>
             <textarea
               v-model="newCentroDescripcion"
               rows="3"
-              class="w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-500 focus:border-primary-600 focus:outline-none focus:ring-primary-600"
+              class="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:border-primary-600 focus:outline-none focus:ring-primary-600"
               placeholder="Descripción del centro..."
             />
           </div>
@@ -108,12 +108,12 @@
           </div>
         </div>
 
-        <div class="px-6 py-4 border-t border-gray-200 flex gap-3 justify-end">
+        <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex gap-3 justify-end">
           <button
             type="button"
             @click="closeCreateModal"
             :disabled="isCreating"
-            class="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50 transition-colors disabled:opacity-50"
+            class="px-4 py-2 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:bg-gray-900/50 transition-colors disabled:opacity-50"
           >
             Cancelar
           </button>

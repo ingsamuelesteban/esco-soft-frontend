@@ -1,9 +1,9 @@
 <template>
-    <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div class="min-h-screen bg-gray-50 dark:bg-gray-900/50 dark:bg-gray-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <!-- Header -->
             <div class="mb-8">
-                <h1 class="text-3xl font-bold text-gray-900 dark:text-white">Mis Tareas</h1>
+                <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 dark:text-white">Mis Tareas</h1>
                 <p class="mt-2 text-gray-600 dark:text-gray-400">
                     Tareas asignadas para tu clase
                 </p>
@@ -15,7 +15,7 @@
                     'px-4 py-2 rounded-lg transition-colors',
                     currentFilter === filter.value
                         ? 'bg-blue-600 text-white'
-                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700'
                 ]">
                     {{ filter.label }}
                 </button>
@@ -35,7 +35,7 @@
                         <div class="flex-1">
                             <!-- Title and Subject -->
                             <div class="flex items-center gap-2 mb-2">
-                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-white">
                                     {{ homework.title }}
                                 </h3>
                                 <span
@@ -85,7 +85,7 @@
                                 {{ getSubmissionStatus(homework) }}
                             </span>
                             <span v-else
-                                class="px-3 py-1 text-sm font-medium bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full">
+                                class="px-3 py-1 text-sm font-medium bg-gray-100 dark:bg-gray-800 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-full">
                                 Pendiente
                             </span>
                         </div>
@@ -98,7 +98,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No hay tareas</h3>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-white">No hay tareas</h3>
                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                         No tienes tareas asignadas en este momento.
                     </p>
@@ -224,7 +224,7 @@ function getStatusBadgeClass(homework: Homework) {
     const status = submission.status
 
     const classMap: Record<string, string> = {
-        draft: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300',
+        draft: 'bg-gray-100 dark:bg-gray-800 dark:bg-gray-700 text-gray-700 dark:text-gray-300',
         submitted: 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200',
         graded: 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200',
         returned: 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'

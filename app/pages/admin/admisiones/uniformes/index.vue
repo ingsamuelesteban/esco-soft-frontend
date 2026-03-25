@@ -1,9 +1,9 @@
 <template>
-    <div class="h-full bg-gray-50 flex flex-col p-6">
+    <div class="h-full bg-gray-50 dark:bg-gray-900/50 flex flex-col p-6">
         <div class="mb-6 flex justify-between items-center flex-shrink-0">
             <div>
-                <h1 class="text-2xl font-bold tracking-tight text-gray-900">Catálogo de Uniformes / Artículos</h1>
-                <p class="mt-1 text-sm text-gray-500">Administra los artículos disponibles para facturación a
+                <h1 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-gray-100">Catálogo de Uniformes / Artículos</h1>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Administra los artículos disponibles para facturación a
                     estudiantes.</p>
             </div>
             <div>
@@ -18,35 +18,35 @@
         </div>
 
         <!-- Tabla -->
-        <div class="bg-white rounded-lg shadow ring-1 ring-gray-200 overflow-hidden flex-1 overflow-y-auto">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50 sticky top-0 z-10">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow ring-1 ring-gray-200 dark:ring-gray-700 overflow-hidden flex-1 overflow-y-auto">
+            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-900/50 sticky top-0 z-10">
                     <tr>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Artículo
                         </th>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Precio
                         </th>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Estado
                         </th>
                         <th scope="col"
-                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Acciones
                         </th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                    <tr v-for="article in articles" :key="article.id" class="hover:bg-gray-50 transition-colors">
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tr v-for="article in articles" :key="article.id" class="hover:bg-gray-50 dark:bg-gray-900/50 transition-colors">
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">{{ article.name }}</div>
+                            <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ article.name }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-900">${{ parseFloat(article.price).toFixed(2) }}</div>
+                            <div class="text-sm text-gray-900 dark:text-gray-100">${{ parseFloat(article.price).toFixed(2) }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span :class="[
@@ -74,7 +74,7 @@
                         </td>
                     </tr>
                     <tr v-if="articles.length === 0 && !loading">
-                        <td colspan="4" class="px-6 py-8 text-center text-sm text-gray-500">
+                        <td colspan="4" class="px-6 py-8 text-center text-sm text-gray-500 dark:text-gray-400">
                             No hay artículos registrados.
                         </td>
                     </tr>
@@ -96,14 +96,14 @@
                             enter-to="opacity-100 scale-100" leave="duration-200 ease-in"
                             leave-from="opacity-100 scale-100" leave-to="opacity-0 scale-95">
                             <DialogPanel
-                                class="w-full max-w-md transform overflow-hidden rounded-xl bg-white text-left align-middle shadow-xl transition-all">
+                                class="w-full max-w-md transform overflow-hidden rounded-xl bg-white dark:bg-gray-800 text-left align-middle shadow-xl transition-all">
                                 <form @submit.prevent="saveArticle">
-                                    <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center">
-                                        <DialogTitle as="h3" class="text-lg font-semibold leading-6 text-gray-900">
+                                    <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+                                        <DialogTitle as="h3" class="text-lg font-semibold leading-6 text-gray-900 dark:text-gray-100">
                                             {{ form.id ? 'Editar Artículo' : 'Nuevo Artículo' }}
                                         </DialogTitle>
                                         <button type="button" @click="closeModal"
-                                            class="text-gray-400 hover:text-gray-500 bg-gray-50 hover:bg-gray-100 rounded-full p-2 transition-colors">
+                                            class="text-gray-400 hover:text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:bg-gray-800 rounded-full p-2 transition-colors">
                                             <span class="sr-only">Close</span>
                                             <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                                                 <path fill-rule="evenodd"
@@ -115,39 +115,39 @@
 
                                     <div class="px-6 py-4 space-y-4">
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre</label>
                                             <input type="text" v-model="form.name" required
-                                                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                                                 placeholder="Ej. Polo Shirt Talla M" />
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700 mb-1">Precio</label>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Precio</label>
                                             <div class="relative mt-1 rounded-md shadow-sm">
                                                 <div
                                                     class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                                                    <span class="text-gray-500 sm:text-sm">$</span>
+                                                    <span class="text-gray-500 dark:text-gray-400 sm:text-sm">$</span>
                                                 </div>
                                                 <input type="number" v-model="form.price" required min="0" step="0.01"
-                                                    class="block w-full rounded-md border-0 py-1.5 pl-7 pr-12 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
+                                                    class="block w-full rounded-md border-0 py-1.5 pl-7 pr-12 text-gray-900 dark:text-gray-100 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
                                                     placeholder="0.00" />
                                             </div>
                                         </div>
                                         <div class="flex items-center mt-4">
                                             <input type="checkbox" v-model="form.is_active" id="is_active"
-                                                class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded" />
-                                            <label for="is_active" class="ml-2 block text-sm text-gray-900">
+                                                class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded" />
+                                            <label for="is_active" class="ml-2 block text-sm text-gray-900 dark:text-gray-100">
                                                 Artículo Activo
                                             </label>
                                         </div>
                                     </div>
 
-                                    <div class="bg-gray-50 px-6 py-4 flex flex-row-reverse rounded-b-xl gap-2">
+                                    <div class="bg-gray-50 dark:bg-gray-900/50 px-6 py-4 flex flex-row-reverse rounded-b-xl gap-2">
                                         <button type="submit" :disabled="saving"
                                             class="inline-flex justify-center rounded-md border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50">
                                             {{ saving ? 'Guardando...' : 'Guardar' }}
                                         </button>
                                         <button type="button" @click="closeModal"
-                                            class="inline-flex justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
+                                            class="inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 shadow-sm hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2">
                                             Cancelar
                                         </button>
                                     </div>

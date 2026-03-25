@@ -12,12 +12,12 @@
                         enter-to="opacity-100 scale-100" leave="duration-200 ease-in" leave-from="opacity-100 scale-100"
                         leave-to="opacity-0 scale-95">
                         <DialogPanel
-                            class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                            <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
+                            class="w-full max-w-md transform overflow-hidden rounded-2xl bg-white dark:bg-gray-800 p-6 text-left align-middle shadow-xl transition-all">
+                            <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">
                                 Transferir Asignaciones
                             </DialogTitle>
                             <div class="mt-2">
-                                <p class="text-sm text-gray-500">
+                                <p class="text-sm text-gray-500 dark:text-gray-400">
                                     Seleccione el profesor de origen y el profesor destino. Todas las asignaciones
                                     activas serán
                                     transferidas, siempre que no existan conflictos de horario.
@@ -27,10 +27,10 @@
                             <div class="mt-4 space-y-4">
                                 <!-- Source Teacher -->
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">Profesor Origen
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Profesor Origen
                                         (Actual)</label>
                                     <select ref="initialInput" v-model="form.from_profesor_id"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
                                         <option :value="null" disabled>Seleccione...</option>
                                         <option v-for="p in props.teachers" :key="p.id" :value="p.id">
                                             {{ p.nombre }} {{ p.apellido }}
@@ -48,10 +48,10 @@
 
                                 <!-- Target Teacher -->
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">Profesor Destino
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Profesor Destino
                                         (Nuevo)</label>
                                     <select v-model="form.to_profesor_id"
-                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
                                         <option :value="null" disabled>Seleccione...</option>
                                         <option v-for="p in availableTargets" :key="p.id" :value="p.id">
                                             {{ p.nombre }} {{ p.apellido }}
@@ -69,7 +69,7 @@
 
                             <div class="mt-6 flex justify-end gap-3">
                                 <button type="button"
-                                    class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                                    class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
                                     @click="close">
                                     Cancelar
                                 </button>

@@ -6,13 +6,13 @@
 
     <!-- Modal -->
     <div class="flex min-h-full items-center justify-center p-4">
-      <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full transform transition-all">
+      <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full transform transition-all">
         <!-- Header -->
-        <div class="flex items-center justify-between p-6 border-b border-gray-200">
-          <h3 class="text-lg font-semibold text-gray-900" id="modal-title">
+        <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100" id="modal-title">
             Editar Perfil
           </h3>
-          <button @click="close" class="text-gray-400 hover:text-gray-500 transition-colors">
+          <button @click="close" class="text-gray-400 hover:text-gray-500 dark:text-gray-400 transition-colors">
             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -20,12 +20,12 @@
         </div>
 
         <!-- Tabs -->
-        <div class="border-b border-gray-200">
+        <div class="border-b border-gray-200 dark:border-gray-700">
           <nav class="flex -mb-px" aria-label="Tabs">
             <button @click="activeTab = 'photo'" :class="[
               activeTab === 'photo'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600',
               'w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm transition-colors'
             ]">
               Mi Perfil
@@ -33,7 +33,7 @@
             <button @click="activeTab = 'password'" :class="[
               activeTab === 'password'
                 ? 'border-blue-500 text-blue-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
+                : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600',
               'w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm transition-colors'
             ]">
               Cambiar Contraseña
@@ -49,11 +49,11 @@
             <div class="flex justify-center">
               <div class="relative">
                 <div v-if="photoPreview || user?.profile_photo_url"
-                  class="h-32 w-32 rounded-full overflow-hidden bg-gray-200 border-4 border-gray-100">
+                  class="h-32 w-32 rounded-full overflow-hidden bg-gray-200 border-4 border-gray-100 dark:border-gray-700">
                   <img :src="photoPreview || user?.profile_photo_url" alt="Profile" class="h-full w-full object-cover" />
                 </div>
                 <div v-else
-                  class="h-32 w-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border-4 border-gray-100">
+                  class="h-32 w-32 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center border-4 border-gray-100 dark:border-gray-700">
                   <span class="text-4xl font-bold text-white">{{ user?.initials || 'ES' }}</span>
                 </div>
               </div>
@@ -61,23 +61,23 @@
 
             <!-- File Input -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                 Seleccionar Nueva Foto
               </label>
               <input ref="fileInput" type="file" accept="image/jpeg,image/png,image/jpg" @change="handleFileChange"
-                class="block w-full text-sm text-gray-500
+                class="block w-full text-sm text-gray-500 dark:text-gray-400
                   file:mr-4 file:py-2 file:px-4
                   file:rounded-full file:border-0
                   file:text-sm file:font-semibold
                   file:bg-blue-50 file:text-blue-700
                   hover:file:bg-blue-100
                   cursor-pointer" />
-              <p class="mt-1 text-xs text-gray-500">JPG, PNG. Máximo 1MB</p>
+              <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">JPG, PNG. Máximo 1MB</p>
             </div>
 
             <!-- Email Input -->
             <div class="pt-2">
-              <label for="profile_email" class="block text-sm font-medium text-gray-700 mb-1">
+              <label for="profile_email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Correo Electrónico
               </label>
               <input 
@@ -85,7 +85,7 @@
                 v-model="profileEmail" 
                 type="email" 
                 required
-                class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 placeholder="tu@correo.com"
                 :disabled="photoLoading"
               />
@@ -104,7 +104,7 @@
             <!-- Actions -->
             <div class="flex justify-end space-x-3 pt-4">
               <button @click="close" type="button"
-                class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:bg-gray-900/50 transition-colors">
                 Cancelar
               </button>
               <button @click="saveProfile" :disabled="photoLoading" type="button" :class="[
@@ -130,31 +130,31 @@
             <form @submit.prevent="savePassword">
               <!-- Current Password -->
               <div>
-                <label for="current_password" class="block text-sm font-medium text-gray-700 mb-1">
+                <label for="current_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Contraseña Actual
                 </label>
                 <input v-model="passwordForm.current_password" type="password" id="current_password" required
-                  class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+                  class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
               </div>
 
               <!-- New Password -->
               <div>
-                <label for="new_password" class="block text-sm font-medium text-gray-700 mb-1">
+                <label for="new_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Nueva Contraseña
                 </label>
                 <input v-model="passwordForm.password" type="password" id="new_password" required minlength="8"
-                  class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
-                <p class="mt-1 text-xs text-gray-500">Mínimo 8 caracteres</p>
+                  class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Mínimo 8 caracteres</p>
               </div>
 
               <!-- Confirm Password -->
               <div>
-                <label for="confirm_password" class="block text-sm font-medium text-gray-700 mb-1">
+                <label for="confirm_password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Confirmar Nueva Contraseña
                 </label>
                 <input v-model="passwordForm.password_confirmation" type="password" id="confirm_password" required
                   minlength="8"
-                  class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+                  class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
               </div>
 
               <!-- Error Message -->
@@ -170,7 +170,7 @@
               <!-- Actions -->
               <div class="flex justify-end space-x-3 pt-4">
                 <button @click="close" type="button"
-                  class="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 transition-colors">
+                  class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-50 dark:bg-gray-900/50 transition-colors">
                   Cancelar
                 </button>
                 <button type="submit" :disabled="passwordLoading" :class="[

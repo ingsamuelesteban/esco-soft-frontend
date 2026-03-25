@@ -1,39 +1,39 @@
 <template>
-  <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+  <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
     <div class="p-4">
       <div class="flex items-center gap-3 flex-wrap">
-        <input v-model="query" type="text" class="w-full md:w-64 rounded-md border-gray-300 text-sm"
+        <input v-model="query" type="text" class="w-full md:w-64 rounded-md border-gray-300 dark:border-gray-600 text-sm"
           placeholder="Buscar por cédula, nombre..." />
-        <select v-model="filterCargo" class="rounded-md border-gray-300 text-sm">
+        <select v-model="filterCargo" class="rounded-md border-gray-300 dark:border-gray-600 text-sm">
           <option :value="undefined">Todos los cargos</option>
           <option v-for="c in cargosStore.items" :key="c.id" :value="c.id">{{ c.nombre }}</option>
         </select>
-        <select v-model="filterUserStatus" class="rounded-md border-gray-300 text-sm">
+        <select v-model="filterUserStatus" class="rounded-md border-gray-300 dark:border-gray-600 text-sm">
           <option value="all">Todos los estados</option>
           <option value="with_user">Con Usuario</option>
           <option value="without_user">Sin Usuario</option>
         </select>
-        <div class="ml-auto text-sm text-gray-500" v-if="!loading">Total: {{ filtered.length }}</div>
+        <div class="ml-auto text-sm text-gray-500 dark:text-gray-400" v-if="!loading">Total: {{ filtered.length }}</div>
       </div>
     </div>
     <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-900/50">
           <tr>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cédula</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cargo</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sueldo</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Ingreso
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Cédula</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nombre</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Cargo</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Sueldo</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Fecha Ingreso
             </th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Teléfono</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Teléfono</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
           <tr v-for="p in filtered" :key="p.id">
             <td class="px-4 py-3 whitespace-nowrap text-sm">{{ p.cedula }}</td>
-            <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900">{{ p.nombre }} {{ p.apellido }}</td>
+            <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">{{ p.nombre }} {{ p.apellido }}</td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">{{ p.cargo?.nombre || (p.cargo_id &&
               cargosStore.byId(p.cargo_id)?.nombre) || '—' }}</td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">{{ p.sueldo ? formatMoney(p.sueldo) : '—' }}</td>
@@ -56,7 +56,7 @@
                 <!-- Si TIENE usuario: Mostrar acciones extendidas -->
                 <div v-else class="relative inline-block text-left" data-menu-container>
                   <button @click="toggleMenu(p.id)"
-                    class="inline-flex items-center justify-center p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                    class="inline-flex items-center justify-center p-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 rounded-md transition-colors"
                     title="Opciones de usuario">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -65,10 +65,10 @@
                   </button>
 
                   <div v-if="menuActive === p.id"
-                    class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
+                    class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
                     <div class="py-1">
                       <button @click="handleResetAccess(p); toggleMenu(null)"
-                        class="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        class="group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800">
                         <svg class="mr-3 h-4 w-4 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M15 7a2 2 0 012 2m0 0a2 2 0 01-2 2m2-2h-1V7h.01M7 20l4-16m2 16l4-16" />
@@ -76,7 +76,7 @@
                         Resetear Contraseña
                       </button>
                       <button @click="handleToggleBlock(p); toggleMenu(null)"
-                        class="group flex w-full items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                        class="group flex w-full items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800">
                         <svg v-if="p.user.active" class="mr-3 h-4 w-4 text-red-600" fill="none" viewBox="0 0 24 24"
                           stroke="currentColor">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -93,7 +93,7 @@
                   </div>
                 </div>
                 <button @click="navigateTo(`/personal/${p.id}/record`)"
-                  class="inline-flex items-center justify-center p-1.5 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-md transition-colors"
+                  class="inline-flex items-center justify-center p-1.5 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 rounded-md transition-colors"
                   title="Ver Expediente">
                   <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -154,10 +154,10 @@
             </td>
           </tr>
           <tr v-if="!loading && filtered.length === 0">
-            <td colspan="7" class="px-4 py-6 text-center text-sm text-gray-500">Sin resultados</td>
+            <td colspan="7" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Sin resultados</td>
           </tr>
           <tr v-if="loading">
-            <td colspan="7" class="px-4 py-6 text-center text-sm text-gray-500">Cargando...</td>
+            <td colspan="7" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Cargando...</td>
           </tr>
         </tbody>
       </table>

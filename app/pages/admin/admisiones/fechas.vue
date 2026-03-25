@@ -2,17 +2,17 @@
     <div class="space-y-6 max-w-6xl mx-auto pb-12 px-4 sm:px-6">
         <div class="md:flex md:items-center md:justify-between">
             <div class="min-w-0 flex-1">
-                <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:truncate sm:text-3xl sm:tracking-tight">
+                <h2 class="text-2xl font-bold leading-7 text-gray-900 dark:text-gray-100 sm:truncate sm:text-3xl sm:tracking-tight">
                     Configuración de Fechas de Admisión
                 </h2>
-                <p class="mt-1 text-sm text-gray-500">
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                     Gestione las actividades, exámenes y orientaciones según el número de folder de los pre-admitidos.
                 </p>
             </div>
             <div class="mt-4 flex md:ml-4 md:mt-0 space-x-3">
                 <div class="w-64">
                     <select v-model="selectedAnioLectivoId" @change="fetchActividades"
-                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
+                        class="block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
                         <option v-for="anio in aniosLectivos" :key="anio.id" :value="anio.id">
                             {{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}
                         </option>
@@ -29,7 +29,7 @@
         <!-- Lista de Actividades -->
         <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
             <div v-for="actividad in actividades" :key="actividad.id"
-                class="bg-white overflow-hidden shadow-sm ring-1 ring-gray-200 rounded-xl hover:shadow-md transition-shadow">
+                class="bg-white dark:bg-gray-800 overflow-hidden shadow-sm ring-1 ring-gray-200 dark:ring-gray-700 rounded-xl hover:shadow-md transition-shadow">
                 <div class="p-5">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center">
@@ -37,8 +37,8 @@
                                 <CalendarIcon class="h-6 w-6 text-primary-600" />
                             </div>
                             <div>
-                                <h3 class="text-sm font-bold text-gray-900">{{ formatDate(actividad.fecha) }}</h3>
-                                <p class="text-xs text-gray-500">{{ actividad.actividad }}</p>
+                                <h3 class="text-sm font-bold text-gray-900 dark:text-gray-100">{{ formatDate(actividad.fecha) }}</h3>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">{{ actividad.actividad }}</p>
                             </div>
                         </div>
                         <div class="flex space-x-1">
@@ -51,15 +51,15 @@
                         </div>
                     </div>
 
-                    <div class="border-t border-gray-100 pt-4">
-                        <h4 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Grupos y Horarios
+                    <div class="border-t border-gray-100 dark:border-gray-700 pt-4">
+                        <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Grupos y Horarios
                         </h4>
                         <div class="space-y-2">
                             <div v-for="grupo in actividad.grupos" :key="grupo.id"
                                 class="flex items-center justify-between text-sm py-1 border-b border-gray-50 last:border-0">
-                                <span class="text-gray-700 font-medium">Folder {{ grupo.folder_desde }} - {{
+                                <span class="text-gray-700 dark:text-gray-300 font-medium">Folder {{ grupo.folder_desde }} - {{
                                     grupo.folder_hasta }}</span>
-                                <span class="bg-gray-100 text-gray-800 px-2 py-0.5 rounded text-xs font-bold">{{
+                                <span class="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-2 py-0.5 rounded text-xs font-bold">{{
                                     grupo.hora }}</span>
                             </div>
                         </div>
@@ -68,10 +68,10 @@
             </div>
 
             <div v-if="actividades.length === 0"
-                class="col-span-full py-12 text-center bg-gray-50 border-2 border-dashed border-gray-300 rounded-xl">
+                class="col-span-full py-12 text-center bg-gray-50 dark:bg-gray-900/50 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl">
                 <CalendarIcon class="mx-auto h-12 w-12 text-gray-400" />
-                <h3 class="mt-2 text-sm font-semibold text-gray-900">No hay actividades</h3>
-                <p class="mt-1 text-sm text-gray-500">Comience agregando una nueva fecha importante para este año
+                <h3 class="mt-2 text-sm font-semibold text-gray-900 dark:text-gray-100">No hay actividades</h3>
+                <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Comience agregando una nueva fecha importante para este año
                     lectivo.</p>
             </div>
         </div>
@@ -92,33 +92,33 @@
                             leave-from="opacity-100 translate-y-0 sm:scale-100"
                             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
                             <DialogPanel
-                                class="relative transform overflow-hidden rounded-lg bg-white px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-2xl sm:p-6">
+                                class="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 pb-4 pt-5 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-2xl sm:p-6">
                                 <form @submit.prevent="saveActividad">
                                     <div>
                                         <div class="mt-3 text-left">
                                             <DialogTitle as="h3"
-                                                class="text-lg font-bold leading-6 text-gray-900 border-b pb-3 mb-4">
+                                                class="text-lg font-bold leading-6 text-gray-900 dark:text-gray-100 border-b pb-3 mb-4">
                                                 {{ form.id ? 'Editar Actividad' : 'Nueva Actividad de Admisión' }}
                                             </DialogTitle>
 
                                             <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 mb-6">
                                                 <div>
-                                                    <label class="block text-sm font-medium text-gray-700">Nombre de la
+                                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre de la
                                                         Actividad</label>
                                                     <input v-model="form.actividad" type="text" required
                                                         placeholder="Ej: Charla y Evaluación"
-                                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
                                                 </div>
                                                 <div>
-                                                    <label class="block text-sm font-medium text-gray-700">Fecha</label>
+                                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha</label>
                                                     <input v-model="form.fecha" type="date" required
-                                                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
                                                 </div>
                                             </div>
 
                                             <div class="space-y-4">
                                                 <div class="flex items-center justify-between border-b pb-2">
-                                                    <h4 class="text-sm font-bold text-gray-900">Configuración de Grupos
+                                                    <h4 class="text-sm font-bold text-gray-900 dark:text-gray-100">Configuración de Grupos
                                                         (Folder/Hora)</h4>
                                                     <button type="button" @click="addGrupo"
                                                         class="inline-flex items-center text-xs font-bold text-primary-600 hover:text-primary-700">
@@ -132,13 +132,13 @@
                                                         <label v-if="index === 0"
                                                             class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Desde</label>
                                                         <input v-model="grupo.folder_desde" type="number" required
-                                                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                                                            class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
                                                     </div>
                                                     <div class="w-24">
                                                         <label v-if="index === 0"
                                                             class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Hasta</label>
                                                         <input v-model="grupo.folder_hasta" type="number" required
-                                                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                                                            class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
                                                     </div>
                                                     <div class="flex-1">
                                                         <label v-if="index === 0"
@@ -146,7 +146,7 @@
                                                             / Turno</label>
                                                         <input v-model="grupo.hora" type="text" required
                                                             placeholder="9:00 am"
-                                                            class="block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                                                            class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
                                                     </div>
                                                     <div class="pt-5" :class="index === 0 ? 'pt-5' : ''">
                                                         <button type="button" @click="removeGrupo(index)"
@@ -165,7 +165,7 @@
                                             {{ loading ? 'Guardando...' : 'Guardar Actividad' }}
                                         </button>
                                         <button type="button" @click="modalOpen = false"
-                                            class="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto">
+                                            class="mt-3 inline-flex w-full justify-center rounded-md bg-white dark:bg-gray-800 px-3 py-2 text-sm font-semibold text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 hover:bg-gray-50 dark:bg-gray-900/50 sm:mt-0 sm:w-auto">
                                             Cancelar
                                         </button>
                                     </div>

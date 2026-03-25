@@ -1,8 +1,8 @@
 <template>
     <div>
-        <header class="bg-white border-b border-gray-200 px-6 py-4">
+        <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
             <div class="flex items-center justify-between">
-                <h1 class="text-2xl font-bold text-gray-900">Años Lectivos</h1>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Años Lectivos</h1>
                 <button @click="openModal()"
                     class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
                     Nuevo Año Lectivo
@@ -22,13 +22,13 @@
             </div>
 
             <!-- List -->
-            <div v-else class="bg-white shadow overflow-hidden rounded-md">
-                <ul class="divide-y divide-gray-200">
+            <div v-else class="bg-white dark:bg-gray-800 shadow overflow-hidden rounded-md">
+                <ul class="divide-y divide-gray-200 dark:divide-gray-700">
                     <li v-for="anio in items" :key="anio.id"
-                        class="px-6 py-4 hover:bg-gray-50 flex items-center justify-between">
+                        class="px-6 py-4 hover:bg-gray-50 dark:bg-gray-900/50 flex items-center justify-between">
                         <div>
-                            <div class="text-sm font-medium text-gray-900">{{ anio.nombre }}</div>
-                            <div class="text-sm text-gray-500">{{ anio.descripcion || 'Sin descripción' }}</div>
+                            <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ anio.nombre }}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ anio.descripcion || 'Sin descripción' }}</div>
                         </div>
                         <div class="flex items-center gap-4">
                             <!-- Toggle Activo -->
@@ -38,7 +38,7 @@
                                 :title="anio.activo ? 'Año activo actualmente' : 'Click para activar este año'">
                                 <span class="sr-only">Usar configuración</span>
                                 <span aria-hidden="true"
-                                    class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"
+                                    class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white dark:bg-gray-800 shadow transform ring-0 transition ease-in-out duration-200"
                                     :class="anio.activo ? 'translate-x-5' : 'translate-x-0'">
                                 </span>
                             </button>
@@ -67,7 +67,7 @@
                         </div>
 
                     </li>
-                    <li v-if="items.length === 0" class="px-6 py-12 text-center text-gray-500">
+                    <li v-if="items.length === 0" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
                         No hay años lectivos registrados.
                     </li>
                 </ul>
@@ -80,11 +80,11 @@
 
         <!-- Modal -->
         <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
-            <div class="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md overflow-hidden">
                 <div class="px-6 py-4 border-b flex justify-between items-center">
-                    <h3 class="text-lg font-medium text-gray-900">{{ isEdit ? 'Editar Año Lectivo' : 'Nuevo Año Lectivo'
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">{{ isEdit ? 'Editar Año Lectivo' : 'Nuevo Año Lectivo'
                     }}</h3>
-                    <button @click="closeModal" class="text-gray-400 hover:text-gray-500">
+                    <button @click="closeModal" class="text-gray-400 hover:text-gray-500 dark:text-gray-400">
                         <span class="sr-only">Cerrar</span>
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -95,35 +95,35 @@
                 <form @submit.prevent="save">
                     <div class="px-6 py-4 space-y-4">
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Nombre</label>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</label>
                             <input v-model="form.nombre" type="text" required placeholder="Ej. 2025-2"
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Descripción</label>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descripción</label>
                             <textarea v-model="form.descripcion" rows="2"
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
+                                class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"></textarea>
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Fecha de Inicio</label>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de Inicio</label>
                             <input v-model="form.fecha_inicio" type="date"
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Fecha de Fin</label>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de Fin</label>
                             <input v-model="form.fecha_fin" type="date"
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                                class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                         </div>
                         <div class="flex items-center">
                             <input id="activo" v-model="form.activo" type="checkbox"
-                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
-                            <label for="activo" class="ml-2 block text-sm text-gray-900">Activo</label>
+                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded">
+                            <label for="activo" class="ml-2 block text-sm text-gray-900 dark:text-gray-100">Activo</label>
                         </div>
                         <div v-if="formError" class="text-red-600 text-sm">{{ formError }}</div>
                     </div>
-                    <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3">
+                    <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
                         <button type="button" @click="closeModal" :disabled="loading"
-                            class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 disabled:opacity-50 disabled:cursor-not-allowed">
                             Cancelar
                         </button>
                         <button type="submit" :disabled="loading"
@@ -144,10 +144,10 @@
         </div>
         <!-- Clonar Modal -->
         <div v-if="showClonarModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
-            <div class="bg-white rounded-lg shadow-xl w-full max-w-md overflow-hidden">
+            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md overflow-hidden">
                 <div class="px-6 py-4 border-b flex justify-between items-center">
-                    <h3 class="text-lg font-medium text-gray-900">Clonar Año Lectivo: {{ anioParaClonar?.nombre }}</h3>
-                    <button @click="closeClonarModal" class="text-gray-400 hover:text-gray-500">
+                    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Clonar Año Lectivo: {{ anioParaClonar?.nombre }}</h3>
+                    <button @click="closeClonarModal" class="text-gray-400 hover:text-gray-500 dark:text-gray-400">
                         <span class="sr-only">Cerrar</span>
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -157,38 +157,38 @@
                 </div>
                 <form @submit.prevent="saveClonacion">
                     <div class="px-6 py-4 space-y-4">
-                        <p class="text-sm text-gray-500">
+                        <p class="text-sm text-gray-500 dark:text-gray-400">
                             Se creará un nuevo año lectivo inactivo. Se copiarán todas las aulas, asignaciones de materias y horarios.
                             Los estudiantes NO se copiarán (debes usar la función Promover).
                         </p>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Nuevo Nombre</label>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nuevo Nombre</label>
                             <input v-model="clonarForm.nombre" type="text" required placeholder="Ej. 2026-1"
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                                class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
                         </div>
                         <div>
-                            <label class="block text-sm font-medium text-gray-700">Nueva Descripción</label>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nueva Descripción</label>
                             <textarea v-model="clonarForm.descripcion" rows="2"
-                                class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"></textarea>
+                                class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"></textarea>
                         </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Fecha Inicio</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha Inicio</label>
                                 <input v-model="clonarForm.fecha_inicio" type="date"
-                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Fecha Fin</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha Fin</label>
                                 <input v-model="clonarForm.fecha_fin" type="date"
-                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
                             </div>
                         </div>
 
                         <div v-if="clonarError" class="text-red-600 text-sm">{{ clonarError }}</div>
                     </div>
-                    <div class="px-6 py-4 bg-gray-50 flex justify-end gap-3">
+                    <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
                         <button type="button" @click="closeClonarModal" :disabled="loading"
-                            class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50">
+                            class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 disabled:opacity-50">
                             Cancelar
                         </button>
                         <button type="submit" :disabled="loading"

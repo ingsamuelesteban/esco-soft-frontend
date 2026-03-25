@@ -1,10 +1,10 @@
 <template>
     <div class="h-full flex flex-col">
         <!-- Header with Search and New Chat -->
-        <div class="p-3 border-b border-gray-100 flex gap-2">
+        <div class="p-3 border-b border-gray-100 dark:border-gray-700 flex gap-2">
             <div class="relative flex-1">
                 <input type="text" placeholder="Buscar chat..."
-                    class="w-full text-sm pl-8 pr-3 py-1.5 bg-gray-100 border-none rounded-md focus:ring-1 focus:ring-blue-500"
+                    class="w-full text-sm pl-8 pr-3 py-1.5 bg-gray-100 dark:bg-gray-800 border-none rounded-md focus:ring-1 focus:ring-blue-500"
                     v-model="searchQuery">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 absolute left-2.5 top-2 text-gray-400"
                     fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -23,17 +23,17 @@
         </div>
 
         <div v-if="filteredConversations.length === 0 && !chatStore.loading"
-            class="p-6 text-center text-gray-500 text-sm">
+            class="p-6 text-center text-gray-500 dark:text-gray-400 text-sm">
             No se encontraron conversaciones.
         </div>
         <div v-if="chatStore.loading" class="p-6 text-center text-gray-400">
             Cargando chats...
         </div>
 
-        <ul class="divide-y divide-gray-100 overflow-y-auto flex-1">
+        <ul class="divide-y divide-gray-100 dark:divide-gray-700 overflow-y-auto flex-1">
             <li v-for="conversation in filteredConversations" :key="conversation.id"
                 @click="chatStore.selectConversation(conversation)"
-                class="p-4 hover:bg-gray-50 cursor-pointer flex items-center transition relative"
+                class="p-4 hover:bg-gray-50 dark:bg-gray-900/50 cursor-pointer flex items-center transition relative"
                 :class="{ 'bg-blue-50/50': conversation.unread_count > 0 }">
 
                 <!-- Unread Indicator Dot -->
@@ -58,7 +58,7 @@
                 <div class="flex-1 min-w-0">
                     <div class="flex justify-between items-baseline mb-1">
                         <h4 class="text-sm truncate"
-                            :class="conversation.unread_count > 0 ? 'font-bold text-gray-900' : 'font-medium text-gray-700'">
+                            :class="conversation.unread_count > 0 ? 'font-bold text-gray-900 dark:text-gray-100' : 'font-medium text-gray-700 dark:text-gray-300'">
                             {{ conversation.name || 'Chat sin nombre' }}
                         </h4>
                         <span v-if="conversation.latest_message" class="text-xs shrink-0"
@@ -67,7 +67,7 @@
                         </span>
                     </div>
                     <p class="text-xs truncate"
-                        :class="conversation.unread_count > 0 ? 'text-gray-800 font-medium' : 'text-gray-500'">
+                        :class="conversation.unread_count > 0 ? 'text-gray-800 dark:text-gray-200 font-medium' : 'text-gray-500 dark:text-gray-400'">
                         <span v-if="conversation.latest_message">
                             {{ conversation.latest_message.sender_id === useAuthStore().user?.id ? 'Tú: ' : '' }}
                             {{ conversation.latest_message.content }}

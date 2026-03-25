@@ -1,11 +1,11 @@
 <template>
   <div class="space-y-6">
     <!-- Header -->
-    <div class="bg-white shadow-sm rounded-lg p-6">
+    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900">Control de Asistencia</h1>
-          <p class="text-sm text-gray-600 mt-1">Registro diario de asistencia de estudiantes</p>
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Control de Asistencia</h1>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Registro diario de asistencia de estudiantes</p>
         </div>
         <div class="flex items-center space-x-3">
           <!-- Botón de Asistencia Baja -->
@@ -19,7 +19,7 @@
 
           <!-- Botón de estadísticas -->
           <button @click="navigateTo('/asistencia/estadisticas')"
-            class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+            class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
             <svg class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
@@ -31,19 +31,19 @@
     </div>
 
     <!-- Filtros -->
-    <div class="bg-white shadow-sm rounded-lg p-6">
+    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
         <!-- Selector de fecha -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">Fecha</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fecha</label>
           <input v-model="selectedDate" type="date"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500" />
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500" />
         </div>
 
         <!-- Selector de asignación/aula -->
         <!-- Selector de asignación/aula -->
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             {{ (authStore.isAdmin || authStore.isMaster || isPsychologist || authStore.isCoordinator) ? 'Aula' :
               'Materia y Aula' }}
           </label>
@@ -51,7 +51,7 @@
           <!-- Para Administradores/Masters/Psicólogos/Coordinadores: Selector directo de Aulas -->
           <select v-if="authStore.isAdmin || authStore.isMaster || isPsychologist || authStore.isCoordinator"
             v-model="selectedAulaId" @change="selectedAssignmentId = null"
-            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
             :disabled="aulasStore.loading">
             <option :value="null">Seleccionar aula...</option>
             <option v-for="option in aulasStore.paraSelect" :key="option.value" :value="option.value">
@@ -63,9 +63,9 @@
           <div
             v-if="(authStore.isAdmin || authStore.isMaster || isPsychologist || authStore.isCoordinator) && selectedAulaId"
             class="mt-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Clase / Asignatura</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Clase / Asignatura</label>
             <select v-model="selectedAssignmentId" @change="loadAttendance"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
               :disabled="attendanceStore.loadingDailyClasses">
               <option :value="null">
                 {{ attendanceStore.loadingDailyClasses ? 'Cargando horario...' : (attendanceStore.dailyClasses.length ?
@@ -84,7 +84,7 @@
           <!-- Para Profesores: Selector de Asignaciones (Filtrado por día) -->
           <div v-else-if="!(authStore.isAdmin || authStore.isMaster || isPsychologist || authStore.isCoordinator)">
             <select v-model="selectedAssignmentId" @change="onAssignmentChange"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
               :disabled="attendanceStore.loadingDailyClasses">
               <option :value="null">
                 {{ attendanceStore.loadingDailyClasses ? 'Cargando horario...' : (attendanceStore.dailyClasses.length ?
@@ -145,39 +145,39 @@
 
     <!-- Panel de estadísticas (Ocultar si es feriado) -->
     <div v-if="showStatistics && hasData && !attendanceStore.holiday"
-      class="bg-white shadow-sm rounded-lg p-6 sticky top-20 z-30 transition-all duration-300 border-b border-gray-200">
-      <h3 class="text-lg font-medium text-gray-900 mb-4">Resumen del Día</h3>
+      class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6 sticky top-20 z-30 transition-all duration-300 border-b border-gray-200 dark:border-gray-700">
+      <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Resumen del Día</h3>
       <div class="grid grid-cols-2 md:grid-cols-6 gap-4">
         <div class="text-center">
-          <div class="text-2xl font-bold text-gray-900">{{ attendanceStore.totalStudents }}</div>
-          <div class="text-sm text-gray-600">Total</div>
+          <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ attendanceStore.totalStudents }}</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">Total</div>
         </div>
         <div class="text-center">
           <div class="text-2xl font-bold text-green-600">{{ attendanceStore.presentCount }}</div>
-          <div class="text-sm text-gray-600">Presentes</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">Presentes</div>
         </div>
         <div class="text-center">
           <div class="text-2xl font-bold text-red-600">{{ attendanceStore.absentCount }}</div>
-          <div class="text-sm text-gray-600">Ausentes</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">Ausentes</div>
         </div>
         <div class="text-center">
           <div class="text-2xl font-bold text-yellow-600">{{ attendanceStore.excusedCount }}</div>
-          <div class="text-sm text-gray-600">Excusas</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">Excusas</div>
         </div>
         <div class="text-center">
           <div class="text-2xl font-bold text-orange-600">{{ attendanceStore.lateCount }}</div>
-          <div class="text-sm text-gray-600">Tardanzas</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">Tardanzas</div>
         </div>
         <div class="text-center">
-          <div class="text-2xl font-bold text-gray-500">{{ attendanceStore.withdrawnCount }}</div>
-          <div class="text-sm text-gray-600">Retirados</div>
+          <div class="text-2xl font-bold text-gray-500 dark:text-gray-400">{{ attendanceStore.withdrawnCount }}</div>
+          <div class="text-sm text-gray-600 dark:text-gray-400">Retirados</div>
         </div>
       </div>
 
       <!-- Porcentaje de asistencia -->
       <div class="mt-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div class="flex-1">
-          <div class="flex justify-between text-sm text-gray-600 mb-2">
+          <div class="flex justify-between text-sm text-gray-600 dark:text-gray-400 mb-2">
             <span>Porcentaje de Asistencia</span>
             <span>{{ attendancePercentage }}%</span>
           </div>
@@ -203,7 +203,7 @@
     </div>
 
     <!-- Loading State -->
-    <div v-if="attendanceStore.loading" class="bg-white shadow-sm rounded-lg p-12 flex justify-center items-center">
+    <div v-if="attendanceStore.loading" class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-12 flex justify-center items-center">
       <svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-primary-600" xmlns="http://www.w3.org/2000/svg" fill="none"
         viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -211,7 +211,7 @@
           d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
         </path>
       </svg>
-      <span class="text-gray-700 font-medium">Cargando lista de estudiantes...</span>
+      <span class="text-gray-700 dark:text-gray-300 font-medium">Cargando lista de estudiantes...</span>
     </div>
 
     <!-- Componente de lista de asistencia (Ocultar si es feriado) -->
@@ -222,13 +222,13 @@
 
     <!-- Estado inicial -->
     <div v-else-if="!attendanceStore.loading && !attendanceStore.holiday"
-      class="bg-white shadow-sm rounded-lg p-12 text-center">
+      class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-12 text-center">
       <svg class="mx-auto h-16 w-16 text-gray-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
           d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
       </svg>
-      <h3 class="text-lg font-medium text-gray-900 mb-2">Selecciona una fecha y aula</h3>
-      <p class="text-gray-600">Para comenzar a tomar asistencia, selecciona la fecha y el aula correspondiente.</p>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">Selecciona una fecha y aula</h3>
+      <p class="text-gray-600 dark:text-gray-400">Para comenzar a tomar asistencia, selecciona la fecha y el aula correspondiente.</p>
     </div>
   </div>
 </template>

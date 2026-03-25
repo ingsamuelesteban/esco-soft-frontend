@@ -2,8 +2,8 @@
   <section>
     <header class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-semibold text-gray-900">Títulos</h1>
-        <p class="mt-1 text-sm text-gray-600">Gestiona los títulos por familia profesional.</p>
+        <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Títulos</h1>
+        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Gestiona los títulos por familia profesional.</p>
       </div>
       <div>
         <button @click="openCreateModal"

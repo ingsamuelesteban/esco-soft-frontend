@@ -2,9 +2,9 @@
     <div class="space-y-6">
         <!-- Header -->
         <div
-            class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100 dark:bg-gray-800 dark:border-gray-700">
+            class="flex justify-between items-center bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:border-gray-700">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white flex items-center gap-2">
                     <i class="fas fa-clock text-blue-600 dark:text-blue-400"></i>
                     Registro de Tardanzas
                 </h1>
@@ -17,13 +17,13 @@
 
         <!-- Tabs -->
         <div
-            class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
+            class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden dark:bg-gray-800 dark:border-gray-700">
             <div class="border-b border-gray-200 dark:border-gray-700">
                 <nav class="flex -mb-px" aria-label="Tabs">
                     <button @click="activeTab = 'registro'" :class="[
                         activeTab === 'registro'
                             ? 'border-blue-500 text-blue-600 dark:text-blue-400 dark:border-blue-400'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300',
+                            : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600 dark:text-gray-400 dark:hover:text-gray-300',
                         'w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm transition-colors duration-200'
                     ]">
                         <i class="fas fa-edit mr-2"></i>
@@ -32,7 +32,7 @@
                     <button @click="activeTab = 'historial'" :class="[
                         activeTab === 'historial'
                             ? 'border-blue-500 text-blue-600 dark:text-blue-400 dark:border-blue-400'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300',
+                            : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600 dark:text-gray-400 dark:hover:text-gray-300',
                         'w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm transition-colors duration-200'
                     ]">
                         <i class="fas fa-history mr-2"></i>
@@ -51,7 +51,7 @@
                                 <i class="fas fa-door-open mr-1"></i> Aula
                             </label>
                             <select v-model="selectedAula" @change="loadRegistro"
-                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                                class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white"
                                 :disabled="isLoading">
                                 <option value="">Seleccione un aula...</option>
                                 <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
@@ -69,7 +69,7 @@
                                     <i class="fas fa-search text-gray-400"></i>
                                 </div>
                                 <input type="text" v-model="searchQuery"
-                                    class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 sm:text-sm border-gray-300 rounded-md dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                                    class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-800 dark:border-gray-600 dark:text-white"
                                     placeholder="Filtrar por nombre..." :disabled="!selectedAula || isLoading" />
                             </div>
                         </div>
@@ -90,9 +90,9 @@
 
                     <!-- Empty State -->
                     <div v-else-if="!selectedAula"
-                        class="text-center py-12 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-700">
+                        class="text-center py-12 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-dashed border-gray-300 dark:border-gray-600 dark:border-gray-700">
                         <i class="fas fa-door-open text-4xl text-gray-400 mb-3"></i>
-                        <h3 class="text-lg font-medium text-gray-900 dark:text-white">Seleccione un aula</h3>
+                        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 dark:text-white">Seleccione un aula</h3>
                         <p class="text-gray-500 dark:text-gray-400 mt-1">Para visualizar y registrar las tardanzas del
                             día actual</p>
                     </div>
@@ -104,11 +104,11 @@
                             <thead class="bg-gray-50 dark:bg-gray-900/50">
                                 <tr>
                                     <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider dark:text-gray-400">
                                         Estudiante
                                     </th>
                                     <th scope="col"
-                                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider dark:text-gray-400">
                                         Tardanza?
                                     </th>
                                 </tr>
@@ -121,7 +121,7 @@
                                     </td>
                                 </tr>
                                 <tr v-for="estudiante in filteredStudents" :key="estudiante.estudiante_id"
-                                    class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                    class="hover:bg-gray-50 dark:bg-gray-900/50 dark:hover:bg-gray-700/50 transition-colors">
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         <div class="flex items-center">
                                             <div class="flex-shrink-0 h-10 w-10 relative">
@@ -132,7 +132,7 @@
                                                 </div>
                                             </div>
                                             <div class="ml-4">
-                                                <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                                <div class="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-white">
                                                     {{ estudiante.nombres_completos }}
                                                 </div>
                                             </div>
@@ -141,11 +141,11 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-center">
                                         <button @click="toggleTardanza(estudiante)" :disabled="isToggling"
                                             class="relative inline-flex items-center justify-center p-0.5 mb-2 mr-2 overflow-hidden text-sm font-medium rounded-lg group focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-800 transition-all shadow-sm disabled:opacity-50"
-                                            :class="estudiante.tiene_tardanza ? 'text-white bg-red-600 hover:bg-red-700 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800' : 'text-gray-900 bg-gray-100 border border-gray-300 hover:bg-gray-200 dark:text-white dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600'">
+                                            :class="estudiante.tiene_tardanza ? 'text-white bg-red-600 hover:bg-red-700 focus:ring-red-300 dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800' : 'text-gray-900 dark:text-gray-100 bg-gray-100 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:text-white dark:bg-gray-700 dark:border-gray-600 dark:hover:bg-gray-600'">
                                             <span
                                                 class="relative px-5 py-2.5 transition-all ease-in duration-75 rounded-md flex items-center gap-2">
                                                 <i class="fas"
-                                                    :class="estudiante.tiene_tardanza ? 'fa-check-circle' : 'fa-plus-circle text-gray-500'"></i>
+                                                    :class="estudiante.tiene_tardanza ? 'fa-check-circle' : 'fa-plus-circle text-gray-500 dark:text-gray-400'"></i>
                                                 <span v-if="estudiante.tiene_tardanza">Llegó Tarde</span>
                                                 <span v-else>Registrar Tardanza</span>
                                             </span>
@@ -166,7 +166,7 @@
                                 <i class="fas fa-door-open mr-1"></i> Aula
                             </label>
                             <select v-model="historyFilters.aula_id"
-                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white">
+                                class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white">
                                 <option value="">Todas las aulas</option>
                                 <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
                                     {{ aula.grado_cardinal }} {{ aula.seccion }}
@@ -178,14 +178,14 @@
                                 <i class="fas fa-calendar mr-1"></i> Fecha Inicio
                             </label>
                             <input type="date" v-model="historyFilters.fecha_inicio"
-                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white" />
+                                class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white" />
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 <i class="fas fa-calendar mr-1"></i> Fecha Fin
                             </label>
                             <input type="date" v-model="historyFilters.fecha_fin"
-                                class="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white" />
+                                class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white" />
                         </div>
                         <div class="flex items-end">
                             <button @click="loadHistory(1)" :disabled="isHistoryLoading"
@@ -206,19 +206,19 @@
                             <thead class="bg-gray-50 dark:bg-gray-900/50">
                                 <tr>
                                     <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider dark:text-gray-400">
                                         Fecha
                                     </th>
                                     <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider dark:text-gray-400">
                                         Estudiante
                                     </th>
                                     <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider dark:text-gray-400">
                                         Aula
                                     </th>
                                     <th scope="col"
-                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider dark:text-gray-400">
+                                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider dark:text-gray-400">
                                         Registrado Por
                                     </th>
                                 </tr>
@@ -231,13 +231,13 @@
                                     </td>
                                 </tr>
                                 <tr v-for="record in historyData.data" :key="record.id"
-                                    class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+                                    class="hover:bg-gray-50 dark:bg-gray-900/50 dark:hover:bg-gray-700/50">
                                     <td
-                                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white font-medium">
+                                        class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 dark:text-white font-medium">
                                         {{ record.fecha_formateada || formatDate(record.fecha) }}
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-white">
                                             {{ record.estudiante?.apellidos }}, {{ record.estudiante?.nombres }}
                                         </div>
                                     </td>
@@ -271,13 +271,13 @@
                                         aria-label="Pagination">
                                         <button @click="loadHistory(historyData.current_page - 1)"
                                             :disabled="historyData.current_page === 1"
-                                            class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700">
+                                            class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-900/50 disabled:opacity-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700">
                                             <span class="sr-only">Anterior</span>
                                             <i class="fas fa-chevron-left"></i>
                                         </button>
                                         <button @click="loadHistory(historyData.current_page + 1)"
                                             :disabled="historyData.current_page === historyData.last_page"
-                                            class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:opacity-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700">
+                                            class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-900/50 disabled:opacity-50 dark:bg-gray-800 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-700">
                                             <span class="sr-only">Siguiente</span>
                                             <i class="fas fa-chevron-right"></i>
                                         </button>

@@ -3,7 +3,7 @@
     <!-- Bienvenida -->
     <div class="glass-card p-6 rounded-xl flex justify-between items-center">
       <div>
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Hola, {{ dashboardData?.student?.nombres }}</h2>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white">Hola, {{ dashboardData?.student?.nombres }}</h2>
         <p class="text-gray-600 dark:text-gray-400 mt-1">
           Estudiante de {{ dashboardData?.student?.aula_grado }} "{{ dashboardData?.student?.aula_seccion }}" <span
             v-if="dashboardData?.student?.numero_orden">| #{{ dashboardData?.student?.numero_orden }}</span> | Año
@@ -36,12 +36,12 @@
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <!-- Actividades de Admisión -->
         <div class="space-y-6">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-white flex items-center">
             <CalendarIcon class="w-5 h-5 mr-2 text-amber-600 dark:text-amber-400" />
             Mi Calendario de Admisión
           </h3>
 
-          <div v-if="dashboardData.admission_activities?.length === 0" class="glass-card p-6 text-center text-gray-500">
+          <div v-if="dashboardData.admission_activities?.length === 0" class="glass-card p-6 text-center text-gray-500 dark:text-gray-400">
             No hay actividades programadas para tu número de folder aún.
           </div>
 
@@ -50,7 +50,7 @@
               class="glass-card p-5 border-l-4 border-l-amber-500 hover:shadow-md transition-all">
               <div class="flex items-center justify-between">
                 <div>
-                  <h4 class="font-bold text-gray-900 dark:text-white">{{ act.actividad }}</h4>
+                  <h4 class="font-bold text-gray-900 dark:text-gray-100 dark:text-white">{{ act.actividad }}</h4>
                   <div class="flex items-center mt-2 text-sm text-gray-600 dark:text-gray-400">
                     <span class="flex items-center mr-4">
                       <CalendarIcon class="w-4 h-4 mr-1" />
@@ -89,7 +89,7 @@
 
         <!-- Documentos Pendientes (checklist) -->
         <div class="space-y-6">
-          <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-white flex items-center">
             <DocumentTextIcon class="w-5 h-5 mr-2 text-red-600 dark:text-red-400" />
             Documentos Pendientes
           </h3>
@@ -100,8 +100,8 @@
                 class="inline-flex items-center justify-center p-3 bg-green-100 dark:bg-green-900/30 rounded-full mb-3">
                 <CheckCircleIcon class="w-8 h-8 text-green-600" />
               </div>
-              <p class="text-gray-900 dark:text-white font-bold">¡Expediente Completo!</p>
-              <p class="text-sm text-gray-500 mt-1">Has entregado todos los documentos requeridos.</p>
+              <p class="text-gray-900 dark:text-gray-100 dark:text-white font-bold">¡Expediente Completo!</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Has entregado todos los documentos requeridos.</p>
             </div>
             <div v-else>
               <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
@@ -126,7 +126,7 @@
 
       <!-- Documentos Solicitados (uploads) -->
       <div v-if="dashboardData.document_requests?.length > 0" class="space-y-4">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-white flex items-center">
           <ArrowUpTrayIcon class="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400" />
           Documentos Solicitados por Administración
         </h3>
@@ -142,7 +142,7 @@
             }">
             <!-- Title & Status -->
             <div class="flex items-start justify-between mb-3">
-              <h4 class="font-semibold text-gray-900 dark:text-white text-sm leading-tight pr-2">{{ req.titulo }}</h4>
+              <h4 class="font-semibold text-gray-900 dark:text-gray-100 dark:text-white text-sm leading-tight pr-2">{{ req.titulo }}</h4>
               <span class="shrink-0 inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold"
                 :class="{
                   'bg-amber-100 text-amber-800': req.status === 'pending',
@@ -199,7 +199,7 @@
 
       <!-- Calificaciones (3/5 ancho) -->
       <div class="lg:col-span-3 space-y-6">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-white flex items-center">
           <svg class="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -217,7 +217,7 @@
             </svg>
           </div>
 
-          <h3 class="text-xl font-bold text-gray-900 dark:text-white mb-2">Acceso a Calificaciones Restringido</h3>
+          <h3 class="text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-white mb-2">Acceso a Calificaciones Restringido</h3>
 
           <div class="max-w-md mx-auto space-y-3">
             <p class="text-gray-600 dark:text-gray-400">
@@ -239,7 +239,7 @@
 
         <div v-else class="space-y-6">
 
-          <div v-if="dashboardData?.grades?.length === 0" class="glass-card p-6 text-center text-gray-500">
+          <div v-if="dashboardData?.grades?.length === 0" class="glass-card p-6 text-center text-gray-500 dark:text-gray-400">
             No hay calificaciones registradas aún.
           </div>
 
@@ -248,46 +248,46 @@
             <!-- TABLA DE CALIFICACIONES ACADÉMICAS -->
             <div v-if="academicSubjects.length > 0" class="glass-card p-0 overflow-hidden">
               <!-- ... content ... -->
-              <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50">
+              <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50/50 dark:bg-gray-800/50">
                 <h3 class="text-sm font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">Calificaciones
                   Académicas</h3>
               </div>
               <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                  <thead class="bg-gray-50 dark:bg-gray-800">
+                  <thead class="bg-gray-50 dark:bg-gray-900/50 dark:bg-gray-800">
                     <tr>
                       <th scope="col"
                         class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider min-w-[200px]">
                         Asignatura
                       </th>
                       <th scope="col"
-                        class="px-2 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
+                        class="px-2 py-3 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         P1
                       </th>
                       <th scope="col"
-                        class="px-2 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
+                        class="px-2 py-3 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         P2
                       </th>
                       <th scope="col"
-                        class="px-2 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
+                        class="px-2 py-3 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         P3
                       </th>
                       <th scope="col"
-                        class="px-2 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">
+                        class="px-2 py-3 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         P4
                       </th>
                       <th scope="col"
-                        class="px-2 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider border-l border-gray-200">
+                        class="px-2 py-3 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider border-l border-gray-200 dark:border-gray-700">
                         Nota Final
                       </th>
                     </tr>
                   </thead>
-                  <tbody class="bg-white dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
+                  <tbody class="bg-white dark:bg-gray-800 dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
                     <tr v-for="subject in academicSubjects" :key="subject.materia_id"
-                      class="hover:bg-gray-50 dark:hover:bg-gray-800">
+                      class="hover:bg-gray-50 dark:bg-gray-900/50 dark:hover:bg-gray-800">
                       <!-- Subject Name -->
                       <td class="px-4 py-3 whitespace-normal">
-                        <div class="text-sm font-medium text-gray-900 dark:text-white">{{ subject.materia }}</div>
+                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-white">{{ subject.materia }}</div>
                       </td>
 
                       <!-- Period Averages PC1-PC4 -->
@@ -296,16 +296,16 @@
                           :class="getGradeColor(subject.promedios_periodo[p])">
                           {{ subject.promedios_periodo[p] }}
                         </div>
-                        <div v-else class="text-xs text-gray-300 dark:text-gray-600">-</div>
+                        <div v-else class="text-xs text-gray-300 dark:text-gray-600 dark:text-gray-400">-</div>
                       </td>
 
                       <!-- Final Average -->
-                      <td class="px-2 py-3 text-center border-l border-gray-200">
+                      <td class="px-2 py-3 text-center border-l border-gray-200 dark:border-gray-700">
                         <div v-if="subject.promedio_academico" class="text-sm font-bold"
                           :class="getScoreColor(subject.promedio_academico)">
                           {{ subject.promedio_academico }}
                         </div>
-                        <div v-else class="text-xs text-gray-300 dark:text-gray-600">-</div>
+                        <div v-else class="text-xs text-gray-300 dark:text-gray-600 dark:text-gray-400">-</div>
                       </td>
                     </tr>
                   </tbody>
@@ -322,7 +322,7 @@
                   class="glass-card p-5 hover:shadow-lg transition-shadow duration-200 border-l-4 border-l-purple-500">
                   <div class="flex justify-between items-start mb-4">
                     <div>
-                      <h4 class="font-bold text-gray-800 dark:text-gray-100 text-lg">{{ subject.materia }}</h4>
+                      <h4 class="font-bold text-gray-800 dark:text-gray-200 dark:text-gray-100 text-lg">{{ subject.materia }}</h4>
 
                     </div>
                     <div class="text-right">
@@ -335,16 +335,16 @@
 
                   <!-- Detalle de notas (RAs) -->
                   <div v-if="subject.notas_ra && subject.notas_ra.length > 0">
-                    <h5 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Resultados de
+                    <h5 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Resultados de
                       Aprendizaje</h5>
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
                       <div v-for="raItem in subject.notas_ra" :key="raItem.ra"
-                        class="bg-gray-50 rounded p-2 text-center border border-gray-100 flex flex-col items-center">
-                        <div class="text-xs text-gray-500 mb-1">RA {{ raItem.ra }}</div>
+                        class="bg-gray-50 dark:bg-gray-900/50 rounded p-2 text-center border border-gray-100 dark:border-gray-700 flex flex-col items-center">
+                        <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">RA {{ raItem.ra }}</div>
                         <div class="flex flex-wrap justify-center gap-1">
                           <span v-for="intento in raItem.intentos" :key="intento.id"
                             class="text-xs font-bold px-1.5 py-0.5 rounded border"
-                            :class="intento.is_nc ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800' : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-600'">
+                            :class="intento.is_nc ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800' : 'bg-white dark:bg-gray-800 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-700 dark:border-gray-600'">
                             {{ intento.nota }}
                           </span>
                         </div>
@@ -362,7 +362,7 @@
 
       <!-- Horario (2/5 ancho) -->
       <div class="lg:col-span-2 space-y-6">
-        <h3 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center">
+        <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-white flex items-center">
           <svg class="w-5 h-5 mr-2 text-purple-600 dark:text-purple-400" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -375,13 +375,13 @@
           <!-- Selector de día simple -->
           <div class="flex space-x-1 mb-4 overflow-x-auto pb-2">
             <button v-for="(dayName, index) in days" :key="index" @click="selectedDay = index + 1"
-              :class="selectedDay === index + 1 ? 'bg-purple-600 text-white shadow-md' : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600'"
+              :class="selectedDay === index + 1 ? 'bg-purple-600 text-white shadow-md' : 'bg-white dark:bg-gray-800 dark:bg-gray-700 text-gray-600 dark:text-gray-400 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 dark:hover:bg-gray-600'"
               class="px-3 py-1.5 rounded-lg text-sm font-medium transition-all whitespace-nowrap border border-transparent flex-shrink-0">
               {{ dayName }}
             </button>
           </div>
 
-          <div v-if="currentSchedule.length === 0" class="text-center py-8 text-gray-500 text-sm">
+          <div v-if="currentSchedule.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400 text-sm">
             No hay clases programadas para este día.
           </div>
 
@@ -394,7 +394,7 @@
                 <div class="text-[10px] text-gray-500 dark:text-gray-400">{{ formatTime(clase.period.end_time) }}</div>
               </div>
               <div>
-                <p class="text-sm font-bold text-gray-900 dark:text-white leading-tight">{{ clase.materia.nombre }}</p>
+                <p class="text-sm font-bold text-gray-900 dark:text-gray-100 dark:text-white leading-tight">{{ clase.materia.nombre }}</p>
                 <p class="text-xs text-gray-600 dark:text-gray-400 mt-0.5">{{ clase.docente.nombres }} {{
                   clase.docente.apellidos }}</p>
               </div>
@@ -455,7 +455,7 @@ const technicalSubjects = computed(() => {
 
 
 const getScoreColor = (score: number | null) => {
-  if (score === null) return 'text-gray-400 dark:text-gray-500'
+  if (score === null) return 'text-gray-400 dark:text-gray-500 dark:text-gray-400'
   if (score >= 90) return 'text-green-600 dark:text-green-400'
   if (score >= 80) return 'text-blue-600 dark:text-blue-400'
   if (score >= 70) return 'text-yellow-600 dark:text-yellow-400'
@@ -463,9 +463,9 @@ const getScoreColor = (score: number | null) => {
 }
 
 const getGradeColor = (score: number | null) => {
-  if (score === null) return 'text-gray-300 dark:text-gray-600'
+  if (score === null) return 'text-gray-300 dark:text-gray-600 dark:text-gray-400'
   if (score < 70) return 'text-red-600 dark:text-red-400'
-  return 'text-gray-900 dark:text-white'
+  return 'text-gray-900 dark:text-gray-100 dark:text-white'
 }
 
 const formatDate = (date: string) => {

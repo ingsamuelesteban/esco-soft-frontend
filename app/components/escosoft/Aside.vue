@@ -1,7 +1,7 @@
 <template>
-  <aside class="flex flex-col h-full bg-white border-r border-gray-200">
+  <aside class="flex flex-col h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transition-colors duration-300">
     <!-- Logo / Branding -->
-    <div class="flex items-center justify-center h-16 border-b border-gray-200 px-4">
+    <div class="flex items-center justify-center h-16 border-b border-gray-200 dark:border-gray-700 px-4">
       <div class="flex items-center space-x-2">
         <img src="/images/logo.png" alt="EscoSoft" class="h-14 w-auto max-w-[180px] object-contain scale-110" />
       </div>
@@ -15,10 +15,10 @@
           <!-- Items sin hijos -->
           <NuxtLink v-if="!item.children && item.route" :to="item.route"
             class="group flex items-center px-3 py-2.5 text-sm font-medium rounded-lg transition-colors"
-            :class="isActive(item.route) ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100'"
+            :class="isActive(item.route) ? 'bg-primary-50 dark:bg-primary-900/50 text-primary-700 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700'"
             @click="handleNavClick">
             <svg class="mr-3 h-5 w-5"
-              :class="isActive(item.route) ? 'text-primary-700' : 'text-gray-400 group-hover:text-gray-600'" fill="none"
+              :class="isActive(item.route) ? 'text-primary-700 dark:text-primary-400' : 'text-gray-400 group-hover:text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300'" fill="none"
               viewBox="0 0 24 24" stroke="currentColor">
               <path v-if="item.icon === 'home'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
@@ -45,10 +45,10 @@
           <!-- Items con hijos (grupos) -->
           <div v-else-if="item.children">
             <button type="button"
-              class="w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg transition-colors text-gray-700 hover:bg-gray-100"
+              class="w-full flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg transition-colors text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700"
               @click="toggleGroup(item.id)">
               <span class="flex items-center">
-                <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-600" fill="none" viewBox="0 0 24 24"
+                <svg class="mr-3 h-5 w-5 text-gray-400 group-hover:text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300" fill="none" viewBox="0 0 24 24"
                   stroke="currentColor">
                   <path v-if="item.icon === 'calendar'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -63,7 +63,7 @@
                 </svg>
                 {{ item.label }}
               </span>
-              <svg class="h-4 w-4 text-gray-400 transform transition-transform"
+              <svg class="h-4 w-4 text-gray-400 dark:text-gray-500 dark:text-gray-400 transform transition-transform"
                 :class="{ 'rotate-180': isGroupOpen(item.id) }" viewBox="0 0 20 20" fill="currentColor">
                 <path fill-rule="evenodd"
                   d="M5.23 7.21a.75.75 0 011.06.02L10 10.94l3.71-3.71a.75.75 0 111.06 1.06l-4.24 4.24a.75.75 0 01-1.06 0L5.21 8.29a.75.75 0 01.02-1.08z"
@@ -74,10 +74,10 @@
             <div v-show="isGroupOpen(item.id)" class="mt-1 pl-9 space-y-1">
               <NuxtLink v-for="child in item.children" :key="child.id" :to="child.route"
                 class="group flex items-center px-3 py-2 text-sm rounded-lg transition-colors"
-                :class="isActive(child.route) ? 'bg-primary-50 text-primary-700' : 'text-gray-700 hover:bg-gray-100'"
+                :class="isActive(child.route) ? 'bg-primary-50 dark:bg-primary-900/50 text-primary-700 dark:text-primary-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700'"
                 @click="handleNavClick">
                 <svg class="mr-3 h-4 w-4"
-                  :class="isActive(child.route) ? 'text-primary-700' : 'text-gray-400 group-hover:text-gray-600'"
+                  :class="isActive(child.route) ? 'text-primary-700 dark:text-primary-400' : 'text-gray-400 group-hover:text-gray-600 dark:text-gray-400 dark:text-gray-500 dark:text-gray-400 dark:group-hover:text-gray-300'"
                   fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path v-if="child.icon === 'clock'" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -122,13 +122,13 @@
       <!-- Loading state -->
       <div v-else class="space-y-2">
         <div v-for="i in 5" :key="i" class="animate-pulse">
-          <div class="h-10 bg-gray-200 rounded-lg"></div>
+          <div class="h-10 bg-gray-200 dark:bg-gray-700 rounded-lg"></div>
         </div>
       </div>
     </nav>
 
     <!-- Área inferior (opcional para futuro) -->
-    <div class="p-4 border-t border-gray-200">
+    <div class="p-4 border-t border-gray-200 dark:border-gray-700">
       <!-- Espacio para información adicional del usuario o configuraciones -->
     </div>
   </aside>

@@ -1,11 +1,11 @@
 <template>
     <div class="space-y-6">
         <!-- Header -->
-        <div class="bg-white shadow-sm rounded-lg p-6">
+        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Casos Unificados</h1>
-                    <p class="text-sm text-gray-600 mt-1">Gestión y Unificación de Casos Múltiples</p>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Casos Unificados</h1>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Gestión y Unificación de Casos Múltiples</p>
                 </div>
             </div>
         </div>

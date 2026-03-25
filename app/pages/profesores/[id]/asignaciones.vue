@@ -1,25 +1,25 @@
 <template>
   <div>
     <!-- Header -->
-    <header class="bg-white border-b border-gray-200 px-6 py-4">
+    <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
       <div class="flex items-center justify-between">
         <div class="flex items-center justify-between w-full">
           <div class="flex items-center space-x-4">
             <button @click="$router.back()"
-              class="inline-flex items-center p-2 border border-gray-300 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
+              class="inline-flex items-center p-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
               </svg>
             </button>
             <div>
-              <h1 class="text-2xl font-bold text-gray-900">
+              <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
                 <span v-if="loading">Cargando asignaciones...</span>
                 <span v-else-if="profesor">
                   Asignaciones de {{ profesor.nombre_completo || `${profesor.nombre} ${profesor.apellido}` }}
                 </span>
                 <span v-else>Asignaciones de Profesor</span>
               </h1>
-              <p class="text-sm text-gray-600 mt-1">
+              <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">
                 Módulos formativos y aulas asignados al profesor
               </p>
             </div>
@@ -65,7 +65,7 @@
       <div v-else>
         <!-- Stats cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div class="bg-white overflow-hidden shadow rounded-lg">
+          <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
             <div class="p-5">
               <div class="flex items-center">
                 <div class="flex-shrink-0">
@@ -76,10 +76,10 @@
                 </div>
                 <div class="ml-5 w-0 flex-1">
                   <dl>
-                    <dt class="text-sm font-medium text-gray-500 truncate">
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
                       Total Asignaciones
                     </dt>
-                    <dd class="text-lg font-medium text-gray-900">
+                    <dd class="text-lg font-medium text-gray-900 dark:text-gray-100">
                       {{ asignaciones.length }}
                     </dd>
                   </dl>
@@ -88,7 +88,7 @@
             </div>
           </div>
 
-          <div class="bg-white overflow-hidden shadow rounded-lg">
+          <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
             <div class="p-5">
               <div class="flex items-center">
                 <div class="flex-shrink-0">
@@ -99,10 +99,10 @@
                 </div>
                 <div class="ml-5 w-0 flex-1">
                   <dl>
-                    <dt class="text-sm font-medium text-gray-500 truncate">
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
                       Asignaciones Activas
                     </dt>
-                    <dd class="text-lg font-medium text-gray-900">
+                    <dd class="text-lg font-medium text-gray-900 dark:text-gray-100">
                       {{asignaciones.filter(a => a.activo).length}}
                     </dd>
                   </dl>
@@ -111,7 +111,7 @@
             </div>
           </div>
 
-          <div class="bg-white overflow-hidden shadow rounded-lg">
+          <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
             <div class="p-5">
               <div class="flex items-center">
                 <div class="flex-shrink-0">
@@ -122,10 +122,10 @@
                 </div>
                 <div class="ml-5 w-0 flex-1">
                   <dl>
-                    <dt class="text-sm font-medium text-gray-500 truncate">
+                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">
                       Horas Semanales
                     </dt>
-                    <dd class="text-lg font-medium text-gray-900">
+                    <dd class="text-lg font-medium text-gray-900 dark:text-gray-100">
                       {{ totalHorasSemanales }}
                     </dd>
                   </dl>
@@ -138,41 +138,41 @@
         <!-- Asignaciones por aula -->
         <div v-if="asignaciones.length > 0" class="space-y-6">
           <div v-for="(grupo, aula) in asignacionesPorAula" :key="aula"
-            class="bg-white rounded-lg shadow-sm border border-gray-200">
-            <div class="px-6 py-4 border-b border-gray-200">
-              <h3 class="text-lg font-medium text-gray-900">
+            class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+            <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+              <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
                 {{ aula }} ({{ grupo.length }} asignaciones)
               </h3>
             </div>
 
             <div class="overflow-x-auto">
-              <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+              <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-900/50">
                   <tr>
                     <th scope="col"
-                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Módulo Formativo
                     </th>
                     <th scope="col"
-                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Año Lectivo
                     </th>
                     <th scope="col"
-                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Horas Semanales
                     </th>
                     <th scope="col"
-                      class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Estado
                     </th>
                     <th scope="col"
-                      class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                       Acciones
                     </th>
                   </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                  <tr v-for="asignacion in grupo" :key="asignacion.id" class="hover:bg-gray-50">
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                  <tr v-for="asignacion in grupo" :key="asignacion.id" class="hover:bg-gray-50 dark:bg-gray-900/50">
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="flex items-center">
                         <div class="flex-shrink-0 h-10 w-10">
@@ -184,21 +184,21 @@
                           </div>
                         </div>
                         <div class="ml-4">
-                          <div class="text-sm font-medium text-gray-900">
+                          <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
                             {{ asignacion.materia?.nombre || 'Sin nombre' }}
                           </div>
-                          <div class="text-sm text-gray-500">
+                          <div class="text-sm text-gray-500 dark:text-gray-400">
                             {{ asignacion.materia?.codigo || 'Sin código' }}
                           </div>
                         </div>
                       </div>
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-sm text-gray-900">
+                      <div class="text-sm text-gray-900 dark:text-gray-100">
                         {{ asignacion.anioLectivo?.nombre || '—' }}
                       </div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                       <div class="flex items-center">
                         <svg class="h-4 w-4 text-gray-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -253,8 +253,8 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
           </svg>
-          <h3 class="mt-2 text-sm font-medium text-gray-900">Sin asignaciones</h3>
-          <p class="mt-1 text-sm text-gray-500">Este profesor no tiene módulos formativos asignados.</p>
+          <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">Sin asignaciones</h3>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Este profesor no tiene módulos formativos asignados.</p>
         </div>
       </div>
     </div>
@@ -262,16 +262,16 @@
     <!-- Modal Nueva Asignación -->
     <div v-if="mostrarModalNuevaAsignacion"
       class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+      <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
         <div class="mt-3">
-          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">Nueva Asignación</h3>
+          <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 mb-4">Nueva Asignación</h3>
 
           <form @submit.prevent="crearNuevaAsignacion" class="space-y-4">
             <!-- Módulo Formativo -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Módulo Formativo</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Módulo Formativo</label>
               <select ref="nuevaAsignacionInput" v-model="nuevaAsignacion.materia_id" required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Seleccionar módulo...</option>
                 <option v-for="modulo in modulosFormativos" :key="modulo.id" :value="modulo.id">
                   {{ modulo.nombre }} ({{ modulo.codigo }})
@@ -281,9 +281,9 @@
 
             <!-- Aula -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Aula</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Aula</label>
               <select v-model="nuevaAsignacion.aula_id" required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Seleccionar aula...</option>
                 <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
                   {{ aula.grado_cardinal }}° - {{ aula.seccion }} ({{ aula.estudiantes_count || 0 }} inscritos)
@@ -293,9 +293,9 @@
 
             <!-- Año Lectivo -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Año Lectivo</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Año Lectivo</label>
               <select v-model.number="nuevaAsignacion.anio_lectivo_id" required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option :value="undefined">Seleccionar...</option>
                 <option v-for="a in anios" :key="a.id" :value="a.id">{{ a.nombre }}</option>
               </select>
@@ -303,23 +303,23 @@
 
             <!-- Horas Semanales -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Horas Semanales</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Horas Semanales</label>
               <input v-model.number="nuevaAsignacion.horas_semanales" type="number" min="1" max="40"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
 
             <!-- Cantidad RAs (Solo Técnicos) -->
             <div v-if="isTecnicoNueva">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Cantidad de RAs</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cantidad de RAs</label>
               <input v-model.number="nuevaAsignacion.cantidad_ra" type="number" min="1" max="20"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Ej. 4" />
             </div>
 
             <!-- Botones -->
             <div class="flex justify-end space-x-3 mt-6">
               <button type="button" @click="mostrarModalNuevaAsignacion = false; resetearFormulario()"
-                class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                 Cancelar
               </button>
               <button type="submit" :disabled="procesandoAccion"
@@ -334,21 +334,21 @@
 
     <!-- Modal Duplicar Asignación -->
     <div v-if="mostrarModalDuplicar" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+      <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
         <div class="mt-3">
-          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 mb-4">
             Duplicar: {{ asignacionADuplicar?.materia?.nombre }}
           </h3>
 
           <form @submit.prevent="ejecutarDuplicacion" class="space-y-4">
             <!-- Aulas a asignar -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Seleccionar Aulas</label>
-              <div class="max-h-40 overflow-y-auto border border-gray-300 rounded-md p-2">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Seleccionar Aulas</label>
+              <div class="max-h-40 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-md p-2">
                 <div v-for="aula in aulasDisponiblesParaDuplicacion" :key="aula.id" class="flex items-center mb-2">
                   <input :id="`aula-${aula.id}`" v-model="opcionesDuplicacion.aulas_ids" :value="aula.id"
-                    type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-                  <label :for="`aula-${aula.id}`" class="ml-2 text-sm text-gray-700">
+                    type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded" />
+                  <label :for="`aula-${aula.id}`" class="ml-2 text-sm text-gray-700 dark:text-gray-300">
                     {{ aula.grado_cardinal }}° - {{ aula.seccion }} ({{ aula.estudiantes_count || 0 }} inscritos)
                   </label>
                 </div>
@@ -357,9 +357,9 @@
 
             <!-- Año Lectivo -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Año Lectivo</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Año Lectivo</label>
               <select ref="duplicarInput" v-model.number="opcionesDuplicacion.anio_lectivo_id" required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option :value="undefined">Seleccionar...</option>
                 <option v-for="a in anios" :key="a.id" :value="a.id">{{ a.nombre }}</option>
               </select>
@@ -367,15 +367,15 @@
 
             <!-- Horas Semanales -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Horas Semanales</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Horas Semanales</label>
               <input v-model.number="opcionesDuplicacion.horas_semanales" type="number" min="1" max="40"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
 
             <!-- Botones -->
             <div class="flex justify-end space-x-3 mt-6">
               <button type="button" @click="mostrarModalDuplicar = false; asignacionADuplicar = null"
-                class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                 Cancelar
               </button>
               <button type="submit" :disabled="procesandoAccion || opcionesDuplicacion.aulas_ids.length === 0"
@@ -391,18 +391,18 @@
     <!-- Modal Editar Asignación -->
     <div v-if="mostrarModalEditarAsignacion"
       class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+      <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
         <div class="mt-3">
-          <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">
+          <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 mb-4">
             Editar Asignación: {{ asignacionAEditar?.materia?.nombre }}
           </h3>
 
           <form @submit.prevent="actualizarAsignacion" class="space-y-4">
             <!-- Módulo Formativo -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Módulo Formativo</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Módulo Formativo</label>
               <select ref="editarAsignacionInput" v-model="datosEdicion.materia_id" required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Seleccionar módulo...</option>
                 <option v-for="modulo in modulosFormativos" :key="modulo.id" :value="modulo.id">
                   {{ modulo.nombre }} ({{ modulo.codigo }})
@@ -412,9 +412,9 @@
 
             <!-- Aula -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Aula</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Aula</label>
               <select v-model="datosEdicion.aula_id" required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Seleccionar aula...</option>
                 <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
                   {{ aula.grado_cardinal }}° - {{ aula.seccion }} ({{ aula.estudiantes_count || 0 }} inscritos)
@@ -424,9 +424,9 @@
 
             <!-- Año Lectivo -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Año Lectivo</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Año Lectivo</label>
               <select v-model.number="datosEdicion.anio_lectivo_id" required
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option :value="undefined">Seleccionar...</option>
                 <option v-for="a in anios" :key="a.id" :value="a.id">{{ a.nombre }}</option>
               </select>
@@ -434,16 +434,16 @@
 
             <!-- Horas Semanales -->
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-2">Horas Semanales</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Horas Semanales</label>
               <input v-model.number="datosEdicion.horas_semanales" type="number" min="1" max="40"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
 
             <!-- Cantidad RAs (Solo Técnicos) -->
             <div v-if="isTecnicoEdicion">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Cantidad de RAs</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cantidad de RAs</label>
               <input v-model.number="datosEdicion.cantidad_ra" type="number" min="1" max="20"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Ej. 4" />
             </div>
 
@@ -451,15 +451,15 @@
             <div>
               <label class="flex items-center">
                 <input v-model="datosEdicion.activo" type="checkbox"
-                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-                <span class="ml-2 text-sm text-gray-700">Asignación activa</span>
+                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded" />
+                <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Asignación activa</span>
               </label>
             </div>
 
             <!-- Botones -->
             <div class="flex justify-end space-x-3 mt-6">
               <button type="button" @click="mostrarModalEditarAsignacion = false; asignacionAEditar = null"
-                class="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                 Cancelar
               </button>
               <button type="submit" :disabled="procesandoAccion"

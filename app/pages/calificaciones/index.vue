@@ -1,11 +1,11 @@
 <template>
   <div>
     <!-- Header -->
-    <header class="bg-white border-b border-gray-200 px-6 py-4">
+    <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900">Calificaciones por Curso</h1>
-          <p class="text-sm text-gray-600 mt-1">Gestión de calificaciones de módulos formativos</p>
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Calificaciones por Curso</h1>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Gestión de calificaciones de módulos formativos</p>
         </div>
         <div>
           <!-- Espacio para futuros botones si es necesario -->
@@ -43,14 +43,14 @@
     <!-- Contenido principal -->
     <div class="p-6">
       <!-- Selector de curso -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">Seleccionar Curso</h3>
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Seleccionar Curso</h3>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Aula</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Aula</label>
             <div class="relative">
               <select v-model="aulaSeleccionada" @change="cargarModulosYEstudiantes" :disabled="loadingAulas"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed">
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 dark:bg-gray-800 disabled:cursor-not-allowed">
                 <option value="">{{ loadingAulas ? 'Cargando aulas...' : 'Seleccionar aula...' }}</option>
                 <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
                   {{ aula.grado_cardinal }}° {{ aula.seccion }}
@@ -70,10 +70,10 @@
           </div>
 
           <div v-if="aulaSeleccionada">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Módulo Formativo</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Módulo Formativo</label>
             <div class="relative">
               <select v-model="moduloSeleccionado" @change="cargarCalificaciones" :disabled="loadingModulosYEstudiantes"
-                class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed">
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 dark:bg-gray-800 disabled:cursor-not-allowed">
                 <option value="">{{ loadingModulosYEstudiantes ? 'Cargando módulos...' : 'Seleccionar módulo...' }}
                 </option>
                 <option v-for="modulo in modulosDisponibles" :key="modulo.id" :value="modulo.id">
@@ -106,7 +106,7 @@
       </div>
 
       <!-- Lista de estudiantes y calificaciones -->
-      <div v-if="aulaSeleccionada && moduloSeleccionado" class="bg-white rounded-lg shadow-sm border border-gray-200">
+      <div v-if="aulaSeleccionada && moduloSeleccionado" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
         <!-- Loading state para calificaciones -->
         <div v-if="loadingCalificaciones" class="p-8 text-center">
           <div class="inline-flex items-center justify-center space-x-2">
@@ -116,14 +116,14 @@
               <path class="opacity-75" fill="currentColor"
                 d="m15.99 4.99c.96.38 1.87.89 2.68 1.5l-2.83 2.83-.01-.01c-.39-.39-.9-.67-1.49-.83l1.65-3.49z"></path>
             </svg>
-            <span class="text-sm font-medium text-gray-600">Cargando calificaciones...</span>
+            <span class="text-sm font-medium text-gray-600 dark:text-gray-400">Cargando calificaciones...</span>
           </div>
         </div>
 
         <!-- Content when not loading -->
         <div v-if="!loadingCalificaciones">
-          <div class="px-6 py-4 border-b border-gray-200">
-            <h3 class="text-lg font-medium text-gray-900 flex items-center gap-2">
+          <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
               Estudiantes - {{ moduloData?.nombre }}
               <span v-if="moduloData?.tipo === 'Academico'"
                 class="text-sm text-green-600 font-normal">(Académico)</span>
@@ -151,8 +151,8 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">No hay estudiantes</h3>
-            <p class="mt-1 text-sm text-gray-500">Esta aula no tiene estudiantes asignados.</p>
+            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No hay estudiantes</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Esta aula no tiene estudiantes asignados.</p>
           </div>
 
           <!-- Tabla de estudiantes -->
@@ -160,25 +160,25 @@
             <!-- Calificaciones para módulos académicos -->
             <div v-if="moduloData?.tipo === 'Academico'">
               <div class="overflow-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg max-h-[70vh]">
-                <table class="min-w-full divide-y divide-gray-200">
-                  <thead class="bg-gray-50">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead class="bg-gray-50 dark:bg-gray-900/50">
                     <tr>
                       <th
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 top-0 bg-gray-50 z-30 shadow-sm">
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky left-0 top-0 bg-gray-50 dark:bg-gray-900/50 z-30 shadow-sm">
                         Estudiante
                       </th>
                       <!-- Bloques 1-4 -->
                       <th v-for="bloque in 4" :key="bloque"
-                        class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-l border-gray-200 sticky top-0 bg-gray-50 z-20 shadow-sm">
+                        class="px-3 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-l border-gray-200 dark:border-gray-700 sticky top-0 bg-gray-50 dark:bg-gray-900/50 z-20 shadow-sm">
                         <div class="flex justify-center space-x-4">
                           <div v-for="comp in getCompetenciasPorBloque(bloque)" :key="comp" class="flex flex-col">
-                            <span class="text-[10px] text-gray-500">{{ comp }}</span>
+                            <span class="text-[10px] text-gray-500 dark:text-gray-400">{{ comp }}</span>
                           </div>
                         </div>
                       </th>
                       <!-- Promedios PC1-PC4 -->
                       <th
-                        class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-l-2 border-gray-300 bg-gray-100 sticky top-0 z-20 shadow-sm">
+                        class="px-3 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-l-2 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 sticky top-0 z-20 shadow-sm">
                         <div class="flex flex-col items-center">
                           <span>Promedio Competencias</span>
                           <div class="flex space-x-4 mt-1">
@@ -188,14 +188,14 @@
                       </th>
                       <!-- Calificación Final -->
                       <th
-                        class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider border-l border-gray-300 bg-gray-200 sticky right-0 top-0 z-30 shadow-sm">
+                        class="px-3 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-l border-gray-300 dark:border-gray-600 bg-gray-200 sticky right-0 top-0 z-30 shadow-sm">
                         Final
                       </th>
                     </tr>
                   </thead>
-                  <tbody class="bg-white divide-y divide-gray-200">
-                    <tr v-for="estudiante in estudiantes" :key="estudiante.id" class="hover:bg-gray-50">
-                      <td class="px-6 py-4 whitespace-nowrap sticky left-0 bg-white z-10">
+                  <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tr v-for="estudiante in estudiantes" :key="estudiante.id" class="hover:bg-gray-50 dark:bg-gray-900/50">
+                      <td class="px-6 py-4 whitespace-nowrap sticky left-0 bg-white dark:bg-gray-800 z-10">
                         <div class="flex items-center space-x-3">
                           <div class="flex-shrink-0">
                             <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
@@ -205,19 +205,19 @@
                             </div>
                           </div>
                           <div class="hidden sm:block">
-                            <div class="text-sm font-medium text-gray-900">
+                            <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
                               {{ estudiante.nombres }} {{ estudiante.apellidos }}
                               <span v-if="estudiante.estado === 'retirado'"
                                 class="ml-2 px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 border border-red-200">
                                 Retirado
                               </span>
                             </div>
-                            <div class="text-sm text-gray-500">{{ estudiante.rne }}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ estudiante.rne }}</div>
                           </div>
                         </div>
                       </td>
                       <!-- Celdas por Bloque -->
-                      <td v-for="bloque in 4" :key="bloque" class="px-3 py-4 text-center border-l border-gray-200">
+                      <td v-for="bloque in 4" :key="bloque" class="px-3 py-4 text-center border-l border-gray-200 dark:border-gray-700">
                         <div class="flex justify-center space-x-4">
                           <div class="flex flex-col items-center space-y-1">
                             <div class="flex space-x-1">
@@ -225,7 +225,7 @@
                                 <div class="flex items-center justify-center gap-1 mb-1">
                                   <span class="text-[10px] font-bold text-gray-400">P{{ p }}</span>
                                   <!-- Contenedor horizontal para botones -->
-                                  <div v-if="!isReadOnly" class="flex items-center gap-0.5 bg-gray-50 rounded px-1 py-0.5">
+                                  <div v-if="!isReadOnly" class="flex items-center gap-0.5 bg-gray-50 dark:bg-gray-900/50 rounded px-1 py-0.5">
                                     <!-- Botón Importar -->
                                     <button
                                       @click.stop="openImportModal('academic', { competencia: getCompetenciasPorBloque(bloque)[0], bloque, tipo: `P${p}` })"
@@ -279,7 +279,7 @@
                         </div>
                       </td>
                       <!-- Celdas Promedios PC1-PC4 -->
-                      <td class="px-3 py-4 text-center border-l-2 border-gray-300 bg-gray-50">
+                      <td class="px-3 py-4 text-center border-l-2 border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/50">
                         <div class="flex justify-center space-x-4">
                           <div v-for="b in 4" :key="`pc${b}`" class="w-8 flex items-center justify-center font-medium"
                             :class="getPromedioClass(calcularPromedioPeriodo(estudiante.id, b))">
@@ -289,7 +289,7 @@
                       </td>
                       <!-- Celda Calificación Final -->
                       <td
-                        class="px-3 py-4 text-center border-l border-gray-300 bg-gray-100 font-bold text-lg sticky right-0 z-10"
+                        class="px-3 py-4 text-center border-l border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 font-bold text-lg sticky right-0 z-10"
                         :class="getPromedioClass(calcularCalificacionFinal(estudiante.id))">
                         {{ calcularCalificacionFinal(estudiante.id) ?? '-' }}
                       </td>
@@ -310,19 +310,19 @@
             <!-- Calificaciones para módulos técnicos (RA) -->
             <div v-if="moduloData?.tipo === 'Tecnico'">
               <div class="overflow-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg max-h-[70vh]">
-                <table class="min-w-full divide-y divide-gray-200">
-                  <thead class="bg-gray-50">
+                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                  <thead class="bg-gray-50 dark:bg-gray-900/50">
                     <tr>
                       <th
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 top-0 bg-gray-50 z-30 shadow-sm">
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky left-0 top-0 bg-gray-50 dark:bg-gray-900/50 z-30 shadow-sm">
                         Estudiante
                       </th>
                       <th v-for="ra in Array.from({ length: moduloData.cantidad_ra }, (_, i) => i + 1)" :key="ra"
-                        class="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider sticky top-0 bg-gray-50 z-20 shadow-sm">
+                        class="px-3 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-0 bg-gray-50 dark:bg-gray-900/50 z-20 shadow-sm">
                         <div class="flex flex-col items-center space-y-1">
                           <span>RA {{ ra }}</span>
                           <div v-if="moduloData?.valores_ra && moduloData.valores_ra[`ra_${ra}`]"
-                            class="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
+                            class="text-xs text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded">
                             {{ moduloData.valores_ra[`ra_${ra}`] }}%
                           </div>
                           <button v-if="!isReadOnly" @click="abrirModalValorRA(ra)"
@@ -344,20 +344,20 @@
                       </th>
                       <!-- FCT Columns -->
                       <th v-if="moduloData?.calculation_mode === 'fct'"
-                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 top-0 bg-gray-50 border-l border-gray-200 z-30 shadow-sm">
+                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky right-0 top-0 bg-gray-50 dark:bg-gray-900/50 border-l border-gray-200 dark:border-gray-700 z-30 shadow-sm">
                         Total
                       </th>
                       <th v-if="moduloData?.calculation_mode === 'fct'"
-                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 top-0 bg-gray-50 border-l border-gray-200 z-30 shadow-sm">
+                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky right-0 top-0 bg-gray-50 dark:bg-gray-900/50 border-l border-gray-200 dark:border-gray-700 z-30 shadow-sm">
                         Promedio
                       </th>
                       <th v-if="moduloData?.calculation_mode === 'fct'"
-                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 top-0 bg-gray-50 border-l border-gray-200 z-30 shadow-sm">
+                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky right-0 top-0 bg-gray-50 dark:bg-gray-900/50 border-l border-gray-200 dark:border-gray-700 z-30 shadow-sm">
                         Situación
                       </th>
                       <!-- Standard Technical Column -->
                       <th v-if="moduloData?.calculation_mode !== 'fct'"
-                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider sticky right-0 top-0 bg-gray-50 border-l border-gray-200 z-30 shadow-sm">
+                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky right-0 top-0 bg-gray-50 dark:bg-gray-900/50 border-l border-gray-200 dark:border-gray-700 z-30 shadow-sm">
                         <div class="flex flex-col items-center space-y-1">
                           <span>Total</span>
                           <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium"
@@ -368,9 +368,9 @@
                       </th>
                     </tr>
                   </thead>
-                  <tbody class="bg-white divide-y divide-gray-200">
-                    <tr v-for="estudiante in estudiantes" :key="estudiante.id" class="hover:bg-gray-50">
-                      <td class="px-6 py-4 whitespace-nowrap sticky left-0 bg-white">
+                  <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tr v-for="estudiante in estudiantes" :key="estudiante.id" class="hover:bg-gray-50 dark:bg-gray-900/50">
+                      <td class="px-6 py-4 whitespace-nowrap sticky left-0 bg-white dark:bg-gray-800">
                         <div class="flex items-center space-x-3">
                           <div class="flex-shrink-0">
                             <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
@@ -380,14 +380,14 @@
                             </div>
                           </div>
                           <div class="hidden sm:block">
-                            <div class="text-sm font-medium text-gray-900">
+                            <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
                               {{ estudiante.nombres }} {{ estudiante.apellidos }}
                               <span v-if="estudiante.estado === 'retirado'"
                                 class="ml-2 px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 border border-red-200">
                                 Retirado
                               </span>
                             </div>
-                            <div class="text-sm text-gray-500">{{ estudiante.rne }}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ estudiante.rne }}</div>
                           </div>
                         </div>
                       </td>
@@ -432,7 +432,7 @@
                           <button v-for="oportunidad in 4" :key="`${estudiante.id}-ra${ra}-op${oportunidad}`"
                             :disabled="isRefreshing || !moduloData?.valores_ra?.[`ra_${ra}`] || estudiante.estado === 'retirado' || isReadOnly"
                             @click="abrirModalCalificarOportunidad(estudiante, ra, oportunidad)"
-                            class="w-5 h-5 border border-gray-300 rounded-sm flex items-center justify-center text-xs font-bold hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                            class="w-5 h-5 border border-gray-300 dark:border-gray-600 rounded-sm flex items-center justify-center text-xs font-bold hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
                             :class="getCasillaOportunidadClass(estudiante.id, ra, oportunidad)"
                             :title="!moduloData?.valores_ra?.[`ra_${ra}`] ? 'RA no configurado' : getTitleCasilla(estudiante.id, ra, oportunidad)">
                             <span v-if="tieneCalificacionEnOportunidad(estudiante.id, ra, oportunidad)">
@@ -443,22 +443,22 @@
                       </td>
 
                       <!-- FCT Cells -->
-                      <td v-if="moduloData?.calculation_mode === 'fct'" class="px-6 py-4 text-center sticky right-0 bg-white border-l border-gray-200">
-                         <span class="font-bold text-gray-900">{{ calcularPuntosObtenidos(estudiante.id) }}</span>
+                      <td v-if="moduloData?.calculation_mode === 'fct'" class="px-6 py-4 text-center sticky right-0 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700">
+                         <span class="font-bold text-gray-900 dark:text-gray-100">{{ calcularPuntosObtenidos(estudiante.id) }}</span>
                       </td>
-                      <td v-if="moduloData?.calculation_mode === 'fct'" class="px-6 py-4 text-center sticky right-0 bg-white border-l border-gray-200">
+                      <td v-if="moduloData?.calculation_mode === 'fct'" class="px-6 py-4 text-center sticky right-0 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700">
                          <span class="font-bold" :class="calcularPromedioFCT(estudiante.id) >= 6 ? 'text-green-700' : 'text-red-700'">
                            {{ calcularPromedioFCT(estudiante.id) }}
                          </span>
                       </td>
-                      <td v-if="moduloData?.calculation_mode === 'fct'" class="px-6 py-4 text-center sticky right-0 bg-white border-l border-gray-200">
+                      <td v-if="moduloData?.calculation_mode === 'fct'" class="px-6 py-4 text-center sticky right-0 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700">
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                           :class="getSituacionFCTClass(estudiante.id)">
                           {{ getSituacionFCT(estudiante.id) }}
                         </span>
                       </td>
                       <!-- Standard Cell -->
-                      <td v-if="moduloData?.calculation_mode !== 'fct'" class="px-6 py-4 text-center sticky right-0 bg-white border-l border-gray-200">
+                      <td v-if="moduloData?.calculation_mode !== 'fct'" class="px-6 py-4 text-center sticky right-0 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700">
                         <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                           :class="getEstadoGeneralClass(estudiante.id)">
                           {{ getEstadoGeneral(estudiante.id) }}
@@ -482,8 +482,8 @@
                 d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
             </svg>
           </div>
-          <h3 class="mt-2 text-sm font-medium text-gray-900">Selecciona un curso</h3>
-          <p class="mt-1 text-sm text-gray-500">
+          <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">Selecciona un curso</h3>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
             Primero selecciona un aula y luego un módulo formativo para gestionar las calificaciones.
           </p>
         </div>
@@ -492,14 +492,14 @@
 
     <!-- Modal para configurar valor del RA -->
     <div v-if="mostrarModalValorRA" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+      <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
         <div class="mt-3">
           <div class="flex items-center justify-between mb-4">
-            <h3 class="text-lg font-medium text-gray-900">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
               Configurar Valor del RA {{ raParaConfigurar }}
             </h3>
             <button @click="cerrarModalValorRA" :disabled="guardandoValorRA"
-              class="text-gray-400 hover:text-gray-600 disabled:opacity-50 disabled:cursor-not-allowed">
+              class="text-gray-400 hover:text-gray-600 dark:text-gray-400 disabled:opacity-50 disabled:cursor-not-allowed">
               <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -507,7 +507,7 @@
           </div>
 
           <div class="mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
               Porcentaje del RA {{ raParaConfigurar }}
             </label>
 
@@ -524,9 +524,9 @@
 
             <input v-model="valorRAActual" type="number" min="0" :max="porcentajeDisponible" step="0.1"
               :disabled="guardandoValorRA"
-              class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 dark:bg-gray-800 disabled:cursor-not-allowed"
               :placeholder="`Máximo ${porcentajeDisponible}%`" />
-            <p class="text-xs text-gray-500 mt-1">
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
               Ingresa el porcentaje que representa este RA (todos los RA deben sumar 100%)
             </p>
 
@@ -541,22 +541,22 @@
             <!-- FECHAS RA (NUEVO) -->
             <div class="mt-4 grid grid-cols-2 gap-3">
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Inicio</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha Inicio</label>
                 <input v-model="fechaInicioRA" type="date" :disabled="guardandoValorRA"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Fecha Fin</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha Fin</label>
                 <input v-model="fechaFinRA" type="date" :disabled="guardandoValorRA"
-                  class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
               </div>
             </div>
-            <p class="text-xs text-gray-500 mt-1">Definir el periodo de evaluación para este RA.</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Definir el periodo de evaluación para este RA.</p>
           </div>
 
           <div class="flex justify-end space-x-3">
             <button @click="cerrarModalValorRA" :disabled="guardandoValorRA"
-              class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed">
+              class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed">
               Cancelar
             </button>
             <button @click="guardarValorRA(valorRAActual)"
@@ -1212,7 +1212,7 @@ const getRAButtonClass = (estudianteId, raNumero) => {
     case 'No Logrado':
       return 'border-red-300 bg-red-50 text-red-700'
     default:
-      return 'border-gray-300 bg-gray-50 text-gray-600'
+      return 'border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/50 text-gray-600 dark:text-gray-400'
   }
 }
 
@@ -1226,7 +1226,7 @@ const getEstadoGeneral = (estudianteId) => {
 }
 
 const getEstadoGeneralClass = (estudianteId) => {
-  if (!moduloData.value?.cantidad_ra) return 'bg-gray-100 text-gray-800'
+  if (!moduloData.value?.cantidad_ra) return 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
 
   const puntosObtenidos = calcularPuntosObtenidos(estudianteId)
   const puntosMaximos = calcularPuntosMaximos()
@@ -1292,7 +1292,7 @@ const getCasillaOportunidadClass = (estudianteId, raNumero, oportunidad) => {
       return 'bg-red-100 text-red-800 border-red-300 hover:bg-red-200'
     }
   } else {
-    return 'bg-gray-50 text-gray-600 border-gray-300 hover:bg-blue-50 hover:border-blue-300'
+    return 'bg-gray-50 dark:bg-gray-900/50 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-blue-50 hover:border-blue-300'
   }
 }
 
@@ -1400,7 +1400,7 @@ const getCompetenciaButtonClass = (estudianteId, competencia, bloque, tipo) => {
   const nota = getNotaCompetencia(estudianteId, competencia, bloque, tipo)
 
   if (nota === null || nota === undefined) {
-    return 'bg-white border-gray-300 text-gray-400 hover:bg-gray-50'
+    return 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-400 hover:bg-gray-50 dark:bg-gray-900/50'
   }
 
   const notaNum = parseFloat(nota)

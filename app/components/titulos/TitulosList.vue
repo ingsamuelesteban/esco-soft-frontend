@@ -1,9 +1,9 @@
 <template>
-  <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+  <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
     <div class="p-4 flex items-center justify-between">
-      <input v-model="query" type="text" class="w-full md:w-64 rounded-md border-gray-300 text-sm"
+      <input v-model="query" type="text" class="w-full md:w-64 rounded-md border-gray-300 dark:border-gray-600 text-sm"
         placeholder="Buscar por nombre o código…" />
-      <div class="ml-4 text-sm text-gray-500" v-if="!loading">Total: {{ filtered.length }}</div>
+      <div class="ml-4 text-sm text-gray-500 dark:text-gray-400" v-if="!loading">Total: {{ filtered.length }}</div>
     </div>
 
     <div v-if="selectedIds.length > 0" class="p-4 bg-blue-50 border-b border-blue-100 flex items-center justify-between">
@@ -15,35 +15,35 @@
     </div>
 
     <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-900/50">
           <tr>
             <th class="px-4 py-3 text-left">
               <input type="checkbox" :checked="allSelected" @change="toggleSelectAll" 
-                class="rounded border-gray-300 text-primary-600 focus:ring-primary-600" />
+                class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-600" />
             </th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Familia</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Código</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Años Vigentes</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Familia</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Código</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nombre</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Años Vigentes</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
           <tr v-for="t in filtered" :key="t.id">
             <td class="px-4 py-3 whitespace-nowrap">
               <input type="checkbox" :value="t.id" v-model="selectedIds"
-                class="rounded border-gray-300 text-primary-600 focus:ring-primary-600" />
+                class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-600" />
             </td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">{{ t.familia?.nombre ||
               familiaNombre(t.familia_profesional_id) }}</td>
             <td class="px-4 py-3 whitespace-nowrap text-sm font-mono">{{ t.codigo }}</td>
-            <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900">{{ t.nombre }}</td>
+            <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">{{ t.nombre }}</td>
             <td class="px-4 py-3 whitespace-nowrap text-[10px]">
               <div class="flex flex-wrap gap-1">
                 <span v-for="a in t.anios_lectivos" :key="a.id" 
-                  class="px-1.5 py-0.5 bg-gray-100 text-gray-600 rounded border border-gray-200">
+                  class="px-1.5 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded border border-gray-200 dark:border-gray-700">
                   {{ a.nombre }}
                 </span>
                 <span v-if="!t.anios_lectivos?.length" class="text-gray-400 italic">Ninguno</span>
@@ -78,10 +78,10 @@
             </td>
           </tr>
           <tr v-if="!loading && filtered.length === 0">
-            <td colspan="5" class="px-4 py-6 text-center text-sm text-gray-500">Sin resultados</td>
+            <td colspan="5" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Sin resultados</td>
           </tr>
           <tr v-if="loading">
-            <td colspan="5" class="px-4 py-6 text-center text-sm text-gray-500">Cargando…</td>
+            <td colspan="5" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Cargando…</td>
           </tr>
         </tbody>
       </table>

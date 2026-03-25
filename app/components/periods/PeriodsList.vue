@@ -1,29 +1,29 @@
 <template>
-  <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+  <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
     <div class="p-4">
       <div class="flex items-center justify-between">
-        <p class="text-sm text-gray-600">Arrastra para reordenar</p>
-        <div class="text-sm text-gray-500" v-if="!loading">Total: {{ filtered.length }}</div>
+        <p class="text-sm text-gray-600 dark:text-gray-400">Arrastra para reordenar</p>
+        <div class="text-sm text-gray-500 dark:text-gray-400" v-if="!loading">Total: {{ filtered.length }}</div>
       </div>
     </div>
     <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-900/50">
           <tr>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-12"></th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Orden</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Etiqueta</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora Inicio</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora Fin</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Período #</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-12"></th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Orden</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Etiqueta</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Hora Inicio</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Hora Fin</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tipo</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Período #</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
           <tr v-for="(p, idx) in filtered" :key="p.id" :draggable="true" @dragstart="onDragStart(idx)" @dragover.prevent
-            @drop="onDrop(idx)" class="cursor-move hover:bg-gray-50">
+            @drop="onDrop(idx)" class="cursor-move hover:bg-gray-50 dark:bg-gray-900/50">
             <td class="px-4 py-3 whitespace-nowrap text-gray-400">
               <svg class="h-5 w-5" fill="currentColor" viewBox="0 0 20 20">
                 <path
@@ -31,7 +31,7 @@
               </svg>
             </td>
             <td class="px-4 py-3 whitespace-nowrap text-sm font-mono">{{ p.order_index }}</td>
-            <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900">{{ p.label }}</td>
+            <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">{{ p.label }}</td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">{{ formatTime12h(p.start_time) }}</td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">{{ formatTime12h(p.end_time) }}</td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">
@@ -71,10 +71,10 @@
             </td>
           </tr>
           <tr v-if="!loading && filtered.length === 0">
-            <td colspan="9" class="px-4 py-6 text-center text-sm text-gray-500">Sin resultados</td>
+            <td colspan="9" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Sin resultados</td>
           </tr>
           <tr v-if="loading">
-            <td colspan="9" class="px-4 py-6 text-center text-sm text-gray-500">Cargando...</td>
+            <td colspan="9" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Cargando...</td>
           </tr>
         </tbody>
       </table>

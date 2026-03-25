@@ -1,10 +1,10 @@
 <template>
     <div class="space-y-6">
         <!-- Header -->
-        <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+        <div class="flex justify-between items-center bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
             <div>
-                <h1 class="text-2xl font-semibold text-gray-900">Amonestaciones</h1>
-                <p class="mt-1 text-sm text-gray-600">Gestión de amonestaciones disciplinarias</p>
+                <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Amonestaciones</h1>
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Gestión de amonestaciones disciplinarias</p>
             </div>
             <button @click="showCreateModal = true"
                 class="inline-flex items-center gap-2 px-4 py-2 text-white bg-red-600 hover:bg-red-700 rounded-lg transition-colors">
@@ -16,15 +16,15 @@
         </div>
 
         <!-- Filters and Tabs -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
             <!-- Tabs -->
-            <div class="border-b border-gray-200">
+            <div class="border-b border-gray-200 dark:border-gray-700">
                 <nav class="flex -mb-px">
                     <button v-for="tab in tabs" :key="tab.value" @click="activeTab = tab.value" :class="[
                         'px-6 py-3 text-sm font-medium border-b-2 transition-colors',
                         activeTab === tab.value
                             ? 'border-red-600 text-red-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600'
                     ]">
                         {{ tab.label }}
                     </button>
@@ -32,11 +32,11 @@
             </div>
 
             <!-- Filters -->
-            <div class="p-4 border-b border-gray-200 flex flex-wrap gap-4">
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-wrap gap-4">
                 <div class="w-full sm:w-64">
-                    <label class="block text-xs font-medium text-gray-700 mb-1">Empleado</label>
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Empleado</label>
                     <select v-model="filters.personal_id" @change="loadWarnings"
-                        class="w-full rounded-lg border-gray-300 focus:border-red-500 focus:ring-red-500">
+                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 focus:border-red-500 focus:ring-red-500">
                         <option :value="undefined">Todos</option>
                         <option v-for="p in personalList" :key="p.id" :value="p.id">
                             {{ p.nombre }} {{ p.apellido }}
@@ -45,9 +45,9 @@
                 </div>
 
                 <div class="w-full sm:w-48">
-                    <label class="block text-xs font-medium text-gray-700 mb-1">Tipo</label>
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Tipo</label>
                     <select v-model="filters.warning_type" @change="loadWarnings"
-                        class="w-full rounded-lg border-gray-300 focus:border-red-500 focus:ring-red-500">
+                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 focus:border-red-500 focus:ring-red-500">
                         <option :value="undefined">Todos</option>
                         <option value="verbal">Verbal</option>
                         <option value="escrita">Escrita</option>
@@ -57,9 +57,9 @@
                 </div>
 
                 <div class="w-full sm:w-48">
-                    <label class="block text-xs font-medium text-gray-700 mb-1">Gravedad</label>
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Gravedad</label>
                     <select v-model="filters.severity" @change="loadWarnings"
-                        class="w-full rounded-lg border-gray-300 focus:border-red-500 focus:ring-red-500">
+                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 focus:border-red-500 focus:ring-red-500">
                         <option :value="undefined">Todas</option>
                         <option value="leve">Leve</option>
                         <option value="moderada">Moderada</option>
@@ -73,24 +73,24 @@
         <!-- Loading State -->
         <div v-if="store.loading" class="text-center py-12">
             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-red-600 mx-auto"></div>
-            <p class="mt-4 text-gray-600">Cargando amonestaciones...</p>
+            <p class="mt-4 text-gray-600 dark:text-gray-400">Cargando amonestaciones...</p>
         </div>
 
         <!-- Empty State -->
         <div v-else-if="!store.warnings || store.warnings.length === 0"
-            class="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+            class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">No hay amonestaciones</h3>
-            <p class="mt-1 text-sm text-gray-500">No se han registrado amonestaciones.</p>
+            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No hay amonestaciones</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">No se han registrado amonestaciones.</p>
         </div>
 
         <!-- Warnings List -->
         <div v-else class="grid gap-4">
             <div v-for="warning in (store.warnings || [])" :key="warning.id"
-                class="bg-white rounded-xl shadow-sm border-l-4 p-6 hover:shadow-md transition-shadow"
+                class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 p-6 hover:shadow-md transition-shadow"
                 :class="getBorderClass(warning.severity)">
                 <div class="flex justify-between items-start">
                     <div class="flex-1">
@@ -101,16 +101,16 @@
                                 </span>
                             </div>
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-900">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
                                     {{ warning.personal?.nombre }} {{ warning.personal?.apellido }}
                                 </h3>
-                                <p class="text-sm text-gray-500">{{ warning.personal?.cedula }}</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ warning.personal?.cedula }}</p>
                             </div>
                         </div>
 
                         <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div>
-                                <p class="text-xs text-gray-500">Tipo</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Tipo</p>
                                 <span :class="[
                                     'inline-flex px-2 py-1 text-xs font-semibold rounded-full',
                                     getTypeClass(warning.warning_type)
@@ -119,7 +119,7 @@
                                 </span>
                             </div>
                             <div>
-                                <p class="text-xs text-gray-500">Gravedad</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Gravedad</p>
                                 <span :class="[
                                     'inline-flex px-2 py-1 text-xs font-semibold rounded-full',
                                     getSeverityClass(warning.severity)
@@ -128,11 +128,11 @@
                                 </span>
                             </div>
                             <div>
-                                <p class="text-xs text-gray-500">Fecha del Incidente</p>
-                                <p class="text-sm font-medium text-gray-900">{{ formatDate(warning.incident_date) }}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Fecha del Incidente</p>
+                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ formatDate(warning.incident_date) }}</p>
                             </div>
                             <div>
-                                <p class="text-xs text-gray-500">Estado</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Estado</p>
                                 <span :class="[
                                     'inline-flex px-2 py-1 text-xs font-semibold rounded-full',
                                     getStatusClass(warning.status)
@@ -143,11 +143,11 @@
                         </div>
 
                         <div class="mt-3">
-                            <p class="text-xs text-gray-500">Descripción</p>
-                            <p class="text-sm text-gray-700 mt-1 line-clamp-2">{{ warning.description }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Descripción</p>
+                            <p class="text-sm text-gray-700 dark:text-gray-300 mt-1 line-clamp-2">{{ warning.description }}</p>
                         </div>
 
-                        <div class="mt-3 flex items-center gap-4 text-xs text-gray-500">
+                        <div class="mt-3 flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400">
                             <span>Emitida por: {{ warning.issuer?.name }}</span>
                             <span v-if="warning.employee_signed_at" class="flex items-center gap-1 text-green-600">
                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -162,7 +162,7 @@
 
                     <div class="ml-4 flex flex-col gap-2">
                         <button @click="viewDetails(warning)"
-                            class="px-3 py-1.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                            class="px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 rounded-lg transition-colors">
                             Ver Detalles
                         </button>
                     </div>
@@ -174,15 +174,15 @@
         <div v-if="store.lastPage > 1" class="flex justify-center">
             <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
                 <button @click="changePage(store.currentPage - 1)" :disabled="store.currentPage === 1"
-                    class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed">
+                    class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-900/50 disabled:bg-gray-100 dark:bg-gray-800 disabled:cursor-not-allowed">
                     Anterior
                 </button>
                 <span
-                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300">
                     Página {{ store.currentPage }} de {{ store.lastPage }}
                 </span>
                 <button @click="changePage(store.currentPage + 1)" :disabled="store.currentPage === store.lastPage"
-                    class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed">
+                    class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-900/50 disabled:bg-gray-100 dark:bg-gray-800 disabled:cursor-not-allowed">
                     Siguiente
                 </button>
             </nav>
@@ -190,9 +190,9 @@
 
         <!-- Create Modal (placeholder) -->
         <div v-if="showCreateModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div class="bg-white rounded-xl p-6 max-w-2xl w-full mx-4">
+            <div class="bg-white dark:bg-gray-800 rounded-xl p-6 max-w-2xl w-full mx-4">
                 <h2 class="text-xl font-semibold mb-4">Nueva Amonestación</h2>
-                <p class="text-gray-600">Formulario en construcción...</p>
+                <p class="text-gray-600 dark:text-gray-400">Formulario en construcción...</p>
                 <button @click="showCreateModal = false" class="mt-4 px-4 py-2 bg-gray-200 rounded-lg">
                     Cerrar
                 </button>
@@ -298,7 +298,7 @@ const getTypeClass = (type: string) => {
         suspension: 'bg-red-100 text-red-800',
         despido: 'bg-purple-100 text-purple-800'
     }
-    return classes[type] || 'bg-gray-100 text-gray-800'
+    return classes[type] || 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
 }
 
 const getSeverityClass = (severity: string) => {
@@ -308,7 +308,7 @@ const getSeverityClass = (severity: string) => {
         grave: 'bg-orange-100 text-orange-800',
         muy_grave: 'bg-red-100 text-red-800'
     }
-    return classes[severity] || 'bg-gray-100 text-gray-800'
+    return classes[severity] || 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
 }
 
 const getStatusClass = (status: string) => {
@@ -316,9 +316,9 @@ const getStatusClass = (status: string) => {
         activa: 'bg-red-100 text-red-800',
         resuelta: 'bg-green-100 text-green-800',
         apelada: 'bg-yellow-100 text-yellow-800',
-        anulada: 'bg-gray-100 text-gray-800'
+        anulada: 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
     }
-    return classes[status] || 'bg-gray-100 text-gray-800'
+    return classes[status] || 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
 }
 
 const getBorderClass = (severity: string) => {
@@ -328,7 +328,7 @@ const getBorderClass = (severity: string) => {
         grave: 'border-orange-400',
         muy_grave: 'border-red-600'
     }
-    return classes[severity] || 'border-gray-300'
+    return classes[severity] || 'border-gray-300 dark:border-gray-600'
 }
 
 const formatDate = (date: string) => {

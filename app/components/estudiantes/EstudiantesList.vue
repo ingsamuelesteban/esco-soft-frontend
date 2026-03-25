@@ -1,15 +1,15 @@
 <template>
-  <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+  <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
     <div class="p-4">
       <div class="flex items-center gap-3 flex-wrap">
-        <input v-model="query" type="text" class="w-full md:w-64 rounded-md border-gray-300 text-sm"
+        <input v-model="query" type="text" class="w-full md:w-64 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 text-sm focus:ring-primary-500 focus:border-primary-500"
           placeholder="Buscar por nombres, apellidos, cédula o RNE..." />
-        <select v-model="filterSexo" class="rounded-md border-gray-300 text-sm">
+        <select v-model="filterSexo" class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 text-sm focus:ring-primary-500 focus:border-primary-500">
           <option :value="undefined">Todos</option>
           <option value="Masculino">Masculino</option>
           <option value="Femenino">Femenino</option>
         </select>
-        <select v-model="filterAula" class="rounded-md border-gray-300 text-sm w-48">
+        <select v-model="filterAula" class="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 text-sm w-48 focus:ring-primary-500 focus:border-primary-500">
           <option :value="undefined">Todas las aulas</option>
           <option v-for="a in aulasStore.items" :key="a.id" :value="a.id">
             {{ a.grado_cardinal }}° {{ a.seccion }}
@@ -39,29 +39,29 @@
           </svg>
           Generar Usuarios
         </button>
-        <div class="ml-auto text-sm text-gray-500" v-if="!loading">Total: {{ filtered.length }}</div>
+        <div class="ml-auto text-sm text-gray-500 dark:text-gray-400" v-if="!loading">Total: {{ filtered.length }}</div>
       </div>
     </div>
 
     <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-900/50">
           <tr>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">N°</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombres</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Apellidos</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cédula</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">RNE</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Nac.</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Edad</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Sexo</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aula</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">N°</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nombres</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Apellidos</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Cédula</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">RNE</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Fecha Nac.</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Edad</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Sexo</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Aula</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700 text-gray-900 dark:text-gray-100">
           <tr v-for="e in filtered" :key="e.id">
-            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
               {{ e.numero_orden ?? '-' }}
             </td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">
@@ -161,12 +161,12 @@
             </td>
           </tr>
           <tr v-if="!loading && filtered.length === 0">
-            <td colspan="10" class="px-4 py-6 text-center text-sm text-gray-500">Sin resultados</td>
+            <td colspan="10" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Sin resultados</td>
           </tr>
           <tr v-if="loading && filtered.length === 0">
-            <td colspan="10" class="px-4 py-6 text-center text-sm text-gray-500">
+            <td colspan="10" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
               <div class="flex justify-center items-center">
-                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg"
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg"
                   fill="none" viewBox="0 0 24 24">
                   <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                   <path class="opacity-75" fill="currentColor"
@@ -182,7 +182,7 @@
 
       <!-- Loading Overlay for table updates -->
       <div v-if="loading && filtered.length > 0"
-        class="absolute inset-x-0 bottom-0 flex justify-center py-2 bg-white/80 border-t z-10">
+        class="absolute inset-x-0 bottom-0 flex justify-center py-2 bg-white dark:bg-gray-800/80 border-t z-10">
         <span class="inline-flex items-center text-sm text-blue-600 font-medium">
           <svg class="animate-spin -ml-1 mr-2 h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none"
             viewBox="0 0 24 24">

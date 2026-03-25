@@ -1,16 +1,16 @@
 <template>
    <div>
-      <header class="bg-white border-b border-gray-200">
+      <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
          <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 px-6 py-4">
             <div>
-               <h1 class="text-2xl font-bold text-gray-900 font-outfit">Reportes de Calificaciones</h1>
-               <p class="text-gray-500 text-sm mt-1">Generación de boletines, sábanas y actas</p>
+               <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 font-outfit">Reportes de Calificaciones</h1>
+               <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Generación de boletines, sábanas y actas</p>
             </div>
 
             <div class="w-full md:w-64">
-               <label class="block text-xs font-medium text-gray-700 mb-1">Año Lectivo</label>
+               <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Año Lectivo</label>
                <select v-model="selectedAnioId" v-if="aniosStore.items.length > 0"
-                  class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg shadow-sm">
+                  class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg shadow-sm">
                   <option :value="null">Año Activo (Por defecto)</option>
                   <option v-for="anio in aniosStore.items" :key="anio.id" :value="anio.id">
                      {{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}
@@ -24,12 +24,12 @@
 
 
          <!-- Tabs -->
-         <div class="mb-6 border-b border-gray-200">
+         <div class="mb-6 border-b border-gray-200 dark:border-gray-700">
             <nav class="-mb-px flex space-x-8">
                <button v-for="tab in tabs" :key="tab.id" @click="currentTab = tab.id" :class="[
                   currentTab === tab.id
                      ? 'border-blue-500 text-blue-600'
-                     : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
+                     : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600',
                   'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm'
                ]">
                   {{ tab.name }}
@@ -38,23 +38,23 @@
          </div>
 
          <!-- Tab Content -->
-         <div class="bg-white shadow rounded-lg p-6">
+         <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
 
             <!-- Tab 1: Boletín (Por Estudiante) -->
             <div v-if="currentTab === 'student'" class="space-y-6">
                <div class="max-w-xl">
-                  <label class="block text-sm font-medium text-gray-700 mb-2">Buscar Estudiante</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Buscar Estudiante</label>
                   <div class="relative">
                      <input v-model="studentSearch" @input="searchStudents" type="text"
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border"
+                        class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border"
                         placeholder="Escribe nombre, apellido o RNE..." />
                      <!-- Resultados de búsqueda -->
                      <div v-if="studentJsonResults.length > 0"
-                        class="absolute z-10 w-full bg-white shadow-lg rounded-md mt-1 border border-gray-200 max-h-60 overflow-auto">
+                        class="absolute z-10 w-full bg-white dark:bg-gray-800 shadow-lg rounded-md mt-1 border border-gray-200 dark:border-gray-700 max-h-60 overflow-auto">
                         <div v-for="s in studentJsonResults" :key="s.id" @click="selectStudent(s)"
-                           class="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm">
-                           <div class="font-medium text-gray-900">{{ s.apellidos }}, {{ s.nombres }}</div>
-                           <div class="text-xs text-gray-500">{{ s.aula ? `${s.aula.grado_cardinal}° ${s.aula.seccion}`
+                           class="px-4 py-2 hover:bg-gray-100 dark:bg-gray-800 cursor-pointer text-sm">
+                           <div class="font-medium text-gray-900 dark:text-gray-100">{{ s.apellidos }}, {{ s.nombres }}</div>
+                           <div class="text-xs text-gray-500 dark:text-gray-400">{{ s.aula ? `${s.aula.grado_cardinal}° ${s.aula.seccion}`
                               : 'Sin Aula' }} | {{ s.rne }}</div>
                         </div>
                      </div>
@@ -77,8 +77,8 @@
 
                <!-- Period Selector Hidden for Global Report
           <div class="max-w-xs">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Periodo</label>
-              <select v-model="selectedPeriod" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Periodo</label>
+              <select v-model="selectedPeriod" class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border">
                   <option value="all">Todos (Acumulado)</option>
                   <option value="1">Periodo 1</option>
                   <option value="2">Periodo 2</option>
@@ -103,7 +103,7 @@
                   </button>
 
                   <button @click="previewStudentReport" :disabled="!selectedStudent || loadingPreview"
-                     class="ml-3 inline-flex items-center px-4 py-2 border border-blue-600 shadow-sm text-sm font-medium rounded-md text-blue-600 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                     class="ml-3 inline-flex items-center px-4 py-2 border border-blue-600 shadow-sm text-sm font-medium rounded-md text-blue-600 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50 disabled:opacity-50 disabled:cursor-not-allowed">
                      <svg v-if="loadingPreview" class="animate-spin -ml-1 mr-2 h-4 w-4 text-blue-600" fill="none"
                         viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
@@ -118,10 +118,10 @@
 
 
                <!-- Report Preview -->
-               <div v-if="reportPreview" class="border border-gray-300 rounded-lg p-6 bg-gray-50 mt-6 print-container">
-                  <div class="text-center border-b border-gray-300 pb-4 mb-4">
-                     <h2 class="text-lg font-bold text-gray-900">{{ reportPreview.tenant?.nombre }}</h2>
-                     <p class="text-xs text-gray-500">{{ reportPreview.tenant?.direccion }}</p>
+               <div v-if="reportPreview" class="border border-gray-300 dark:border-gray-600 rounded-lg p-6 bg-gray-50 dark:bg-gray-900/50 mt-6 print-container">
+                  <div class="text-center border-b border-gray-300 dark:border-gray-600 pb-4 mb-4">
+                     <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ reportPreview.tenant?.nombre }}</h2>
+                     <p class="text-xs text-gray-500 dark:text-gray-400">{{ reportPreview.tenant?.direccion }}</p>
                      <h3 class="font-bold mt-2">BOLETÍN DE CALIFICACIONES - AÑO {{ reportPreview.year }}</h3>
                   </div>
 
@@ -155,10 +155,10 @@
                         </tr>
                      </thead>
                      <tbody>
-                        <tr v-for="subj in reportPreview.subjects" :key="subj.materia" class="bg-white">
+                        <tr v-for="subj in reportPreview.subjects" :key="subj.materia" class="bg-white dark:bg-gray-800">
                            <td class="border border-gray-400 p-1">
                               <div class="font-medium">{{ subj.materia }}</div>
-                              <div class="text-[10px] text-gray-500">{{ subj.profesor }}</div>
+                              <div class="text-[10px] text-gray-500 dark:text-gray-400">{{ subj.profesor }}</div>
                            </td>
 
                            <template v-if="subj.tipo === 'Academico'">
@@ -179,7 +179,7 @@
                               <td :colspan="selectedPeriod === 'all' ? 4 : 1" class="border border-gray-400 p-1">
                                  <div class="flex flex-wrap gap-1">
                                     <span v-for="ra in subj.ras" :key="ra.numero"
-                                       class="border border-gray-300 rounded px-1 text-[10px]">
+                                       class="border border-gray-300 dark:border-gray-600 rounded px-1 text-[10px]">
                                        RA{{ ra.numero }}: <b>{{ ra.nota_final }}</b>
                                     </span>
                                  </div>
@@ -191,7 +191,7 @@
                      </tbody>
                   </table>
 
-                  <div class="mt-4 text-[10px] text-center text-gray-500">
+                  <div class="mt-4 text-[10px] text-center text-gray-500 dark:text-gray-400">
                      Vista previa generada para consulta.
                   </div>
                </div>
@@ -202,9 +202,9 @@
             <div v-if="currentTab === 'classroom'" class="space-y-6">
                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                     <label class="block text-sm font-medium text-gray-700 mb-2">Aula</label>
+                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Aula</label>
                      <select v-model="selectedAula" @change="loadSubjects"
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border">
+                        class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border">
                         <option value="">Seleccionar Aula...</option>
                         <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
                            {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo ? aula.titulo.nombre : '' }}
@@ -230,7 +230,7 @@
                   </button>
 
                   <button @click="previewClassroomReport" :disabled="!selectedAula || loadingPreview"
-                     class="inline-flex items-center px-4 py-2 border border-green-600 shadow-sm text-sm font-medium rounded-md text-green-600 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                     class="inline-flex items-center px-4 py-2 border border-green-600 shadow-sm text-sm font-medium rounded-md text-green-600 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50 disabled:opacity-50 disabled:cursor-not-allowed">
                      <svg v-if="loadingPreview" class="animate-spin -ml-1 mr-2 h-4 w-4 text-green-600" fill="none"
                         viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
@@ -245,13 +245,13 @@
 
                <!-- Classroom Report Preview -->
                <div v-if="classroomPreview"
-                  class="border border-gray-300 rounded-lg p-6 bg-gray-50 mt-6 overflow-x-auto">
-                  <div class="text-center border-b border-gray-300 pb-4 mb-4">
-                     <h2 class="text-lg font-bold text-gray-900">{{ classroomPreview.tenant?.nombre }}</h2>
+                  class="border border-gray-300 dark:border-gray-600 rounded-lg p-6 bg-gray-50 dark:bg-gray-900/50 mt-6 overflow-x-auto">
+                  <div class="text-center border-b border-gray-300 dark:border-gray-600 pb-4 mb-4">
+                     <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ classroomPreview.tenant?.nombre }}</h2>
                      <h3 class="font-bold mt-2">SÁBANA DE CALIFICACIONES - {{ classroomPreview.aula?.grado_cardinal }}°
                         {{
                            classroomPreview.aula?.seccion }}</h3>
-                     <p class="text-xs text-gray-500 mt-1">Año {{ classroomPreview.year }} - Período: {{
+                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Año {{ classroomPreview.year }} - Período: {{
                         classroomPreview.period }}
                      </p>
                   </div>
@@ -265,15 +265,15 @@
                            <th v-for="subject in classroomPreview.subjects" :key="subject.id"
                               class="border border-gray-400 p-1 text-center min-w-[60px]">
                               <div class="font-medium">{{ subject.materia?.nombre }}</div>
-                              <div class="text-[10px] text-gray-500">{{ subject.materia?.tipo }}</div>
+                              <div class="text-[10px] text-gray-500 dark:text-gray-400">{{ subject.materia?.tipo }}</div>
                            </th>
                         </tr>
                      </thead>
                      <tbody>
-                        <tr v-for="row in classroomPreview.data" :key="row.numero" class="bg-white hover:bg-gray-50">
-                           <td class="border border-gray-400 p-1 text-center sticky left-0 bg-white z-10">{{ row.numero
+                        <tr v-for="row in classroomPreview.data" :key="row.numero" class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50">
+                           <td class="border border-gray-400 p-1 text-center sticky left-0 bg-white dark:bg-gray-800 z-10">{{ row.numero
                               }}</td>
-                           <td class="border border-gray-400 p-1 sticky left-12 bg-white z-10">{{ row.nombre }}</td>
+                           <td class="border border-gray-400 p-1 sticky left-12 bg-white dark:bg-gray-800 z-10">{{ row.nombre }}</td>
                            <td v-for="subject in classroomPreview.subjects" :key="subject.id"
                               class="border border-gray-400 p-1 text-center font-bold">
                               {{ row.notas[subject.id] ?? '-' }}
@@ -282,7 +282,7 @@
                      </tbody>
                   </table>
 
-                  <div class="mt-4 text-[10px] text-center text-gray-500">
+                  <div class="mt-4 text-[10px] text-center text-gray-500 dark:text-gray-400">
                      Vista previa generada para consulta.
                   </div>
                </div>
@@ -292,9 +292,9 @@
             <div v-if="currentTab === 'subject'" class="space-y-6">
                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                     <label class="block text-sm font-medium text-gray-700 mb-2">Aula</label>
+                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Aula</label>
                      <select v-model="selectedAula" @change="loadSubjects"
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border">
+                        class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border">
                         <option value="">Seleccionar Aula...</option>
                         <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
                            {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo ? aula.titulo.nombre : '' }}
@@ -303,9 +303,9 @@
                   </div>
 
                   <div>
-                     <label class="block text-sm font-medium text-gray-700 mb-2">Materia</label>
+                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Materia</label>
                      <select v-model="selectedMateria" :disabled="!selectedAula"
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border disabled:bg-gray-100">
+                        class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border disabled:bg-gray-100 dark:bg-gray-800">
                         <option value="">Seleccionar Materia...</option>
                         <option v-for="subj in subjects" :key="subj.materia_id" :value="subj.materia_id">
                            {{ subj.nombre }} ({{ subj.tipo }}) - {{ subj.profesor ? subj.profesor.nombre_completo :
@@ -316,8 +316,8 @@
 
                   <!-- Period Selector Hidden for Global Report
              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2">Periodo</label>
-                <select v-model="selectedPeriod" class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Periodo</label>
+                <select v-model="selectedPeriod" class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border">
                     <option value="all">Todos (Acumulado)</option>
                     <option value="1">Periodo 1</option>
                     <option value="2">Periodo 2</option>
@@ -344,7 +344,7 @@
                   </button>
 
                   <button @click="previewSubjectReport" :disabled="!selectedAula || !selectedMateria || loadingPreview"
-                     class="inline-flex items-center px-4 py-2 border border-purple-600 shadow-sm text-sm font-medium rounded-md text-purple-600 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                     class="inline-flex items-center px-4 py-2 border border-purple-600 shadow-sm text-sm font-medium rounded-md text-purple-600 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50 disabled:opacity-50 disabled:cursor-not-allowed">
                      <svg v-if="loadingPreview" class="animate-spin -ml-1 mr-2 h-4 w-4 text-purple-600" fill="none"
                         viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
@@ -358,13 +358,13 @@
                </div>
 
                <!-- Subject Report Preview -->
-               <div v-if="subjectPreview" class="border border-gray-300 rounded-lg p-6 bg-gray-50 mt-6 overflow-x-auto">
-                  <div class="text-center border-b border-gray-300 pb-4 mb-4">
-                     <h2 class="text-lg font-bold text-gray-900">{{ subjectPreview.tenant?.nombre }}</h2>
+               <div v-if="subjectPreview" class="border border-gray-300 dark:border-gray-600 rounded-lg p-6 bg-gray-50 dark:bg-gray-900/50 mt-6 overflow-x-auto">
+                  <div class="text-center border-b border-gray-300 dark:border-gray-600 pb-4 mb-4">
+                     <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ subjectPreview.tenant?.nombre }}</h2>
                      <h3 class="font-bold mt-2">PLANILLA DE CALIFICACIONES</h3>
                      <p class="text-sm font-bold mt-1">{{ subjectPreview.materia?.nombre }} ({{
                         subjectPreview.materia?.tipo }})</p>
-                     <p class="text-xs text-gray-500">{{ subjectPreview.assignment?.aula?.grado_cardinal }}° {{
+                     <p class="text-xs text-gray-500 dark:text-gray-400">{{ subjectPreview.assignment?.aula?.grado_cardinal }}° {{
                         subjectPreview.assignment?.aula?.seccion }} - Profesor: {{
                            subjectPreview.assignment?.profesor?.nombre_completo }}</p>
                   </div>
@@ -390,10 +390,10 @@
                      </thead>
                      <tbody>
                         <tr v-for="row in subjectPreview.data" :key="row.estudiante.id"
-                           class="bg-white hover:bg-gray-50">
-                           <td class="border border-gray-400 p-1 text-center sticky left-0 bg-white z-10">{{
+                           class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50">
+                           <td class="border border-gray-400 p-1 text-center sticky left-0 bg-white dark:bg-gray-800 z-10">{{
                               row.estudiante.numero_orden }}</td>
-                           <td class="border border-gray-400 p-1 sticky left-12 bg-white z-10">{{
+                           <td class="border border-gray-400 p-1 sticky left-12 bg-white dark:bg-gray-800 z-10">{{
                               row.estudiante.apellidos }} {{
                                  row.estudiante.nombres }}</td>
                            <td v-for="i in subjectPreview.assignment?.cantidad_ra" :key="i"
@@ -429,10 +429,10 @@
                      </thead>
                      <tbody>
                         <tr v-for="row in subjectPreview.data" :key="row.estudiante.id"
-                           class="bg-white hover:bg-gray-50">
-                           <td class="border border-gray-400 p-1 text-center sticky left-0 bg-white z-10">{{
+                           class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50">
+                           <td class="border border-gray-400 p-1 text-center sticky left-0 bg-white dark:bg-gray-800 z-10">{{
                               row.estudiante.numero_orden }}</td>
-                           <td class="border border-gray-400 p-1 sticky left-12 bg-white z-10">{{
+                           <td class="border border-gray-400 p-1 sticky left-12 bg-white dark:bg-gray-800 z-10">{{
                               row.estudiante.apellidos }} {{
                                  row.estudiante.nombres }}</td>
                            <td class="border border-gray-400 p-1 text-center font-bold">{{ row.periodos?.[1] ?? '-' }}
@@ -449,7 +449,7 @@
                      </tbody>
                   </table>
 
-                  <div class="mt-4 text-[10px] text-center text-gray-500">
+                  <div class="mt-4 text-[10px] text-center text-gray-500 dark:text-gray-400">
                      Vista previa generada para consulta.
                   </div>
                </div>
@@ -459,16 +459,16 @@
             <div v-if="currentTab === 'merit'" class="space-y-6">
                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                     <label class="block text-sm font-medium text-gray-700 mb-2">Aula</label>
+                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Aula</label>
                      <select v-model="selectedAula"
-                        class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border">
+                        class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border">
                         <option value="">Seleccionar Aula...</option>
                         <option value="all">Todas las Aulas</option>
                         <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
                            {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo ? aula.titulo.nombre : '' }}
                         </option>
                      </select>
-                     <p class="text-xs text-gray-500 mt-2">
+                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
                         Se generará un listado de estudiantes con promedio académico general >= 97.0
                      </p>
                   </div>
@@ -489,7 +489,7 @@
                   </button>
 
                   <button @click="previewMeritReport" :disabled="!selectedAula || loadingPreview"
-                     class="inline-flex items-center px-4 py-2 border border-yellow-600 shadow-sm text-sm font-medium rounded-md text-yellow-600 bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+                     class="inline-flex items-center px-4 py-2 border border-yellow-600 shadow-sm text-sm font-medium rounded-md text-yellow-600 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50 disabled:opacity-50 disabled:cursor-not-allowed">
                      <svg v-if="loadingPreview" class="animate-spin -ml-1 mr-2 h-4 w-4 text-yellow-600" fill="none"
                         viewBox="0 0 24 24">
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
@@ -503,14 +503,14 @@
                </div>
 
                <!-- Merit Report Preview -->
-               <div v-if="meritPreview" class="border border-gray-300 rounded-lg p-6 bg-gray-50 mt-6 overflow-x-auto">
+               <div v-if="meritPreview" class="border border-gray-300 dark:border-gray-600 rounded-lg p-6 bg-gray-50 dark:bg-gray-900/50 mt-6 overflow-x-auto">
 
                   <div v-if="meritPreview.school_excellence && meritPreview.school_excellence.length > 0"
                      class="mb-12 border-b-2 border-dashed border-gray-400 pb-8">
-                     <div class="text-center border-b border-gray-300 pb-4 mb-4">
-                        <h2 class="text-lg font-bold text-gray-900">{{ meritPreview.tenant?.nombre }}</h2>
+                     <div class="text-center border-b border-gray-300 dark:border-gray-600 pb-4 mb-4">
+                        <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ meritPreview.tenant?.nombre }}</h2>
                         <h3 class="font-bold mt-2 text-green-700">EXCELENCIA DEL CENTRO EDUCATIVO</h3>
-                        <p class="text-xs italic text-gray-600">Estudiantes con promedio > 98.0 puntos</p>
+                        <p class="text-xs italic text-gray-600 dark:text-gray-400">Estudiantes con promedio > 98.0 puntos</p>
                      </div>
 
                      <table class="min-w-full text-xs border-collapse border border-gray-400">
@@ -525,7 +525,7 @@
                         </thead>
                         <tbody>
                            <tr v-for="(row, idx) in meritPreview.school_excellence" :key="idx"
-                              class="bg-white hover:bg-gray-50">
+                              class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50">
                               <td class="border border-gray-400 p-2 text-center font-bold">{{ Number(idx) + 1 }}</td>
                               <td class="border border-gray-400 p-2 font-bold">{{ row.estudiante.apellidos }} {{
                                  row.estudiante.nombres }}</td>
@@ -546,8 +546,8 @@
                   <div v-for="(report, reportIdx) in (meritPreview.reports || [meritPreview])" :key="reportIdx"
                      class="mb-12 last:mb-0">
 
-                     <div class="text-center border-b border-gray-300 pb-4 mb-4">
-                        <h2 class="text-lg font-bold text-gray-900">{{ report.tenant?.nombre ||
+                     <div class="text-center border-b border-gray-300 dark:border-gray-600 pb-4 mb-4">
+                        <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ report.tenant?.nombre ||
                            meritPreview.tenant?.nombre }}</h2>
                         <h3 class="font-bold mt-2 text-yellow-700">LISTADO DE HONOR - MERITORIOS</h3>
                         <p class="text-sm font-medium">{{ report.aula?.grado_cardinal }}° {{
@@ -569,7 +569,7 @@
                         </thead>
                         <tbody>
                            <tr v-for="(row, idx) in report.data" :key="row.estudiante.id"
-                              class="bg-white hover:bg-gray-50">
+                              class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50">
                               <td class="border border-gray-400 p-2 text-center">{{ Number(idx) + 1 }}</td>
                               <td class="border border-gray-400 p-2 font-medium">{{ row.estudiante.apellidos }} {{
                                  row.estudiante.nombres }}</td>
@@ -589,7 +589,7 @@
                            </tr>
                            <tr v-if="report.data && report.data.length === 0">
                               <td :colspan="(report.subjects ? report.subjects.length : 0) + 4"
-                                 class="p-4 text-center text-gray-500 italic">
+                                 class="p-4 text-center text-gray-500 dark:text-gray-400 italic">
                                  No se encontraron estudiantes meritorios (Promedio >= 97) en esta aula.
                               </td>
                            </tr>
@@ -598,7 +598,7 @@
 
                   </div>
 
-                  <div class="mt-4 text-[10px] text-center text-gray-500">
+                  <div class="mt-4 text-[10px] text-center text-gray-500 dark:text-gray-400">
                      Vista previa generada para consulta.
                   </div>
                </div>

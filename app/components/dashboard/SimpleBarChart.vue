@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-white p-6 rounded-lg shadow">
-    <h3 class="text-lg font-medium text-gray-900 mb-6">{{ title }}</h3>
+  <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow border border-transparent dark:border-gray-700 transition-colors">
+    <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-6">{{ title }}</h3>
     <div class="relative h-64">
       <!-- Grid lines (optional, kept simple for now) -->
 
@@ -9,7 +9,7 @@
           class="relative flex flex-col items-center flex-1 h-full justify-end group">
 
           <!-- Value Label (Visible) -->
-          <div class="mb-1 text-xs font-bold text-gray-700">
+          <div class="mb-1 text-xs font-bold text-gray-700 dark:text-gray-300">
             {{ item.percentage }}%
           </div>
 
@@ -27,7 +27,7 @@
           </div>
 
           <!-- Label -->
-          <div class="mt-2 text-xs text-gray-500 truncate w-full text-center font-medium">
+          <div class="mt-2 text-xs text-gray-500 dark:text-gray-400 truncate w-full text-center font-medium">
             {{ item.shortLabel || item.label }}
           </div>
         </div>

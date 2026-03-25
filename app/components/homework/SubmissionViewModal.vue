@@ -4,12 +4,12 @@
             <div class="p-6">
                 <!-- Header -->
                 <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white">
                         <span v-if="gradingMode && isRegrade">Editar Calificación</span>
                         <span v-else-if="gradingMode">Calificar Entrega</span>
                         <span v-else>Ver Entrega</span>
                     </h2>
-                    <button @click="$emit('close')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                    <button @click="$emit('close')" class="text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M6 18L18 6M6 6l12 12" />
@@ -19,7 +19,7 @@
 
                 <!-- Student Info -->
                 <div class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-white mb-2">
                         {{ submission.student?.user?.name || 'Sin nombre' }}
                     </h3>
                     <div class="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
@@ -37,7 +37,7 @@
                     <div v-if="submission.text_content">
                         <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Respuesta de texto:</h4>
                         <p
-                            class="text-gray-900 dark:text-white whitespace-pre-wrap bg-gray-50 dark:bg-gray-700 p-4 rounded">
+                            class="text-gray-900 dark:text-gray-100 dark:text-white whitespace-pre-wrap bg-gray-50 dark:bg-gray-900/50 dark:bg-gray-700 p-4 rounded">
                             {{ submission.text_content }}
                         </p>
                     </div>

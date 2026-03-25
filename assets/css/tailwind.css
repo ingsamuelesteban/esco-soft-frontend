@@ -6,4 +6,37 @@
   html {
     @apply antialiased;
   }
+
+  /* Override @tailwindcss/forms defaults for dark mode globally */
+  .dark [type='text'],
+  .dark [type='email'],
+  .dark [type='url'],
+  .dark [type='password'],
+  .dark [type='number'],
+  .dark [type='date'],
+  .dark [type='datetime-local'],
+  .dark [type='month'],
+  .dark [type='search'],
+  .dark [type='tel'],
+  .dark [type='time'],
+  .dark [type='week'],
+  .dark [multiple],
+  .dark textarea,
+  .dark select {
+    background-color: #1f2937 !important; /* bg-gray-800 */
+    border-color: #4b5563 !important; /* border-gray-600 */
+    color: #f3f4f6 !important; /* text-gray-100 */
+  }
+
+  .dark [type='checkbox'],
+  .dark [type='radio'] {
+    background-color: #1f2937 !important;
+    border-color: #4b5563 !important;
+  }
+
+  /* Placeholders en oscuro */
+  .dark ::placeholder {
+    color: #9ca3af !important; /* text-gray-400 */
+    opacity: 1 !important;
+  }
 }

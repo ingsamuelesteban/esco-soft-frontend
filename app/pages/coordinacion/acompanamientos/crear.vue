@@ -1,12 +1,12 @@
 <template>
   <div class="p-6">
     <div class="mb-6 flex items-center justify-between">
-      <h1 class="text-2xl font-bold text-gray-800">
+      <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200">
         {{ isReadOnly ? 'Ver Acompañamiento' : 'Nuevo Acompañamiento' }} - Maestro Técnico
       </h1>
       <div class="flex items-center gap-2">
         <button v-if="isReadOnly" @click="downloadPdf(form.id)" :disabled="pdfLoading"
-          class="text-gray-600 hover:text-red-600 transition-colors" title="Imprimir PDF">
+          class="text-gray-600 dark:text-gray-400 hover:text-red-600 transition-colors" title="Imprimir PDF">
           <svg v-if="pdfLoading" class="animate-spin h-6 w-6 text-red-600" xmlns="http://www.w3.org/2000/svg"
             fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -20,7 +20,7 @@
               d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
           </svg>
         </button>
-        <button @click="$router.push('/coordinacion/acompanamientos')" class="text-gray-600 hover:text-gray-800">
+        <button @click="$router.push('/coordinacion/acompanamientos')" class="text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:text-gray-200">
           <Icon name="ph:x" size="24" />
         </button>
       </div>
@@ -30,7 +30,7 @@
       <Icon name="svg-spinners:180-ring-with-bg" size="48" class="text-primary-600" />
     </div>
 
-    <div v-else class="mx-auto max-w-5xl rounded-xl bg-white p-8 shadow-sm ring-1 ring-gray-100">
+    <div v-else class="mx-auto max-w-5xl rounded-xl bg-white dark:bg-gray-800 p-8 shadow-sm ring-1 ring-gray-100">
 
       <!-- Stepper Header -->
       <div class="mb-8">
@@ -40,21 +40,21 @@
             <div
               class="flex h-10 w-10 items-center justify-center rounded-full border-2 text-sm font-bold transition-colors"
               :class="[
-                currentStep > index ? 'border-primary-600 bg-primary-600 text-white' : (currentStep === index ? 'border-primary-600 text-primary-600' : 'border-gray-300 text-gray-400'),
+                currentStep > index ? 'border-primary-600 bg-primary-600 text-white' : (currentStep === index ? 'border-primary-600 text-primary-600' : 'border-gray-300 dark:border-gray-600 text-gray-400'),
                 (isReadOnly || index <= furthestStep) ? 'hover:bg-primary-50 hover:border-primary-500' : 'opacity-50 cursor-not-allowed'
               ]">
               <Icon v-if="currentStep > index" name="ph:check" size="20" />
               <span v-else>{{ index + 1 }}</span>
             </div>
             <span class="mt-2 text-xs font-medium"
-              :class="currentStep === index ? 'text-primary-700' : 'text-gray-500'">
+              :class="currentStep === index ? 'text-primary-700' : 'text-gray-500 dark:text-gray-400'">
               {{ step.label }}
             </span>
             <div v-if="index < steps.length - 1" class="absolute mt-5 h-[2px] w-full translate-x-1/2 bg-gray-200"
               style="z-index: -1"></div>
           </div>
         </div>
-        <div v-if="savingDraft && !isReadOnly" class="text-center text-xs text-gray-500 animate-pulse mt-2">
+        <div v-if="savingDraft && !isReadOnly" class="text-center text-xs text-gray-500 dark:text-gray-400 animate-pulse mt-2">
           <Icon name="ph:cloud-arrow-up" class="mr-1" /> Guardando borrador...
         </div>
       </div>
@@ -63,41 +63,41 @@
 
         <!-- Step 1: Información General -->
         <div v-show="currentStep === 0">
-          <h2 class="mb-4 text-xl font-semibold text-gray-800">I. Información General</h2>
+          <h2 class="mb-4 text-xl font-semibold text-gray-800 dark:text-gray-200">I. Información General</h2>
           <div class="grid gap-6 md:grid-cols-2">
             <div>
-              <label class="mb-2 block text-sm font-medium text-gray-700">Fecha de Observación</label>
+              <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de Observación</label>
               <input type="date" v-model="form.observed_at"
-                class="w-full rounded-lg border-gray-300 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border" />
+                class="w-full rounded-lg border-gray-300 dark:border-gray-600 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border" />
             </div>
             <div class="flex gap-4">
               <div class="flex-1">
-                <label class="mb-2 block text-sm font-medium text-gray-700">Hora Inicio</label>
+                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Hora Inicio</label>
                 <input type="time" v-model="form.start_time"
-                  class="w-full rounded-lg border-gray-300 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border" />
+                  class="w-full rounded-lg border-gray-300 dark:border-gray-600 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border" />
               </div>
             </div>
             <div>
-              <label class="mb-2 block text-sm font-medium text-gray-700">Director/a</label>
+              <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Director/a</label>
               <input type="text" :value="directorName" disabled
-                class="w-full rounded-lg border-gray-200 bg-gray-50 p-2.5 text-sm text-gray-500 shadow-sm border" />
+                class="w-full rounded-lg border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 p-2.5 text-sm text-gray-500 dark:text-gray-400 shadow-sm border" />
             </div>
             <div>
-              <label class="mb-2 block text-sm font-medium text-gray-700">Coordinador/a Técnico (Observador/a)</label>
+              <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Coordinador/a Técnico (Observador/a)</label>
               <input type="text" :value="user.name" disabled
-                class="w-full rounded-lg border-gray-200 bg-gray-50 p-2.5 text-sm text-gray-500 shadow-sm border" />
+                class="w-full rounded-lg border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 p-2.5 text-sm text-gray-500 dark:text-gray-400 shadow-sm border" />
             </div>
           </div>
         </div>
 
         <!-- Step 2: Perfil del Maestro -->
         <div v-show="currentStep === 1">
-          <h2 class="mb-4 text-xl font-semibold text-gray-800">II. Perfil del Maestro Técnico</h2>
+          <h2 class="mb-4 text-xl font-semibold text-gray-800 dark:text-gray-200">II. Perfil del Maestro Técnico</h2>
           <div class="grid gap-6 md:grid-cols-2">
             <div class="md:col-span-2">
-              <label class="mb-2 block text-sm font-medium text-gray-700">Seleccionar Maestro</label>
+              <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Seleccionar Maestro</label>
               <select v-model="form.teacher_id" @change="onTeacherSelect"
-                class="w-full rounded-lg border-gray-300 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border">
+                class="w-full rounded-lg border-gray-300 dark:border-gray-600 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border">
                 <option value="" disabled>Seleccione un maestro...</option>
                 <option v-for="t in availableTeachers" :key="t.id" :value="t.user.id">{{ t.nombre }} {{ t.apellido }}
                 </option>
@@ -105,36 +105,36 @@
             </div>
 
             <div>
-              <label class="mb-2 block text-sm font-medium text-gray-700">Sexo</label>
+              <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Sexo</label>
               <input type="text" :value="selectedTeacher?.sexo || '-'" disabled
-                class="w-full rounded-lg border-gray-200 bg-gray-50 p-2.5 text-sm text-gray-500 shadow-sm border" />
+                class="w-full rounded-lg border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 p-2.5 text-sm text-gray-500 dark:text-gray-400 shadow-sm border" />
             </div>
             <div>
-              <label class="mb-2 block text-sm font-medium text-gray-700">Cédula</label>
+              <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Cédula</label>
               <input type="text" :value="selectedTeacher?.cedula || '-'" disabled
-                class="w-full rounded-lg border-gray-200 bg-gray-50 p-2.5 text-sm text-gray-500 shadow-sm border" />
+                class="w-full rounded-lg border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 p-2.5 text-sm text-gray-500 dark:text-gray-400 shadow-sm border" />
             </div>
             <div>
-              <label class="mb-2 block text-sm font-medium text-gray-700">Teléfono</label>
+              <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Teléfono</label>
               <input type="text" :value="selectedTeacher?.telefono || '-'" disabled
-                class="w-full rounded-lg border-gray-200 bg-gray-50 p-2.5 text-sm text-gray-500 shadow-sm border" />
+                class="w-full rounded-lg border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 p-2.5 text-sm text-gray-500 dark:text-gray-400 shadow-sm border" />
             </div>
             <div>
-              <label class="mb-2 block text-sm font-medium text-gray-700">Correo Electrónico</label>
+              <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Correo Electrónico</label>
               <input type="text" :value="selectedTeacher?.user?.email || '-'" disabled
-                class="w-full rounded-lg border-gray-200 bg-gray-50 p-2.5 text-sm text-gray-500 shadow-sm border" />
+                class="w-full rounded-lg border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 p-2.5 text-sm text-gray-500 dark:text-gray-400 shadow-sm border" />
             </div>
           </div>
         </div>
 
         <!-- Step 3: Módulo Formativo -->
         <div v-show="currentStep === 2">
-          <h2 class="mb-4 text-xl font-semibold text-gray-800">III. Módulo Formativo que Imparte</h2>
+          <h2 class="mb-4 text-xl font-semibold text-gray-800 dark:text-gray-200">III. Módulo Formativo que Imparte</h2>
           <div class="grid gap-6">
             <div>
-              <label class="mb-2 block text-sm font-medium text-gray-700">Seleccionar Asignación (Clase)</label>
+              <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Seleccionar Asignación (Clase)</label>
               <select v-model="form.assignment_id" @change="onAssignmentSelect"
-                class="w-full rounded-lg border-gray-300 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border">
+                class="w-full rounded-lg border-gray-300 dark:border-gray-600 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border">
                 <option value="" disabled>Seleccione una asignación...</option>
                 <option v-for="a in assignments" :key="a.id" :value="a.id">
                   {{ a.materia?.nombre }} - {{ a.aula?.nombre }} ({{ a.aula?.grado_cardinal }}° {{ a.aula?.seccion }})
@@ -145,49 +145,49 @@
 
             <div class="grid gap-6 md:grid-cols-2">
               <div>
-                <label class="mb-2 block text-sm font-medium text-gray-700">Familia Profesional</label>
+                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Familia Profesional</label>
                 <input type="text" :value="selectedAssignment?.aula?.titulo?.familia?.nombre || '-'" disabled
-                  class="w-full rounded-lg border-gray-200 bg-gray-50 p-2.5 text-sm text-gray-500 shadow-sm border" />
+                  class="w-full rounded-lg border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 p-2.5 text-sm text-gray-500 dark:text-gray-400 shadow-sm border" />
               </div>
               <div>
-                <label class="mb-2 block text-sm font-medium text-gray-700">Título / Carrera</label>
+                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Título / Carrera</label>
                 <input type="text" :value="selectedAssignment?.aula?.titulo?.nombre || '-'" disabled
-                  class="w-full rounded-lg border-gray-200 bg-gray-50 p-2.5 text-sm text-gray-500 shadow-sm border" />
+                  class="w-full rounded-lg border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 p-2.5 text-sm text-gray-500 dark:text-gray-400 shadow-sm border" />
               </div>
               <div>
-                <label class="mb-2 block text-sm font-medium text-gray-700">Módulo Formativo</label>
+                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Módulo Formativo</label>
                 <input type="text" :value="selectedAssignment?.materia?.nombre || '-'" disabled
-                  class="w-full rounded-lg border-gray-200 bg-gray-50 p-2.5 text-sm text-gray-500 shadow-sm border" />
+                  class="w-full rounded-lg border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 p-2.5 text-sm text-gray-500 dark:text-gray-400 shadow-sm border" />
               </div>
               <div>
-                <label class="mb-2 block text-sm font-medium text-gray-700">Grado / Sección</label>
+                <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Grado / Sección</label>
                 <input type="text"
                   :value="selectedAssignment?.aula ? `${selectedAssignment.aula.grado_cardinal}° ${selectedAssignment.aula.seccion}` : '-'"
                   disabled
-                  class="w-full rounded-lg border-gray-200 bg-gray-50 p-2.5 text-sm text-gray-500 shadow-sm border" />
+                  class="w-full rounded-lg border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 p-2.5 text-sm text-gray-500 dark:text-gray-400 shadow-sm border" />
               </div>
             </div>
 
             <!-- Student Counts -->
-            <div class="grid grid-cols-3 gap-4 rounded-lg bg-gray-50 p-4 border border-gray-200">
+            <div class="grid grid-cols-3 gap-4 rounded-lg bg-gray-50 dark:bg-gray-900/50 p-4 border border-gray-200 dark:border-gray-700">
               <div>
-                <label class="block text-xs font-bold text-gray-500 uppercase">Masculinos</label>
-                <span class="text-lg font-semibold text-gray-800">{{ form.estudiantes_m }}</span>
+                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Masculinos</label>
+                <span class="text-lg font-semibold text-gray-800 dark:text-gray-200">{{ form.estudiantes_m }}</span>
               </div>
               <div>
-                <label class="block text-xs font-bold text-gray-500 uppercase">Femeninos</label>
-                <span class="text-lg font-semibold text-gray-800">{{ form.estudiantes_f }}</span>
+                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Femeninos</label>
+                <span class="text-lg font-semibold text-gray-800 dark:text-gray-200">{{ form.estudiantes_f }}</span>
               </div>
               <div>
-                <label class="block text-xs font-bold text-gray-500 uppercase">Total</label>
+                <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase">Total</label>
                 <span class="text-lg font-semibold text-primary-600">{{ form.estudiantes_t }}</span>
               </div>
             </div>
 
             <div>
-              <label class="mb-2 block text-sm font-medium text-gray-700">Resultado de Aprendizaje (Tema)</label>
+              <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Resultado de Aprendizaje (Tema)</label>
               <textarea v-model="form.topic" rows="3"
-                class="w-full rounded-lg border-gray-300 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border"
+                class="w-full rounded-lg border-gray-300 dark:border-gray-600 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border"
                 placeholder="Ingrese el resultado de aprendizaje o tema tratado..."></textarea>
             </div>
           </div>
@@ -195,32 +195,32 @@
 
         <!-- Step 4+: Dimensions (Dynamic) -->
         <div v-if="currentStep >= 3 && currentStep < steps.length - 1">
-          <h2 class="mb-6 text-xl font-bold text-gray-800">{{ currentDimensionConfig?.title }}</h2>
+          <h2 class="mb-6 text-xl font-bold text-gray-800 dark:text-gray-200">{{ currentDimensionConfig?.title }}</h2>
 
           <div v-for="(section, secIndex) in currentDimensionConfig?.sections" :key="secIndex"
             class="mb-8 border-b pb-6 last:border-0">
             <h3 class="mb-4 text-lg font-semibold text-primary-700">{{ section.title }}</h3>
 
             <div v-for="q in section.questions" :key="q.id"
-              class="mb-6 rounded-lg bg-gray-50 p-4 border border-gray-200">
-              <p class="mb-3 text-sm font-medium text-gray-900">{{ q.text }}</p>
+              class="mb-6 rounded-lg bg-gray-50 dark:bg-gray-900/50 p-4 border border-gray-200 dark:border-gray-700">
+              <p class="mb-3 text-sm font-medium text-gray-900 dark:text-gray-100">{{ q.text }}</p>
 
               <!-- Radio Options -->
               <div class="mb-3 flex flex-wrap gap-4">
                 <label
-                  class="flex cursor-pointer items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 hover:bg-gray-50">
+                  class="flex cursor-pointer items-center gap-2 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 hover:bg-gray-50 dark:bg-gray-900/50">
                   <input type="radio" :name="q.id" :value="3" v-model="form.data[q.id]!.value"
                     class="h-4 w-4 text-primary-600 focus:ring-primary-500" />
                   <span class="text-sm">Se aprecia</span>
                 </label>
                 <label
-                  class="flex cursor-pointer items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 hover:bg-gray-50">
+                  class="flex cursor-pointer items-center gap-2 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 hover:bg-gray-50 dark:bg-gray-900/50">
                   <input type="radio" :name="q.id" :value="2" v-model="form.data[q.id]!.value"
                     class="h-4 w-4 text-yellow-500 focus:ring-yellow-500" />
                   <span class="text-sm">Parcialmente</span>
                 </label>
                 <label
-                  class="flex cursor-pointer items-center gap-2 rounded-md border border-gray-200 bg-white px-3 py-2 hover:bg-gray-50">
+                  class="flex cursor-pointer items-center gap-2 rounded-md border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-2 hover:bg-gray-50 dark:bg-gray-900/50">
                   <input type="radio" :name="q.id" :value="1" v-model="form.data[q.id]!.value"
                     class="h-4 w-4 text-red-500 focus:ring-red-500" />
                   <span class="text-sm">No se aprecia</span>
@@ -229,19 +229,19 @@
 
               <!-- Observation -->
               <input type="text" v-model="form.data[q.id]!.obs" placeholder="Observaciones..."
-                class="w-full rounded-md border-gray-300 py-1.5 px-3 text-sm focus:border-primary-500 border" />
+                class="w-full rounded-md border-gray-300 dark:border-gray-600 py-1.5 px-3 text-sm focus:border-primary-500 border" />
             </div>
           </div>
         </div>
 
         <!-- Step Last: Finalize -->
         <div v-show="currentStep === steps.length - 1">
-          <h2 class="mb-4 text-xl font-semibold text-gray-800">Acuerdos y Finalización</h2>
+          <h2 class="mb-4 text-xl font-semibold text-gray-800 dark:text-gray-200">Acuerdos y Finalización</h2>
 
           <div class="mb-6">
-            <label class="mb-2 block text-sm font-medium text-gray-700">Acuerdos y/o compromisos para la mejora</label>
+            <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Acuerdos y/o compromisos para la mejora</label>
             <textarea v-model="form.agreements" rows="6"
-              class="w-full rounded-lg border-gray-300 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border"
+              class="w-full rounded-lg border-gray-300 dark:border-gray-600 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border"
               placeholder="Describa los acuerdos establecidos..."></textarea>
           </div>
 
@@ -255,13 +255,13 @@
       <!-- Navigation Buttons -->
       <div class="mt-8 flex justify-between border-t pt-6">
         <button v-if="currentStep > 0 && !isReadOnly" @click="prevStep"
-          class="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
+          class="flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50">
           <Icon name="ph:arrow-left" /> Anterior
         </button>
         <div v-else></div> <!-- Spacer -->
 
         <button v-if="isReadOnly" @click="$router.push('/coordinacion/acompanamientos')"
-          class="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50">
+          class="flex items-center gap-2 rounded-lg border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-5 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50">
           <Icon name="ph:sign-out" /> Salir a la Lista
         </button>
 

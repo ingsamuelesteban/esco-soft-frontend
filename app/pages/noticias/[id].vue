@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50 flex flex-col pt-20">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900/50 flex flex-col pt-20">
     <!-- Breadcrumbs / Back navigation -->
     <div class="max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 mt-8">
       <NuxtLink to="/" class="inline-flex items-center gap-2 text-sm font-semibold text-blue-600 hover:text-blue-800 transition-colors group">
@@ -15,27 +15,27 @@
       <!-- Loading State -->
       <div v-if="loading" class="flex flex-col items-center justify-center py-20 grayscale opacity-50">
         <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
-        <p class="text-gray-500 font-medium italic">Cargando noticia...</p>
+        <p class="text-gray-500 dark:text-gray-400 font-medium italic">Cargando noticia...</p>
       </div>
 
       <!-- Error State -->
-      <div v-else-if="error" class="bg-white rounded-3xl p-12 text-center shadow-xl border border-red-50">
+      <div v-else-if="error" class="bg-white dark:bg-gray-800 rounded-3xl p-12 text-center shadow-xl border border-red-50">
         <div class="w-20 h-20 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-6">
           <svg class="w-10 h-10 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
         </div>
-        <h2 class="text-2xl font-bold text-gray-900 mb-2">Noticia no encontrada</h2>
-        <p class="text-gray-600 mb-8">{{ error }}</p>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-2">Noticia no encontrada</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-8">{{ error }}</p>
         <NuxtLink to="/" class="px-8 py-3 bg-blue-600 text-white rounded-full font-bold hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-500/25">
           Ver todas las noticias
         </NuxtLink>
       </div>
 
       <!-- News Content -->
-      <article v-else-if="news" class="bg-white rounded-[2.5rem] overflow-hidden shadow-2xl border border-gray-100 flex flex-col">
+      <article v-else-if="news" class="bg-white dark:bg-gray-800 rounded-[2.5rem] overflow-hidden shadow-2xl border border-gray-100 dark:border-gray-700 flex flex-col">
         <!-- Feature Image (if exists) -->
-        <div v-if="news.attachment_path && isImage(news.attachment_path)" class="w-full h-[400px] relative overflow-hidden bg-gray-100">
+        <div v-if="news.attachment_path && isImage(news.attachment_path)" class="w-full h-[400px] relative overflow-hidden bg-gray-100 dark:bg-gray-800">
           <img :src="news.attachment_path" :alt="news.title" class="w-full h-full object-cover" />
           <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
         </div>
@@ -51,28 +51,28 @@
                 Publicado el {{ formatDate(news.published_at) }}
               </span>
             </div>
-            <h1 class="text-4xl md:text-5xl font-black text-gray-900 leading-tight">
+            <h1 class="text-4xl md:text-5xl font-black text-gray-900 dark:text-gray-100 leading-tight">
               {{ news.title }}
             </h1>
           </div>
 
           <!-- Body Text -->
-          <div class="text-lg text-gray-700 leading-relaxed whitespace-pre-wrap font-inter">
+          <div class="text-lg text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-wrap font-inter">
             {{ news.body }}
           </div>
 
           <!-- Attachment (if not an image or besides the image) -->
-          <div v-if="news.attachment_path" class="pt-8 border-t border-gray-100">
-            <h4 class="text-sm font-bold text-gray-900 uppercase tracking-widest mb-4">Archivo Adjunto</h4>
+          <div v-if="news.attachment_path" class="pt-8 border-t border-gray-100 dark:border-gray-700">
+            <h4 class="text-sm font-bold text-gray-900 dark:text-gray-100 uppercase tracking-widest mb-4">Archivo Adjunto</h4>
             <div class="flex items-center p-6 bg-slate-50 rounded-3xl border border-slate-100 group">
-              <div class="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-blue-600 shadow-sm mr-4 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+              <div class="w-12 h-12 bg-white dark:bg-gray-800 rounded-2xl flex items-center justify-center text-blue-600 shadow-sm mr-4 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5l5 5v11a2 2 0 01-2 2z" />
                 </svg>
               </div>
               <div class="flex-grow min-w-0">
-                <p class="text-sm font-bold text-gray-900 truncate">Documento de la noticia</p>
-                <p class="text-xs text-gray-500">Descargue el archivo adjunto para más información</p>
+                <p class="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">Documento de la noticia</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">Descargue el archivo adjunto para más información</p>
               </div>
               <button @click="downloadFile" :disabled="downloading" class="ml-4 px-6 py-2.5 bg-gray-900 text-white text-sm font-bold rounded-2xl hover:bg-black transition-all disabled:opacity-50 shadow-lg shadow-black/10">
                 {{ downloading ? 'Preparando...' : 'Descargar' }}

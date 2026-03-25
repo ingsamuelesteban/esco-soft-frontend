@@ -6,9 +6,9 @@
 
       <!-- Modal -->
       <div
-        class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+        class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
         <!-- Header -->
-        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
           <div class="flex items-center justify-between">
             <div class="flex items-center">
               <div
@@ -19,15 +19,15 @@
                 </svg>
               </div>
               <div class="ml-4">
-                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
                   Estudiantes - {{ aulaLabel }}
                 </h3>
-                <p class="text-sm text-gray-500">
+                <p class="text-sm text-gray-500 dark:text-gray-400">
                   Gestiona los estudiantes asignados a esta aula
                 </p>
               </div>
             </div>
-            <button @click="$emit('close')" class="text-gray-400 hover:text-gray-600">
+            <button @click="$emit('close')" class="text-gray-400 hover:text-gray-600 dark:text-gray-400">
               <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
               </svg>
@@ -36,16 +36,16 @@
         </div>
 
         <!-- Content -->
-        <div class="bg-white px-4 pb-4 sm:p-6 sm:pt-0">
+        <div class="bg-white dark:bg-gray-800 px-4 pb-4 sm:p-6 sm:pt-0">
           <!-- Stats -->
           <div class="mb-6 grid grid-cols-1 gap-4 sm:grid-cols-3">
             <div class="bg-blue-50 p-4 rounded-lg">
               <div class="text-2xl font-semibold text-blue-900">{{ estudiantesAsignados.length }}</div>
               <div class="text-sm text-blue-700">Estudiantes asignados</div>
             </div>
-            <div class="bg-gray-50 p-4 rounded-lg">
-              <div class="text-2xl font-semibold text-gray-900">{{ estudiantesSinAula.length }}</div>
-              <div class="text-sm text-gray-700">Sin aula asignada</div>
+            <div class="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg">
+              <div class="text-2xl font-semibold text-gray-900 dark:text-gray-100">{{ estudiantesSinAula.length }}</div>
+              <div class="text-sm text-gray-700 dark:text-gray-300">Sin aula asignada</div>
             </div>
             <div class="bg-green-50 p-4 rounded-lg">
               <div class="text-2xl font-semibold text-green-900">{{ aula?.capacidad || '—' }}</div>
@@ -54,13 +54,13 @@
           </div>
 
           <!-- Tabs -->
-          <div class="border-b border-gray-200 mb-6">
+          <div class="border-b border-gray-200 dark:border-gray-700 mb-6">
             <nav class="-mb-px flex space-x-8">
               <button @click="activeTab = 'assigned'" :class="[
                 'py-2 px-1 border-b-2 font-medium text-sm',
                 activeTab === 'assigned'
                   ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600'
               ]">
                 Estudiantes Asignados ({{ estudiantesAsignados.length }})
               </button>
@@ -68,7 +68,7 @@
                 'py-2 px-1 border-b-2 font-medium text-sm',
                 activeTab === 'unassigned'
                   ? 'border-blue-500 text-blue-600'
-                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                  : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600'
               ]">
                 Sin Aula ({{ estudiantesSinAula.length }})
               </button>
@@ -77,36 +77,36 @@
 
           <!-- Tab Content -->
           <div v-if="activeTab === 'assigned'" class="space-y-4">
-            <div v-if="loading" class="text-center py-8 text-gray-500">
+            <div v-if="loading" class="text-center py-8 text-gray-500 dark:text-gray-400">
               Cargando estudiantes...
             </div>
-            <div v-else-if="estudiantesAsignados.length === 0" class="text-center py-8 text-gray-500">
+            <div v-else-if="estudiantesAsignados.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400">
               No hay estudiantes asignados a esta aula
             </div>
             <div v-else class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-              <table class="min-w-full divide-y divide-gray-300">
-                <thead class="bg-gray-50">
+              <table class="min-w-full divide-y divide-gray-300 dark:divide-gray-600">
+                <thead class="bg-gray-50 dark:bg-gray-900/50">
                   <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">#</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">#</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nombre
                     </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">RNE</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">RNE</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones
                     </th>
                   </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
-                  <tr v-for="estudiante in estudiantesAsignados" :key="estudiante.id" class="hover:bg-gray-50">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                  <tr v-for="estudiante in estudiantesAsignados" :key="estudiante.id" class="hover:bg-gray-50 dark:bg-gray-900/50">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
                       {{ estudiante.numero_orden }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-sm font-medium text-gray-900">
+                      <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
                         {{ estudiante.nombres }} {{ estudiante.apellidos }}
                       </div>
-                      <div class="text-sm text-gray-500">{{ estudiante.cedula }}</div>
+                      <div class="text-sm text-gray-500 dark:text-gray-400">{{ estudiante.cedula }}</div>
                     </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                       {{ estudiante.rne }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
@@ -122,22 +122,22 @@
           </div>
 
           <div v-if="activeTab === 'unassigned'" class="space-y-4">
-            <div v-if="loadingUnassigned" class="text-center py-8 text-gray-500">
+            <div v-if="loadingUnassigned" class="text-center py-8 text-gray-500 dark:text-gray-400">
               Cargando estudiantes...
             </div>
-            <div v-else-if="estudiantesSinAula.length === 0" class="text-center py-8 text-gray-500">
+            <div v-else-if="estudiantesSinAula.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400">
               Todos los estudiantes tienen aula asignada
             </div>
             <div v-else>
               <!-- Barra de acciones múltiples -->
               <div v-if="estudiantesSinAula.length > 0"
-                class="flex items-center justify-between mb-4 p-3 bg-gray-50 rounded-lg">
+                class="flex items-center justify-between mb-4 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
                 <div class="flex items-center space-x-3">
                   <label class="flex items-center">
                     <input type="checkbox" :checked="todosSeleccionados"
                       :indeterminate="algunosSeleccionados && !todosSeleccionados" @change="toggleSeleccionTodos"
-                      class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-                    <span class="ml-2 text-sm text-gray-700">
+                      class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded" />
+                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">
                       {{ estudiantesSeleccionados.size > 0 ? `${estudiantesSeleccionados.size} seleccionado(s)` :
                         'Seleccionar todos' }}
                     </span>
@@ -158,36 +158,36 @@
               </div>
 
               <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                <table class="min-w-full divide-y divide-gray-300">
-                  <thead class="bg-gray-50">
+                <table class="min-w-full divide-y divide-gray-300 dark:divide-gray-600">
+                  <thead class="bg-gray-50 dark:bg-gray-900/50">
                     <tr>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         <input type="checkbox" :checked="todosSeleccionados"
                           :indeterminate="algunosSeleccionados && !todosSeleccionados" @change="toggleSeleccionTodos"
-                          class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                          class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded" />
                       </th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nombre
                       </th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">RNE
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">RNE
                       </th>
-                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Acciones</th>
                     </tr>
                   </thead>
-                  <tbody class="bg-white divide-y divide-gray-200">
-                    <tr v-for="estudiante in estudiantesSinAula" :key="estudiante.id" class="hover:bg-gray-50">
+                  <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tr v-for="estudiante in estudiantesSinAula" :key="estudiante.id" class="hover:bg-gray-50 dark:bg-gray-900/50">
                       <td class="px-6 py-4 whitespace-nowrap">
                         <input type="checkbox" :checked="estudiantesSeleccionados.has(estudiante.id)"
                           @change="toggleSeleccionEstudiante(estudiante.id)"
-                          class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                          class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded" />
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap">
-                        <div class="text-sm font-medium text-gray-900">
+                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
                           {{ estudiante.nombres }} {{ estudiante.apellidos }}
                         </div>
-                        <div class="text-sm text-gray-500">{{ estudiante.cedula }}</div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">{{ estudiante.cedula }}</div>
                       </td>
-                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                         {{ estudiante.rne }}
                       </td>
                       <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
@@ -205,7 +205,7 @@
         </div>
 
         <!-- Footer -->
-        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+        <div class="bg-gray-50 dark:bg-gray-900/50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
           <button @click="$emit('close')" type="button"
             class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
             Cerrar

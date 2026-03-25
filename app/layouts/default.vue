@@ -1,10 +1,10 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-300">
     <!-- Overlay para móvil -->
     <Transition enter-active-class="transition-opacity duration-300" enter-from-class="opacity-0"
       enter-to-class="opacity-100" leave-active-class="transition-opacity duration-200" leave-from-class="opacity-100"
       leave-to-class="opacity-0">
-      <div v-if="isSidebarOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 z-30 md:hidden" @click="closeSidebar">
+      <div v-if="isSidebarOpen" class="fixed inset-0 bg-gray-900 bg-opacity-50 dark:bg-opacity-70 z-30 md:hidden" @click="closeSidebar">
       </div>
     </Transition>
 
@@ -32,7 +32,7 @@
         <EscosoftNav @toggle-sidebar="toggleSidebar" />
 
         <!-- Main content -->
-        <main class="flex-1 overflow-y-auto bg-gray-50">
+        <main class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
           <div class="container mx-auto px-4 py-6 sm:px-6 lg:px-8">
             <slot />
           </div>

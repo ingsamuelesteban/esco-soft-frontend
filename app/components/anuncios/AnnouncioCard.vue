@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
+  <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md transition-shadow overflow-hidden">
     <!-- Top accent bar -->
     <div :class="announcement.visible_para_estudiantes ? 'bg-blue-500' : 'bg-amber-500'" class="h-1 w-full" />
 
@@ -14,7 +14,7 @@
                 d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
             </svg>
           </span>
-          <h3 class="font-semibold text-gray-900 text-sm leading-tight truncate">{{ announcement.title }}</h3>
+          <h3 class="font-semibold text-gray-900 dark:text-gray-100 text-sm leading-tight truncate">{{ announcement.title }}</h3>
         </div>
         <!-- Solo personal badge -->
         <span v-if="!announcement.visible_para_estudiantes"
@@ -24,7 +24,7 @@
       </div>
 
       <!-- Body excerpt -->
-      <p class="mt-2 text-sm text-gray-600 line-clamp-3">{{ announcement.body }}</p>
+      <p class="mt-2 text-sm text-gray-600 dark:text-gray-400 line-clamp-3">{{ announcement.body }}</p>
 
       <!-- Footer -->
       <div class="mt-3 flex items-center justify-between text-xs text-gray-400">

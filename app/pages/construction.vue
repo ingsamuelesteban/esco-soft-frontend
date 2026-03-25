@@ -10,11 +10,11 @@ definePageMeta({
             <Icon name="lucide:hard-hat" class="w-24 h-24 text-blue-500" />
         </div>
 
-        <h1 class="text-4xl font-bold text-gray-900 mb-4">
+        <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-4">
             Página en Construcción
         </h1>
 
-        <p class="text-xl text-gray-600 mb-8 max-w-md">
+        <p class="text-xl text-gray-600 dark:text-gray-400 mb-8 max-w-md">
             Estamos trabajando duro para traerte esta funcionalidad.
             Regresa pronto para ver las novedades.
         </p>

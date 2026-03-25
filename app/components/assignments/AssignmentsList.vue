@@ -1,8 +1,8 @@
 <template>
-  <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+  <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
     <div class="p-4 flex items-center justify-between gap-4 flex-wrap">
       <div class="flex items-center gap-2">
-        <label class="text-sm text-gray-600">Año lectivo</label>
+        <label class="text-sm text-gray-600 dark:text-gray-400">Año lectivo</label>
         <select v-model="anioId" class="border rounded px-2 py-1 text-sm h-8 w-40">
            <option :value="null">Seleccione...</option>
            <option v-for="a in anios" :key="a.id" :value="a.id">
@@ -11,7 +11,7 @@
         </select>
       </div>
       <div class="flex items-center gap-2">
-        <label class="text-sm text-gray-600">Aula</label>
+        <label class="text-sm text-gray-600 dark:text-gray-400">Aula</label>
         <select v-model.number="aulaId" class="border rounded px-2 py-1 text-sm h-8">
           <option :value="undefined">Todas</option>
           <option v-for="a in aulas" :key="a.id" :value="a.id">
@@ -21,7 +21,7 @@
       </div>
       <div class="ml-auto flex items-center gap-2">
         <button @click="onRefresh"
-          class="inline-flex items-center justify-center p-1.5 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-colors"
+          class="inline-flex items-center justify-center p-1.5 rounded-md text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800 transition-colors"
           title="Refrescar">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -39,20 +39,20 @@
     </div>
 
     <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-900/50">
           <tr>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Materia</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Profesor</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aula</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Horas/Sem</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Materia</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Profesor</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Aula</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Horas/Sem</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-for="a in filtered" :key="a.id" class="hover:bg-gray-50">
-            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">{{ a.materia?.nombre }}</td>
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <tr v-for="a in filtered" :key="a.id" class="hover:bg-gray-50 dark:bg-gray-900/50">
+            <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ a.materia?.nombre }}</td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">{{ a.profesor ? (a.profesor.nombre + ' ' +
               a.profesor.apellido) : '—' }}</td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">{{ aulaName(a.aula) }}</td>
@@ -80,10 +80,10 @@
             </td>
           </tr>
           <tr v-if="!loading && filtered && filtered.length === 0">
-            <td colspan="6" class="px-4 py-6 text-center text-sm text-gray-500">Sin resultados</td>
+            <td colspan="6" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Sin resultados</td>
           </tr>
           <tr v-if="loading">
-            <td colspan="6" class="px-4 py-6 text-center text-sm text-gray-500">Cargando...</td>
+            <td colspan="6" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Cargando...</td>
           </tr>
         </tbody>
       </table>

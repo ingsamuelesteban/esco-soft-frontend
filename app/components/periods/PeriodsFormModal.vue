@@ -1,55 +1,55 @@
 <template>
   <div v-if="modelValue" class="fixed inset-0 z-50 flex items-center justify-center">
     <div class="absolute inset-0 bg-black/40" @click="onClose" />
-    <div class="relative bg-white rounded-lg shadow-xl w-full max-w-lg mx-4 p-5">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ isEdit ? 'Editar Período' : 'Nuevo Período' }}</h3>
+    <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-lg mx-4 p-5">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{{ isEdit ? 'Editar Período' : 'Nuevo Período' }}</h3>
 
       <form @submit.prevent="onSubmit" class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Etiqueta</label>
-          <input ref="initialInput" v-model.trim="form.label" class="w-full rounded-md border-gray-300 text-sm"
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Etiqueta</label>
+          <input ref="initialInput" v-model.trim="form.label" class="w-full rounded-md border-gray-300 dark:border-gray-600 text-sm"
             placeholder="1ra hora, Receso, etc." />
           <p v-if="errors.label" class="mt-1 text-sm text-red-600">{{ errors.label }}</p>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Hora Inicio</label>
-            <input type="time" v-model="form.start_time" class="w-full rounded-md border-gray-300 text-sm" />
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hora Inicio</label>
+            <input type="time" v-model="form.start_time" class="w-full rounded-md border-gray-300 dark:border-gray-600 text-sm" />
             <p v-if="errors.start_time" class="mt-1 text-sm text-red-600">{{ errors.start_time }}</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Hora Fin</label>
-            <input type="time" v-model="form.end_time" class="w-full rounded-md border-gray-300 text-sm" />
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hora Fin</label>
+            <input type="time" v-model="form.end_time" class="w-full rounded-md border-gray-300 dark:border-gray-600 text-sm" />
             <p v-if="errors.end_time" class="mt-1 text-sm text-red-600">{{ errors.end_time }}</p>
           </div>
         </div>
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
-            <select v-model="form.type" class="w-full rounded-md border-gray-300 text-sm">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tipo</label>
+            <select v-model="form.type" class="w-full rounded-md border-gray-300 dark:border-gray-600 text-sm">
               <option value="class">Clase</option>
               <option value="break">Receso</option>
             </select>
             <p v-if="errors.type" class="mt-1 text-sm text-red-600">{{ errors.type }}</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Número de Período</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Número de Período</label>
             <input type="number" min="1" v-model.number="form.period_number" :disabled="form.type === 'break'"
-              class="w-full rounded-md border-gray-300 text-sm disabled:bg-gray-100" placeholder="1, 2, 3..." />
+              class="w-full rounded-md border-gray-300 dark:border-gray-600 text-sm disabled:bg-gray-100 dark:bg-gray-800" placeholder="1, 2, 3..." />
             <p v-if="errors.period_number" class="mt-1 text-sm text-red-600">{{ errors.period_number }}</p>
           </div>
         </div>
 
         <div v-if="isEdit" class="flex items-center gap-2">
-          <input id="is_active" type="checkbox" v-model="form.is_active" class="rounded border-gray-300" />
-          <label for="is_active" class="text-sm text-gray-700">Activo</label>
+          <input id="is_active" type="checkbox" v-model="form.is_active" class="rounded border-gray-300 dark:border-gray-600" />
+          <label for="is_active" class="text-sm text-gray-700 dark:text-gray-300">Activo</label>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
           <button type="button" @click="onClose"
-            class="px-3 py-1.5 rounded-md text-sm text-gray-700 hover:bg-gray-100">Cancelar</button>
+            class="px-3 py-1.5 rounded-md text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800">Cancelar</button>
           <button type="submit" class="px-3 py-1.5 rounded-md text-sm text-white bg-blue-600 hover:bg-blue-700">{{
             isEdit ? 'Guardar' : 'Crear' }}</button>
         </div>

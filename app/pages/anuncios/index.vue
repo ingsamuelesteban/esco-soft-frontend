@@ -1,11 +1,11 @@
 <template>
   <div>
     <!-- Header -->
-    <header class="bg-white border-b border-gray-200 px-6 py-4">
+    <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900">Anuncios</h1>
-          <p class="text-sm text-gray-600 mt-1">Publicaciones institucionales para el personal y estudiantes</p>
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Anuncios</h1>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Publicaciones institucionales para el personal y estudiantes</p>
         </div>
         <button v-if="authStore.user?.role === 'admin' || authStore.user?.role === 'master'" @click="openModal"
           class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-sm">
@@ -47,8 +47,8 @@
               d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
           </svg>
         </div>
-        <h3 class="text-sm font-medium text-gray-900">No hay anuncios publicados</h3>
-        <p class="mt-1 text-sm text-gray-500">Haz clic en "Nuevo Anuncio" para publicar el primero.</p>
+        <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">No hay anuncios publicados</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Haz clic en "Nuevo Anuncio" para publicar el primero.</p>
       </div>
 
       <!-- Grid of announcements -->
@@ -60,10 +60,10 @@
 
     <!-- Create Modal -->
     <div v-if="showModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div class="bg-white rounded-xl shadow-xl w-full max-w-lg">
-        <div class="flex items-center justify-between p-6 border-b border-gray-200">
-          <h2 class="text-lg font-semibold text-gray-900">Nuevo Anuncio</h2>
-          <button @click="closeModal" class="text-gray-400 hover:text-gray-600">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-lg">
+        <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Nuevo Anuncio</h2>
+          <button @click="closeModal" class="text-gray-400 hover:text-gray-600 dark:text-gray-400">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -78,35 +78,35 @@
         <form @submit.prevent="submitAnnouncement" class="p-6 space-y-4">
           <!-- Title -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Título *</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Título *</label>
             <input v-model="form.title" type="text" required maxlength="255"
               placeholder="Ej: Reunión de docentes el viernes"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
           </div>
 
           <!-- Body -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Descripción *</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripción *</label>
             <textarea v-model="form.body" rows="5" required placeholder="Escribe el contenido del anuncio..."
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"></textarea>
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"></textarea>
           </div>
 
           <!-- Attachment -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Adjunto (opcional)</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Adjunto (opcional)</label>
             <input type="file" @change="handleFile" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
-              class="w-full text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+              class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
             <p class="mt-1 text-xs text-gray-400">PDF, Word, Excel o imagen. Máx 20 MB.</p>
           </div>
 
           <!-- Visible para estudiantes -->
           <label
-            class="flex items-center gap-3 cursor-pointer select-none bg-gray-50 rounded-lg p-3 border border-gray-200">
+            class="flex items-center gap-3 cursor-pointer select-none bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
             <input v-model="form.visible_para_estudiantes" type="checkbox"
-              class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+              class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500" />
             <div>
-              <span class="text-sm font-medium text-gray-800">Visible para estudiantes</span>
-              <p class="text-xs text-gray-500 mt-0.5">Aparecerá en el portal de alumnos</p>
+              <span class="text-sm font-medium text-gray-800 dark:text-gray-200">Visible para estudiantes</span>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Aparecerá en el portal de alumnos</p>
             </div>
           </label>
 
@@ -114,7 +114,7 @@
           <label
             class="flex items-center gap-3 cursor-pointer select-none bg-blue-50/50 rounded-lg p-3 border border-blue-100">
             <input v-model="form.visible_en_web" type="checkbox"
-              class="w-4 h-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+              class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500" />
             <div>
               <span class="text-sm font-medium text-blue-900">Mostrar en la web pública</span>
               <p class="text-xs text-blue-600/70 mt-0.5">Aparecerá en la página principal (Landing Page)</p>
@@ -124,7 +124,7 @@
           <!-- Actions -->
           <div class="flex justify-end gap-3 pt-2">
             <button type="button" @click="closeModal"
-              class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+              class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 transition-colors">
               Cancelar
             </button>
             <button type="submit" :disabled="saving"

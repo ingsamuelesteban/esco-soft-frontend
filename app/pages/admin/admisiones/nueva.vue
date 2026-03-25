@@ -3,8 +3,8 @@
     <!-- Header -->
     <div class="flex justify-between items-start">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900">Formulario de Pre-admisión</h1>
-        <p class="text-sm text-gray-500 mt-1">Complete todos los datos requeridos para la inscripción del estudiante.
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Formulario de Pre-admisión</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Complete todos los datos requeridos para la inscripción del estudiante.
         </p>
       </div>
       <button v-if="form.pdf_token" @click="downloadPdf" type="button"
@@ -28,17 +28,17 @@
     <form @submit.prevent="submitForm" class="space-y-8">
 
       <!-- Sección 1: Procedencia y Área -->
-      <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
+      <div class="bg-white dark:bg-gray-800 shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
         <div class="px-4 py-6 sm:p-8">
-          <h2 class="text-lg font-semibold leading-7 text-gray-900 mb-4 border-b pb-2">1. Información de Ingreso</h2>
+          <h2 class="text-lg font-semibold leading-7 text-gray-900 dark:text-gray-100 mb-4 border-b pb-2">1. Información de Ingreso</h2>
           <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
             <div class="sm:col-span-2">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Fecha</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Fecha</label>
               <input type="date" v-model="form.admision.fecha" required
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
             </div>
             <div class="sm:col-span-2">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Centro de Procedencia</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Centro de Procedencia</label>
               <CentroProcedenciaAutocomplete 
                 v-model="form.admision.centro_procedencia_id"
                 @centro-selected="handleCentroSelected"
@@ -47,9 +47,9 @@
               />
             </div>
             <div class="sm:col-span-2">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Año Lectivo Admisión</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Año Lectivo Admisión</label>
               <select v-model="form.admision.anio_lectivo_id" required
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
                 <option value="" disabled>Seleccione Año Lectivo</option>
                 <option v-for="anio in aniosLectivos" :key="anio.id" :value="anio.id">
                   {{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}
@@ -57,9 +57,9 @@
               </select>
             </div>
             <div class="sm:col-span-2">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Área a Escoger</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Área a Escoger</label>
               <select v-model="form.admision.titulo_id" required
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
                 <option value="" disabled>Seleccione un área (Título)</option>
                 <option v-for="titulo in titulos" :key="titulo.id" :value="titulo.id">
                   {{ titulo.nombre }}
@@ -69,21 +69,21 @@
             <div class="sm:col-span-6 flex flex-col gap-3 mt-4">
               <div class="flex items-center gap-2">
                 <input type="checkbox" id="pago_folleto" v-model="form.admision.pago"
-                  class="h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-600" />
-                <label for="pago_folleto" class="text-sm text-gray-900 font-medium">Pago de folleto y derecho a examen $100.00</label>
+                  class="h-5 w-5 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-600" />
+                <label for="pago_folleto" class="text-sm text-gray-900 dark:text-gray-100 font-medium">Pago de folleto y derecho a examen $100.00</label>
               </div>
               <div class="flex items-center gap-2">
                 <input type="checkbox" id="recomendado" v-model="form.admision.recomendado"
-                  class="h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-600" />
-                <label for="recomendado" class="text-sm text-gray-900 font-medium">¿Recomendado? (Uso interno)</label>
+                  class="h-5 w-5 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-600" />
+                <label for="recomendado" class="text-sm text-gray-900 dark:text-gray-100 font-medium">¿Recomendado? (Uso interno)</label>
               </div>
 
               <!-- Campo de nombre de quien recomienda -->
               <div v-if="form.admision.recomendado" class="ml-7 animate-in fade-in slide-in-from-top-1 duration-200">
-                <label class="block text-sm font-medium leading-6 text-gray-900">¿Quién recomienda?</label>
+                <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">¿Quién recomienda?</label>
                 <input type="text" v-model="form.admision.recomendado_por" required
                   placeholder="Nombre de la persona que recomienda"
-                  class="mt-1 block w-full max-w-md rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+                  class="mt-1 block w-full max-w-md rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
               </div>
             </div>
           </div>
@@ -91,78 +91,78 @@
       </div>
 
       <!-- Sección 2: Datos del Estudiante -->
-      <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
+      <div class="bg-white dark:bg-gray-800 shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
         <div class="px-4 py-6 sm:p-8">
-          <h2 class="text-lg font-semibold leading-7 text-gray-900 mb-4 border-b pb-2">2. Datos del Estudiante</h2>
+          <h2 class="text-lg font-semibold leading-7 text-gray-900 dark:text-gray-100 mb-4 border-b pb-2">2. Datos del Estudiante</h2>
           <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
             <div class="sm:col-span-3">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Nombres</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Nombres</label>
               <input type="text" v-model="form.nombres" required
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
             </div>
             <div class="sm:col-span-3">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Apellidos</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Apellidos</label>
               <input type="text" v-model="form.apellidos" required
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
             </div>
             <div class="sm:col-span-2">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Cédula / Pasaporte</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Cédula / Pasaporte</label>
               <input type="text" v-model="form.cedula" placeholder="Opcional"
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
             </div>
             <div class="sm:col-span-2">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Sexo</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Sexo</label>
               <select v-model="form.sexo" required
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
                 <option value="Masculino">Masculino</option>
                 <option value="Femenino">Femenino</option>
               </select>
             </div>
             <div class="sm:col-span-3">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Fecha de Nacimiento</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Fecha de Nacimiento</label>
               <input type="date" v-model="form.fecha_nacimiento" required
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
             </div>
             <div class="sm:col-span-3">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Edad Calculada</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Edad Calculada</label>
               <input type="text" :value="edadCalculada" readonly
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-500 bg-gray-50 shadow-sm ring-1 ring-inset ring-gray-300 sm:text-sm sm:leading-6" />
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 sm:text-sm sm:leading-6" />
             </div>
           </div>
         </div>
       </div>
 
       <!-- Sección 3: Datos de Acta de Nacimiento -->
-      <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
+      <div class="bg-white dark:bg-gray-800 shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
         <div class="px-4 py-6 sm:p-8">
           <div class="flex justify-between items-center mb-4 border-b pb-2">
-            <h2 class="text-lg font-semibold leading-7 text-gray-900">3. Datos de Origen y Acta de Nacimiento</h2>
+            <h2 class="text-lg font-semibold leading-7 text-gray-900 dark:text-gray-100">3. Datos de Origen y Acta de Nacimiento</h2>
             <div class="flex items-center gap-2">
               <input type="checkbox" id="es_extranjero" v-model="form.es_extranjero"
                 @change="handleExtranjeroChange"
-                class="h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-600" />
-              <label for="es_extranjero" class="text-sm text-gray-900 font-medium">Estudiante Extranjero</label>
+                class="h-5 w-5 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-600" />
+              <label for="es_extranjero" class="text-sm text-gray-900 dark:text-gray-100 font-medium">Estudiante Extranjero</label>
             </div>
           </div>
 
           <!-- Campos si ES extranjero -->
-          <div v-if="form.es_extranjero" class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6 mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+          <div v-if="form.es_extranjero" class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6 mb-4 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700">
             <div class="sm:col-span-6">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Nacionalidad</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Nacionalidad</label>
               <input type="text" v-model="form.nacionalidad" required placeholder="Ej. Venezolana, Colombiana, Estadounidense..."
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
             </div>
             <div class="sm:col-span-6">
-              <p class="text-sm text-gray-500 italic">Al ser estudiante extranjero, los campos del acta de nacimiento se completarán con "EX" automáticamente en el sistema.</p>
+              <p class="text-sm text-gray-500 dark:text-gray-400 italic">Al ser estudiante extranjero, los campos del acta de nacimiento se completarán con "EX" automáticamente en el sistema.</p>
             </div>
           </div>
 
           <!-- Campos si NO ES extranjero -->
           <div v-else class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
             <div class="sm:col-span-3">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Provincia (Opcional)</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Provincia (Opcional)</label>
               <select v-model="form.acta.provincia" @change="fetchMunicipiosActa" 
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
                 <option value="" disabled>Seleccione provincia</option>
                 <option v-for="prov in provinciasList" :key="prov.id" :value="prov.nombre">
                   {{ prov.nombre }}
@@ -170,9 +170,9 @@
               </select>
             </div>
             <div class="sm:col-span-3">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Municipio (Opcional)</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Municipio (Opcional)</label>
               <select v-model="form.acta.municipio" :disabled="!form.acta.provincia"
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
                 <option value="" disabled>Seleccione municipio</option>
                 <option v-for="mun in municipiosActaList" :key="mun.nombre" :value="mun.nombre">
                   {{ mun.nombre }}
@@ -180,34 +180,34 @@
               </select>
             </div>
             <div class="sm:col-span-2">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Oficialia (Opcional)</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Oficialia (Opcional)</label>
               <input type="text" v-model="form.acta.oficialia"
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
             </div>
             <div class="sm:col-span-1">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Libro (Op.)</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Libro (Op.)</label>
               <input type="text" v-model="form.acta.libro"
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
             </div>
             <div class="sm:col-span-1">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Folio (Op.)</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Folio (Op.)</label>
               <input type="text" v-model="form.acta.folio"
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
             </div>
             <div class="sm:col-span-1">
-              <label class="block text-sm font-medium leading-6 text-gray-900">N° de Acta (Op.)</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">N° de Acta (Op.)</label>
               <input type="text" v-model="form.acta.acta_numero"
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
             </div>
             <div class="sm:col-span-1">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Año (Op.)</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Año (Op.)</label>
               <input type="text" v-model="form.acta.anio" maxlength="4"
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
             </div>
             <div class="sm:col-span-6">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Observaciones del Acta (Opcional)</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Observaciones del Acta (Opcional)</label>
               <textarea v-model="form.acta.observaciones" rows="2"
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
                 placeholder="Notas adicionales sobre el acta de nacimiento..."></textarea>
             </div>
           </div>
@@ -215,24 +215,24 @@
       </div>
 
       <!-- Sección 4: Dirección -->
-      <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
+      <div class="bg-white dark:bg-gray-800 shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
         <div class="px-4 py-6 sm:p-8">
-          <h2 class="text-lg font-semibold leading-7 text-gray-900 mb-4 border-b pb-2">4. Dirección del Estudiante</h2>
+          <h2 class="text-lg font-semibold leading-7 text-gray-900 dark:text-gray-100 mb-4 border-b pb-2">4. Dirección del Estudiante</h2>
           <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
             <div class="sm:col-span-6">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Calle, No. y Detalles</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Calle, No. y Detalles</label>
               <input type="text" v-model="form.direccion.calle" required
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
             </div>
             <div class="sm:col-span-2">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Sector</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Sector</label>
               <input type="text" v-model="form.direccion.sector" required
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
             </div>
             <div class="sm:col-span-2">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Provincia</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Provincia</label>
               <select v-model="form.direccion.provincia" @change="fetchMunicipiosDireccion" required
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
                 <option value="" disabled>Seleccione provincia</option>
                 <option v-for="prov in provinciasList" :key="prov.id" :value="prov.nombre">
                   {{ prov.nombre }}
@@ -240,9 +240,9 @@
               </select>
             </div>
             <div class="sm:col-span-2">
-              <label class="block text-sm font-medium leading-6 text-gray-900">Municipio</label>
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Municipio</label>
               <select v-model="form.direccion.municipio" required :disabled="!form.direccion.provincia"
-                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
+                class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
                 <option value="" disabled>Seleccione municipio</option>
                 <option v-for="mun in municipiosDireccionList" :key="mun.nombre" :value="mun.nombre">
                   {{ mun.nombre }}
@@ -254,10 +254,10 @@
       </div>
 
       <!-- Sección 5: Padre, Madre o Tutor -->
-      <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
+      <div class="bg-white dark:bg-gray-800 shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
         <div class="px-4 py-6 sm:p-8">
           <div class="flex justify-between items-center mb-4 border-b pb-2">
-            <h2 class="text-lg font-semibold leading-7 text-gray-900">5. Familiares o Tutores</h2>
+            <h2 class="text-lg font-semibold leading-7 text-gray-900 dark:text-gray-100">5. Familiares o Tutores</h2>
             <div class="flex gap-4">
               <button type="button" @click="addFamiliar"
                 class="text-sm text-primary-600 hover:text-primary-800 font-medium flex items-center">
@@ -272,25 +272,25 @@
           <div v-for="(familiar, index) in form.familiares" :key="index"
             class="mb-6 pb-6 border-b last:border-0 last:mb-0 last:pb-0">
             <div class="flex justify-between items-center mb-3">
-              <h3 class="text-sm font-medium text-gray-700">Familiar #{{ index + 1 }}</h3>
+              <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300">Familiar #{{ index + 1 }}</h3>
               <button v-if="form.familiares.length > 1" type="button" @click="removeFamiliar(index)"
                 class="text-xs text-red-600 hover:text-red-800">Eliminar</button>
             </div>
             <div class="grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-6">
               <div class="sm:col-span-2">
-                <label class="block text-sm font-medium leading-6 text-gray-900">Nombres</label>
+                <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Nombres</label>
                 <input type="text" v-model="familiar.nombres" required
-                  class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+                  class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
               </div>
               <div class="sm:col-span-2">
-                <label class="block text-sm font-medium leading-6 text-gray-900">Apellidos</label>
+                <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Apellidos</label>
                 <input type="text" v-model="familiar.apellidos" required
-                  class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+                  class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
               </div>
               <div class="sm:col-span-2">
-                <label class="block text-sm font-medium leading-6 text-gray-900">Parentesco</label>
+                <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Parentesco</label>
                 <select v-model="familiar.parentesco" required
-                  class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
+                  class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
                   <option value="Padre">Padre</option>
                   <option value="Madre">Madre</option>
                   <option value="Tutor">Tutor/a</option>
@@ -298,33 +298,33 @@
                 </select>
               </div>
               <div class="sm:col-span-2">
-                <label class="block text-sm font-medium leading-6 text-gray-900">Cédula / Pasaporte</label>
+                <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Cédula / Pasaporte</label>
                 <input type="text" v-model="familiar.cedula_pasaporte" placeholder="Opcional"
-                  class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+                  class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
               </div>
               <div class="sm:col-span-2">
-                <label class="block text-sm font-medium leading-6 text-gray-900">Teléfono Casa (Opcional)</label>
+                <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Teléfono Casa (Opcional)</label>
                 <TelefonoInput v-model="familiar.telefono_casa" />
               </div>
               <div class="sm:col-span-2">
-                <label class="block text-sm font-medium leading-6 text-gray-900">Celular</label>
+                <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Celular</label>
                 <TelefonoInput v-model="familiar.celular" required />
               </div>
               <div class="sm:col-span-3">
-                <label class="block text-sm font-medium leading-6 text-gray-900">Nivel Académico (Opcional)</label>
+                <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Nivel Académico (Opcional)</label>
                 <input type="text" v-model="familiar.nivel_academico" placeholder="Ej. Universitario, Bachiller..."
-                  class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+                  class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
               </div>
               <div class="sm:col-span-3">
-                <label class="block text-sm font-medium leading-6 text-gray-900">Profesión u Oficio (Opcional)</label>
+                <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Profesión u Oficio (Opcional)</label>
                 <input type="text" v-model="familiar.profesion_oficio"
-                  class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+                  class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
               </div>
               <div class="sm:col-span-6">
-                <label class="block text-sm font-medium leading-6 text-gray-900">Dirección</label>
+                <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100">Dirección</label>
                 <input type="text" v-model="familiar.direccion"
                   placeholder="Si es igual a la del estudiante, dejar en blanco o escribir 'Misma'."
-                  class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
+                  class="mt-2 block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6" />
               </div>
             </div>
           </div>
@@ -332,102 +332,102 @@
       </div>
 
       <!-- Sección 6: Historia Clínica -->
-      <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
+      <div class="bg-white dark:bg-gray-800 shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
         <div class="px-4 py-6 sm:p-8">
-          <h2 class="text-lg font-semibold leading-7 text-gray-900 mb-4 border-b pb-2">6. Historia Clínica</h2>
+          <h2 class="text-lg font-semibold leading-7 text-gray-900 dark:text-gray-100 mb-4 border-b pb-2">6. Historia Clínica</h2>
           
           <div class="mb-4">
-            <h3 class="text-sm font-medium text-gray-900 mb-2">Discapacidades o Necesidades Especiales:</h3>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 border p-4 rounded-lg bg-gray-50">
+            <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-2">Discapacidades o Necesidades Especiales:</h3>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 border p-4 rounded-lg bg-gray-50 dark:bg-gray-900/50">
               <label class="flex items-start gap-2 cursor-pointer" v-for="disc in ['Auditiva', 'Visual', 'Motora', 'Intelectual', 'Trastorno del Espectro Autista (TEA)', 'Trastorno de Déficit de Atención (TDAH)', 'Otra']" :key="disc">
-                <input type="checkbox" :value="disc" v-model="form.historia.discapacidades" class="mt-1 h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-600">
-                <span class="text-sm text-gray-700 leading-snug">{{ disc }}</span>
+                <input type="checkbox" :value="disc" v-model="form.historia.discapacidades" class="mt-1 h-5 w-5 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-600">
+                <span class="text-sm text-gray-700 dark:text-gray-300 leading-snug">{{ disc }}</span>
               </label>
             </div>
-            <p class="text-xs text-gray-500 mt-2">Seleccione todas las que apliquen. Si no padece ninguna, deje esta sección en blanco.</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">Seleccione todas las que apliquen. Si no padece ninguna, deje esta sección en blanco.</p>
           </div>
         </div>
       </div>
 
       <!-- Sección 7: Documentos Entregados -->
-      <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
+      <div class="bg-white dark:bg-gray-800 shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
         <div class="px-4 py-6 sm:p-8">
-          <h2 class="text-lg font-semibold leading-7 text-gray-900 mb-4 border-b pb-2">7. Documentos Entregados</h2>
+          <h2 class="text-lg font-semibold leading-7 text-gray-900 dark:text-gray-100 mb-4 border-b pb-2">7. Documentos Entregados</h2>
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <label
-              class="flex items-center gap-2 border p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+              class="flex items-center gap-2 border p-3 rounded-lg hover:bg-gray-50 dark:bg-gray-900/50 cursor-pointer transition-colors">
               <input type="checkbox" v-model="form.historia.documento_record_notas"
-                class="h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-600">
-              <span class="text-sm text-gray-700">Récord de notas</span>
+                class="h-5 w-5 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-600">
+              <span class="text-sm text-gray-700 dark:text-gray-300">Récord de notas</span>
             </label>
             <label
-              class="flex items-center gap-2 border p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+              class="flex items-center gap-2 border p-3 rounded-lg hover:bg-gray-50 dark:bg-gray-900/50 cursor-pointer transition-colors">
               <input type="checkbox" v-model="form.historia.documento_certificado_sigerd"
-                class="h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-600">
-              <span class="text-sm text-gray-700">Certificado SIGERD</span>
+                class="h-5 w-5 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-600">
+              <span class="text-sm text-gray-700 dark:text-gray-300">Certificado SIGERD</span>
             </label>
             <label
-              class="flex items-center gap-2 border p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+              class="flex items-center gap-2 border p-3 rounded-lg hover:bg-gray-50 dark:bg-gray-900/50 cursor-pointer transition-colors">
               <input type="checkbox" v-model="form.historia.documento_buena_conducta"
-                class="h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-600">
-              <span class="text-sm text-gray-700">Buena Conducta</span>
+                class="h-5 w-5 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-600">
+              <span class="text-sm text-gray-700 dark:text-gray-300">Buena Conducta</span>
             </label>
             <label
-              class="flex items-center gap-2 border p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+              class="flex items-center gap-2 border p-3 rounded-lg hover:bg-gray-50 dark:bg-gray-900/50 cursor-pointer transition-colors">
               <input type="checkbox" v-model="form.historia.documento_acta_nacimiento"
-                class="h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-600">
-              <span class="text-sm text-gray-700">Acta de Nacimiento</span>
+                class="h-5 w-5 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-600">
+              <span class="text-sm text-gray-700 dark:text-gray-300">Acta de Nacimiento</span>
             </label>
             <label
-              class="flex items-center gap-2 border p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+              class="flex items-center gap-2 border p-3 rounded-lg hover:bg-gray-50 dark:bg-gray-900/50 cursor-pointer transition-colors">
               <input type="checkbox" v-model="form.historia.documento_fotos"
-                class="h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-600">
-              <span class="text-sm text-gray-700">Fotos 2x2 (2)</span>
+                class="h-5 w-5 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-600">
+              <span class="text-sm text-gray-700 dark:text-gray-300">Fotos 2x2 (2)</span>
             </label>
             <label
-              class="flex items-center gap-2 border p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+              class="flex items-center gap-2 border p-3 rounded-lg hover:bg-gray-50 dark:bg-gray-900/50 cursor-pointer transition-colors">
               <input type="checkbox" v-model="form.historia.documento_certificado_medico"
-                class="h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-600">
-              <span class="text-sm text-gray-700">Certificado Médico</span>
+                class="h-5 w-5 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-600">
+              <span class="text-sm text-gray-700 dark:text-gray-300">Certificado Médico</span>
             </label>
             <label
-              class="flex items-center gap-2 border p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+              class="flex items-center gap-2 border p-3 rounded-lg hover:bg-gray-50 dark:bg-gray-900/50 cursor-pointer transition-colors">
               <input type="checkbox" v-model="form.historia.documento_tarjeta_vacuna"
-                class="h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-600">
-              <span class="text-sm text-gray-700">Tarjeta de Vacunas</span>
+                class="h-5 w-5 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-600">
+              <span class="text-sm text-gray-700 dark:text-gray-300">Tarjeta de Vacunas</span>
             </label>
             <label
-              class="flex items-center gap-2 border p-3 rounded-lg hover:bg-gray-50 cursor-pointer transition-colors">
+              class="flex items-center gap-2 border p-3 rounded-lg hover:bg-gray-50 dark:bg-gray-900/50 cursor-pointer transition-colors">
               <input type="checkbox" v-model="form.historia.documento_copia_cedula_padres"
-                class="h-5 w-5 rounded border-gray-300 text-primary-600 focus:ring-primary-600">
-              <span class="text-sm text-gray-700">Copia Cédula Padres</span>
+                class="h-5 w-5 rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-600">
+              <span class="text-sm text-gray-700 dark:text-gray-300">Copia Cédula Padres</span>
             </label>
           </div>
         </div>
       </div>
 
       <!-- Sección 8: Firmas -->
-      <div class="bg-white shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
+      <div class="bg-white dark:bg-gray-800 shadow-sm ring-1 ring-gray-900/5 sm:rounded-xl md:col-span-2">
         <div class="px-4 py-6 sm:p-8">
-          <h2 class="text-lg font-semibold leading-7 text-gray-900 mb-4 border-b pb-2">8. Firmas de Inscripción</h2>
+          <h2 class="text-lg font-semibold leading-7 text-gray-900 dark:text-gray-100 mb-4 border-b pb-2">8. Firmas de Inscripción</h2>
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <!-- Firma del Padre o Tutor -->
             <div>
-              <label class="block text-sm font-medium leading-6 text-gray-900 mb-2">Firma del Padre, Madre o
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100 mb-2">Firma del Padre, Madre o
                 Tutor</label>
               <StaffSignaturePad ref="signaturePadRef" @update="handleSignatureUpdate" />
             </div>
 
             <!-- Firma del Coordinador -->
             <div>
-              <label class="block text-sm font-medium leading-6 text-gray-900 mb-2">Nombre y Firma del Coordinador/a de
+              <label class="block text-sm font-medium leading-6 text-gray-900 dark:text-gray-100 mb-2">Nombre y Firma del Coordinador/a de
                 Registro</label>
               <input type="text" v-model="form.historia.firma_coordinador" readonly disabled
                 placeholder="Cargando coordinador..."
-                class="block w-full rounded-md border-0 py-1.5 text-gray-700 bg-gray-50 shadow-sm ring-1 ring-inset ring-gray-300 sm:text-sm sm:leading-6 mb-4 cursor-not-allowed" />
+                class="block w-full rounded-md border-0 py-1.5 text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-900/50 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600 sm:text-sm sm:leading-6 mb-4 cursor-not-allowed" />
 
-              <div class="p-4 bg-gray-50 rounded-lg border border-gray-200 text-sm text-gray-500 mt-10">
+              <div class="p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg border border-gray-200 dark:border-gray-700 text-sm text-gray-500 dark:text-gray-400 mt-10">
                 <p>La firma del responsable del formulario (<strong>{{ authStore.user?.name || 'Administrador'
                 }}</strong>) será adjuntada automáticamente al generar el documento final si está disponible en su
                   perfil.</p>
@@ -439,7 +439,7 @@
 
       <!-- Actions -->
       <div class="flex items-center justify-end gap-x-6 border-t border-gray-900/10 pt-6">
-        <NuxtLink to="/admin/admisiones" class="text-sm font-semibold leading-6 text-gray-900 hover:text-gray-600">
+        <NuxtLink to="/admin/admisiones" class="text-sm font-semibold leading-6 text-gray-900 dark:text-gray-100 hover:text-gray-600 dark:text-gray-400">
           Cancelar</NuxtLink>
         <button type="submit" :disabled="loading"
           class="rounded-md bg-primary-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-primary-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary-600 disabled:opacity-50 inline-flex items-center">

@@ -1,11 +1,11 @@
 <template>
   <div>
     <!-- Header -->
-    <header class="bg-white border-b border-gray-200 px-6 py-4">
+    <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900">Gestión de Profesores</h1>
-          <p class="text-sm text-gray-600 mt-1">Administrar accesos al sistema para el personal docente</p>
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Gestión de Profesores</h1>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Administrar accesos al sistema para el personal docente</p>
         </div>
       </div>
     </header>
@@ -13,12 +13,12 @@
     <!-- Contenido principal -->
     <div class="p-6">
       <!-- Filtros de búsqueda -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
         <div class="flex flex-col sm:flex-row gap-4">
           <div class="flex-1">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Buscar profesor</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Buscar profesor</label>
             <input v-model="filtros.search" type="text" placeholder="Buscar por nombre, apellido o cédula..."
-              class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
           </div>
           <div class="flex items-end">
             <button @click="cargarProfesores" :disabled="loading"
@@ -30,9 +30,9 @@
       </div>
 
       <!-- Lista de profesores -->
-      <div class="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div class="px-6 py-4 border-b border-gray-200">
-          <h3 class="text-lg font-medium text-gray-900">
+      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700">
+        <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
             Personal Docente ({{ profesores.length }})
           </h3>
         </div>
@@ -46,26 +46,26 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
           </svg>
-          <h3 class="mt-2 text-sm font-medium text-gray-900">No se encontraron profesores</h3>
-          <p class="mt-1 text-sm text-gray-500">No hay personal docente registrado o no coincide con la búsqueda.</p>
+          <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No se encontraron profesores</h3>
+          <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">No hay personal docente registrado o no coincide con la búsqueda.</p>
         </div>
 
         <!-- Tabla de profesores -->
         <div v-else class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-900/50">
               <tr>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Profesor</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cargo</th>
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acceso</th>
-                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Profesor</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Cargo</th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acceso</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Email</th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado</th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones
                 </th>
               </tr>
             </thead>
-            <tbody class="bg-white divide-y divide-gray-200">
-              <tr v-for="profesor in profesores" :key="profesor.id" class="hover:bg-gray-50">
+            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+              <tr v-for="profesor in profesores" :key="profesor.id" class="hover:bg-gray-50 dark:bg-gray-900/50">
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
                     <div class="flex-shrink-0 h-10 w-10">
@@ -76,14 +76,14 @@
                       </div>
                     </div>
                     <div class="ml-4">
-                      <div class="text-sm font-medium text-gray-900">
+                      <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
                         {{ profesor.nombre_completo }}
                       </div>
-                      <div class="text-sm text-gray-500">{{ profesor.cedula }}</div>
+                      <div class="text-sm text-gray-500 dark:text-gray-400">{{ profesor.cedula }}</div>
                     </div>
                   </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                   {{ profesor.cargo?.nombre || 'Sin cargo' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -98,7 +98,7 @@
                     </svg>
                   </div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                   {{ profesor.user?.email || '-' }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-center">
@@ -180,7 +180,7 @@
                       <!-- Menú desplegable para acciones adicionales -->
                       <div class="relative inline-block text-left" data-menu-container>
                         <button @click="toggleMenuProfesor(profesor.id)"
-                          class="inline-flex items-center p-2 border border-gray-300 rounded-md text-gray-500 hover:text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                          class="inline-flex items-center p-2 border border-gray-300 dark:border-gray-600 rounded-md text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                           title="Más opciones">
                           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -190,12 +190,12 @@
 
                         <!-- Menú desplegable -->
                         <div v-if="menuActivo === profesor.id"
-                          class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+                          class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
                           role="menu">
                           <div class="py-1" role="none">
                             <button @click="resetearPassword(profesor); toggleMenuProfesor(null)"
                               :disabled="procesando === profesor.id"
-                              class="group flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 w-full text-left disabled:opacity-50 disabled:cursor-not-allowed"
+                              class="group flex items-center px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 hover:text-gray-900 dark:text-gray-100 w-full text-left disabled:opacity-50 disabled:cursor-not-allowed"
                               role="menuitem">
                               <svg class="mr-3 h-4 w-4 text-yellow-600" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
@@ -231,7 +231,7 @@
     <!-- Modal de credenciales temporales -->
     <div v-if="mostrarModalCredenciales"
       class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white">
+      <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
         <div class="mt-3">
           <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
             <svg class="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -239,25 +239,25 @@
             </svg>
           </div>
           <div class="mt-4 text-center">
-            <h3 class="text-lg leading-6 font-medium text-gray-900">Acceso Creado Exitosamente</h3>
+            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Acceso Creado Exitosamente</h3>
             <div class="mt-4 p-4 bg-yellow-50 rounded-lg">
-              <p class="text-sm text-gray-700 mb-2">
+              <p class="text-sm text-gray-700 dark:text-gray-300 mb-2">
                 <strong>Credenciales temporales para {{ credencialesTemporales.profesor }}:</strong>
               </p>
               <div class="space-y-2 text-sm text-left">
                 <div v-if="credencialesTemporales.username">
-                  <span class="font-medium block text-gray-600">Usuario:</span>
-                  <span class="font-mono bg-white border border-gray-200 px-2 py-1 rounded block w-full">{{
+                  <span class="font-medium block text-gray-600 dark:text-gray-400">Usuario:</span>
+                  <span class="font-mono bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2 py-1 rounded block w-full">{{
                     credencialesTemporales.username }}</span>
                 </div>
                 <div>
-                  <span class="font-medium block text-gray-600">Email:</span>
-                  <span class="font-mono bg-white border border-gray-200 px-2 py-1 rounded block w-full">{{
+                  <span class="font-medium block text-gray-600 dark:text-gray-400">Email:</span>
+                  <span class="font-mono bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2 py-1 rounded block w-full">{{
                     credencialesTemporales.email }}</span>
                 </div>
                 <div>
-                  <span class="font-medium block text-gray-600">Contraseña:</span>
-                  <span class="font-mono bg-white border border-gray-200 px-2 py-1 rounded block w-full break-all">{{
+                  <span class="font-medium block text-gray-600 dark:text-gray-400">Contraseña:</span>
+                  <span class="font-mono bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2 py-1 rounded block w-full break-all">{{
                     credencialesTemporales.password }}</span>
                 </div>
               </div>

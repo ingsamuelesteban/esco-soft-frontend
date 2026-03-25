@@ -1,15 +1,15 @@
 <template>
     <div class="space-y-6">
         <!-- Header -->
-        <div class="bg-white shadow-sm rounded-lg p-6">
+        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Departamento de Psicología</h1>
-                    <p class="text-sm text-gray-600 mt-1">Gestión de Casos de Psicología</p>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Departamento de Psicología</h1>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Gestión de Casos de Psicología</p>
                 </div>
                 <div class="flex items-center space-x-4">
                     <select v-model="selectedAnioId" v-if="aniosStore.items.length > 0"
-                        class="block w-48 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm">
+                        class="block w-48 pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm">
                         <option :value="'all'">Todos los años</option>
                         <option v-for="anio in aniosStore.items" :key="anio.id" :value="anio.id">
                             {{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}
@@ -20,27 +20,27 @@
         </div>
 
         <!-- Casos Activos (Full Width) -->
-        <div class="bg-white shadow-sm rounded-lg p-4 h-[calc(100vh-180px)] min-h-[600px] flex flex-col">
+        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-4 h-[calc(100vh-180px)] min-h-[600px] flex flex-col">
             <div v-if="viewMode === 'list'">
-                <div class="flex items-center justify-between mb-4 border-b border-gray-200">
-                    <h2 class="text-lg font-medium text-gray-900 pb-2">Casos</h2>
+                <div class="flex items-center justify-between mb-4 border-b border-gray-200 dark:border-gray-700">
+                    <h2 class="text-lg font-medium text-gray-900 dark:text-gray-100 pb-2">Casos</h2>
                     <nav class="-mb-px flex space-x-8" aria-label="Tabs">
                         <a href="#" @click.prevent="caseFilter = 'open'"
-                            :class="[caseFilter === 'open' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">
+                            :class="[caseFilter === 'open' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">
                             Activos <span v-if="stats"
                                 class="ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-600">{{
                                     stats.summary.open_cases }}</span>
                         </a>
                         <a v-if="isPsychologist" href="#" @click.prevent="caseFilter = 'unified'"
-                            :class="[caseFilter === 'unified' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">
+                            :class="[caseFilter === 'unified' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">
                             Unificados <span v-if="unifiedStore.unifiedCases"
                                 class="ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium bg-purple-100 text-purple-600">{{
                                     unifiedStore.unifiedCases.length }}</span>
                         </a>
                         <a href="#" @click.prevent="caseFilter = 'closed'"
-                            :class="[caseFilter === 'closed' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">
+                            :class="[caseFilter === 'closed' ? 'border-indigo-500 text-indigo-600' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm']">
                             Historial (Cerrados) <span v-if="stats"
-                                class="ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">{{
+                                class="ml-2 py-0.5 px-2.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">{{
                                     stats.summary.closed_cases }}</span>
                         </a>
                     </nav>

@@ -1,10 +1,10 @@
 <template>
     <div class="space-y-6">
         <!-- Header -->
-        <div class="flex justify-between items-center bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+        <div class="flex justify-between items-center bg-white dark:bg-gray-800 p-4 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
             <div>
-                <h1 class="text-2xl font-semibold text-gray-900">Solicitudes de Permiso</h1>
-                <p class="mt-1 text-sm text-gray-600">Gestión de permisos y ausencias del personal</p>
+                <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Solicitudes de Permiso</h1>
+                <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Gestión de permisos y ausencias del personal</p>
             </div>
             <button @click="showCreateModal = true"
                 class="inline-flex items-center gap-2 px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
@@ -16,22 +16,22 @@
         </div>
 
         <!-- Filters and Tabs -->
-        <div class="bg-white rounded-xl shadow-sm border border-gray-100">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
             <!-- Tabs -->
-            <div class="border-b border-gray-200">
+            <div class="border-b border-gray-200 dark:border-gray-700">
                 <nav class="flex -mb-px">
                     <button v-for="tab in tabs" :key="tab.value" @click="activeTab = tab.value" :class="[
                         'px-6 py-3 text-sm font-medium border-b-2 transition-colors',
                         activeTab === tab.value
                             ? 'border-blue-600 text-blue-600'
-                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                            : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600'
                     ]">
                         {{ tab.label }}
                         <span v-if="tab.count !== undefined" :class="[
                             'ml-2 px-2 py-0.5 text-xs rounded-full',
                             activeTab === tab.value
                                 ? 'bg-blue-100 text-blue-600'
-                                : 'bg-gray-100 text-gray-600'
+                                : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
                         ]">
                             {{ tab.count }}
                         </span>
@@ -40,11 +40,11 @@
             </div>
 
             <!-- Filters -->
-            <div class="p-4 border-b border-gray-200 flex flex-wrap gap-4">
+            <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex flex-wrap gap-4">
                 <div v-if="authStore.isAdmin || authStore.isMaster" class="w-full sm:w-64">
-                    <label class="block text-xs font-medium text-gray-700 mb-1">Empleado</label>
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Empleado</label>
                     <select v-model="filters.personal_id" @change="loadRequests"
-                        class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500">
                         <option :value="undefined">Todos</option>
                         <option v-for="p in personalList" :key="p.id" :value="p.id">
                             {{ p.nombre }} {{ p.apellido }}
@@ -53,9 +53,9 @@
                 </div>
 
                 <div class="w-full sm:w-48">
-                    <label class="block text-xs font-medium text-gray-700 mb-1">Tipo de Permiso</label>
+                    <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Tipo de Permiso</label>
                     <select v-model="filters.leave_type" @change="loadRequests"
-                        class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500">
+                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500">
                         <option :value="undefined">Todos</option>
                         <option value="vacaciones">Vacaciones</option>
                         <option value="personal">Personal</option>
@@ -72,24 +72,24 @@
         <!-- Loading State -->
         <div v-if="store.loading" class="text-center py-12">
             <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p class="mt-4 text-gray-600">Cargando solicitudes...</p>
+            <p class="mt-4 text-gray-600 dark:text-gray-400">Cargando solicitudes...</p>
         </div>
 
         <!-- Empty State -->
         <div v-else-if="!store.leaveRequests || store.leaveRequests.length === 0"
-            class="bg-white rounded-xl shadow-sm border border-gray-100 p-12 text-center">
+            class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-12 text-center">
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">No hay solicitudes</h3>
-            <p class="mt-1 text-sm text-gray-500">Comienza creando una nueva solicitud de permiso.</p>
+            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No hay solicitudes</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Comienza creando una nueva solicitud de permiso.</p>
         </div>
 
         <!-- Requests List -->
         <div v-else class="grid gap-4">
             <div v-for="request in (store.leaveRequests || [])" :key="request.id"
-                class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 hover:shadow-md transition-shadow">
+                class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 hover:shadow-md transition-shadow">
                 <div class="flex justify-between items-start">
                     <div class="flex-1">
                         <div class="flex items-center gap-3">
@@ -107,31 +107,31 @@
                                 </div>
                             </div>
                             <div>
-                                <h3 class="text-lg font-semibold text-gray-900">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
                                     {{ request.personal?.nombre }} {{ request.personal?.apellido }}
                                 </h3>
-                                <p class="text-sm text-gray-500">{{ request.personal?.cedula }}</p>
+                                <p class="text-sm text-gray-500 dark:text-gray-400">{{ request.personal?.cedula }}</p>
                             </div>
                         </div>
 
                         <div class="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
                             <div>
-                                <p class="text-xs text-gray-500">Tipo</p>
-                                <p class="text-sm font-medium text-gray-900">{{ getLeaveTypeName(request.leave_type) }}
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Tipo</p>
+                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ getLeaveTypeName(request.leave_type) }}
                                 </p>
                             </div>
                             <div>
-                                <p class="text-xs text-gray-500">Fechas</p>
-                                <p class="text-sm font-medium text-gray-900">
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Fechas</p>
+                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">
                                     {{ formatDate(request.start_date) }} - {{ formatDate(request.end_date) }}
                                 </p>
                             </div>
                             <div>
-                                <p class="text-xs text-gray-500">Duración</p>
-                                <p class="text-sm font-medium text-gray-900">{{ getDurationDisplay(request) }}</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Duración</p>
+                                <p class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ getDurationDisplay(request) }}</p>
                             </div>
                             <div>
-                                <p class="text-xs text-gray-500">Estado</p>
+                                <p class="text-xs text-gray-500 dark:text-gray-400">Estado</p>
                                 <span :class="[
                                     'inline-flex px-2 py-1 text-xs font-semibold rounded-full',
                                     getStatusClass(request.status)
@@ -142,14 +142,14 @@
                         </div>
 
                         <div class="mt-3">
-                            <p class="text-xs text-gray-500">Motivo</p>
-                            <p class="text-sm text-gray-700 mt-1">{{ request.reason }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Motivo</p>
+                            <p class="text-sm text-gray-700 dark:text-gray-300 mt-1">{{ request.reason }}</p>
                         </div>
 
-                        <div v-if="request.review_notes" class="mt-3 p-3 bg-gray-50 rounded-lg">
-                            <p class="text-xs text-gray-500">Notas del revisor</p>
-                            <p class="text-sm text-gray-700 mt-1">{{ request.review_notes }}</p>
-                            <p class="text-xs text-gray-500 mt-1">
+                        <div v-if="request.review_notes" class="mt-3 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
+                            <p class="text-xs text-gray-500 dark:text-gray-400">Notas del revisor</p>
+                            <p class="text-sm text-gray-700 dark:text-gray-300 mt-1">{{ request.review_notes }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                 Por: {{ request.reviewer?.name }} - {{ formatDate(request.reviewed_at!) }}
                             </p>
                         </div>
@@ -162,7 +162,7 @@
                             Revisar
                         </button>
                         <button @click="viewDetails(request)"
-                            class="px-3 py-1.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                            class="px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 rounded-lg transition-colors">
                             Ver Detalles
                         </button>
                         <button v-if="authStore.isAdmin || authStore.isMaster" @click="deleteRequest(request)"
@@ -178,15 +178,15 @@
         <div v-if="store.lastPage > 1" class="flex justify-center">
             <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px">
                 <button @click="changePage(store.currentPage - 1)" :disabled="store.currentPage === 1"
-                    class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed">
+                    class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-900/50 disabled:bg-gray-100 dark:bg-gray-800 disabled:cursor-not-allowed">
                     Anterior
                 </button>
                 <span
-                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                    class="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-700 dark:text-gray-300">
                     Página {{ store.currentPage }} de {{ store.lastPage }}
                 </span>
                 <button @click="changePage(store.currentPage + 1)" :disabled="store.currentPage === store.lastPage"
-                    class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed">
+                    class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-900/50 disabled:bg-gray-100 dark:bg-gray-800 disabled:cursor-not-allowed">
                     Siguiente
                 </button>
             </nav>
@@ -382,8 +382,8 @@ const getStatusClass = (status: string) => {
         pendiente: 'bg-yellow-100 text-yellow-800',
         aprobado: 'bg-green-100 text-green-800',
         rechazado: 'bg-red-100 text-red-800',
-        cancelado: 'bg-gray-100 text-gray-800'
+        cancelado: 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
     }
-    return classes[status] || 'bg-gray-100 text-gray-800'
+    return classes[status] || 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
 }
 </script>

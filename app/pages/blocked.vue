@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen flex items-center justify-center bg-gray-50 px-4 sm:px-6 lg:px-8">
+    <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900/50 px-4 sm:px-6 lg:px-8">
         <div class="max-w-md w-full text-center space-y-8">
             <div>
                 <div class="mx-auto flex items-center justify-center h-24 w-24 rounded-full bg-red-100 mb-6">
@@ -8,10 +8,10 @@
                             d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                     </svg>
                 </div>
-                <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
+                <h2 class="mt-6 text-3xl font-extrabold text-gray-900 dark:text-gray-100">
                     Acceso Restringido
                 </h2>
-                <p class="mt-4 text-lg text-gray-600">
+                <p class="mt-4 text-lg text-gray-600 dark:text-gray-400">
                     Acceso bloqueado temporalmente, contacte a la dirección.
                 </p>
             </div>

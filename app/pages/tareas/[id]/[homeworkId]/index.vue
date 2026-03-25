@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div class="min-h-screen bg-gray-50 dark:bg-gray-900/50 dark:bg-gray-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <!-- Back Button -->
             <NuxtLink :to="`/tareas/${classId}`"
@@ -15,7 +15,7 @@
             <div v-else>
                 <!-- Header -->
                 <div class="mb-8">
-                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 dark:text-white">
                         {{ homework?.title || 'Cargando...' }}
                     </h1>
                     <p class="mt-2 text-gray-600 dark:text-gray-400">
@@ -27,18 +27,18 @@
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8 border-l-4 border-blue-500">
                     <div class="flex justify-between items-start">
                         <div>
-                            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Detalles de la Tarea</h2>
+                            <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-white mb-2">Detalles de la Tarea</h2>
                             <p v-if="homework?.description" class="text-gray-700 dark:text-gray-300 mb-4">
                                 {{ homework.description }}
                             </p>
-                            <div v-if="homework?.instructions" class="prose dark:prose-invert max-w-none mb-4 text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
-                                <h3 class="text-sm font-bold uppercase tracking-wider mb-2 text-gray-500">Instrucciones:</h3>
+                            <div v-if="homework?.instructions" class="prose dark:prose-invert max-w-none mb-4 text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 dark:bg-gray-900 p-4 rounded-lg">
+                                <h3 class="text-sm font-bold uppercase tracking-wider mb-2 text-gray-500 dark:text-gray-400">Instrucciones:</h3>
                                 <div class="whitespace-pre-wrap">{{ homework.instructions }}</div>
                             </div>
                         </div>
                         <div v-if="homework?.attachment_path" class="ml-4">
                             <button @click="downloadAttachment" 
-                               class="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium">
+                               class="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                 </svg>
@@ -95,7 +95,7 @@
                 <!-- Submissions Table -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gray-50 dark:bg-gray-900">
+                        <thead class="bg-gray-50 dark:bg-gray-900/50 dark:bg-gray-900">
                             <tr>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -125,9 +125,9 @@
                         </thead>
                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                             <tr v-for="submission in submissions" :key="submission.id"
-                                class="hover:bg-gray-50 dark:hover:bg-gray-700">
+                                class="hover:bg-gray-50 dark:bg-gray-900/50 dark:hover:bg-gray-700">
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900 dark:text-white">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-white">
                                         {{ submission.student?.user?.name || 'Sin nombre' }}
                                     </div>
                                     <div class="text-sm text-gray-500 dark:text-gray-400">
@@ -144,7 +144,7 @@
                                         Tardía
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 dark:text-white">
                                     {{ submission.submitted_at ? formatDate(submission.submitted_at) : '-' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
@@ -164,7 +164,7 @@
                                     </div>
                                     <span v-else class="text-gray-400">-</span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 dark:text-white">
                                     {{ submission.score !== null ? `${submission.score}/${homework?.max_score}` : '-' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
@@ -204,7 +204,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
-                        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No hay entregas</h3>
+                        <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-white">No hay entregas</h3>
                         <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                             Los estudiantes aún no han enviado sus trabajos.
                         </p>
@@ -371,7 +371,7 @@ function getExtensionLabel(status: string) {
 
 function getStatusBadgeClass(status: string) {
     const classes: Record<string, string> = {
-        draft: 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300',
+        draft: 'bg-gray-100 dark:bg-gray-800 dark:bg-gray-700 text-gray-700 dark:text-gray-300',
         submitted: 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200',
         graded: 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200',
         returned: 'bg-purple-100 dark:bg-purple-900 text-purple-800 dark:text-purple-200',

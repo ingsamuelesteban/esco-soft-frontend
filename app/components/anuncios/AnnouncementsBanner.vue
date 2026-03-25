@@ -10,20 +10,20 @@
   <div v-else class="relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg">
 
     <!-- Decorative background shapes -->
-    <div class="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10"></div>
-    <div class="absolute -left-4 -bottom-6 h-24 w-24 rounded-full bg-white/10"></div>
+    <div class="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white dark:bg-gray-800/10"></div>
+    <div class="absolute -left-4 -bottom-6 h-24 w-24 rounded-full bg-white dark:bg-gray-800/10"></div>
 
     <!-- Header strip -->
     <div class="relative flex items-center justify-between px-5 pt-4 pb-2">
       <div class="flex items-center gap-2">
-        <span class="flex h-7 w-7 items-center justify-center rounded-full bg-white/20">
+        <span class="flex h-7 w-7 items-center justify-center rounded-full bg-white dark:bg-gray-800/20">
           <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
           </svg>
         </span>
         <span class="text-sm font-bold uppercase tracking-widest text-white/90">Anuncios</span>
-        <span class="inline-flex items-center rounded-full bg-white/20 px-2 py-0.5 text-xs font-bold text-white">
+        <span class="inline-flex items-center rounded-full bg-white dark:bg-gray-800/20 px-2 py-0.5 text-xs font-bold text-white">
           {{ announcements.length }}
         </span>
       </div>
@@ -40,7 +40,7 @@
     <!-- Cards scroll row -->
     <div class="relative flex gap-3 overflow-x-auto px-5 pb-4 pt-1 scrollbar-hide snap-x snap-mandatory">
       <div v-for="a in announcements" :key="a.id"
-        class="snap-start flex-shrink-0 w-72 sm:w-80 bg-white/15 backdrop-blur-sm border border-white/20 rounded-xl p-4 hover:bg-white/20 transition-all cursor-default">
+        class="snap-start flex-shrink-0 w-72 sm:w-80 bg-white dark:bg-gray-800/15 backdrop-blur-sm border border-white/20 rounded-xl p-4 hover:bg-white dark:bg-gray-800/20 transition-all cursor-default">
         <!-- Card top: title + badge -->
         <div class="flex items-start justify-between gap-2 mb-2">
           <h4 class="text-sm font-bold text-white leading-snug line-clamp-2">{{ a.title }}</h4>
@@ -55,7 +55,7 @@
         <div class="mt-3 flex items-center justify-between">
           <span class="text-[11px] text-white/60">{{ formatDate(a.created_at) }}</span>
           <button v-if="a.attachment_path" @click="downloadFile(a.id, a.attachment_path)"
-            class="inline-flex items-center gap-1 text-[11px] font-semibold text-white/90 hover:text-white bg-white/20 hover:bg-white/30 px-2 py-1 rounded transition-colors">
+            class="inline-flex items-center gap-1 text-[11px] font-semibold text-white/90 hover:text-white bg-white dark:bg-gray-800/20 hover:bg-white dark:bg-gray-800/30 px-2 py-1 rounded transition-colors">
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />

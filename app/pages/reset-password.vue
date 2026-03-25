@@ -1,15 +1,15 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900/50 py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8">
       <div>
         <!-- Logo -->
         <div class="flex justify-center mb-8">
           <img src="/images/logo.png?v=2" alt="EscoSoft Logo" class="h-32 w-auto" />
         </div>
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">
           Nueva contraseña
         </h2>
-        <p class="mt-2 text-center text-sm text-gray-600">
+        <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
           Ingresa tu nueva contraseña para recuperar el acceso.
         </p>
       </div>
@@ -44,18 +44,18 @@
       <form v-if="!status.success" class="mt-8 space-y-6" @submit.prevent="handleReset">
         <div class="space-y-5">
           <div>
-            <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Nueva contraseña</label>
+            <label for="password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nueva contraseña</label>
             <div class="relative">
               <input id="password" v-model="form.password" :type="showPassword ? 'text' : 'password'" required
-                class="appearance-none rounded-md relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition-all duration-200"
+                class="appearance-none rounded-md relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition-all duration-200"
                 :class="{
                   'border-red-300 focus:ring-red-500 focus:border-red-500': form.password && !isPasswordLengthValid,
                   'border-green-300 focus:ring-green-500 focus:border-green-500': isPasswordLengthValid,
-                  'border-gray-300': !form.password
+                  'border-gray-300 dark:border-gray-600': !form.password
                 }"
                 placeholder="Mínimo 8 caracteres" :disabled="status.loading" />
               <button type="button" @click="showPassword = !showPassword"
-                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
+                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:text-gray-400 focus:outline-none">
                 <svg v-if="!showPassword" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -67,7 +67,7 @@
             </div>
             <!-- Validation indicator -->
             <div class="mt-1 flex items-center text-xs" 
-              :class="isPasswordLengthValid ? 'text-green-600' : (form.password ? 'text-red-600' : 'text-gray-500')">
+              :class="isPasswordLengthValid ? 'text-green-600' : (form.password ? 'text-red-600' : 'text-gray-500 dark:text-gray-400')">
               <svg v-if="isPasswordLengthValid" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
               </svg>
@@ -80,18 +80,18 @@
           </div>
 
           <div>
-            <label for="password_confirmation" class="block text-sm font-medium text-gray-700 mb-1">Confirmar contraseña</label>
+            <label for="password_confirmation" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirmar contraseña</label>
             <div class="relative">
               <input id="password_confirmation" v-model="form.password_confirmation" :type="showConfirmPassword ? 'text' : 'password'" required
-                class="appearance-none rounded-md relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition-all duration-200"
+                class="appearance-none rounded-md relative block w-full px-3 py-2 border placeholder-gray-500 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm transition-all duration-200"
                 :class="{
                   'border-red-300 focus:ring-red-500 focus:border-red-500': form.password_confirmation && !doPasswordsMatch,
                   'border-green-300 focus:ring-green-500 focus:border-green-500': doPasswordsMatch,
-                  'border-gray-300': !form.password_confirmation
+                  'border-gray-300 dark:border-gray-600': !form.password_confirmation
                 }"
                 placeholder="Confirma tu nueva contraseña" :disabled="status.loading" />
               <button type="button" @click="showConfirmPassword = !showConfirmPassword"
-                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
+                class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:text-gray-400 focus:outline-none">
                 <svg v-if="!showConfirmPassword" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -103,7 +103,7 @@
             </div>
             <!-- Match indicator -->
             <div class="mt-1 flex items-center text-xs"
-              :class="doPasswordsMatch ? 'text-green-600' : (form.password_confirmation ? 'text-red-600' : 'text-gray-500')">
+              :class="doPasswordsMatch ? 'text-green-600' : (form.password_confirmation ? 'text-red-600' : 'text-gray-500 dark:text-gray-400')">
               <svg v-if="doPasswordsMatch" class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
               </svg>
@@ -127,8 +127,8 @@
         </div>
       </form>
       
-      <div v-else class="text-center mt-4 p-4 border rounded-lg bg-gray-50">
-        <p class="text-sm text-gray-600">Puedes volver a <NuxtLink to="/login" class="text-blue-600 font-semibold hover:underline">iniciar sesión</NuxtLink> con tu nueva contraseña.</p>
+      <div v-else class="text-center mt-4 p-4 border rounded-lg bg-gray-50 dark:bg-gray-900/50">
+        <p class="text-sm text-gray-600 dark:text-gray-400">Puedes volver a <NuxtLink to="/login" class="text-blue-600 font-semibold hover:underline">iniciar sesión</NuxtLink> con tu nueva contraseña.</p>
       </div>
     </div>
   </div>

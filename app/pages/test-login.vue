@@ -1,8 +1,8 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50">
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900/50">
     <div class="max-w-md w-full space-y-8">
       <div>
-        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">
           Login de Prueba
         </h2>
       </div>
@@ -10,12 +10,12 @@
         <div>
           <label for="email" class="sr-only">Email</label>
           <input id="email" v-model="credentials.email" name="email" type="email" required
-            class="relative block w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Email">
+            class="relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md" placeholder="Email">
         </div>
         <div>
           <label for="password" class="sr-only">Password</label>
           <input id="password" v-model="credentials.password" name="password" type="password" required
-            class="relative block w-full px-3 py-2 border border-gray-300 rounded-md" placeholder="Password">
+            class="relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md" placeholder="Password">
         </div>
         <div>
           <button type="submit" :disabled="isLoading"

@@ -1,17 +1,17 @@
 <template>
   <div class="space-y-6">
     <!-- Header with Staff Details -->
-    <div class="bg-white shadow-sm rounded-lg p-6">
+    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
       <div class="flex items-center justify-between mb-4">
         <div class="flex items-center gap-4">
-          <button @click="router.back()" class="p-2 hover:bg-gray-100 rounded-full text-gray-600">
+          <button @click="router.back()" class="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-full text-gray-600 dark:text-gray-400">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
           </button>
           <div v-if="personal">
-            <h1 class="text-2xl font-bold text-gray-900">{{ personal.nombre }} {{ personal.apellido }}</h1>
-            <p class="text-gray-500">{{ personal.cedula }} • {{ personal.cargo?.nombre || 'Sin cargo' }}</p>
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ personal.nombre }} {{ personal.apellido }}</h1>
+            <p class="text-gray-500 dark:text-gray-400">{{ personal.cedula }} • {{ personal.cargo?.nombre || 'Sin cargo' }}</p>
           </div>
           <div v-else class="h-16 w-32 bg-gray-200 animate-pulse rounded"></div>
         </div>
@@ -39,18 +39,18 @@
     </div>
 
     <!-- Permission History List -->
-    <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-      <div class="px-6 py-4 border-b border-gray-200 bg-gray-50 flex justify-between items-center">
-        <h3 class="text-lg font-medium text-gray-900">Historial de Permisos</h3>
-        <span class="text-xs text-gray-500" v-if="leaveRequests.length">Mostrando últimos {{ leaveRequests.length }} registros</span>
+    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
+      <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 flex justify-between items-center">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Historial de Permisos</h3>
+        <span class="text-xs text-gray-500 dark:text-gray-400" v-if="leaveRequests.length">Mostrando últimos {{ leaveRequests.length }} registros</span>
       </div>
       
       <div v-if="loading" class="p-8 text-center">
         <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        <p class="mt-2 text-gray-500">Cargando historial...</p>
+        <p class="mt-2 text-gray-500 dark:text-gray-400">Cargando historial...</p>
       </div>
 
-      <div v-else-if="leaveRequests.length === 0" class="p-8 text-center text-gray-500">
+      <div v-else-if="leaveRequests.length === 0" class="p-8 text-center text-gray-500 dark:text-gray-400">
         <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
@@ -58,32 +58,32 @@
       </div>
 
       <div v-else class="overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-900/50">
             <tr>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha Solicitud</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fechas Permiso</th>
-              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Fecha Solicitud</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tipo</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Fechas Permiso</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="request in leaveRequests" :key="request.id" class="hover:bg-gray-50 transition-colors">
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+            <tr v-for="request in leaveRequests" :key="request.id" class="hover:bg-gray-50 dark:bg-gray-900/50 transition-colors">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                 {{ formatDate(request.created_at) }}
               </td>
               <td class="px-6 py-4 whitespace-nowrap">
-                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 capitalize">
+                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 capitalize">
                   {{ request.leave_type }}
                 </span>
-                <div v-if="request.leave_type === 'express'" class="text-xs text-gray-500 mt-1 ml-1">
+                <div v-if="request.leave_type === 'express'" class="text-xs text-gray-500 dark:text-gray-400 mt-1 ml-1">
                    {{ getDurationDisplay(request) }}
                 </div>
               </td>
-              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+              <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
                 <div>{{ formatDate(request.start_date) }} <span class="text-gray-400">-></span> {{ formatDate(request.end_date) }}</div>
-                <div class="text-xs text-gray-500" v-if="request.leave_type !== 'express'">
+                <div class="text-xs text-gray-500 dark:text-gray-400" v-if="request.leave_type !== 'express'">
                     {{ request.days_count }} día{{ request.days_count !== 1 ? 's' : '' }}
                 </div>
               </td>
@@ -184,8 +184,8 @@ const getStatusClass = (status: string) => {
     case 'aprobado': return 'bg-green-100 text-green-800'
     case 'rechazado': return 'bg-red-100 text-red-800'
     case 'pendiente': return 'bg-yellow-100 text-yellow-800'
-    case 'cancelado': return 'bg-gray-100 text-gray-800'
-    default: return 'bg-gray-100 text-gray-600'
+    case 'cancelado': return 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
+    default: return 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'
   }
 }
 

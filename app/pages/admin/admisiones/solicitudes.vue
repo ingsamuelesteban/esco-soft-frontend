@@ -1,15 +1,15 @@
 <template>
   <div class="space-y-6 max-w-6xl mx-auto pb-12">
     <!-- Header -->
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 pb-4">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-gray-200 dark:border-gray-700 pb-4">
       <div>
-        <nav class="flex text-sm text-gray-500 mb-2">
+        <nav class="flex text-sm text-gray-500 dark:text-gray-400 mb-2">
           <NuxtLink to="/admin/admisiones" class="hover:text-primary-600 transition-colors">Admisiones</NuxtLink>
           <span class="mx-2">/</span>
-          <span class="text-gray-900 font-medium">Solicitudes de Documentos</span>
+          <span class="text-gray-900 dark:text-gray-100 font-medium">Solicitudes de Documentos</span>
         </nav>
-        <h1 class="text-2xl font-bold text-gray-900">Solicitudes de Documentos</h1>
-        <p class="text-sm text-gray-500 mt-1">Solicita documentos a preadmitidos por rango de folder. Los estudiantes los suben desde su dashboard.</p>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Solicitudes de Documentos</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Solicita documentos a preadmitidos por rango de folder. Los estudiantes los suben desde su dashboard.</p>
       </div>
       <button @click="showCreateModal = true" type="button"
         class="inline-flex items-center gap-2 rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white shadow hover:bg-primary-700 transition-colors">
@@ -27,23 +27,23 @@
     </div>
 
     <!-- Empty -->
-    <div v-else-if="solicitudes.length === 0" class="text-center py-20 bg-white rounded-xl border border-gray-200">
+    <div v-else-if="solicitudes.length === 0" class="text-center py-20 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
       <DocumentTextIcon class="mx-auto h-12 w-12 text-gray-300 mb-4" />
-      <h3 class="text-lg font-medium text-gray-900">No hay solicitudes aún</h3>
-      <p class="text-gray-500 mt-1 text-sm">Crea una solicitud para que los estudiantes suban sus documentos.</p>
+      <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">No hay solicitudes aún</h3>
+      <p class="text-gray-500 dark:text-gray-400 mt-1 text-sm">Crea una solicitud para que los estudiantes suban sus documentos.</p>
     </div>
 
     <!-- List of Solicitudes (no detail selected) -->
     <div v-else-if="!selectedSolicitud" class="space-y-4">
       <div v-for="s in solicitudes" :key="s.id"
-        class="bg-white border border-gray-200 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+        class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm hover:shadow-md transition-shadow cursor-pointer"
         @click="loadDetail(s.id)">
         <div class="p-5">
           <div class="flex items-start justify-between gap-4">
             <div class="flex-1 min-w-0">
-              <h3 class="font-semibold text-gray-900 text-lg leading-tight">{{ s.titulo }}</h3>
-              <p v-if="s.descripcion" class="text-sm text-gray-500 mt-1 line-clamp-2">{{ s.descripcion }}</p>
-              <div class="flex items-center gap-4 mt-3 text-xs text-gray-500">
+              <h3 class="font-semibold text-gray-900 dark:text-gray-100 text-lg leading-tight">{{ s.titulo }}</h3>
+              <p v-if="s.descripcion" class="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{{ s.descripcion }}</p>
+              <div class="flex items-center gap-4 mt-3 text-xs text-gray-500 dark:text-gray-400">
                 <span class="flex items-center gap-1">
                   <FolderIcon class="w-4 h-4" />
                   Folders {{ s.folder_desde }} – {{ s.folder_hasta }}
@@ -57,9 +57,9 @@
             </div>
             <!-- Stats -->
             <div class="flex gap-3 shrink-0">
-              <div class="text-center bg-gray-50 rounded-lg px-3 py-2 min-w-[52px]">
-                <div class="text-lg font-bold text-gray-800">{{ s.total }}</div>
-                <div class="text-[10px] text-gray-500 uppercase">Total</div>
+              <div class="text-center bg-gray-50 dark:bg-gray-900/50 rounded-lg px-3 py-2 min-w-[52px]">
+                <div class="text-lg font-bold text-gray-800 dark:text-gray-200">{{ s.total }}</div>
+                <div class="text-[10px] text-gray-500 dark:text-gray-400 uppercase">Total</div>
               </div>
               <div class="text-center bg-amber-50 rounded-lg px-3 py-2 min-w-[52px]">
                 <div class="text-lg font-bold text-amber-700">{{ s.pendientes }}</div>
@@ -87,11 +87,11 @@
     <div v-else>
       <div class="flex items-center gap-3 mb-6">
         <button @click="selectedSolicitud = null; detail = null" type="button"
-          class="flex items-center gap-1 text-sm text-gray-600 hover:text-gray-900 transition-colors">
+          class="flex items-center gap-1 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100 transition-colors">
           <ArrowLeftIcon class="w-4 h-4" />
           Volver
         </button>
-        <h2 class="text-xl font-bold text-gray-900">{{ detail?.solicitud?.titulo }}</h2>
+        <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100">{{ detail?.solicitud?.titulo }}</h2>
         <span class="text-sm text-gray-400">| Folders {{ detail?.solicitud?.folder_desde }} – {{ detail?.solicitud?.folder_hasta }}</span>
         
         <div class="ml-auto">
@@ -116,31 +116,31 @@
         </svg>
       </div>
 
-      <div v-else class="bg-white border border-gray-200 rounded-xl shadow-sm overflow-hidden">
+      <div v-else class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl shadow-sm overflow-hidden">
         <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200">
-            <thead class="bg-gray-50">
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead class="bg-gray-50 dark:bg-gray-900/50">
               <tr>
-                <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Estudiante</th>
-                <th class="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Folder</th>
-                <th class="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Entró a la App</th>
-                <th class="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Estado</th>
-                <th class="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Archivo</th>
-                <th class="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Acciones</th>
+                <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estudiante</th>
+                <th class="px-4 py-3 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Folder</th>
+                <th class="px-4 py-3 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Entró a la App</th>
+                <th class="px-4 py-3 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado</th>
+                <th class="px-4 py-3 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Archivo</th>
+                <th class="px-4 py-3 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
               </tr>
             </thead>
-            <tbody class="divide-y divide-gray-200 bg-white">
+            <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
               <tr v-if="!detail?.uploads?.length">
-                <td colspan="6" class="px-4 py-8 text-center text-sm text-gray-500">No hay estudiantes en este rango de folders.</td>
+                <td colspan="6" class="px-4 py-8 text-center text-sm text-gray-500 dark:text-gray-400">No hay estudiantes en este rango de folders.</td>
               </tr>
-              <tr v-for="u in detail?.uploads" :key="u.id" class="hover:bg-gray-50">
+              <tr v-for="u in detail?.uploads" :key="u.id" class="hover:bg-gray-50 dark:bg-gray-900/50">
                 <!-- Name -->
                 <td class="px-4 py-3">
-                  <div class="text-sm font-medium text-gray-900">{{ u.estudiante?.nombres }} {{ u.estudiante?.apellidos }}</div>
+                  <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ u.estudiante?.nombres }} {{ u.estudiante?.apellidos }}</div>
                   <div v-if="u.last_seen_at" class="text-xs text-gray-400 mt-0.5">Última vez: {{ formatDateTime(u.last_seen_at) }}</div>
                 </td>
                 <!-- Folder -->
-                <td class="px-4 py-3 text-center text-sm font-semibold text-gray-700">
+                <td class="px-4 py-3 text-center text-sm font-semibold text-gray-700 dark:text-gray-300">
                   #{{ u.estudiante?.no_folder ?? '—' }}
                 </td>
                 <!-- Entró a la app -->
@@ -157,7 +157,7 @@
                   </span>
                 </td>
                 <td class="px-4 py-3 text-center">
-                  <span v-if="u.file_name" class="text-xs text-gray-700 truncate max-w-[140px] block mx-auto" :title="u.file_name">
+                  <span v-if="u.file_name" class="text-xs text-gray-700 dark:text-gray-300 truncate max-w-[140px] block mx-auto" :title="u.file_name">
                     {{ u.file_name }}
                   </span>
                   <span v-else class="text-gray-300 text-xs">—</span>
@@ -204,44 +204,44 @@
 
     <!-- Create Modal -->
     <div v-if="showCreateModal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md">
-        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <h3 class="text-lg font-semibold text-gray-900">Nueva Solicitud de Documento</h3>
-          <button @click="showCreateModal = false" type="button" class="text-gray-400 hover:text-gray-600">
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Nueva Solicitud de Documento</h3>
+          <button @click="showCreateModal = false" type="button" class="text-gray-400 hover:text-gray-600 dark:text-gray-400">
             <XMarkIcon class="w-5 h-5" />
           </button>
         </div>
         <div class="px-6 py-5 space-y-4">
           <!-- Titulo -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Título del documento *</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Título del documento *</label>
             <input v-model="form.titulo" type="text" placeholder="Ej: Copia de Cédula del Estudiante"
-              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none" />
+              class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none" />
           </div>
           <!-- Descripcion -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Descripción (opcional)</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripción (opcional)</label>
             <textarea v-model="form.descripcion" rows="3" placeholder="Instrucciones adicionales..."
-              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none resize-none" />
+              class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none resize-none" />
           </div>
           <!-- Folder Range -->
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Folder Desde *</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Folder Desde *</label>
               <input v-model.number="form.folder_desde" type="number" min="1" placeholder="1"
-                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none" />
+                class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none" />
             </div>
             <div>
-              <label class="block text-sm font-medium text-gray-700 mb-1">Folder Hasta *</label>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Folder Hasta *</label>
               <input v-model.number="form.folder_hasta" type="number" min="1" placeholder="999"
-                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none" />
+                class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-primary-500 outline-none" />
             </div>
           </div>
           <p class="text-xs text-gray-400">Se creará una solicitud para todos los preadmitidos cuyo número de folder esté en el rango indicado.</p>
         </div>
-        <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+        <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
           <button @click="showCreateModal = false" type="button"
-            class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+            class="rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 transition-colors">
             Cancelar
           </button>
           <button @click="createSolicitud" type="button" :disabled="saving"
@@ -258,23 +258,23 @@
 
     <!-- Reject Modal -->
     <div v-if="showRejectModal" class="fixed inset-0 bg-black/40 flex items-center justify-center z-50 p-4">
-      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-sm">
-        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <h3 class="text-lg font-semibold text-gray-900">Rechazar Documento</h3>
-          <button @click="showRejectModal = false" type="button" class="text-gray-400 hover:text-gray-600">
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-sm">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+          <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Rechazar Documento</h3>
+          <button @click="showRejectModal = false" type="button" class="text-gray-400 hover:text-gray-600 dark:text-gray-400">
             <XMarkIcon class="w-5 h-5" />
           </button>
         </div>
         <div class="px-6 py-5 space-y-4">
-          <p class="text-sm text-gray-500">¿Por qué rechazas este documento? El estudiante verá este comentario y podrá volver a subir su archivo.</p>
+          <p class="text-sm text-gray-500 dark:text-gray-400">¿Por qué rechazas este documento? El estudiante verá este comentario y podrá volver a subir su archivo.</p>
           <div>
             <textarea v-model="rejectForm.notes" rows="3" placeholder="Ej: La imagen está borrosa, suba una donde se lea claramente la cédula."
-              class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none resize-none" />
+              class="w-full border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-red-500 focus:border-red-500 outline-none resize-none" />
           </div>
         </div>
-        <div class="px-6 py-4 border-t border-gray-200 flex justify-end gap-3">
+        <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
           <button @click="showRejectModal = false" type="button"
-            class="rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors">
+            class="rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 transition-colors">
             Cancelar
           </button>
           <button @click="rejectUpload" type="button" :disabled="rejecting"
@@ -496,7 +496,7 @@ const statusClass = (s: string) => ({
   uploaded: 'bg-blue-100 text-blue-800',
   received: 'bg-green-100 text-green-800',
   rejected: 'bg-red-100 text-red-800',
-}[s] ?? 'bg-gray-100 text-gray-700')
+}[s] ?? 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300')
 
 const formatDate = (d: string) => d ? new Date(d).toLocaleDateString('es-DO', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'
 const formatDateTime = (d: string) => d ? new Date(d).toLocaleString('es-DO', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—'

@@ -1,30 +1,30 @@
 <template>
-  <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+  <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
     <div class="p-4">
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div class="flex items-center gap-3">
-          <select v-model="dia" class="rounded-md border-gray-300 text-sm">
+          <select v-model="dia" class="rounded-md border-gray-300 dark:border-gray-600 text-sm">
             <option value="">Todos los días</option>
             <option v-for="d in dias" :key="d" :value="d">{{ d }}</option>
           </select>
-          <input v-model="grupo" type="text" class="rounded-md border-gray-300 text-sm" placeholder="Grupo (ej. 6A)" />
+          <input v-model="grupo" type="text" class="rounded-md border-gray-300 dark:border-gray-600 text-sm" placeholder="Grupo (ej. 6A)" />
         </div>
-        <div class="text-sm text-gray-500" v-if="!loading">Total: {{ filtered.length }}</div>
+        <div class="text-sm text-gray-500 dark:text-gray-400" v-if="!loading">Total: {{ filtered.length }}</div>
       </div>
     </div>
     <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-900/50">
           <tr>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Día</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Hora</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Materia</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aula</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Profesor</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Grupo</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Día</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Hora</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Materia</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Aula</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Profesor</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Grupo</th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
           <tr v-for="h in filtered" :key="h.id">
             <td class="px-4 py-3 whitespace-nowrap">{{ h.dia }}</td>
             <td class="px-4 py-3 whitespace-nowrap">{{ h.hora_inicio }} - {{ h.hora_fin }}</td>
@@ -34,10 +34,10 @@
             <td class="px-4 py-3 whitespace-nowrap">{{ h.grupo }}</td>
           </tr>
           <tr v-if="!loading && filtered.length === 0">
-            <td colspan="6" class="px-4 py-6 text-center text-sm text-gray-500">Sin resultados</td>
+            <td colspan="6" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Sin resultados</td>
           </tr>
           <tr v-if="loading">
-            <td colspan="6" class="px-4 py-6 text-center text-sm text-gray-500">Cargando...</td>
+            <td colspan="6" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Cargando...</td>
           </tr>
         </tbody>
       </table>

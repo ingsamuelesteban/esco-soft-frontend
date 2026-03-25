@@ -1,13 +1,13 @@
 <template>
   <div v-if="modelValue" class="fixed inset-0 z-50 flex items-center justify-center">
     <div class="absolute inset-0 bg-black/40" @click="onClose" />
-    <div class="relative bg-white rounded-lg shadow-xl w-full max-w-md mx-4 p-5">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4">{{ isEdit ? 'Editar Aula' : 'Nueva Aula' }}</h3>
+    <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md mx-4 p-5">
+      <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">{{ isEdit ? 'Editar Aula' : 'Nueva Aula' }}</h3>
 
       <form @submit.prevent="onSubmit" class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Título</label>
-          <select ref="initialInput" v-model.number="form.titulo_id" class="w-full rounded-md border-gray-300 text-sm">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Título</label>
+          <select ref="initialInput" v-model.number="form.titulo_id" class="w-full rounded-md border-gray-300 dark:border-gray-600 text-sm">
             <option :value="null">Seleccione un título…</option>
             <option v-for="t in titulos.activas" :key="t.id" :value="t.id">{{ t.nombre }}</option>
           </select>
@@ -16,36 +16,36 @@
 
         <div class="grid grid-cols-2 gap-3">
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Grado</label>
-            <select v-model.number="form.grado_cardinal" class="w-full rounded-md border-gray-300 text-sm">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Grado</label>
+            <select v-model.number="form.grado_cardinal" class="w-full rounded-md border-gray-300 dark:border-gray-600 text-sm">
               <option :value="null">—</option>
               <option v-for="n in [1, 2, 3, 4, 5, 6]" :key="n" :value="n">{{ gradoLabel(n) }}</option>
             </select>
             <p v-if="errors.grado_cardinal" class="mt-1 text-sm text-red-600">{{ errors.grado_cardinal }}</p>
           </div>
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Sección</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sección</label>
             <input v-model="form.seccion" @input="onSeccionInput" maxlength="1"
-              class="w-full rounded-md border-gray-300 text-sm" placeholder="A" />
+              class="w-full rounded-md border-gray-300 dark:border-gray-600 text-sm" placeholder="A" />
             <p v-if="errors.seccion" class="mt-1 text-sm text-red-600">{{ errors.seccion }}</p>
           </div>
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Capacidad</label>
-          <input type="number" min="1" v-model.number="form.capacidad" class="w-full rounded-md border-gray-300 text-sm"
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Capacidad</label>
+          <input type="number" min="1" v-model.number="form.capacidad" class="w-full rounded-md border-gray-300 dark:border-gray-600 text-sm"
             placeholder="30" />
           <p v-if="errors.capacidad" class="mt-1 text-sm text-red-600">{{ errors.capacidad }}</p>
         </div>
 
         <div v-if="isEdit" class="flex items-center gap-2">
-          <input id="activo" type="checkbox" v-model="form.activo" class="rounded border-gray-300" />
-          <label for="activo" class="text-sm text-gray-700">Activa</label>
+          <input id="activo" type="checkbox" v-model="form.activo" class="rounded border-gray-300 dark:border-gray-600" />
+          <label for="activo" class="text-sm text-gray-700 dark:text-gray-300">Activa</label>
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
           <button type="button" @click="onClose"
-            class="px-3 py-1.5 rounded-md text-sm text-gray-700 hover:bg-gray-100">Cancelar</button>
+            class="px-3 py-1.5 rounded-md text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800">Cancelar</button>
           <button type="submit" class="px-3 py-1.5 rounded-md text-sm text-white bg-blue-600 hover:bg-blue-700">{{
             isEdit ? 'Guardar' : 'Crear' }}</button>
         </div>

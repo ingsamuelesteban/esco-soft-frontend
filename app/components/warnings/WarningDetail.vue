@@ -2,7 +2,7 @@
     <div v-if="warning" class="space-y-6">
         <!-- Header with Back Button -->
         <div class="flex items-center justify-between">
-            <button @click="emit('back')" class="inline-flex items-center text-sm text-gray-500 hover:text-gray-700">
+            <button @click="emit('back')" class="inline-flex items-center text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300">
                 <svg class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
                 </svg>
@@ -13,52 +13,52 @@
                 <span :class="[
                     warning.status === 'open'
                         ? 'bg-green-100 text-green-800'
-                        : 'bg-gray-100 text-gray-800',
+                        : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200',
                     'inline-flex rounded-full px-3 py-1 text-xs font-semibold'
                 ]">
                     {{ warning.status === 'open' ? 'Abierta' : 'Cerrada' }}
                 </span>
 
                 <button v-if="canEdit && warning.status === 'open'" @click="closeWarning"
-                    class="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                    class="inline-flex items-center px-3 py-1 border border-gray-300 dark:border-gray-600 shadow-sm text-xs font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50">
                     Cerrar Advertencia
                 </button>
 
                 <button v-if="canEdit && warning.status === 'closed'" @click="reopenWarning"
-                    class="inline-flex items-center px-3 py-1 border border-gray-300 shadow-sm text-xs font-medium rounded-md text-gray-700 bg-white hover:bg-gray-  50">
+                    class="inline-flex items-center px-3 py-1 border border-gray-300 dark:border-gray-600 shadow-sm text-xs font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-  50">
                     Reabrir Advertencia
                 </button>
             </div>
         </div>
 
         <!-- Warning Info Card -->
-        <div class="bg-white shadow rounded-lg p-6">
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
             <div class="grid grid-cols-2 gap-4">
                 <div>
-                    <h3 class="text-sm font-medium text-gray-500">Estudiante</h3>
-                    <p class="mt-1 text-sm text-gray-900">
+                    <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Estudiante</h3>
+                    <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
                         {{ warning.student?.apellidos }}, {{ warning.student?.nombres }}
                     </p>
-                    <p class="text-xs text-gray-500">
+                    <p class="text-xs text-gray-500 dark:text-gray-400">
                         {{ warning.student?.aula?.grado_cardinal }}-{{ warning.student?.aula?.seccion }}
                     </p>
                 </div>
 
                 <div>
-                    <h3 class="text-sm font-medium text-gray-500">Reportado por</h3>
-                    <p class="mt-1 text-sm text-gray-900">{{ warning.reportedBy?.name || warning.reported_by?.name ||
+                    <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Reportado por</h3>
+                    <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ warning.reportedBy?.name || warning.reported_by?.name ||
                         'Desconocido' }}</p>
-                    <p class="text-xs text-gray-500">{{ formatDate(warning.created_at) }}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400">{{ formatDate(warning.created_at) }}</p>
                 </div>
 
                 <div class="col-span-2">
-                    <h3 class="text-sm font-medium text-gray-500">Título</h3>
-                    <p class="mt-1 text-sm text-gray-900">{{ warning.title }}</p>
+                    <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Título</h3>
+                    <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ warning.title }}</p>
                 </div>
 
                 <div v-if="warning.closed_at" class="col-span-2">
-                    <h3 class="text-sm font-medium text-gray-500">Cerrado</h3>
-                    <p class="mt-1 text-sm text-gray-900">
+                    <h3 class="text-sm font-medium text-gray-500 dark:text-gray-400">Cerrado</h3>
+                    <p class="mt-1 text-sm text-gray-900 dark:text-gray-100">
                         {{ warning.closedBy?.name }} - {{ formatDate(warning.closed_at) }}
                     </p>
                 </div>
@@ -66,18 +66,18 @@
         </div>
 
         <!-- Entries Timeline -->
-        <div class="bg-white shadow rounded-lg p-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">Seguimiento</h3>
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Seguimiento</h3>
 
             <!-- Add Entry Form (if open) -->
             <div v-if="warning.status === 'open' && canEdit" class="mb-6 border-b pb-6">
                 <form @submit.prevent="addEntry">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Agregar seguimiento
                         </label>
                         <textarea v-model="newEntryContent" rows="3" required
-                            class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                            class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md"
                             placeholder="Escriba el seguimiento..."></textarea>
                     </div>
                     <div class="mt-3 flex justify-end">
@@ -109,14 +109,14 @@
                                 </div>
                                 <div class="flex min-w-0 flex-1 justify-between space-x-4 pt-1.5">
                                     <div class="flex-1">
-                                        <p class="text-sm text-gray-500">
-                                            <span class="font-medium text-gray-900">{{ entry.author?.name }}</span>
+                                        <p class="text-sm text-gray-500 dark:text-gray-400">
+                                            <span class="font-medium text-gray-900 dark:text-gray-100">{{ entry.author?.name }}</span>
                                             {{ getEntryAction(idx) }}
                                         </p>
-                                        <p class="mt-2 text-sm text-gray-700 whitespace-pre-wrap">{{ entry.content }}
+                                        <p class="mt-2 text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{ entry.content }}
                                         </p>
                                     </div>
-                                    <div class="whitespace-nowrap text-right text-sm text-gray-500">
+                                    <div class="whitespace-nowrap text-right text-sm text-gray-500 dark:text-gray-400">
                                         <time :datetime="entry.date_of_event">{{ formatDate(entry.date_of_event)
                                             }}</time>
                                     </div>

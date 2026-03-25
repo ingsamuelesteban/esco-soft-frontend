@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div class="min-h-screen bg-gray-50 dark:bg-gray-900/50 dark:bg-gray-900">
         <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <!-- Back Button -->
             <NuxtLink to="/student/tareas" class="text-blue-600 dark:text-blue-400 hover:underline mb-4 inline-block">
@@ -17,7 +17,7 @@
                     <!-- Header -->
                     <div class="mb-4">
                         <div class="flex items-center gap-2 mb-2">
-                            <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white">
                                 {{ homework.title }}
                             </h1>
                             <span v-if="homework.is_overdue && !submission"
@@ -34,26 +34,26 @@
                     <div class="grid grid-cols-2 gap-4 mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
                         <div>
                             <p class="text-sm text-gray-600 dark:text-gray-400">Fecha de entrega</p>
-                            <p class="font-medium text-gray-900 dark:text-white">
+                            <p class="font-medium text-gray-900 dark:text-gray-100 dark:text-white">
                                 {{ homework.due_date ? formatDate(homework.due_date) : 'Sin fecha límite' }}
                             </p>
                         </div>
                         <div>
                             <p class="text-sm text-gray-600 dark:text-gray-400">Puntuación máxima</p>
-                            <p class="font-medium text-gray-900 dark:text-white">{{ homework.max_score }} puntos</p>
+                            <p class="font-medium text-gray-900 dark:text-gray-100 dark:text-white">{{ homework.max_score }} puntos</p>
                         </div>
                     </div>
 
                     <!-- Description -->
                     <div v-if="homework.description" class="mb-4">
                         <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Descripción</h3>
-                        <p class="text-gray-900 dark:text-white whitespace-pre-wrap">{{ homework.description }}</p>
+                        <p class="text-gray-900 dark:text-gray-100 dark:text-white whitespace-pre-wrap">{{ homework.description }}</p>
                     </div>
 
                     <!-- Instructions -->
                     <div v-if="homework.instructions" class="mb-4">
                         <h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Instrucciones</h3>
-                        <p class="text-gray-900 dark:text-white whitespace-pre-wrap">{{ homework.instructions }}</p>
+                        <p class="text-gray-900 dark:text-gray-100 dark:text-white whitespace-pre-wrap">{{ homework.instructions }}</p>
                     </div>
 
                     <!-- Teacher Attachment -->
@@ -73,7 +73,7 @@
 
                 <!-- Submission Section -->
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-6">
-                    <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Tu Entrega</h2>
+                    <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 dark:text-white mb-4">Tu Entrega</h2>
 
                     <!-- Graded Submission View (Score & Feedback) -->
                     <div v-if="submission && ['graded', 'returned'].includes(submission.status)">
@@ -96,7 +96,7 @@
                         <div v-if="submission.text_content">
                             <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Tu respuesta:</h4>
                             <p
-                                class="text-gray-900 dark:text-white whitespace-pre-wrap bg-gray-50 dark:bg-gray-700 p-4 rounded">
+                                class="text-gray-900 dark:text-gray-100 dark:text-white whitespace-pre-wrap bg-gray-50 dark:bg-gray-900/50 dark:bg-gray-700 p-4 rounded">
                                 {{ submission.text_content }}
                             </p>
                         </div>
@@ -211,7 +211,7 @@
                             <DropZone v-model="form.file" label="Arrastra tu archivo aquí para entregar"
                                 :max-size="10 * 1024 * 1024" />
                             <p v-if="submission?.file_path && !form.file"
-                                class="text-sm text-gray-500 dark:text-gray-400 mt-2 p-2 bg-gray-50 rounded border border-gray-200">
+                                class="text-sm text-gray-500 dark:text-gray-400 mt-2 p-2 bg-gray-50 dark:bg-gray-900/50 rounded border border-gray-200 dark:border-gray-700">
                                 Archivo enviado anteriormente: <strong>{{ submission.file_path.split('/').pop()
                                 }}</strong>
                             </p>
@@ -245,8 +245,8 @@
                     <!-- Extension Request Button -->
                     <div v-if="showExtensionRequest" class="text-center py-6">
                         <div
-                            class="bg-gray-50 dark:bg-gray-700/50 rounded-lg p-6 max-w-lg mx-auto border border-gray-200 dark:border-gray-700">
-                            <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">La fecha de entrega ha
+                            class="bg-gray-50 dark:bg-gray-900/50 dark:bg-gray-700/50 rounded-lg p-6 max-w-lg mx-auto border border-gray-200 dark:border-gray-700">
+                            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 dark:text-white mb-2">La fecha de entrega ha
                                 vencido</h3>
                             <p class="text-gray-500 dark:text-gray-400 mb-4">
                                 Esta tarea no acepta entregas tardías. Si necesitas más tiempo, puedes solicitar una

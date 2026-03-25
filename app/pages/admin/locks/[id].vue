@@ -1,15 +1,15 @@
 <template>
     <div>
-        <header class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+        <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-between items-center">
             <div class="flex items-center gap-4">
-                <button @click="router.back()" class="text-gray-500 hover:text-gray-700">
+                <button @click="router.back()" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300">
                     <ArrowLeftIcon class="h-5 w-5" />
                 </button>
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
                         {{ student ? `${student.nombres} ${student.apellidos}` : 'Detalles del Estudiante' }}
                     </h1>
-                    <p v-if="student?.aula" class="text-sm text-gray-600 mt-1">
+                    <p v-if="student?.aula" class="text-sm text-gray-600 dark:text-gray-400 mt-1">
                         {{ student.aula.grado_cardinal }}° {{ student.aula.seccion }}
                     </p>
                 </div>
@@ -38,7 +38,7 @@
         <div class="p-6">
             <div v-if="loading" class="text-center py-12">
                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                <p class="mt-2 text-gray-500">Cargando calificaciones...</p>
+                <p class="mt-2 text-gray-500 dark:text-gray-400">Cargando calificaciones...</p>
             </div>
 
             <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -50,16 +50,16 @@
 
                     <!-- Academic Failures -->
                     <div v-if="failedAcademic.length > 0"
-                        class="bg-white rounded-lg shadow overflow-hidden border-l-4 border-red-500">
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden border-l-4 border-red-500">
                         <div class="px-4 py-3 bg-red-50 border-b border-red-100 font-medium text-red-800">
                             Materias Académicas
                         </div>
                         <table class="min-w-full text-sm">
-                            <tbody class="divide-y divide-gray-100">
+                            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                                 <tr v-for="(item, idx) in failedAcademic" :key="'af-' + idx">
                                     <td class="px-4 py-3">
-                                        <div class="font-medium text-gray-900">{{ item.materia }}</div>
-                                        <div class="text-xs text-gray-500">{{ item.competencia }}</div>
+                                        <div class="font-medium text-gray-900 dark:text-gray-100">{{ item.materia }}</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ item.competencia }}</div>
                                     </td>
                                     <td class="px-4 py-3 text-right">
                                         <span
@@ -75,16 +75,16 @@
 
                     <!-- Technical Failures -->
                     <div v-if="failedTechnical.length > 0"
-                        class="bg-white rounded-lg shadow overflow-hidden border-l-4 border-orange-500">
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden border-l-4 border-orange-500">
                         <div class="px-4 py-3 bg-orange-50 border-b border-orange-100 font-medium text-orange-800">
                             Módulos Técnicos
                         </div>
                         <table class="min-w-full text-sm">
-                            <tbody class="divide-y divide-gray-100">
+                            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                                 <tr v-for="(item, idx) in failedTechnical" :key="'tf-' + idx">
                                     <td class="px-4 py-3">
-                                        <div class="font-medium text-gray-900">{{ item.materia }}</div>
-                                        <div class="text-xs text-gray-500">RA {{ item.ra }} (Op. {{ item.oportunidad }})
+                                        <div class="font-medium text-gray-900 dark:text-gray-100">{{ item.materia }}</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">RA {{ item.ra }} (Op. {{ item.oportunidad }})
                                         </div>
                                     </td>
                                     <td class="px-4 py-3 text-right">
@@ -120,16 +120,16 @@
 
                     <!-- Academic Approved -->
                     <div v-if="approvedAcademic.length > 0"
-                        class="bg-white rounded-lg shadow overflow-hidden border-l-4 border-green-500">
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden border-l-4 border-green-500">
                         <div class="px-4 py-3 bg-green-50 border-b border-green-100 font-medium text-green-800">
                             Materias Académicas
                         </div>
                         <table class="min-w-full text-sm">
-                            <tbody class="divide-y divide-gray-100">
+                            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                                 <tr v-for="(item, idx) in approvedAcademic" :key="'aa-' + idx">
                                     <td class="px-4 py-3">
-                                        <div class="font-medium text-gray-900">{{ item.materia }}</div>
-                                        <div class="text-xs text-gray-500">{{ item.competencia }}</div>
+                                        <div class="font-medium text-gray-900 dark:text-gray-100">{{ item.materia }}</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ item.competencia }}</div>
                                     </td>
                                     <td class="px-4 py-3 text-right">
                                         <span
@@ -145,16 +145,16 @@
 
                     <!-- Technical Approved -->
                     <div v-if="approvedTechnical.length > 0"
-                        class="bg-white rounded-lg shadow overflow-hidden border-l-4 border-teal-500">
+                        class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden border-l-4 border-teal-500">
                         <div class="px-4 py-3 bg-teal-50 border-b border-teal-100 font-medium text-teal-800">
                             Módulos Técnicos
                         </div>
                         <table class="min-w-full text-sm">
-                            <tbody class="divide-y divide-gray-100">
+                            <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
                                 <tr v-for="(item, idx) in approvedTechnical" :key="'ta-' + idx">
                                     <td class="px-4 py-3">
-                                        <div class="font-medium text-gray-900">{{ item.materia }}</div>
-                                        <div class="text-xs text-gray-500">RA {{ item.ra }} (Op. {{ item.oportunidad }})
+                                        <div class="font-medium text-gray-900 dark:text-gray-100">{{ item.materia }}</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">RA {{ item.ra }} (Op. {{ item.oportunidad }})
                                         </div>
                                     </td>
                                     <td class="px-4 py-3 text-right">

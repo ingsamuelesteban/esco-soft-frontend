@@ -1,9 +1,9 @@
 <template>
     <div class="space-y-6">
-        <div class="bg-white shadow-sm rounded-lg p-6 flex justify-between items-center">
+        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6 flex justify-between items-center">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900">Categorías y Tipologías</h1>
-                <p class="text-sm text-gray-600 mt-1">Gestione las categorías para clasificar casos (ej. Académico,
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Categorías y Tipologías</h1>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Gestione las categorías para clasificar casos (ej. Académico,
                     Conductual, Familiar)</p>
             </div>
             <div>
@@ -17,39 +17,39 @@
             </div>
         </div>
 
-        <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
             <div v-if="loading" class="p-8 text-center">
                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
             </div>
 
-            <div v-else-if="categories.length === 0" class="p-8 text-center text-gray-500">
+            <div v-else-if="categories.length === 0" class="p-8 text-center text-gray-500 dark:text-gray-400">
                 No hay categorías registradas.
             </div>
 
-            <table v-else class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+            <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-900/50">
                     <tr>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Nombre</th>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Descripción</th>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Color
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Color
                         </th>
                         <th scope="col" class="relative px-6 py-3">
                             <span class="sr-only">Acciones</span>
                         </th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     <tr v-for="category in categories" :key="category.id">
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm font-medium text-gray-900">{{ category.name }}</div>
+                            <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ category.name }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <div class="text-sm text-gray-500">{{ category.description || '-' }}</div>
+                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ category.description || '-' }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
@@ -77,39 +77,39 @@
                 </div>
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
                 <div
-                    class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">{{ isEditing ? 'Editar Categoría' : 'Nueva Categoría' }}</h3>
+                    class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 mb-4">{{ isEditing ? 'Editar Categoría' : 'Nueva Categoría' }}</h3>
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Nombre</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</label>
                                 <input type="text" v-model="form.name"
-                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Descripción</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descripción</label>
                                 <textarea v-model="form.description" rows="2"
-                                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
+                                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"></textarea>
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Color (Hex)</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Color (Hex)</label>
                                 <div class="flex items-center space-x-2 mt-1">
                                     <input type="color" v-model="form.color"
-                                        class="h-8 w-12 p-0 border border-gray-300 rounded shadow-sm">
+                                        class="h-8 w-12 p-0 border border-gray-300 dark:border-gray-600 rounded shadow-sm">
                                     <input type="text" v-model="form.color"
-                                        class="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        class="block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <div class="bg-gray-50 dark:bg-gray-900/50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                         <button type="button"
                             class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm"
                             @click="saveCategory" :disabled="saving">
                             {{ saving ? 'Guardando...' : 'Guardar' }}
                         </button>
                         <button type="button"
-                            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                             @click="showModal = false">
                             Cancelar
                         </button>

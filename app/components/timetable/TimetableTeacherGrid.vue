@@ -1,8 +1,8 @@
 <template>
-  <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+  <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
     <div class="p-4 flex items-center gap-3 flex-wrap">
       <div class="flex items-center gap-2">
-        <label class="text-sm text-gray-600">Año lectivo</label>
+        <label class="text-sm text-gray-600 dark:text-gray-400">Año lectivo</label>
         <select v-model="anioId" class="border rounded px-2 py-1 text-sm h-8 min-w-[120px]">
           <option :value="undefined">Seleccionar...</option>
           <option v-for="a in anios" :key="a.id" :value="a.id">{{ a.nombre }}</option>
@@ -10,7 +10,7 @@
       </div>
       <!-- Selector de profesores: Visible si es admin/master -->
       <div class="flex items-center gap-2" v-if="!authStore.isProfesor">
-        <label class="text-sm text-gray-600">Profesor</label>
+        <label class="text-sm text-gray-600 dark:text-gray-400">Profesor</label>
         <select v-model.number="profesorId" class="border rounded px-2 py-1 text-sm h-8 min-w-[250px]"
           :disabled="loadingProfesores">
           <option :value="undefined">{{ loadingProfesores ? 'Cargando profesores...' : 'Seleccionar profesor…' }}
@@ -21,14 +21,14 @@
 
       <!-- Nombre del profesor si es rol profesor -->
       <div v-else class="flex items-center gap-2">
-        <span class="text-sm text-gray-500 mr-1">Profesor:</span>
-        <h2 class="text-base font-medium text-gray-900 border-b border-gray-300 pb-0.5">
+        <span class="text-sm text-gray-500 dark:text-gray-400 mr-1">Profesor:</span>
+        <h2 class="text-base font-medium text-gray-900 dark:text-gray-100 border-b border-gray-300 dark:border-gray-600 pb-0.5">
           {{ authStore.user?.name }}
         </h2>
       </div>
       <div class="ml-auto flex items-center gap-2">
         <button @click="reload"
-          class="inline-flex items-center justify-center p-1.5 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-colors"
+          class="inline-flex items-center justify-center p-1.5 rounded-md text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800 transition-colors"
           :disabled="loading" title="Refrescar">
           <svg class="h-5 w-5" :class="{ 'animate-spin': loading }" fill="none" viewBox="0 0 24 24"
             stroke="currentColor">
@@ -40,32 +40,32 @@
     </div>
 
     <!-- Loading indicator -->
-    <div v-if="loading && profesorId" class="px-4 py-8 text-center border-b border-gray-200">
+    <div v-if="loading && profesorId" class="px-4 py-8 text-center border-b border-gray-200 dark:border-gray-700">
       <div class="flex justify-center items-center space-x-3">
         <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-        <span class="text-sm text-gray-600 font-medium">Cargando horario del profesor...</span>
+        <span class="text-sm text-gray-600 dark:text-gray-400 font-medium">Cargando horario del profesor...</span>
       </div>
     </div>
 
     <div class="overflow-x-auto" :class="{ 'overflow-y-auto': fitViewport }" :style="wrapperStyle">
-      <table class="min-w-full table-fixed divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+      <table class="min-w-full table-fixed divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-900/50">
           <tr>
-            <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-44">Período</th>
+            <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-44">Período</th>
             <th v-for="d in days" :key="d.value"
-              class="px-2 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ d.label }}
+              class="px-2 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ d.label }}
             </th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
           <tr v-for="p in classPeriods" :key="p.id" class="align-top">
-            <td class="px-2 py-2 text-sm text-gray-600 w-44">
-              <div class="font-medium text-gray-900">{{ p.label }}</div>
+            <td class="px-2 py-2 text-sm text-gray-600 dark:text-gray-400 w-44">
+              <div class="font-medium text-gray-900 dark:text-gray-100">{{ p.label }}</div>
               <div class="text-xs">{{ formatTime12h(p.start_time) }} - {{ formatTime12h(p.end_time) }}</div>
             </td>
             <td v-for="d in days" :key="d.value" class="px-1 py-1">
               <div class="h-20 border rounded p-1 text-xs relative min-w-0"
-                :class="entryAt(d.value, p.id) ? 'bg-blue-50 border-blue-200' : 'bg-gray-50'">
+                :class="entryAt(d.value, p.id) ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 dark:bg-gray-900/50'">
                 <template v-if="entryAt(d.value, p.id)">
                   <div class="h-full w-full min-w-0 flex flex-col justify-between">
                     <div class="font-semibold truncate text-blue-900"
@@ -87,11 +87,11 @@
             </td>
           </tr>
           <tr v-if="!profesorId">
-            <td colspan="7" class="px-4 py-6 text-center text-sm text-gray-500">Selecciona un profesor para ver su
+            <td colspan="7" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Selecciona un profesor para ver su
               horario</td>
           </tr>
           <tr v-else-if="!loading && teacherEntries.length === 0">
-            <td colspan="7" class="px-4 py-6 text-center text-sm text-gray-500">Este profesor no tiene clases asignadas
+            <td colspan="7" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Este profesor no tiene clases asignadas
             </td>
           </tr>
         </tbody>
@@ -99,18 +99,18 @@
     </div>
 
     <!-- Resumen de asignaciones del profesor -->
-    <div v-if="profesorId && profesorAssignments.length > 0" class="border-t border-gray-200 p-4 bg-gray-50">
-      <h3 class="text-sm font-medium text-gray-900 mb-3">Resumen de Asignaciones</h3>
+    <div v-if="profesorId && profesorAssignments.length > 0" class="border-t border-gray-200 dark:border-gray-700 p-4 bg-gray-50 dark:bg-gray-900/50">
+      <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Resumen de Asignaciones</h3>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-        <div v-for="assignment in profesorAssignments" :key="assignment.id" class="bg-white border rounded-lg p-3">
-          <div class="font-medium text-sm text-gray-900 mb-1">
+        <div v-for="assignment in profesorAssignments" :key="assignment.id" class="bg-white dark:bg-gray-800 border rounded-lg p-3">
+          <div class="font-medium text-sm text-gray-900 dark:text-gray-100 mb-1">
             {{ assignment.materia?.nombre }}
           </div>
-          <div class="text-xs text-gray-600 mb-2">
+          <div class="text-xs text-gray-600 dark:text-gray-400 mb-2">
             {{ aulaName(assignment.aula) }}
           </div>
           <div class="flex justify-between items-center text-xs">
-            <span class="text-gray-600">Períodos:</span>
+            <span class="text-gray-600 dark:text-gray-400">Períodos:</span>
             <span class="font-medium" :class="getHoursColor(assignment)">
               {{ assignment.periodos_programados || 0 }}/{{ assignment.horas_semanales }}
             </span>

@@ -2,15 +2,15 @@
     <div class="space-y-6">
         <!-- Breadcrumb / Header -->
         <div class="flex items-center gap-4">
-            <button @click="router.back()" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
-                <svg class="w-6 h-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <button @click="router.back()" class="p-2 hover:bg-gray-100 dark:bg-gray-800 rounded-full transition-colors">
+                <svg class="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
             </button>
             <div>
-                <h1 class="text-2xl font-semibold text-gray-900">Detalles de Solicitud #{{ request?.id }}</h1>
-                <p class="text-sm text-gray-500">
+                <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Detalles de Solicitud #{{ request?.id }}</h1>
+                <p class="text-sm text-gray-500 dark:text-gray-400">
                     {{ request?.personal?.nombre }} {{ request?.personal?.apellido }}
                 </p>
             </div>
@@ -32,38 +32,38 @@
             <!-- Col 1: Main Details -->
             <div class="lg:col-span-2 space-y-6">
                 <!-- Solicitud Info -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Información de la Solicitud</h2>
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Información de la Solicitud</h2>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <p class="text-sm text-gray-500">Tipo de Permiso</p>
-                            <p class="font-medium text-gray-900 mt-1 capitalize">{{ getLeaveTypeName(request.leave_type)
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Tipo de Permiso</p>
+                            <p class="font-medium text-gray-900 dark:text-gray-100 mt-1 capitalize">{{ getLeaveTypeName(request.leave_type)
                             }}</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Duración</p>
-                            <p class="font-medium text-gray-900 mt-1">{{ getDurationDisplay(request) }}</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Duración</p>
+                            <p class="font-medium text-gray-900 dark:text-gray-100 mt-1">{{ getDurationDisplay(request) }}</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Fecha Inicio</p>
-                            <p class="font-medium text-gray-900 mt-1">{{ formatDate(request.start_date) }}</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Fecha Inicio</p>
+                            <p class="font-medium text-gray-900 dark:text-gray-100 mt-1">{{ formatDate(request.start_date) }}</p>
                         </div>
                         <div>
-                            <p class="text-sm text-gray-500">Fecha Fin</p>
-                            <p class="font-medium text-gray-900 mt-1">{{ formatDate(request.end_date) }}</p>
+                            <p class="text-sm text-gray-500 dark:text-gray-400">Fecha Fin</p>
+                            <p class="font-medium text-gray-900 dark:text-gray-100 mt-1">{{ formatDate(request.end_date) }}</p>
                         </div>
                     </div>
 
                     <div class="mt-6">
-                        <p class="text-sm text-gray-500">Motivo</p>
-                        <div class="mt-2 p-4 bg-gray-50 rounded-lg text-gray-700">
+                        <p class="text-sm text-gray-500 dark:text-gray-400">Motivo</p>
+                        <div class="mt-2 p-4 bg-gray-50 dark:bg-gray-900/50 rounded-lg text-gray-700 dark:text-gray-300">
                             {{ request.reason }}
                         </div>
                     </div>
 
                     <div v-if="request.attachment_path" class="mt-6">
-                        <p class="text-sm text-gray-500 mb-2">Documento Adjunto (Empleado)</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Documento Adjunto (Empleado)</p>
                         <button v-if="request.attachment_path" @click="printFile('/api/staff/leave-requests/' + request.id + '/download?type=request')"
                             class="inline-flex items-center gap-2 px-4 py-2 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors">
                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -75,7 +75,7 @@
                     </div>
 
                     <div v-if="request.approval_attachment_path" class="mt-6">
-                        <p class="text-sm text-gray-500 mb-2">Adjunto de Aprobación</p>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Adjunto de Aprobación</p>
                         <button v-if="request.approval_attachment_path"
                             @click="printFile('/api/staff/leave-requests/' + request.id + '/download?type=approval')"
                             class="inline-flex items-center gap-2 px-4 py-2 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors">
@@ -89,12 +89,12 @@
                 </div>
 
                 <!-- Firmas -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h2 class="text-lg font-semibold text-gray-900 mb-4">Firmas Digitales</h2>
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                    <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Firmas Digitales</h2>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div>
-                            <p class="text-sm text-gray-500 mb-2">Firma del Empleado</p>
-                            <div class="border rounded-lg p-2 bg-white">
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Firma del Empleado</p>
+                            <div class="border rounded-lg p-2 bg-white dark:bg-gray-800">
                                 <img :src="getSignatureUrl(request.employee_signature)" alt="Firma Empleado"
                                     class="max-h-24 mx-auto" v-if="request.employee_signature" />
                                 <p v-else class="text-center text-gray-400 py-4">Sin firma</p>
@@ -105,8 +105,8 @@
                         </div>
 
                         <div v-if="request.status !== 'pendiente'">
-                            <p class="text-sm text-gray-500 mb-2">Firma del Administrador ({{ request.status }})</p>
-                            <div class="border rounded-lg p-2 bg-white">
+                            <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">Firma del Administrador ({{ request.status }})</p>
+                            <div class="border rounded-lg p-2 bg-white dark:bg-gray-800">
                                 <img :src="getSignatureUrl(request.admin_signature)" alt="Firma Admin"
                                     class="max-h-24 mx-auto" v-if="request.admin_signature" />
                                 <p v-else class="text-center text-gray-400 py-4">Sin firma</p>
@@ -122,8 +122,8 @@
             <!-- Col 2: Actions & Timeline -->
             <div class="space-y-6">
                 <!-- Actions Box -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-4">Acciones</h3>
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-4">Acciones</h3>
 
                     <div class="flex flex-col gap-3">
                         <button v-if="request.status === 'pendiente' && (authStore.isAdmin || authStore.isMaster)"
@@ -142,13 +142,13 @@
                         </button>
 
                         <button v-if="request.status === 'pendiente'" @click="cancelRequest"
-                            class="w-full flex justify-center items-center gap-2 px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                            class="w-full flex justify-center items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50 focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
                             Cancelar Solicitud
                         </button>
 
 
                         <button @click="printRequest"
-                            class="w-full flex justify-center items-center gap-2 px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                            class="w-full flex justify-center items-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50 focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
@@ -159,9 +159,9 @@
                 </div>
 
                 <!-- Review Notes -->
-                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6" v-if="request.review_notes">
-                    <h3 class="text-lg font-semibold text-gray-900 mb-2">Notas de Revisión</h3>
-                    <p class="text-gray-600 text-sm whitespace-pre-wrap">{{ request.review_notes }}</p>
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6" v-if="request.review_notes">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2">Notas de Revisión</h3>
+                    <p class="text-gray-600 dark:text-gray-400 text-sm whitespace-pre-wrap">{{ request.review_notes }}</p>
                 </div>
             </div>
         </div>
@@ -332,9 +332,9 @@ const getStatusClass = (status: string) => {
         pendiente: 'bg-yellow-100 text-yellow-800',
         aprobado: 'bg-green-100 text-green-800',
         rechazado: 'bg-red-100 text-red-800',
-        cancelado: 'bg-gray-100 text-gray-800'
+        cancelado: 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
     }
-    return classes[status] || 'bg-gray-100 text-gray-800'
+    return classes[status] || 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
 }
 
 const getFileUrl = (path: string) => {

@@ -1,28 +1,28 @@
 <template>
-  <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+  <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
     <div class="p-4">
       <div class="flex items-center justify-between gap-3">
-        <input v-model="query" type="text" class="w-full md:w-64 rounded-md border-gray-300 text-sm"
+        <input v-model="query" type="text" class="w-full md:w-64 rounded-md border-gray-300 dark:border-gray-600 text-sm"
           placeholder="Buscar módulos formativos..." />
-        <div class="ml-2 text-sm text-gray-500" v-if="!loading">Total: {{ filtered.length }}</div>
+        <div class="ml-2 text-sm text-gray-500 dark:text-gray-400" v-if="!loading">Total: {{ filtered.length }}</div>
       </div>
     </div>
     <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-900/50">
           <tr>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Código</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Módulo Formativo
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Código</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Módulo Formativo
             </th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tipo</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          <tr v-for="m in filtered" :key="m.id" class="hover:bg-gray-50">
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <tr v-for="m in filtered" :key="m.id" class="hover:bg-gray-50 dark:bg-gray-900/50">
             <td class="px-4 py-3 whitespace-nowrap text-sm">{{ m.codigo || '—' }}</td>
-            <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900">{{ m.nombre }}</td>
+            <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">{{ m.nombre }}</td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">
               <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
                 :class="m.tipo === 'Tecnico' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'">
@@ -32,7 +32,7 @@
             <td class="px-4 py-3 whitespace-nowrap text-sm">
               <span v-if="!m.deleted_at" :class="m.activo ? 'text-green-600' : 'text-red-600'">{{ m.activo ? 'Activa' :
                 'Inactiva' }}</span>
-              <span v-else class="text-gray-500">Eliminada</span>
+              <span v-else class="text-gray-500 dark:text-gray-400">Eliminada</span>
             </td>
             <td class="px-4 py-3 whitespace-nowrap text-sm space-x-1">
               <template v-if="!m.deleted_at">
@@ -66,10 +66,10 @@
             </td>
           </tr>
           <tr v-if="!loading && filtered.length === 0">
-            <td colspan="5" class="px-4 py-6 text-center text-sm text-gray-500">Sin resultados</td>
+            <td colspan="5" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Sin resultados</td>
           </tr>
           <tr v-if="loading">
-            <td colspan="5" class="px-4 py-6 text-center text-sm text-gray-500">Cargando...</td>
+            <td colspan="5" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Cargando...</td>
           </tr>
         </tbody>
       </table>

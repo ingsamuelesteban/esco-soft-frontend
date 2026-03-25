@@ -34,19 +34,19 @@
 
       <!-- Alerta de Nuevas Incidencias de Aula -->
       <NuxtLink v-if="alerts?.new_incidents > 0" to="/reportes-aulas/gestion"
-        class="bg-orange-50 border border-orange-200 rounded-lg p-4 flex items-center justify-between hover:bg-orange-100 transition-colors">
+        class="bg-orange-50 dark:bg-orange-900/30 border border-orange-200 dark:border-orange-800 rounded-lg p-4 flex items-center justify-between hover:bg-orange-100 dark:hover:bg-orange-900/50 transition-colors">
         <div class="flex items-center gap-3">
-          <div class="flex-shrink-0 bg-orange-100 rounded-full p-2">
-            <ExclamationTriangleIcon class="w-6 h-6 text-orange-600" />
+          <div class="flex-shrink-0 bg-orange-100 dark:bg-orange-800/50 rounded-full p-2">
+            <ExclamationTriangleIcon class="w-6 h-6 text-orange-600 dark:text-orange-400" />
           </div>
           <div>
-            <h3 class="text-sm font-bold text-orange-900">
+            <h3 class="text-sm font-bold text-orange-900 dark:text-orange-100">
               Hay {{ alerts.new_incidents }} {{ alerts.new_incidents === 1 ? 'incidencia' : 'incidencias' }} de aula sin procesar
             </h3>
-            <p class="text-xs text-orange-700 mt-0.5">Pendientes de revisión y asignación</p>
+            <p class="text-xs text-orange-700 dark:text-orange-300 mt-0.5">Pendientes de revisión y asignación</p>
           </div>
         </div>
-        <svg class="w-5 h-5 text-orange-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <svg class="w-5 h-5 text-orange-400 dark:text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
         </svg>
       </NuxtLink>
@@ -61,32 +61,32 @@
       />
 
       <!-- Online Users -->
-      <div class="bg-white shadow rounded-lg p-6">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">Usuarios en Línea</h3>
-        <div class="space-y-4 max-h-96 overflow-y-auto">
+      <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 border border-transparent dark:border-gray-700 transition-colors">
+        <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Usuarios en Línea</h3>
+        <div class="space-y-4 max-h-96 overflow-y-auto pr-2">
           <div v-if="onlineUsers && onlineUsers.length > 0" class="flow-root">
-             <ul role="list" class="-my-4 divide-y divide-gray-200">
+             <ul role="list" class="-my-4 divide-y divide-gray-200 dark:divide-gray-700">
                 <li v-for="user in onlineUsers" :key="user.id" class="flex items-center space-x-3 py-4">
                    <div class="flex-shrink-0">
-                      <img v-if="user.profile_photo_url" class="h-8 w-8 rounded-full" :src="user.profile_photo_url" :alt="user.name" />
-                      <span v-else class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-500">
+                      <img v-if="user.profile_photo_url" class="h-8 w-8 rounded-full border border-gray-200 dark:border-gray-700 dark:border-gray-600" :src="user.profile_photo_url" :alt="user.name" />
+                      <span v-else class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-500 dark:bg-gray-600">
                         <span class="text-xs font-medium leading-none text-white">{{ user.initials }}</span>
                       </span>
                    </div>
                    <div class="min-w-0 flex-1">
-                      <p class="truncate text-sm font-medium text-gray-900">{{ user.name }}</p>
-                      <p v-if="user.is_online" class="truncate text-xs text-green-600 font-medium">En línea</p>
-                      <p v-else class="truncate text-xs text-gray-500">Últ. vez {{ user.last_seen }}</p>
+                      <p class="truncate text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-white">{{ user.name }}</p>
+                      <p v-if="user.is_online" class="truncate text-xs text-green-600 dark:text-green-400 font-medium">En línea</p>
+                      <p v-else class="truncate text-xs text-gray-500 dark:text-gray-400">Últ. vez {{ user.last_seen }}</p>
                    </div>
                    <div>
-                      <span v-if="user.is_online" class="inline-block h-2.5 w-2.5 rounded-full bg-green-500 ring-2 ring-white"></span>
-                      <span v-else class="inline-block h-2.5 w-2.5 rounded-full bg-gray-300 ring-2 ring-white"></span>
+                      <span v-if="user.is_online" class="inline-block h-2.5 w-2.5 rounded-full bg-green-500 dark:bg-green-400 ring-2 ring-white dark:ring-gray-800"></span>
+                      <span v-else class="inline-block h-2.5 w-2.5 rounded-full bg-gray-300 dark:bg-gray-600 ring-2 ring-white dark:ring-gray-800"></span>
                    </div>
                 </li>
              </ul>
           </div>
           
-           <div v-else class="text-center py-6 text-gray-500">
+           <div v-else class="text-center py-6 text-gray-500 dark:text-gray-400">
               <p>No hay otros usuarios en línea.</p>
            </div>
         </div>

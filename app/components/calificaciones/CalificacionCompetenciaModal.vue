@@ -5,8 +5,8 @@
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
             <div
-                class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div class="flex items-center mb-4">
                         <div
                             class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -16,10 +16,10 @@
                             </svg>
                         </div>
                         <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
                                 Calificar {{ tituloCompetencia }}
                             </h3>
-                            <p class="text-sm text-gray-500">
+                            <p class="text-sm text-gray-500 dark:text-gray-400">
                                 {{ estudiante?.nombres }} {{ estudiante?.apellidos }} - {{ periodo }}
                             </p>
                         </div>
@@ -28,17 +28,17 @@
                     <form @submit.prevent="guardarCalificacion">
                         <div class="space-y-4">
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Calificación (0-100) *</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Calificación (0-100) *</label>
                                 <input ref="gradeInput" v-model.number="form.nota" type="number" min="0" max="100"
                                     step="1" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                                     placeholder="Ingrese la nota" @keypress="isNumber($event)" />
                             </div>
 
                             <div>
-                                <label class="block text-sm font-medium text-gray-700">Observaciones</label>
+                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Observaciones</label>
                                 <textarea v-model="form.observaciones" rows="3"
-                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                                     placeholder="Observaciones opcionales..."></textarea>
                             </div>
                         </div>
@@ -54,11 +54,11 @@
                             <button
                                 v-if="calificacionActual !== undefined && calificacionActual !== null && calificacionActual !== ''"
                                 type="button" @click="eliminar" :disabled="loading"
-                                class="mt-3 w-full inline-flex justify-center rounded-md border border-red-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-red-700 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
+                                class="mt-3 w-full inline-flex justify-center rounded-md border border-red-300 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-red-700 hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
                                 Eliminar
                             </button>
                             <button type="button" @click="$emit('close')" :disabled="loading"
-                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
+                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
                                 Cancelar
                             </button>
                         </div>

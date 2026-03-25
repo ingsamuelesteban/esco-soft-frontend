@@ -1,15 +1,15 @@
 <template>
   <section>
     <div class="mb-6">
-      <h1 class="text-2xl font-bold text-gray-900">Panel de Control</h1>
-      <p class="mt-1 text-sm text-gray-500">
+      <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white transition-colors">Panel de Control</h1>
+      <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 transition-colors">
         Bienvenido, {{ authStore.user?.name }}. Aquí tienes un resumen de tu actividad.
       </p>
     </div>
 
     <!-- Loading State -->
     <div v-if="loading" class="flex justify-center py-12">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 dark:border-blue-400"></div>
     </div>
 
     <!-- Error State -->
@@ -26,8 +26,8 @@
       <DashboardPsychology v-else-if="isPsychologist" :data="dashboardData" />
 
       <!-- Fallback or Student View -->
-      <div v-else class="bg-white p-6 rounded shadow">
-        <p>Bienvenido al sistema EscoSoft.</p>
+      <div v-else class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-transparent dark:border-gray-700 transition-colors">
+        <p class="text-gray-900 dark:text-gray-100">Bienvenido al sistema EscoSoft.</p>
         <!-- Student dashboard is usually a separate route /student/dashboard, 
              but if they land here we can redirect or show basic info -->
       </div>

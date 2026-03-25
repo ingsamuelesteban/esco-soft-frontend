@@ -1,6 +1,6 @@
 <template>
     <div v-if="chatStore.showChatWindow"
-        class="fixed bottom-24 right-6 w-96 h-[600px] bg-white rounded-xl shadow-2xl border border-gray-200 z-50 flex flex-col overflow-hidden">
+        class="fixed bottom-24 right-6 w-96 h-[600px] bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-200 dark:border-gray-700 z-50 flex flex-col overflow-hidden">
         <!-- Header -->
         <div class="bg-blue-600 text-white p-4 flex justify-between items-center shrink-0">
             <h3 class="font-bold flex items-center">
@@ -25,7 +25,7 @@
         </div>
 
         <!-- Body -->
-        <div class="flex-1 overflow-y-auto bg-gray-50 relative">
+        <div class="flex-1 overflow-y-auto bg-gray-50 dark:bg-gray-900/50 relative">
             <UserList v-if="isCreatingNew" @cancel="isCreatingNew = false" @select-user="handleUserSelect" />
             <ConversationList v-else-if="!chatStore.activeConversation" @new-chat="isCreatingNew = true" />
             <MessageList v-else />

@@ -1,9 +1,9 @@
 <template>
     <div class="space-y-6">
         <!-- Header -->
-        <div class="bg-white shadow-sm rounded-lg p-6">
-            <h1 class="text-2xl font-bold text-gray-900">Panel de Estadísticas</h1>
-            <p class="text-sm text-gray-600 mt-1">Resumen del rendimiento y actividad del departamento de psicología.
+        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
+            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Panel de Estadísticas</h1>
+            <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Resumen del rendimiento y actividad del departamento de psicología.
             </p>
         </div>
 
@@ -14,7 +14,7 @@
         <div v-else class="space-y-6">
             <!-- Summary Cards -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                     <div class="p-5">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
@@ -28,8 +28,8 @@
                             </div>
                             <div class="ml-5 w-0 flex-1">
                                 <dl>
-                                    <dt class="text-sm font-medium text-gray-500 truncate">Total Casos</dt>
-                                    <dd class="text-lg font-semibold text-gray-900">{{ stats.summary?.total_cases }}
+                                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Total Casos</dt>
+                                    <dd class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ stats.summary?.total_cases }}
                                     </dd>
                                 </dl>
                             </div>
@@ -37,7 +37,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                     <div class="p-5">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
@@ -51,15 +51,15 @@
                             </div>
                             <div class="ml-5 w-0 flex-1">
                                 <dl>
-                                    <dt class="text-sm font-medium text-gray-500 truncate">Casos Activos</dt>
-                                    <dd class="text-lg font-semibold text-gray-900">{{ stats.summary?.open_cases }}</dd>
+                                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Casos Activos</dt>
+                                    <dd class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ stats.summary?.open_cases }}</dd>
                                 </dl>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                     <div class="p-5">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
@@ -73,8 +73,8 @@
                             </div>
                             <div class="ml-5 w-0 flex-1">
                                 <dl>
-                                    <dt class="text-sm font-medium text-gray-500 truncate">Reportes Pendientes</dt>
-                                    <dd class="text-lg font-semibold text-gray-900">{{ stats.summary?.pending_referrals
+                                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Reportes Pendientes</dt>
+                                    <dd class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ stats.summary?.pending_referrals
                                     }}</dd>
                                 </dl>
                             </div>
@@ -82,7 +82,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                     <div class="p-5">
                         <div class="flex items-center">
                             <div class="flex-shrink-0">
@@ -96,8 +96,8 @@
                             </div>
                             <div class="ml-5 w-0 flex-1">
                                 <dl>
-                                    <dt class="text-sm font-medium text-gray-500 truncate">Total Reportes</dt>
-                                    <dd class="text-lg font-semibold text-gray-900">{{ stats.summary?.total_referrals }}
+                                    <dt class="text-sm font-medium text-gray-500 dark:text-gray-400 truncate">Total Reportes</dt>
+                                    <dd class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ stats.summary?.total_referrals }}
                                     </dd>
                                 </dl>
                             </div>
@@ -108,11 +108,11 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <!-- Cases by Grade -->
-                <div class="bg-white shadow rounded-lg p-6">
-                    <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Casos por Grado (Top 5)</h3>
+                <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+                    <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 mb-4">Casos por Grado (Top 5)</h3>
                     <div class="space-y-4">
                         <div v-for="(item, idx) in stats.by_grade" :key="idx">
-                            <div class="flex items-center justify-between text-sm font-medium text-gray-600 mb-1">
+                            <div class="flex items-center justify-between text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
                                 <span>{{ item.curso }}</span>
                                 <span>{{ item.total }} casos</span>
                             </div>
@@ -122,17 +122,17 @@
                                 </div>
                             </div>
                         </div>
-                        <div v-if="stats.by_grade?.length === 0" class="text-center text-gray-500 py-4">No hay datos
+                        <div v-if="stats.by_grade?.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-4">No hay datos
                             suficientes.</div>
                     </div>
                 </div>
 
                 <!-- Cases by Category -->
-                <div class="bg-white shadow rounded-lg p-6">
-                    <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Casos por Categoría/Tipología</h3>
+                <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+                    <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 mb-4">Casos por Categoría/Tipología</h3>
                     <div class="space-y-4">
                         <div v-for="(item, idx) in stats.by_category" :key="idx">
-                            <div class="flex items-center justify-between text-sm font-medium text-gray-600 mb-1">
+                            <div class="flex items-center justify-between text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">
                                 <div class="flex items-center">
                                     <span class="w-3 h-3 rounded-full mr-2"
                                         :style="{ backgroundColor: item.color }"></span>
@@ -146,15 +146,15 @@
                                 </div>
                             </div>
                         </div>
-                        <div v-if="stats.by_category?.length === 0" class="text-center text-gray-500 py-4">No hay datos
+                        <div v-if="stats.by_category?.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-4">No hay datos
                             suficientes.</div>
                     </div>
                 </div>
             </div>
 
             <!-- Cases by Month (Simple Bar Chart Visualization with CSS) -->
-            <div class="bg-white shadow rounded-lg p-6">
-                <h3 class="text-lg font-medium leading-6 text-gray-900 mb-6">Tendencia de Casos (Últimos 6 meses)</h3>
+            <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
+                <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 mb-6">Tendencia de Casos (Últimos 6 meses)</h3>
                 <div class="flex items-end space-x-4 h-48 sm:h-64" v-if="stats.by_month && stats.by_month.length > 0">
                     <div v-for="(item, idx) in stats.by_month" :key="idx"
                         class="flex-1 flex flex-col items-center group relative">
@@ -165,11 +165,11 @@
                         <div class="w-full bg-indigo-200 hover:bg-indigo-300 rounded-t-md transition-all duration-300"
                             :style="{ height: calculatePercentageOfMax(item.total) + '%' }"></div>
                         <div
-                            class="mt-2 text-xs text-gray-600 transform -rotate-45 sm:rotate-0 origin-top-left sm:origin-center">
+                            class="mt-2 text-xs text-gray-600 dark:text-gray-400 transform -rotate-45 sm:rotate-0 origin-top-left sm:origin-center">
                             {{ monthLabel(item.month) }}</div>
                     </div>
                 </div>
-                <div v-else class="text-center text-gray-500 py-12">No hay datos históricos suficientes.</div>
+                <div v-else class="text-center text-gray-500 dark:text-gray-400 py-12">No hay datos históricos suficientes.</div>
             </div>
 
         </div>

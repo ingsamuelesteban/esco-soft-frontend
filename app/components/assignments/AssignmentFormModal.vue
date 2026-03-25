@@ -1,10 +1,10 @@
 <template>
   <div v-if="open" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
-    <div class="bg-white w-full max-w-xl rounded-lg shadow-xl overflow-hidden">
+    <div class="bg-white dark:bg-gray-800 w-full max-w-xl rounded-lg shadow-xl overflow-hidden">
       <div class="px-4 py-3 border-b flex items-center justify-between">
         <h3 class="text-lg font-semibold">{{ isEdit ? 'Editar asignación' : 'Nueva asignación' }}</h3>
         <button
-          class="inline-flex items-center justify-center p-1.5 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-colors"
+          class="inline-flex items-center justify-center p-1.5 rounded-md text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800 transition-colors"
           @click="onCancel" title="Cerrar">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -15,7 +15,7 @@
         <div class="p-4 space-y-4">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label class="block text-sm text-gray-600 mb-1">Año lectivo</label>
+              <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Año lectivo</label>
               <select ref="initialFocus" v-model.number="form.anio_lectivo_id" class="border rounded px-2 py-2 w-full">
                 <option :value="undefined">Seleccionar...</option>
                 <option v-for="a in anios" :key="a.id" :value="a.id">{{ a.nombre }}</option>
@@ -23,14 +23,14 @@
               <p v-if="errors.anio_lectivo_id" class="text-sm text-red-600 mt-1">{{ errors.anio_lectivo_id }}</p>
             </div>
             <div>
-              <label class="block text-sm text-gray-600 mb-1">Horas semanales</label>
+              <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Horas semanales</label>
               <input v-model.number="form.horas_semanales" type="number" min="0" max="60"
                 class="border rounded px-2 py-2 w-full" placeholder="p. ej. 5" />
             </div>
           </div>
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label class="block text-sm text-gray-600 mb-1">Módulo Formativo</label>
+              <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Módulo Formativo</label>
               <select v-model.number="form.materia_id" class="border rounded px-2 py-2 w-full">
                 <option :value="undefined">Seleccionar…</option>
                 <option v-for="m in modulosFormativos" :key="m.id" :value="m.id">{{ m.nombre }}</option>
@@ -38,7 +38,7 @@
               <p v-if="errors.materia_id" class="text-sm text-red-600 mt-1">{{ errors.materia_id }}</p>
             </div>
             <div>
-              <label class="block text-sm text-gray-600 mb-1">Profesor</label>
+              <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Profesor</label>
               <select v-model.number="form.profesor_id" class="border rounded px-2 py-2 w-full">
                 <option :value="undefined">Seleccionar…</option>
                 <option v-for="p in profesores" :key="p.id" :value="p.id">{{ p.nombre }} {{ p.apellido }}</option>
@@ -46,7 +46,7 @@
               <p v-if="errors.profesor_id" class="text-sm text-red-600 mt-1">{{ errors.profesor_id }}</p>
             </div>
             <div>
-              <label class="block text-sm text-gray-600 mb-1">Aula</label>
+              <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Aula</label>
               <select v-model.number="form.aula_id" class="border rounded px-2 py-2 w-full">
                 <option :value="undefined">Seleccionar…</option>
                 <option v-for="a in aulas" :key="a.id" :value="a.id">{{ aulaName(a) }}</option>
@@ -55,7 +55,7 @@
             </div>
           </div>
           <div v-if="isTecnico">
-            <label class="block text-sm text-gray-600 mb-1">Cantidad de RAs</label>
+            <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Cantidad de RAs</label>
             <input v-model.number="form.cantidad_ra" type="number" min="1" max="20"
               class="border rounded px-2 py-2 w-full" placeholder="p. ej. 4" />
             <p v-if="errors.cantidad_ra" class="text-sm text-red-600 mt-1">{{ errors.cantidad_ra }}</p>
@@ -64,14 +64,14 @@
           <div class="mt-2">
             <label class="inline-flex items-center">
               <input type="checkbox" v-model="form.compartido"
-                class="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
-              <span class="ml-2 text-sm text-gray-600">Asignación Compartida (Permitir múltiples profesores)</span>
+                class="rounded border-gray-300 dark:border-gray-600 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+              <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Asignación Compartida (Permitir múltiples profesores)</span>
             </label>
           </div>
           <div v-if="formError" class="p-3 bg-red-50 text-red-700 rounded">{{ formError }}</div>
         </div>
         <div class="px-4 py-3 border-t flex items-center justify-end gap-2">
-          <button type="button" class="px-3 py-2 border rounded bg-gray-50 hover:bg-gray-100 transition"
+          <button type="button" class="px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900/50 hover:bg-gray-100 dark:bg-gray-800 transition"
             @click="onCancel">Cancelar</button>
           <button type="submit" class="px-3 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition">{{ isEdit
             ? 'Actualizar' : 'Crear' }}</button>

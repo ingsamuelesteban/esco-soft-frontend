@@ -1,11 +1,11 @@
 <template>
   <div>
     <!-- Header -->
-    <header class="bg-white border-b border-gray-200 px-6 py-4">
+    <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900">Reportes de Aula</h1>
-          <p class="text-sm text-gray-600 mt-1">Reporta incidencias como mobiliario dañado, equipos averiados u otros problemas en tu aula.</p>
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Reportes de Aula</h1>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Reporta incidencias como mobiliario dañado, equipos averiados u otros problemas en tu aula.</p>
         </div>
         <button @click="openModal"
           class="inline-flex items-center gap-2 px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-lg hover:bg-orange-700 transition-colors shadow-sm">
@@ -44,14 +44,14 @@
               d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
         </div>
-        <h3 class="text-sm font-medium text-gray-900">No tienes reportes creados</h3>
-        <p class="mt-1 text-sm text-gray-500">Haz clic en "Nuevo Reporte" para reportar una incidencia.</p>
+        <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">No tienes reportes creados</h3>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Haz clic en "Nuevo Reporte" para reportar una incidencia.</p>
       </div>
 
       <!-- Lista de reportes -->
       <div v-else class="space-y-3">
         <div v-for="r in reports" :key="r.id"
-          class="bg-white border border-gray-200 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+          class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
           @click="openDetail(r)">
           <div class="flex items-start justify-between gap-4">
             <div class="flex-1 min-w-0">
@@ -59,10 +59,10 @@
                 <span :class="prioridadClasses[r.prioridad]" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium">
                   {{ prioridadLabels[r.prioridad] }}
                 </span>
-                <span class="text-xs text-gray-500">{{ categoriaLabels[r.categoria] }}</span>
+                <span class="text-xs text-gray-500 dark:text-gray-400">{{ categoriaLabels[r.categoria] }}</span>
               </div>
-              <h3 class="font-semibold text-gray-900 truncate">{{ r.titulo }}</h3>
-              <p class="text-sm text-gray-500 mt-0.5">
+              <h3 class="font-semibold text-gray-900 dark:text-gray-100 truncate">{{ r.titulo }}</h3>
+              <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
                 {{ r.aula ? `Aula ${r.aula.grado_cardinal}° ${r.aula.seccion}` : 'Sin aula' }}
               </p>
               <p class="text-sm text-gray-400 mt-1 line-clamp-2">{{ r.descripcion }}</p>
@@ -80,10 +80,10 @@
 
     <!-- Modal: Nuevo Reporte -->
     <div v-if="showModal" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div class="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white">
-          <h2 class="text-lg font-semibold text-gray-900">Nueva Incidencia de Aula</h2>
-          <button @click="closeModal" class="text-gray-400 hover:text-gray-600">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Nueva Incidencia de Aula</h2>
+          <button @click="closeModal" class="text-gray-400 hover:text-gray-600 dark:text-gray-400">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -97,9 +97,9 @@
         <form @submit.prevent="submitReport" class="p-6 space-y-4">
           <!-- Aula -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Aula afectada</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Aula afectada</label>
             <select v-model="form.aula_id"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white">
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white dark:bg-gray-800">
               <option :value="null">Seleccionar aula (opcional)</option>
               <option v-for="a in aulas" :key="a.id" :value="a.id">{{ a.grado_cardinal }}° {{ a.seccion }}</option>
             </select>
@@ -107,9 +107,9 @@
 
           <!-- Categoría -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Categoría *</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Categoría *</label>
             <select v-model="form.categoria" required
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white">
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white dark:bg-gray-800">
               <option value="">Seleccionar...</option>
               <option value="mobiliario">Mobiliario</option>
               <option value="equipo">Equipo / Tecnología</option>
@@ -121,27 +121,27 @@
 
           <!-- Título -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Título *</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Título *</label>
             <input v-model="form.titulo" type="text" required maxlength="255"
               placeholder="Ej: Silla rota en la fila 3"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500" />
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500" />
           </div>
 
           <!-- Descripción -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Descripción *</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripción *</label>
             <textarea v-model="form.descripcion" rows="4" required
               placeholder="Describe el problema con el mayor detalle posible..."
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none"></textarea>
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none"></textarea>
           </div>
 
           <!-- Prioridad -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2">Prioridad *</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Prioridad *</label>
             <div class="flex gap-3">
               <label v-for="p in prioridades" :key="p.value"
                 :class="['flex-1 flex items-center justify-center gap-2 p-2.5 rounded-lg border-2 cursor-pointer text-sm font-medium transition-all',
-                  form.prioridad === p.value ? p.activeClass : 'border-gray-200 text-gray-500 hover:border-gray-300']">
+                  form.prioridad === p.value ? p.activeClass : 'border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:border-gray-600']">
                 <input type="radio" v-model="form.prioridad" :value="p.value" class="sr-only" />
                 <span>{{ p.icon }}</span>
                 {{ p.label }}
@@ -151,15 +151,15 @@
 
           <!-- Imagen -->
           <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Foto del problema (opcional)</label>
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Foto del problema (opcional)</label>
             <input type="file" accept="image/*" @change="handleImage"
-              class="w-full text-sm text-gray-500 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100" />
+              class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100" />
           </div>
 
           <!-- Actions -->
           <div class="flex justify-end gap-3 pt-2">
             <button type="button" @click="closeModal"
-              class="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+              class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 transition-colors">
               Cancelar
             </button>
             <button type="submit" :disabled="saving"
@@ -177,10 +177,10 @@
 
     <!-- Modal: Detalle -->
     <div v-if="selectedReport" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div class="bg-white rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white">
-          <h2 class="text-lg font-semibold text-gray-900">{{ selectedReport.titulo }}</h2>
-          <button @click="selectedReport = null" class="text-gray-400 hover:text-gray-600">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-lg max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800">
+          <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ selectedReport.titulo }}</h2>
+          <button @click="selectedReport = null" class="text-gray-400 hover:text-gray-600 dark:text-gray-400">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -195,29 +195,29 @@
             <span :class="prioridadClasses[selectedReport.prioridad]" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium">
               {{ prioridadLabels[selectedReport.prioridad] }}
             </span>
-            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+            <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
               {{ categoriaLabels[selectedReport.categoria] }}
             </span>
           </div>
 
           <!-- Info -->
           <div class="text-sm space-y-2">
-            <p><span class="font-medium text-gray-700">Aula:</span>
+            <p><span class="font-medium text-gray-700 dark:text-gray-300">Aula:</span>
               {{ selectedReport.aula ? `${selectedReport.aula.grado_cardinal}° ${selectedReport.aula.seccion}` : 'No especificada' }}</p>
-            <p><span class="font-medium text-gray-700">Descripción:</span></p>
-            <p class="text-gray-600 bg-gray-50 rounded-lg p-3">{{ selectedReport.descripcion }}</p>
+            <p><span class="font-medium text-gray-700 dark:text-gray-300">Descripción:</span></p>
+            <p class="text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">{{ selectedReport.descripcion }}</p>
           </div>
 
           <!-- Foto -->
           <div v-if="selectedReport.imagen_path">
-            <p class="text-sm font-medium text-gray-700 mb-2">Fotografía (Evidencia)</p>
+            <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fotografía (Evidencia)</p>
             <button @click="downloadImage(selectedReport)" :disabled="downloadingImage"
-              class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 transition-colors">
-              <svg v-if="downloadingImage" class="animate-spin h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24">
+              class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 transition-colors">
+              <svg v-if="downloadingImage" class="animate-spin h-4 w-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
               </svg>
-              <svg v-else class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg v-else class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
               {{ downloadingImage ? 'Descargando...' : 'Descargar Imagen' }}
@@ -226,7 +226,7 @@
 
           <!-- Notas de seguimiento -->
           <div v-if="selectedReport.entries && selectedReport.entries.length > 0">
-            <p class="text-sm font-medium text-gray-700 mb-2">Seguimiento del equipo</p>
+            <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Seguimiento del equipo</p>
             <div class="space-y-2">
               <div v-for="entry in selectedReport.entries" :key="entry.id"
                 class="bg-blue-50 border border-blue-100 rounded-lg p-3">

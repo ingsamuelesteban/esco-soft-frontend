@@ -2,13 +2,13 @@
   <section>
     <header class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-semibold text-gray-900">Horario General</h1>
-        <p class="mt-1 text-sm text-gray-600">Configuración de períodos y recesos del día escolar. Arrastra para
+        <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Horario General</h1>
+        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Configuración de períodos y recesos del día escolar. Arrastra para
           reordenar.</p>
       </div>
       <div class="flex gap-2">
         <button @click="refresh"
-          class="inline-flex items-center justify-center p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+          class="inline-flex items-center justify-center p-2 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:bg-gray-800 rounded-lg transition-colors"
           title="Refrescar">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

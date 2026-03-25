@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900/50 py-12 px-4 sm:px-6 lg:px-8">
     <div class="max-w-md w-full space-y-8">
       <div>
         <!-- Logo -->
@@ -11,7 +11,7 @@
           </div>
         </div>
 
-        <p class="mt-2 text-center text-sm text-gray-600">
+        <p class="mt-2 text-center text-sm text-gray-600 dark:text-gray-400">
           Inicia sesión en tu cuenta
         </p>
       </div>
@@ -21,7 +21,7 @@
           <div>
             <label for="username" class="sr-only">Usuario</label>
             <input id="username" v-model="form.username" name="username" type="text" autocomplete="username" required
-              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+              class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 text-gray-900 dark:text-gray-100 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
               placeholder="Usuario" :disabled="isLoading" />
           </div>
           <div>
@@ -29,10 +29,10 @@
             <div class="relative">
               <input id="password" v-model="form.password" name="password" :type="showPassword ? 'text' : 'password'"
                 autocomplete="current-password" required
-                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm pr-10"
+                class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 placeholder-gray-500 text-gray-900 dark:text-gray-100 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm pr-10"
                 placeholder="Contraseña" :disabled="isLoading" />
               <button type="button" @click="showPassword = !showPassword"
-                class="absolute inset-y-0 right-0 pr-3 flex items-center z-20 text-gray-400 hover:text-gray-600 focus:outline-none">
+                class="absolute inset-y-0 right-0 pr-3 flex items-center z-20 text-gray-400 hover:text-gray-600 dark:text-gray-400 focus:outline-none">
                 <svg v-if="!showPassword" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -52,8 +52,8 @@
         <div class="flex items-center justify-between">
           <div class="flex items-center">
             <input id="remember" v-model="form.remember" name="remember" type="checkbox"
-              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
-            <label for="remember" class="ml-2 block text-sm text-gray-900">
+              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded" />
+            <label for="remember" class="ml-2 block text-sm text-gray-900 dark:text-gray-100">
               Recordarme
             </label>
           </div>
@@ -137,15 +137,15 @@
       <!-- Modal de cambio de contraseña obligatorio -->
       <div v-if="showPasswordChange"
         class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-        <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+        <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
           <div class="p-6">
             <div class="flex items-center justify-between mb-4">
-              <h3 class="text-lg font-semibold text-gray-900">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 Cambio de contraseña obligatorio
               </h3>
             </div>
 
-            <p class="text-sm text-gray-600 mb-6">
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">
               Por seguridad, debes cambiar tu contraseña antes de continuar. Esta es tu primera vez ingresando o tu
               contraseña fue reseteada.
             </p>
@@ -167,17 +167,17 @@
 
             <form @submit.prevent="handlePasswordChange" class="space-y-4">
               <div>
-                <label for="new-password" class="block text-sm font-medium text-gray-700 mb-1">
+                <label for="new-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Nueva contraseña
                 </label>
                 <div class="relative">
                   <input id="new-password" v-model="passwordChangeData.newPassword"
                     :type="showNewPassword ? 'text' : 'password'" required
                     class="block w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 pr-10"
-                    :class="{ 'border-red-300': passwordChangeData.newPassword && !isPasswordLengthValid, 'border-green-300': isPasswordLengthValid, 'border-gray-300': !passwordChangeData.newPassword }"
+                    :class="{ 'border-red-300': passwordChangeData.newPassword && !isPasswordLengthValid, 'border-green-300': isPasswordLengthValid, 'border-gray-300 dark:border-gray-600': !passwordChangeData.newPassword }"
                     placeholder="Mínimo 8 caracteres" :disabled="isLoading" />
                   <button type="button" @click="showNewPassword = !showNewPassword"
-                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:text-gray-400 focus:outline-none">
                     <svg v-if="!showNewPassword" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                         d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -192,7 +192,7 @@
                 </div>
                 <!-- Validation Helper -->
                 <div class="mt-1 flex items-center text-xs"
-                  :class="isPasswordLengthValid ? 'text-green-600' : (passwordChangeData.newPassword ? 'text-red-600' : 'text-gray-500')">
+                  :class="isPasswordLengthValid ? 'text-green-600' : (passwordChangeData.newPassword ? 'text-red-600' : 'text-gray-500 dark:text-gray-400')">
                   <svg v-if="isPasswordLengthValid" class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
                     viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -207,17 +207,17 @@
               </div>
 
               <div>
-                <label for="confirm-password" class="block text-sm font-medium text-gray-700 mb-1">
+                <label for="confirm-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Confirmar nueva contraseña
                 </label>
                 <div class="relative">
                   <input id="confirm-password" v-model="passwordChangeData.newPasswordConfirmation"
                     :type="showConfirmPassword ? 'text' : 'password'" required
                     class="block w-full px-3 py-2 border rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 pr-10"
-                    :class="{ 'border-red-300': passwordChangeData.newPasswordConfirmation && !doPasswordsMatch, 'border-green-300': doPasswordsMatch, 'border-gray-300': !passwordChangeData.newPasswordConfirmation }"
+                    :class="{ 'border-red-300': passwordChangeData.newPasswordConfirmation && !doPasswordsMatch, 'border-green-300': doPasswordsMatch, 'border-gray-300 dark:border-gray-600': !passwordChangeData.newPasswordConfirmation }"
                     placeholder="Confirma tu nueva contraseña" :disabled="isLoading" />
                   <button type="button" @click="showConfirmPassword = !showConfirmPassword"
-                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none">
+                    class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:text-gray-400 focus:outline-none">
                     <svg v-if="!showConfirmPassword" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                       stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -233,7 +233,7 @@
                 </div>
                 <!-- Match Helper -->
                 <div class="mt-1 flex items-center text-xs"
-                  :class="doPasswordsMatch ? 'text-green-600' : (passwordChangeData.newPasswordConfirmation ? 'text-red-600' : 'text-gray-500')">
+                  :class="doPasswordsMatch ? 'text-green-600' : (passwordChangeData.newPasswordConfirmation ? 'text-red-600' : 'text-gray-500 dark:text-gray-400')">
                   <svg v-if="doPasswordsMatch" class="w-4 h-4 mr-1" fill="none" stroke="currentColor"
                     viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
@@ -258,7 +258,7 @@
                 </button>
 
                 <button type="button" @click="showPasswordChange = false; error = ''" :disabled="isLoading"
-                  class="px-4 py-2 text-gray-600 hover:text-gray-800 disabled:opacity-50">
+                  class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:text-gray-200 disabled:opacity-50">
                   Cancelar
                 </button>
               </div>
@@ -270,13 +270,13 @@
       <!-- Modal de Olvidé mi contraseña -->
       <div v-if="showForgotPassword" 
         class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
-        <div class="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
+        <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
           <div class="p-6">
             <div class="flex items-center justify-between mb-4">
-              <h3 class="text-lg font-semibold text-gray-900">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
                 Recuperar acceso
               </h3>
-              <button @click="showForgotPassword = false; resetForgotForm()" class="text-gray-400 hover:text-gray-600">
+              <button @click="showForgotPassword = false; resetForgotForm()" class="text-gray-400 hover:text-gray-600 dark:text-gray-400">
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -290,21 +290,21 @@
               <p class="text-sm">{{ forgotStatus.message }}</p>
             </div>
 
-            <p class="text-sm text-gray-600 mb-6">
+            <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">
               Ingresa tu nombre de usuario y el correo electrónico asociado a tu cuenta. Te enviaremos un enlace para restablecer tu contraseña.
             </p>
 
             <form @submit.prevent="handleForgotPassword" class="space-y-4">
               <div>
-                <label for="forgot-username" class="block text-sm font-medium text-gray-700 mb-1">Usuario</label>
+                <label for="forgot-username" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Usuario</label>
                 <input id="forgot-username" v-model="forgotForm.username" type="text" required
-                  class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="Tu nombre de usuario" :disabled="forgotStatus.loading" />
               </div>
               <div>
-                <label for="forgot-email" class="block text-sm font-medium text-gray-700 mb-1">Correo electrónico</label>
+                <label for="forgot-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Correo electrónico</label>
                 <input id="forgot-email" v-model="forgotForm.email" type="email" required
-                  class="block w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"
                   placeholder="ejemplo@correo.com" :disabled="forgotStatus.loading" />
               </div>
 

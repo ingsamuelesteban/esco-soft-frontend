@@ -5,8 +5,8 @@
       <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
       <div
-        class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-        <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+        class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+        <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
           <div class="flex items-center mb-4">
             <div
               class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
@@ -16,10 +16,10 @@
               </svg>
             </div>
             <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left">
-              <h3 class="text-lg leading-6 font-medium text-gray-900">
+              <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
                 Gestionar RA {{ raNumero }} - {{ modulo?.nombre }}
               </h3>
-              <p class="text-sm text-gray-500">
+              <p class="text-sm text-gray-500 dark:text-gray-400">
                 {{ estudiante?.nombres }} {{ estudiante?.apellidos }} ({{ estudiante?.rne }})
               </p>
             </div>
@@ -27,8 +27,8 @@
 
           <!-- Historial de oportunidades -->
           <div class="mb-6">
-            <h4 class="text-sm font-medium text-gray-900 mb-3">Historial de Oportunidades</h4>
-            <div v-if="calificacionesExistentes.length === 0" class="text-sm text-gray-500 italic">
+            <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">Historial de Oportunidades</h4>
+            <div v-if="calificacionesExistentes.length === 0" class="text-sm text-gray-500 dark:text-gray-400 italic">
               No hay evaluaciones registradas para este RA
             </div>
             <div v-else class="space-y-2">
@@ -44,7 +44,7 @@
                     {{ cal.estado }}
                   </span>
                 </div>
-                <div class="text-sm text-gray-500">
+                <div class="text-sm text-gray-500 dark:text-gray-400">
                   {{ formatDate(cal.fecha_evaluacion) }}
                 </div>
               </div>
@@ -53,7 +53,7 @@
 
           <!-- Estado actual -->
           <div class="mb-6 p-4 rounded-md"
-            :class="estadoFinal === 'Logrado' ? 'bg-green-50 border border-green-200' : 'bg-gray-50 border border-gray-200'">
+            :class="estadoFinal === 'Logrado' ? 'bg-green-50 border border-green-200' : 'bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700'">
             <div class="flex items-center">
               <svg v-if="estadoFinal === 'Logrado'" class="h-5 w-5 text-green-500 mr-2" fill="currentColor"
                 viewBox="0 0 20 20">
@@ -66,7 +66,7 @@
                   d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
                   clip-rule="evenodd" />
               </svg>
-              <span class="text-sm font-medium" :class="estadoFinal === 'Logrado' ? 'text-green-800' : 'text-gray-800'">
+              <span class="text-sm font-medium" :class="estadoFinal === 'Logrado' ? 'text-green-800' : 'text-gray-800 dark:text-gray-200'">
                 Estado actual: {{ estadoFinal }}
               </span>
             </div>
@@ -74,15 +74,15 @@
 
           <!-- Formulario para nueva evaluación -->
           <div v-if="puedeAgregarOportunidad">
-            <h4 class="text-sm font-medium text-gray-900 mb-3">
+            <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-3">
               Nueva Evaluación - Oportunidad {{ proximaOportunidad }}
             </h4>
             <form @submit.prevent="guardarCalificacion">
               <div class="space-y-4">
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Estado *</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Estado *</label>
                   <select ref="initialInput" v-model="form.estado" required
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
                     <option value="">Seleccionar estado...</option>
                     <option value="Logrado">Logrado</option>
                     <option value="No Logrado">No Logrado</option>
@@ -90,15 +90,15 @@
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Fecha de Evaluación *</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de Evaluación *</label>
                   <input v-model="form.fecha_evaluacion" type="date" required
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
                 </div>
 
                 <div>
-                  <label class="block text-sm font-medium text-gray-700">Observaciones</label>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Observaciones</label>
                   <textarea v-model="form.observaciones" rows="3"
-                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                     placeholder="Observaciones adicionales sobre la evaluación..."></textarea>
                 </div>
               </div>
@@ -108,7 +108,7 @@
           </div>
 
           <div v-else class="text-center py-4">
-            <div class="text-sm text-gray-500">
+            <div class="text-sm text-gray-500 dark:text-gray-400">
               <svg class="mx-auto h-8 w-8 text-gray-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -118,14 +118,14 @@
           </div>
         </div>
 
-        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+        <div class="bg-gray-50 dark:bg-gray-900/50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
           <button v-if="puedeAgregarOportunidad" type="submit" @click="guardarCalificacion"
             :disabled="loading || !form.estado || !form.fecha_evaluacion"
             class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
             {{ loading ? 'Guardando...' : 'Guardar Evaluación' }}
           </button>
           <button type="button" @click="$emit('close')" :disabled="loading"
-            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
+            class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
             Cerrar
           </button>
         </div>

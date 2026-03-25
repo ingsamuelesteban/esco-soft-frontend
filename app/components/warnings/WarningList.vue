@@ -11,30 +11,30 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">No hay advertencias</h3>
-            <p class="mt-1 text-sm text-gray-500">
+            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No hay advertencias</h3>
+            <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                 {{ status === 'closed' ? 'No hay advertencias cerradas' : 'No hay advertencias activas' }}
             </p>
         </div>
 
         <!-- Warnings Table -->
         <div v-else class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 rounded-lg">
-            <table class="min-w-full divide-y divide-gray-300">
-                <thead class="bg-gray-50">
+            <table class="min-w-full divide-y divide-gray-300 dark:divide-gray-600">
+                <thead class="bg-gray-50 dark:bg-gray-900/50">
                     <tr>
-                        <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900">
+                        <th scope="col" class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">
                             Estudiante
                         </th>
-                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">
                             Título
                         </th>
-                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">
                             Reportado por
                         </th>
-                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">
                             Fecha
                         </th>
-                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                        <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">
                             Estado
                         </th>
                         <th scope="col" class="relative py-3.5 pl-3 pr-4">
@@ -42,8 +42,8 @@
                         </th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200 bg-white">
-                    <tr v-for="warning in warnings" :key="warning.id" class="hover:bg-gray-50 cursor-pointer"
+                <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
+                    <tr v-for="warning in warnings" :key="warning.id" class="hover:bg-gray-50 dark:bg-gray-900/50 cursor-pointer"
                         @click="selectWarning(warning)">
                         <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm">
                             <div class="flex items-center">
@@ -56,29 +56,29 @@
                                     </div>
                                 </div>
                                 <div class="ml-4">
-                                    <div class="font-medium text-gray-900">
+                                    <div class="font-medium text-gray-900 dark:text-gray-100">
                                         {{ warning.student?.apellidos }}, {{ warning.student?.nombres }}
                                     </div>
-                                    <div class="text-gray-500">
+                                    <div class="text-gray-500 dark:text-gray-400">
                                         {{ warning.student?.aula?.grado_cardinal }}-{{ warning.student?.aula?.seccion }}
                                     </div>
                                 </div>
                             </div>
                         </td>
-                        <td class="px-3 py-4 text-sm text-gray-900">
+                        <td class="px-3 py-4 text-sm text-gray-900 dark:text-gray-100">
                             {{ warning.title }}
                         </td>
-                        <td class="px-3 py-4 text-sm text-gray-500">
+                        <td class="px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
                             {{ warning.reportedBy?.name || warning.reported_by?.name || 'Desconocido' }}
                         </td>
-                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                        <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
                             {{ formatDate(warning.created_at) }}
                         </td>
                         <td class="whitespace-nowrap px-3 py-4 text-sm">
                             <span :class="[
                                 warning.status === 'open'
                                     ? 'bg-green-100 text-green-800'
-                                    : 'bg-gray-100 text-gray-800',
+                                    : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200',
                                 'inline-flex rounded-full px-2 text-xs font-semibold leading-5'
                             ]">
                                 {{ warning.status === 'open' ? 'Abierta' : 'Cerrada' }}

@@ -114,16 +114,16 @@ const reset = () => {
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
             <div
-                class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
-                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+                <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div class="sm:flex sm:items-start">
                         <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-title">
                                 Importar Notas: {{ columnTitle }}
                             </h3>
 
                             <div class="mt-2" v-if="step === 1">
-                                <p class="text-sm text-gray-500 mb-2">
+                                <p class="text-sm text-gray-500 dark:text-gray-400 mb-2">
                                     Copia la columna de notas desde Excel (Ctrl+C) y pégala aquí (Ctrl+V).
                                     Asegúrate de que el orden coincida con la lista de estudiantes.
                                 </p>
@@ -131,20 +131,20 @@ const reset = () => {
                                     Nota máxima permitida: <strong>{{ maxNota }}</strong>
                                 </div>
                                 <textarea v-model="pastedContent" rows="10"
-                                    class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                                    class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md"
                                     placeholder="Pega aquí tus notas..."></textarea>
                             </div>
 
                             <div class="mt-2" v-if="step === 2">
                                 <!-- Estadísticas -->
                                 <div class="flex gap-4 mb-4 text-sm">
-                                    <div class="bg-gray-100 px-3 py-1 rounded">
+                                    <div class="bg-gray-100 dark:bg-gray-800 px-3 py-1 rounded">
                                         Total filas: <strong>{{ previewStats.total }}</strong>
                                     </div>
                                     <div class="bg-green-100 text-green-800 px-3 py-1 rounded">
                                         Válidos: <strong>{{ previewStats.valid }}</strong>
                                     </div>
-                                    <div class="bg-gray-100 text-gray-600 px-3 py-1 rounded"
+                                    <div class="bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-3 py-1 rounded"
                                         v-if="previewStats.skipped > 0">
                                         Omitidos: <strong>{{ previewStats.skipped }}</strong>
                                     </div>
@@ -164,23 +164,23 @@ const reset = () => {
 
                                 <!-- Tabla Preview -->
                                 <div class="overflow-y-auto max-h-60 border rounded">
-                                    <table class="min-w-full divide-y divide-gray-200">
-                                        <thead class="bg-gray-50">
+                                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                        <thead class="bg-gray-50 dark:bg-gray-900/50">
                                             <tr>
                                                 <th
-                                                    class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                                                    class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                                                     Estudiante</th>
                                                 <th
-                                                    class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                                                    class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                                                     Valor Detectado</th>
                                                 <th
-                                                    class="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase">
+                                                    class="px-3 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
                                                     Estado</th>
                                             </tr>
                                         </thead>
-                                        <tbody class="bg-white divide-y divide-gray-200">
+                                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                                             <tr v-for="item in parsedGrades" :key="item.estudianteId">
-                                                <td class="px-3 py-2 text-sm text-gray-900 truncate max-w-xs"
+                                                <td class="px-3 py-2 text-sm text-gray-900 dark:text-gray-100 truncate max-w-xs"
                                                     :title="item.estudianteNombre">
                                                     {{ item.estudianteNombre }}
                                                 </td>
@@ -212,7 +212,7 @@ const reset = () => {
                         </div>
                     </div>
                 </div>
-                <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                <div class="bg-gray-50 dark:bg-gray-900/50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
                     <button v-if="step === 2" type="button"
                         class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm"
                         @click="handleSave" :disabled="previewStats.valid === 0">
@@ -226,13 +226,13 @@ const reset = () => {
                     </button>
 
                     <button v-if="step === 2" type="button"
-                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                         @click="reset">
                         Atrás
                     </button>
 
                     <button type="button"
-                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
                         @click="$emit('close')">
                         Cancelar
                     </button>

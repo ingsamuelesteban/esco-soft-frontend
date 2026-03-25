@@ -1,10 +1,10 @@
 <template>
     <div v-if="show" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div class="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="bg-white dark:bg-gray-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <!-- Header -->
-            <div class="sticky top-0 bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-                <h2 class="text-xl font-semibold text-gray-900">Revisar Solicitud de Permiso</h2>
-                <button @click="close" class="text-gray-400 hover:text-gray-600">
+            <div class="sticky top-0 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-between items-center">
+                <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Revisar Solicitud de Permiso</h2>
+                <button @click="close" class="text-gray-400 hover:text-gray-600 dark:text-gray-400">
                     <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M6 18L18 6M6 6l12 12" />
@@ -14,43 +14,43 @@
 
             <div class="p-6 space-y-6">
                 <!-- Info Resumen -->
-                <div class="bg-gray-50 rounded-lg p-4 border border-gray-200">
+                <div class="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
                     <div class="flex items-center gap-3 mb-3">
                         <div
                             class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
                             {{ request.personal?.nombre[0] }}{{ request.personal?.apellido[0] }}
                         </div>
                         <div>
-                            <h3 class="font-medium text-gray-900">{{ request.personal?.nombre }} {{
+                            <h3 class="font-medium text-gray-900 dark:text-gray-100">{{ request.personal?.nombre }} {{
                                 request.personal?.apellido }}</h3>
-                            <p class="text-xs text-gray-500">{{ request.personal?.cedula }}</p>
+                            <p class="text-xs text-gray-500 dark:text-gray-400">{{ request.personal?.cedula }}</p>
                         </div>
                     </div>
                     <div class="grid grid-cols-2 gap-4 text-sm">
                         <div>
-                            <span class="text-gray-500 block">Tipo:</span>
-                            <span class="font-medium text-gray-900">{{ request.leave_type }}</span>
+                            <span class="text-gray-500 dark:text-gray-400 block">Tipo:</span>
+                            <span class="font-medium text-gray-900 dark:text-gray-100">{{ request.leave_type }}</span>
                             <!-- TODO: Format name -->
                         </div>
                         <div>
-                            <span class="text-gray-500 block">Duración:</span>
-                            <span class="font-medium text-gray-900">{{ getDurationDisplay(request) }}</span>
+                            <span class="text-gray-500 dark:text-gray-400 block">Duración:</span>
+                            <span class="font-medium text-gray-900 dark:text-gray-100">{{ getDurationDisplay(request) }}</span>
                         </div>
                         <div class="col-span-2">
-                            <span class="text-gray-500 block">Fechas:</span>
-                            <span class="font-medium text-gray-900">{{ formatDate(request.start_date) }} - {{
+                            <span class="text-gray-500 dark:text-gray-400 block">Fechas:</span>
+                            <span class="font-medium text-gray-900 dark:text-gray-100">{{ formatDate(request.start_date) }} - {{
                                 formatDate(request.end_date) }}</span>
                         </div>
                         <div class="col-span-2">
-                            <span class="text-gray-500 block">Motivo:</span>
-                            <p class="text-gray-700 mt-1">{{ request.reason }}</p>
+                            <span class="text-gray-500 dark:text-gray-400 block">Motivo:</span>
+                            <p class="text-gray-700 dark:text-gray-300 mt-1">{{ request.reason }}</p>
                         </div>
                     </div>
                     <!-- Attachments -->
-                    <div class="mt-4 border-t border-gray-100 pt-3 flex flex-col gap-2">
+                    <div class="mt-4 border-t border-gray-100 dark:border-gray-700 pt-3 flex flex-col gap-2">
                         <div v-if="request.attachment_path">
                             <span
-                                class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 block">Evidencia
+                                class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1 block">Evidencia
                                 del Empleado</span>
                             <button @click="printFile('/api/staff/leave-requests/' + request.id + '/download?type=request')"
                                 class="inline-flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm hover:bg-blue-100 transition-colors w-fit">
@@ -64,7 +64,7 @@
 
                         <div v-if="request.approval_attachment_path">
                             <span
-                                class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1 block">Adjunto
+                                class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1 block">Adjunto
                                 de Aprobación</span>
                             <button @click="printFile('/api/staff/leave-requests/' + request.id + '/download?type=approval')"
                                 class="inline-flex items-center gap-2 px-3 py-2 bg-green-50 text-green-700 rounded-lg text-sm hover:bg-green-100 transition-colors w-fit">
@@ -81,25 +81,25 @@
                 <!-- Formulario de Revisión -->
                 <form class="space-y-4">
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Notas de Revisión
                         </label>
                         <textarea v-model="form.review_notes" rows="3"
                             placeholder="Comentarios sobre la aprobación o rechazo..."
-                            class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring-blue-500"></textarea>
+                            class="w-full rounded-lg border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"></textarea>
                     </div>
 
                     <div>
                         <DropZone v-model="form.file" label="Evidencia Adjunta (Opcional)" accept="image/*,.pdf"
                             :max-size="10 * 1024 * 1024" />
-                        <p class="text-xs text-gray-500 mt-1">Formatos: Imágenes o PDF. Máx 10MB.</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Formatos: Imágenes o PDF. Máx 10MB.</p>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-2">
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Firma del Administrador <span class="text-red-500">*</span>
                         </label>
-                        <div v-if="usingStoredSignature" class="bg-gray-50 border border-gray-200 rounded-lg p-4 flex items-center justify-between">
+                        <div v-if="usingStoredSignature" class="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex items-center justify-between">
                             <div class="flex items-center gap-3">
                                 <div class="bg-green-100 p-2 rounded-full">
                                     <svg class="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -107,8 +107,8 @@
                                     </svg>
                                 </div>
                                 <div>
-                                    <p class="font-medium text-gray-900">Firma Digital Cargada</p>
-                                    <p class="text-xs text-gray-500">Se utilizará su firma registrada en el perfil</p>
+                                    <p class="font-medium text-gray-900 dark:text-gray-100">Firma Digital Cargada</p>
+                                    <p class="text-xs text-gray-500 dark:text-gray-400">Se utilizará su firma registrada en el perfil</p>
                                 </div>
                             </div>
                             <button type="button" @click="useManualSignature" class="text-sm text-blue-600 hover:text-blue-800 hover:underline">
@@ -128,9 +128,9 @@
                     </div>
 
                     <!-- Botones de Acción -->
-                    <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200 justify-end">
+                    <div class="flex flex-col sm:flex-row gap-3 pt-4 border-t border-gray-200 dark:border-gray-700 justify-end">
                         <button type="button" @click="close"
-                            class="px-4 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors">
+                            class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 rounded-lg transition-colors">
                             Cancelar
                         </button>
 

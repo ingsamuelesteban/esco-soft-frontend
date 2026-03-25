@@ -1,46 +1,46 @@
 <template>
     <div class="space-y-8">
         <!-- Header & Filters -->
-        <div class="bg-white shadow-sm rounded-lg p-6">
+        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
             <div class="flex flex-col gap-6">
                 <!-- Top Header -->
                 <div class="flex items-center justify-between">
                     <div class="flex items-center gap-2">
-                        <button @click="navigateTo('/asistencia')" class="text-gray-400 hover:text-gray-600">
+                        <button @click="navigateTo('/asistencia')" class="text-gray-400 hover:text-gray-600 dark:text-gray-400">
                             <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                             </svg>
                         </button>
                         <div>
-                            <h1 class="text-2xl font-bold text-gray-900">Estadísticas de Asistencia</h1>
-                            <p class="text-sm text-gray-600 mt-0.5">
+                            <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Estadísticas de Asistencia</h1>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
                                 {{ selectedAulaName }} <span v-if="selectedAulaName">•</span> {{ viewModeLabel }}
                             </p>
                         </div>
                     </div>
 
                     <!-- View Mode Toggle -->
-                    <div class="bg-gray-100 p-1 rounded-lg flex text-sm font-medium">
+                    <div class="bg-gray-100 dark:bg-gray-800 p-1 rounded-lg flex text-sm font-medium">
                         <button @click="viewMode = 'daily'" class="px-3 py-1.5 rounded-md transition-colors"
-                            :class="viewMode === 'daily' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'">
+                            :class="viewMode === 'daily' ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100'">
                             Vista Diaria
                         </button>
                         <button @click="viewMode = 'monthly'" class="px-3 py-1.5 rounded-md transition-colors"
-                            :class="viewMode === 'monthly' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-500 hover:text-gray-900'">
+                            :class="viewMode === 'monthly' ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:text-gray-100'">
                             Vista Mensual
                         </button>
                     </div>
                 </div>
 
                 <!-- Filters Row -->
-                <div class="flex flex-col sm:flex-row gap-4 items-end bg-gray-50 p-4 rounded-lg border border-gray-100">
+                <div class="flex flex-col sm:flex-row gap-4 items-end bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-100 dark:border-gray-700">
 
                     <!-- Aula Selector -->
                     <div class="w-full sm:w-64">
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Aula / Asignatura</label>
+                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Aula / Asignatura</label>
                         <select v-model="filters.aulaId"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-white">
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-white dark:bg-gray-800">
                             <option :value="null">Seleccionar...</option>
                             <!-- Removed redundant option here, handled by aulaOptions -->
                             <option v-for="opt in aulaOptions" :key="opt.value" :value="opt.value">
@@ -51,31 +51,31 @@
 
                     <!-- Daily Filters -->
                     <div v-if="viewMode === 'daily'" class="w-full sm:w-48">
-                        <label class="block text-xs font-bold text-gray-700 mb-1">Fecha</label>
+                        <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Fecha</label>
                         <input v-model="filters.date" type="date"
-                            class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
                     </div>
 
                     <!-- Monthly Filters -->
                     <template v-else>
                         <div class="w-full sm:w-40">
-                            <label class="block text-xs font-bold text-gray-700 mb-1">Mes</label>
+                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Mes</label>
                             <select v-model="filters.month"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                 <option v-for="(m, i) in months" :key="i" :value="i + 1">{{ m }}</option>
                             </select>
                         </div>
                         <div class="w-24">
-                            <label class="block text-xs font-bold text-gray-700 mb-1">Año</label>
+                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Año</label>
                             <input v-model="filters.year" type="number" min="2020" max="2100"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
                         </div>
 
                         <!-- Assignment Filter (Available for both Admin and Teacher) -->
                         <div v-if="filters.aulaId && filters.aulaId !== 'all'" class="w-full sm:w-64">
-                            <label class="block text-xs font-bold text-gray-700 mb-1">Asignatura</label>
+                            <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Asignatura</label>
                             <select v-model="filters.assignmentId"
-                                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-white"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-white dark:bg-gray-800"
                                 :disabled="loadingAssignments">
                                 <option :value="null" disabled>Seleccione materia...</option>
                                 <option v-for="opt in assignmentOptions" :key="opt.value" :value="opt.value">
@@ -90,9 +90,9 @@
                         <!-- Print/Export Buttons (Disabled contextually) -->
                         <button v-if="viewMode === 'daily'" @click="printGlobal"
                             :disabled="!canPrintDaily || isPrintingGlobal"
-                            class="px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                            <PrinterIcon v-if="!isPrintingGlobal" class="h-5 w-5 text-gray-500" />
-                            <svg v-else class="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg"
+                            class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 flex items-center gap-2">
+                            <PrinterIcon v-if="!isPrintingGlobal" class="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                            <svg v-else class="animate-spin h-5 w-5 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg"
                                 fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
                                     stroke-width="4"></circle>
@@ -104,9 +104,9 @@
 
                         <button v-if="viewMode === 'monthly'" @click="printMonthly"
                             :disabled="isPrintingMonthly || !monthlyStats || !monthlyStats.students || monthlyStats.students.length === 0"
-                            class="px-3 py-2 bg-white border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 flex items-center gap-2">
-                            <PrinterIcon v-if="!isPrintingMonthly" class="h-5 w-5 text-gray-500" />
-                            <svg v-else class="animate-spin h-5 w-5 text-gray-500" xmlns="http://www.w3.org/2000/svg"
+                            class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 flex items-center gap-2">
+                            <PrinterIcon v-if="!isPrintingMonthly" class="h-5 w-5 text-gray-500 dark:text-gray-400" />
+                            <svg v-else class="animate-spin h-5 w-5 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg"
                                 fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
                                     stroke-width="4"></circle>
@@ -177,28 +177,28 @@
                 </div>
             </div>
             <div v-else-if="stats"
-                class="text-center p-12 bg-white rounded-lg border border-dashed border-gray-300 text-gray-500">
+                class="text-center p-12 bg-white dark:bg-gray-800 rounded-lg border border-dashed border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400">
                 No se encontraron registros diarios para esta selección.
             </div>
         </template>
 
         <!-- CONTENT: MONTHLY VIEW -->
         <template v-else-if="viewMode === 'monthly'">
-            <div v-if="monthlyStats" class="bg-white shadow-sm rounded-lg overflow-hidden border border-gray-200">
+            <div v-if="monthlyStats" class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden border border-gray-200 dark:border-gray-700">
                 <div class="overflow-x-auto pb-4"> <!-- Added pb-4 for scrollbar space if needed -->
-                    <table class="min-w-full divide-y divide-gray-200 text-sm">
-                        <thead class="bg-gray-50">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 text-sm">
+                        <thead class="bg-gray-50 dark:bg-gray-900/50">
                             <tr>
                                 <th
-                                    class="px-2 py-3 text-center font-bold text-gray-700 bg-gray-50 border-r border-gray-200 min-w-[40px]">
+                                    class="px-2 py-3 text-center font-bold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-900/50 border-r border-gray-200 dark:border-gray-700 min-w-[40px]">
                                     No.
                                 </th>
                                 <th
-                                    class="px-4 py-3 text-left font-bold text-gray-700 bg-gray-50 sticky left-0 z-10 border-r border-gray-200 min-w-[200px]">
+                                    class="px-4 py-3 text-left font-bold text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-900/50 sticky left-0 z-10 border-r border-gray-200 dark:border-gray-700 min-w-[200px]">
                                     Estudiante
                                 </th>
                                 <th v-for="day in (monthlyStats.dates || [])" :key="day"
-                                    class="px-1 py-3 text-center font-semibold text-gray-500 min-w-[32px] relative align-bottom h-32 group"
+                                    class="px-1 py-3 text-center font-semibold text-gray-500 dark:text-gray-400 min-w-[32px] relative align-bottom h-32 group"
                                     :class="{ 'bg-indigo-50/50': monthlyStats.holidays && monthlyStats.holidays[day] }"
                                     :title="monthlyStats.holidays ? monthlyStats.holidays[day] : ''">
                                     <div class="flex flex-col items-center justify-end h-full w-full">
@@ -210,22 +210,22 @@
                                         <span>{{ day }}</span>
                                     </div>
                                 </th>
-                                <th class="px-3 py-3 text-center font-bold text-gray-700 border-l border-gray-200">Total
+                                <th class="px-3 py-3 text-center font-bold text-gray-700 dark:text-gray-300 border-l border-gray-200 dark:border-gray-700">Total
                                     ({{ (monthlyStats.dates ? monthlyStats.dates.length : 0) - (monthlyStats.holidays ?
                                         Object.keys(monthlyStats.holidays).length : 0) }})
                                 </th>
-                                <th class="px-3 py-3 text-center font-bold text-gray-700 border-l border-gray-200">%
+                                <th class="px-3 py-3 text-center font-bold text-gray-700 dark:text-gray-300 border-l border-gray-200 dark:border-gray-700">%
                                 </th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200 bg-white">
+                        <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
                             <tr v-for="student in (monthlyStats.students || [])" :key="student.id"
-                                class="hover:bg-gray-50">
-                                <td class="px-2 py-2 text-center text-gray-700 bg-white border-r border-gray-200">
+                                class="hover:bg-gray-50 dark:bg-gray-900/50">
+                                <td class="px-2 py-2 text-center text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700">
                                     {{ student.numero_orden }}
                                 </td>
-                                <td class="px-4 py-2 font-medium text-gray-900 sticky left-0 z-10 bg-white border-r border-gray-200"
-                                    :class="{ 'bg-gray-50': false /* hover effect handled by tr? sticky makes it tricky */ }">
+                                <td class="px-4 py-2 font-medium text-gray-900 dark:text-gray-100 sticky left-0 z-10 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700"
+                                    :class="{ 'bg-gray-50 dark:bg-gray-900/50': false /* hover effect handled by tr? sticky makes it tricky */ }">
                                     <div class="truncate max-w-[200px]" :title="student.name">
                                         {{ student.name }}
                                     </div>
@@ -243,10 +243,10 @@
                                     <span v-else class="text-gray-200">-</span>
                                 </td>
                                 <td
-                                    class="px-3 py-2 text-center font-bold text-gray-800 border-l border-gray-200 bg-gray-50/50">
+                                    class="px-3 py-2 text-center font-bold text-gray-800 dark:text-gray-200 border-l border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50/50">
                                     {{ student.stats.effective_days }}
                                 </td>
-                                <td class="px-3 py-2 text-center font-bold border-l border-gray-200 bg-gray-50/50"
+                                <td class="px-3 py-2 text-center font-bold border-l border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50/50"
                                     :class="student.estado === 'retirado' ? '' : getPercentClass(student.stats.percentage)">
                                     <span v-if="student.estado === 'retirado'"
                                         class="inline-block text-[10px] font-medium px-2 py-1 rounded bg-red-100 text-red-800 border border-red-200">
@@ -259,11 +259,11 @@
                     </table>
                 </div>
                 <div v-if="!monthlyStats.students || monthlyStats.students.length === 0"
-                    class="p-8 text-center text-gray-500">
+                    class="p-8 text-center text-gray-500 dark:text-gray-400">
                     No hay datos para mostrar en este rango.
                 </div>
                 <!-- Legend -->
-                <div class="bg-gray-50 p-4 border-t border-gray-200 flex flex-wrap gap-4 text-xs">
+                <div class="bg-gray-50 dark:bg-gray-900/50 p-4 border-t border-gray-200 dark:border-gray-700 flex flex-wrap gap-4 text-xs">
                     <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-green-500"></span>
                         <strong>P</strong>resente
                     </div>
@@ -281,7 +281,7 @@
                     </div>
                 </div>
             </div>
-            <div v-else-if="!loading" class="text-center p-12 text-gray-500">Selecciona un aula o asignatura para ver el
+            <div v-else-if="!loading" class="text-center p-12 text-gray-500 dark:text-gray-400">Selecciona un aula o asignatura para ver el
                 reporte mensual.</div>
         </template>
 
@@ -413,7 +413,7 @@ const getStatusClass = (code: string) => {
         case 'A': return 'bg-red-100 text-red-700'
         case 'T': return 'bg-yellow-100 text-yellow-700'
         case 'E': return 'bg-blue-100 text-blue-700'
-        default: return 'bg-gray-100'
+        default: return 'bg-gray-100 dark:bg-gray-800'
     }
 }
 

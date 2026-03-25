@@ -23,23 +23,23 @@
       <!-- Top Students & Quick Actions -->
       <div class="space-y-6">
         <!-- Top Students List -->
-        <div class="bg-white shadow rounded-lg p-6">
-          <h3 class="text-lg font-medium text-gray-900 mb-4">Estudiantes con más casos</h3>
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 border border-transparent dark:border-gray-700 transition-colors">
+          <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Estudiantes con más casos</h3>
           <div v-if="summary?.top_students && summary.top_students.length > 0" class="flow-root">
-            <ul role="list" class="-my-5 divide-y divide-gray-200">
+            <ul role="list" class="-my-5 divide-y divide-gray-200 dark:divide-gray-700">
               <li v-for="student in summary.top_students" :key="student.id" class="py-4">
                 <div class="flex items-center space-x-4">
                   <div class="flex-shrink-0">
                     <span
-                      class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-indigo-100 text-indigo-500 font-bold">
+                      class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-indigo-100 dark:bg-indigo-900/50 text-indigo-500 dark:text-indigo-400 font-bold">
                       {{ student.cases_count }}
                     </span>
                   </div>
                   <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-gray-900 truncate">
+                    <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                       {{ student.name }}
                     </p>
-                    <p class="text-sm text-gray-500 truncate">
+                    <p class="text-sm text-gray-500 dark:text-gray-400 truncate">
                       {{ student.grade }}
                     </p>
                   </div>
@@ -47,19 +47,19 @@
               </li>
             </ul>
           </div>
-          <div v-else class="text-sm text-gray-500">No hay datos suficientes aún.</div>
+          <div v-else class="text-sm text-gray-500 dark:text-gray-400">No hay datos suficientes aún.</div>
         </div>
 
         <!-- Quick Actions -->
-        <div class="bg-white shadow rounded-lg p-6">
-          <h3 class="text-lg font-medium text-gray-900 mb-4">Acciones Rápidas</h3>
+        <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6 border border-transparent dark:border-gray-700 transition-colors">
+          <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Acciones Rápidas</h3>
           <div class="grid grid-cols-1 gap-4">
             <router-link to="/psicologia/casos"
-              class="flex items-center p-4 bg-blue-50 rounded-lg border border-blue-200 hover:bg-blue-100 transition">
-              <UserGroupIcon class="h-8 w-8 text-blue-600 mr-4" />
+              class="flex items-center p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors">
+              <UserGroupIcon class="h-8 w-8 text-blue-600 dark:text-blue-400 mr-4" />
               <div>
-                <h4 class="font-bold text-blue-900">Gestionar Casos</h4>
-                <p class="text-sm text-blue-700">Ver listado de estudiantes con casos activos.</p>
+                <h4 class="font-bold text-blue-900 dark:text-blue-200">Gestionar Casos</h4>
+                <p class="text-sm text-blue-700 dark:text-blue-400">Ver listado de estudiantes con casos activos.</p>
               </div>
             </router-link>
           </div>

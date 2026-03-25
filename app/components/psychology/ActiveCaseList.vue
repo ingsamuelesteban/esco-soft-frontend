@@ -3,7 +3,7 @@
         <!-- Filter for Admin/Master -->
         <div v-if="authStore.user?.role === 'admin' || authStore.user?.role === 'master'" class="flex justify-end">
             <select v-model="selectedPsychologist" 
-                class="block w-64 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                class="block w-64 pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
                 <option :value="null">Todos los psicólogos</option>
                 <option v-for="psych in psychologists" :key="psych.id" :value="psych.id">
                     {{ psych.name }}
@@ -15,20 +15,20 @@
             <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto"></div>
         </div>
 
-        <div v-else-if="cases.length === 0" class="text-center py-12 bg-gray-50 rounded-lg dashed-border">
+        <div v-else-if="cases.length === 0" class="text-center py-12 bg-gray-50 dark:bg-gray-900/50 rounded-lg dashed-border">
             <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            <h3 class="mt-2 text-sm font-medium text-gray-900">No hay casos {{ status === 'open' ? 'activos' :
+            <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100">No hay casos {{ status === 'open' ? 'activos' :
                 'cerrados' }}</h3>
-            <p v-if="status === 'open'" class="mt-1 text-sm text-gray-500">Acepte un referimiento para iniciar un
+            <p v-if="status === 'open'" class="mt-1 text-sm text-gray-500 dark:text-gray-400">Acepte un referimiento para iniciar un
                 caso.</p>
         </div>
 
         <div v-else class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div v-for="caso in cases" :key="caso.id"
-                class="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
+                class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow cursor-pointer"
                 @click="$emit('select', caso)">
                 <div class="flex items-center space-x-3 mb-3">
                     <!-- Student Photo or Initials -->
@@ -43,9 +43,9 @@
                         </div>
                     </div>
                     <div>
-                        <h3 class="text-sm font-medium text-gray-900">{{ caso.student?.nombres }} {{
+                        <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ caso.student?.nombres }} {{
                             caso.student?.apellidos }}</h3>
-                        <p class="text-xs text-gray-500">#{{ caso.student?.numero_orden || '?' }} • {{
+                        <p class="text-xs text-gray-500 dark:text-gray-400">#{{ caso.student?.numero_orden || '?' }} • {{
                             caso.student?.aula ? (caso.student.aula.grado_cardinal + '° ' +
                                 caso.student.aula.seccion) :
                                 'Sin curso' }}</p>
@@ -53,7 +53,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <h4 class="text-sm font-medium text-gray-800">{{ caso.title }}</h4>
+                    <h4 class="text-sm font-medium text-gray-800 dark:text-gray-200">{{ caso.title }}</h4>
                     <div class="flex flex-wrap gap-1 mt-1" v-if="caso.categories && caso.categories.length">
                         <span v-for="cat in caso.categories" :key="cat.id"
                             class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800"
@@ -61,10 +61,10 @@
                             {{ cat.name }}
                         </span>
                     </div>
-                    <p class="text-xs text-gray-500 mt-1">
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                         Iniciado el {{ formatDate(caso.start_date) }}
                     </p>
-                    <p v-if="caso.referral?.reporter" class="text-xs text-gray-600 mt-1">
+                    <p v-if="caso.referral?.reporter" class="text-xs text-gray-600 dark:text-gray-400 mt-1">
                         <span class="font-medium">Enviado por:</span> {{ caso.referral.reporter.name ||
                             (caso.referral.reporter.nombres + ' ' + caso.referral.reporter.apellidos) }}
                     </p>
@@ -80,7 +80,7 @@
 
                 <div class="flex items-center justify-between mt-4">
                     <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                        :class="caso.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'">
+                        :class="caso.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'">
                         {{ caso.status === 'open' ? 'Activo' : 'Cerrado' }}
                     </span>
                     <span class="text-xs text-gray-400">

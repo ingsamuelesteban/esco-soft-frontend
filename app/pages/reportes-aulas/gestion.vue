@@ -1,11 +1,11 @@
 <template>
   <div>
     <!-- Header -->
-    <header class="bg-white border-b border-gray-200 px-6 py-4">
+    <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4">
       <div class="flex items-center justify-between">
         <div>
-          <h1 class="text-2xl font-bold text-gray-900">Gestión de Incidencias de Aulas</h1>
-          <p class="text-sm text-gray-600 mt-1">Revisa, acepta y da seguimiento a los reportes enviados por los profesores.</p>
+          <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Gestión de Incidencias de Aulas</h1>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Revisa, acepta y da seguimiento a los reportes enviados por los profesores.</p>
         </div>
       </div>
     </header>
@@ -20,13 +20,13 @@
 
     <div class="p-6">
       <!-- Tabs -->
-      <div class="flex gap-1 bg-gray-100 p-1 rounded-xl w-fit mb-6">
+      <div class="flex gap-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-xl w-fit mb-6">
         <button v-for="tab in tabs" :key="tab.value"
           @click="activeTab = tab.value; fetchReports()"
           :class="['px-4 py-2 text-sm font-medium rounded-lg transition-all',
             activeTab === tab.value
-              ? 'bg-white text-gray-900 shadow-sm'
-              : 'text-gray-500 hover:text-gray-700']">
+              ? 'bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 shadow-sm'
+              : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300']">
           {{ tab.label }}
           <span v-if="tab.value === 'nuevos' && newCount > 0"
             class="ml-1.5 inline-flex items-center justify-center px-1.5 py-0.5 rounded-full text-xs font-bold bg-red-500 text-white">
@@ -38,7 +38,7 @@
       <!-- Filtros -->
       <div class="flex flex-wrap gap-3 mb-5">
         <select v-model="filters.categoria" @change="fetchReports()"
-          class="px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-orange-500">
+          class="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-orange-500">
           <option value="">Todas las categorías</option>
           <option value="mobiliario">Mobiliario</option>
           <option value="equipo">Equipo</option>
@@ -47,7 +47,7 @@
           <option value="otro">Otro</option>
         </select>
         <select v-model="filters.prioridad" @change="fetchReports()"
-          class="px-3 py-2 text-sm border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-orange-500">
+          class="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-orange-500">
           <option value="">Todas las prioridades</option>
           <option value="alta">Alta</option>
           <option value="media">Media</option>
@@ -68,29 +68,29 @@
               d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
-        <h3 class="text-sm font-medium text-gray-900">Sin reportes en esta categoría</h3>
+        <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">Sin reportes en esta categoría</h3>
       </div>
 
       <!-- Tabla de reportes -->
-      <div v-else class="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-50">
+      <div v-else class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-900/50">
             <tr>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reporte</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aula / Profesor</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Prioridad</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
-              <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Reporte</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Aula / Profesor</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Prioridad</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Fecha</th>
+              <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
             </tr>
           </thead>
-          <tbody class="divide-y divide-gray-100">
-            <tr v-for="r in reports" :key="r.id" class="hover:bg-gray-50 transition-colors">
+          <tbody class="divide-y divide-gray-100 dark:divide-gray-700">
+            <tr v-for="r in reports" :key="r.id" class="hover:bg-gray-50 dark:bg-gray-900/50 transition-colors">
               <td class="px-4 py-3">
-                <p class="text-sm font-semibold text-gray-900">{{ r.titulo }}</p>
-                <p class="text-xs text-gray-500">{{ categoriaLabels[r.categoria] }}</p>
+                <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">{{ r.titulo }}</p>
+                <p class="text-xs text-gray-500 dark:text-gray-400">{{ categoriaLabels[r.categoria] }}</p>
               </td>
-              <td class="px-4 py-3 text-sm text-gray-600">
+              <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
                 <p>{{ r.aula ? `${r.aula.grado_cardinal}° ${r.aula.seccion}` : '—' }}</p>
                 <p class="text-xs text-gray-400">{{ r.reported_by?.name }}</p>
               </td>
@@ -122,7 +122,7 @@
                   </button>
                   <!-- Ver detalles -->
                   <button @click="openDetail(r)"
-                    class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors">
+                    class="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-lg hover:bg-gray-200 transition-colors">
                     Ver
                   </button>
                 </div>
@@ -135,13 +135,13 @@
 
     <!-- Modal: Detalle y Gestión -->
     <div v-if="selectedReport" class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
-      <div class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
-        <div class="flex items-center justify-between p-6 border-b border-gray-200 sticky top-0 bg-white">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div class="flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700 sticky top-0 bg-white dark:bg-gray-800">
           <div>
-            <h2 class="text-lg font-semibold text-gray-900">{{ selectedReport.titulo }}</h2>
-            <p class="text-sm text-gray-500">{{ selectedReport.reported_by?.name }} · {{ formatDate(selectedReport.created_at) }}</p>
+            <h2 class="text-lg font-semibold text-gray-900 dark:text-gray-100">{{ selectedReport.titulo }}</h2>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ selectedReport.reported_by?.name }} · {{ formatDate(selectedReport.created_at) }}</p>
           </div>
-          <button @click="selectedReport = null" class="text-gray-400 hover:text-gray-600">
+          <button @click="selectedReport = null" class="text-gray-400 hover:text-gray-600 dark:text-gray-400">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -157,7 +157,7 @@
             <span :class="prioridadClasses[selectedReport.prioridad]" class="px-3 py-1 rounded-full text-xs font-medium">
               {{ prioridadLabels[selectedReport.prioridad] }}
             </span>
-            <span class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700">
+            <span class="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300">
               {{ categoriaLabels[selectedReport.categoria] }}
             </span>
           </div>
@@ -165,33 +165,33 @@
           <!-- Detalles -->
           <div class="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p class="text-xs text-gray-500 mb-0.5">Aula</p>
-              <p class="font-medium text-gray-900">
+              <p class="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Aula</p>
+              <p class="font-medium text-gray-900 dark:text-gray-100">
                 {{ selectedReport.aula ? `${selectedReport.aula.grado_cardinal}° ${selectedReport.aula.seccion}` : 'No especificada' }}
               </p>
             </div>
             <div v-if="selectedReport.accepted_by">
-              <p class="text-xs text-gray-500 mb-0.5">Aceptado por</p>
-              <p class="font-medium text-gray-900">{{ selectedReport.accepted_by?.name }}</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Aceptado por</p>
+              <p class="font-medium text-gray-900 dark:text-gray-100">{{ selectedReport.accepted_by?.name }}</p>
             </div>
           </div>
 
           <!-- Descripción -->
           <div>
-            <p class="text-sm font-medium text-gray-700 mb-1">Descripción</p>
-            <p class="text-sm text-gray-600 bg-gray-50 rounded-lg p-3">{{ selectedReport.descripcion }}</p>
+            <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripción</p>
+            <p class="text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3">{{ selectedReport.descripcion }}</p>
           </div>
 
           <!-- Foto -->
           <div v-if="selectedReport.imagen_path">
-            <p class="text-sm font-medium text-gray-700 mb-2">Fotografía (Evidencia)</p>
+            <p class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fotografía (Evidencia)</p>
             <button @click="downloadImage(selectedReport)" :disabled="downloadingImage"
-              class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 transition-colors">
-              <svg v-if="downloadingImage" class="animate-spin h-4 w-4 text-gray-500" fill="none" viewBox="0 0 24 24">
+              class="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 disabled:opacity-50 transition-colors">
+              <svg v-if="downloadingImage" class="animate-spin h-4 w-4 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                 <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
               </svg>
-              <svg v-else class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg v-else class="w-4 h-4 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
               {{ downloadingImage ? 'Descargando...' : 'Descargar Imagen' }}
@@ -218,7 +218,7 @@
 
           <!-- Notas de seguimiento -->
           <div>
-            <p class="text-sm font-semibold text-gray-700 mb-3">Historial de seguimiento</p>
+            <p class="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Historial de seguimiento</p>
             <div v-if="selectedReport.entries && selectedReport.entries.length > 0" class="space-y-2 mb-4">
               <div v-for="entry in selectedReport.entries" :key="entry.id"
                 class="bg-blue-50 border border-blue-100 rounded-lg p-3">
@@ -229,11 +229,11 @@
             <p v-else class="text-sm text-gray-400 italic mb-4">Sin notas aún.</p>
 
             <!-- Agregar nota -->
-            <div class="border-t border-gray-200 pt-4">
+            <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
               <textarea v-model="newEntry"
                 rows="3"
                 placeholder="Escribe una nota de seguimiento..."
-                class="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none"></textarea>
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none"></textarea>
               <div class="flex justify-end mt-2">
                 <button @click="addEntry"
                   :disabled="!newEntry.trim() || savingEntry"

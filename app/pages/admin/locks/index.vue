@@ -1,9 +1,9 @@
 <template>
     <div>
-        <header class="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+        <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 px-6 py-4 flex justify-between items-center">
             <div>
-                <h1 class="text-2xl font-bold text-gray-900">Gestión de Bloqueos</h1>
-                <p class="text-sm text-gray-600 mt-1">Estudiantes bloqueados para ver boletines</p>
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Gestión de Bloqueos</h1>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Estudiantes bloqueados para ver boletines</p>
             </div>
             <button @click="openCreateModal"
                 class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm font-medium">
@@ -14,18 +14,18 @@
         <div class="p-6">
             <div v-if="loading" class="text-center py-12">
                 <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
-                <p class="mt-2 text-gray-500">Cargando...</p>
+                <p class="mt-2 text-gray-500 dark:text-gray-400">Cargando...</p>
             </div>
 
             <div v-else class="space-y-4">
                 <!-- Filters -->
-                <div class="flex flex-col md:flex-row gap-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
+                <div class="flex flex-col md:flex-row gap-4 bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
                     <div class="flex-1">
-                        <label for="search" class="block text-xs font-medium text-gray-500 mb-1">Buscar
+                        <label for="search" class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Buscar
                             Estudiante</label>
                         <div class="relative">
                             <input type="text" id="search" v-model="searchQuery"
-                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-blue-300 focus:ring focus:ring-blue-200 sm:text-sm transition duration-150 ease-in-out"
+                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-gray-800 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-blue-300 focus:ring focus:ring-blue-200 sm:text-sm transition duration-150 ease-in-out"
                                 placeholder="Nombre o apellido..." />
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -37,9 +37,9 @@
                         </div>
                     </div>
                     <div class="w-full md:w-64">
-                        <label for="aula" class="block text-xs font-medium text-gray-500 mb-1">Filtrar por Aula</label>
+                        <label for="aula" class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Filtrar por Aula</label>
                         <select id="aula" v-model="selectedAulaId"
-                            class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                            class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
                             <option value="">Todas las aulas</option>
                             <option v-for="aula in aulasOptions" :key="aula.value" :value="aula.value">
                                 {{ aula.label }}
@@ -48,40 +48,40 @@
                     </div>
                 </div>
 
-                <div class="bg-white shadow overflow-hidden rounded-lg">
-                    <table class="min-w-full divide-y divide-gray-200">
-                        <thead class="bg-gray-50">
+                <div class="bg-white dark:bg-gray-800 shadow overflow-hidden rounded-lg">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-900/50">
                             <tr>
                                 <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     Estudiante</th>
                                 <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     Razón</th>
                                 <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     Tipo</th>
                                 <th
-                                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     Acciones</th>
                             </tr>
                         </thead>
-                        <tbody class="bg-white divide-y divide-gray-200">
+                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                             <tr v-for="lock in filteredLocks" :key="lock.id">
                                 <td class="px-6 py-4 whitespace-nowrap">
-                                    <div class="text-sm font-medium text-gray-900">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
                                         {{ lock.student?.nombres }} {{ lock.student?.apellidos }}
                                     </div>
-                                    <div class="text-xs text-gray-500">
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">
                                         {{ lock.student?.aula?.grado_cardinal }}° {{ lock.student?.aula?.seccion }}
                                     </div>
                                 </td>
                                 <td class="px-6 py-4">
-                                    <span class="text-sm text-gray-700">{{ lock.reason }}</span>
+                                    <span class="text-sm text-gray-700 dark:text-gray-300">{{ lock.reason }}</span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full"
-                                        :class="lock.auto_generated ? 'bg-gray-100 text-gray-800' : 'bg-yellow-100 text-yellow-800'">
+                                        :class="lock.auto_generated ? 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200' : 'bg-yellow-100 text-yellow-800'">
                                         {{ lock.auto_generated ? 'Automático' : 'Manual' }}
                                     </span>
                                 </td>
@@ -99,7 +99,7 @@
                                 </td>
                             </tr>
                             <tr v-if="filteredLocks.length === 0">
-                                <td colspan="4" class="px-6 py-12 text-center text-gray-500">
+                                <td colspan="4" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
                                     {{ emptyStateMessage }}
                                 </td>
                             </tr>
@@ -110,24 +110,24 @@
 
             <!-- Modal Manual Lock -->
             <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
-                <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-6">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md p-6">
                     <h3 class="text-lg font-bold mb-4">Bloquear Estudiante Manualmente</h3>
 
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">ID Estudiante</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ID Estudiante</label>
                         <input v-model="form.student_id" type="number" class="w-full border rounded px-3 py-2"
                             placeholder="ID del estudiante">
-                        <p class="text-xs text-gray-500 mt-1">Ingresa el ID del sistema del estudiante.</p>
+                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Ingresa el ID del sistema del estudiante.</p>
                     </div>
 
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Motivo</label>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Motivo</label>
                         <textarea v-model="form.reason" class="w-full border rounded px-3 py-2" rows="2"></textarea>
                     </div>
 
                     <div class="flex justify-end gap-2">
                         <button @click="showModal = false"
-                            class="px-4 py-2 border rounded text-gray-700">Cancelar</button>
+                            class="px-4 py-2 border rounded text-gray-700 dark:text-gray-300">Cancelar</button>
                         <button @click="performLock"
                             class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Bloquear</button>
                     </div>

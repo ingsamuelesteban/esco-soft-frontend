@@ -1,26 +1,26 @@
 <template>
-  <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+  <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
     <div class="p-4">
       <div class="flex items-center justify-between">
-        <input v-model="query" type="text" class="w-full md:w-64 rounded-md border-gray-300 text-sm"
+        <input v-model="query" type="text" class="w-full md:w-64 rounded-md border-gray-300 dark:border-gray-600 text-sm"
           placeholder="Buscar por nombre o código..." />
-        <div class="ml-4 text-sm text-gray-500" v-if="!loading">Total: {{ filtered.length }}</div>
+        <div class="ml-4 text-sm text-gray-500 dark:text-gray-400" v-if="!loading">Total: {{ filtered.length }}</div>
       </div>
     </div>
     <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-900/50">
           <tr>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Código</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nombre</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estado</th>
-            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acciones</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Código</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nombre</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
           <tr v-for="f in filtered" :key="f.id">
             <td class="px-4 py-3 whitespace-nowrap text-sm font-mono">{{ f.codigo }}</td>
-            <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900">{{ f.nombre }}</td>
+            <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">{{ f.nombre }}</td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">
               <span :class="f.activo ? 'text-green-600' : 'text-red-600'">
                 {{ f.activo ? 'Activo' : 'Inactivo' }}
@@ -52,10 +52,10 @@
             </td>
           </tr>
           <tr v-if="!loading && filtered.length === 0">
-            <td colspan="4" class="px-4 py-6 text-center text-sm text-gray-500">Sin resultados</td>
+            <td colspan="4" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Sin resultados</td>
           </tr>
           <tr v-if="loading">
-            <td colspan="4" class="px-4 py-6 text-center text-sm text-gray-500">Cargando...</td>
+            <td colspan="4" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Cargando...</td>
           </tr>
         </tbody>
       </table>

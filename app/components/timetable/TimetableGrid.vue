@@ -1,8 +1,8 @@
 <template>
-  <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+  <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
     <div class="p-4 flex items-center gap-3 flex-wrap">
       <div class="flex items-center gap-2">
-        <label class="text-sm text-gray-600">Año lectivo</label>
+        <label class="text-sm text-gray-600 dark:text-gray-400">Año lectivo</label>
         <select v-model.number="anioId" class="border rounded px-2 py-1 text-sm h-8">
           <option :value="undefined">Seleccionar...</option>
           <option v-for="a in aniosLectivosStore.items" :key="a.id" :value="a.id">
@@ -11,14 +11,14 @@
         </select>
       </div>
       <div class="flex items-center gap-2">
-        <label class="text-sm text-gray-600">Aula</label>
+        <label class="text-sm text-gray-600 dark:text-gray-400">Aula</label>
         <select v-model.number="aulaId" class="border rounded px-2 py-1 text-sm h-8">
           <option :value="undefined">Seleccionar…</option>
           <option v-for="a in aulas" :key="a.id" :value="a.id">{{ aulaName(a) }}</option>
         </select>
       </div>
       <div class="flex items-center gap-2" v-if="!readOnly">
-        <label class="text-sm text-gray-600">Asignación</label>
+        <label class="text-sm text-gray-600 dark:text-gray-400">Asignación</label>
         <select v-model.number="selectedAssignmentId" class="border rounded px-2 py-1 text-sm h-8 min-w-[220px]"
           :disabled="!aulaId || !anioId">
           <option :value="undefined">Seleccionar asignación…</option>
@@ -29,7 +29,7 @@
       </div>
       <div class="ml-auto flex items-center gap-2">
         <button @click="reload"
-          class="inline-flex items-center justify-center p-1.5 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-colors"
+          class="inline-flex items-center justify-center p-1.5 rounded-md text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800 transition-colors"
           title="Refrescar">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -40,20 +40,20 @@
     </div>
 
     <div class="overflow-x-auto" :class="{ 'overflow-y-auto': fitViewport }" :style="wrapperStyle">
-      <table class="min-w-full table-fixed divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+      <table class="min-w-full table-fixed divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-900/50">
           <tr>
-            <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-44">Período
+            <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-44">Período
             </th>
             <th v-for="d in days" :key="d.value"
-              class="px-2 py-2 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">{{ d.label }}
+              class="px-2 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ d.label }}
             </th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
           <tr v-for="p in classPeriods" :key="p.id" class="align-top">
-            <td class="px-2 py-2 text-sm text-gray-600 w-44">
-              <div class="font-medium text-gray-900">{{ p.label }}</div>
+            <td class="px-2 py-2 text-sm text-gray-600 dark:text-gray-400 w-44">
+              <div class="font-medium text-gray-900 dark:text-gray-100">{{ p.label }}</div>
               <div class="text-xs">{{ formatTime12h(p.start_time) }} - {{ formatTime12h(p.end_time) }}</div>
             </td>
             <td v-for="d in days" :key="d.value" class="px-1 py-1">
@@ -63,7 +63,7 @@
                     <div class="font-semibold truncate" :title="entryAt(d.value, p.id)?.assignment?.materia?.nombre">
                       {{
                         entryAt(d.value, p.id)?.assignment?.materia?.nombre }}</div>
-                    <div class="text-gray-500 truncate" :title="teacherName(entryAt(d.value, p.id)?.assignment)">{{
+                    <div class="text-gray-500 dark:text-gray-400 truncate" :title="teacherName(entryAt(d.value, p.id)?.assignment)">{{
                       teacherName(entryAt(d.value, p.id)?.assignment) }}</div>
                   </div>
                   <button v-if="!readOnly" @click="remove(entryAt(d.value, p.id)?.id as number)"
@@ -76,7 +76,7 @@
                 </template>
                 <template v-else>
                   <button v-if="!readOnly" @click="assignHere(d.value, p.id)"
-                    class="w-full h-full flex items-center justify-center text-gray-400 hover:text-gray-600"
+                    class="w-full h-full flex items-center justify-center text-gray-400 hover:text-gray-600 dark:text-gray-400"
                     :disabled="!selectedAssignmentId || !aulaId" title="Asignar aquí">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -87,7 +87,7 @@
             </td>
           </tr>
           <tr v-if="!aulaId">
-            <td colspan="7" class="px-4 py-6 text-center text-sm text-gray-500">Selecciona un aula para ver y editar
+            <td colspan="7" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Selecciona un aula para ver y editar
               el
               horario
             </td>

@@ -4,10 +4,10 @@
             <div class="p-6">
                 <!-- Header -->
                 <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white">
                         {{ homework ? 'Editar Tarea' : 'Nueva Tarea' }}
                     </h2>
-                    <button @click="$emit('close')" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200">
+                    <button @click="$emit('close')" class="text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M6 18L18 6M6 6l12 12" />
@@ -53,7 +53,7 @@
                             <label
                                 class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 flex justify-between">
                                 <span>Programar Publicación</span>
-                                <span class="text-xs text-gray-500 font-normal self-end">(Opcional)</span>
+                                <span class="text-xs text-gray-500 dark:text-gray-400 font-normal self-end">(Opcional)</span>
                             </label>
                             <input v-model="form.published_at" type="datetime-local"
                                 class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
@@ -97,7 +97,7 @@
                         <DropZone v-model="form.attachment" label="Arrastra tu archivo aquí o haz clic para seleccionar"
                             :max-size="10 * 1024 * 1024" />
                         <p v-if="homework?.attachment_path && !form.attachment"
-                            class="text-sm text-gray-500 dark:text-gray-400 mt-2 p-2 bg-gray-50 rounded border border-gray-200">
+                            class="text-sm text-gray-500 dark:text-gray-400 mt-2 p-2 bg-gray-50 dark:bg-gray-900/50 rounded border border-gray-200 dark:border-gray-700">
                             Archivo actual: <strong>{{ homework.attachment_path.split('/').pop() }}</strong>
                         </p>
                     </div>
@@ -105,7 +105,7 @@
                     <!-- Allow Late Submission -->
                     <div class="flex items-center">
                         <input v-model="form.allow_late_submission" type="checkbox" id="allow_late"
-                            class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+                            class="w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500" />
                         <label for="allow_late" class="ml-2 text-sm text-gray-700 dark:text-gray-300">
                             Permitir entregas tardías
                         </label>
@@ -114,7 +114,7 @@
                     <!-- Assign to all switch -->
                     <div class="flex items-center justify-between">
                         <span class="flex flex-col">
-                            <span class="text-sm font-medium text-gray-900 dark:text-white">Asignar a todos</span>
+                            <span class="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-white">Asignar a todos</span>
                             <span class="text-sm text-gray-500 dark:text-gray-400">Si se desactiva, podrás seleccionar
                                 estudiantes específicos</span>
                         </span>
@@ -122,7 +122,7 @@
                             :class="form.assign_to_all ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'"
                             class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2">
                             <span aria-hidden="true" :class="form.assign_to_all ? 'translate-x-5' : 'translate-x-0'"
-                                class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out"></span>
+                                class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white dark:bg-gray-800 shadow ring-0 transition duration-200 ease-in-out"></span>
                         </button>
                     </div>
 
@@ -131,18 +131,18 @@
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
                             Seleccionar Estudiantes
                         </label>
-                        <div v-if="loadingStudents" class="text-sm text-gray-500">Cargando estudiantes...</div>
+                        <div v-if="loadingStudents" class="text-sm text-gray-500 dark:text-gray-400">Cargando estudiantes...</div>
                         <div v-else
                             class="max-h-48 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-lg p-2 space-y-1">
                             <label v-for="student in students" :key="student.id"
-                                class="flex items-center p-2 hover:bg-gray-50 dark:hover:bg-gray-700 rounded cursor-pointer">
+                                class="flex items-center p-2 hover:bg-gray-50 dark:bg-gray-900/50 dark:hover:bg-gray-700 rounded cursor-pointer">
                                 <input type="checkbox" :value="student.id" v-model="form.student_ids"
-                                    class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500" />
+                                    class="w-4 h-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded focus:ring-blue-500" />
                                 <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">
                                     {{ student.user?.name || student.primer_nombre + ' ' + student.primer_apellido }}
                                 </span>
                             </label>
-                            <div v-if="students.length === 0" class="text-sm text-gray-500 p-2">
+                            <div v-if="students.length === 0" class="text-sm text-gray-500 dark:text-gray-400 p-2">
                                 No se encontraron estudiantes en esta clase.
                             </div>
                         </div>

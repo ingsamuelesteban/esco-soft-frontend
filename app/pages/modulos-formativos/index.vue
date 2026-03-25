@@ -2,13 +2,13 @@
   <section>
     <header class="flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-semibold text-gray-900">Módulos Formativos</h1>
-        <p class="mt-1 text-sm text-gray-600">Catálogo de módulos formativos de la institución.</p>
+        <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Módulos Formativos</h1>
+        <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Catálogo de módulos formativos de la institución.</p>
       </div>
       <div class="flex items-center gap-2">
         <FilterStatus v-model="store.statusFilter" @update:modelValue="onFilterChange" />
         <button
-          class="inline-flex items-center justify-center p-1.5 rounded-md text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-colors"
+          class="inline-flex items-center justify-center p-1.5 rounded-md text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800 transition-colors"
           @click="refresh" title="Refrescar">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

@@ -2,12 +2,12 @@
   <div class="p-6">
     <div class="mb-6 flex items-center justify-between">
       <div>
-        <h1 class="text-2xl font-bold text-gray-800">Acompañamientos - Componente Técnico</h1>
-        <p class="text-sm text-gray-500">Gestión de observaciones a maestros</p>
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-200">Acompañamientos - Componente Técnico</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400">Gestión de observaciones a maestros</p>
       </div>
       <div class="flex items-center space-x-3">
         <select v-model="selectedAnioId" v-if="aniosStore.items.length > 0"
-          class="block w-48 pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg shadow-sm">
+          class="block w-48 pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg shadow-sm">
           <option :value="'all'">Todos los años</option>
           <option v-for="anio in aniosStore.items" :key="anio.id" :value="anio.id">
             {{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}
@@ -23,10 +23,10 @@
       </div>
     </div>
 
-    <div class="rounded-xl border border-gray-100 bg-white shadow-sm">
+    <div class="rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 shadow-sm">
       <div class="overflow-x-auto">
-        <table class="w-full text-left text-sm text-gray-500">
-          <thead class="bg-gray-50 text-xs text-gray-700 uppercase">
+        <table class="w-full text-left text-sm text-gray-500 dark:text-gray-400">
+          <thead class="bg-gray-50 dark:bg-gray-900/50 text-xs text-gray-700 dark:text-gray-300 uppercase">
             <tr>
               <th class="px-6 py-3">Fecha</th>
               <th class="px-6 py-3">Maestro</th>
@@ -43,17 +43,17 @@
               </td>
             </tr>
             <tr v-else-if="observations.length === 0" class="border-b">
-              <td colspan="5" class="py-8 text-center text-gray-500">No hay observaciones registradas.</td>
+              <td colspan="5" class="py-8 text-center text-gray-500 dark:text-gray-400">No hay observaciones registradas.</td>
             </tr>
-            <tr v-for="obs in observations" :key="obs.id" class="border-b hover:bg-gray-50">
-              <td class="px-6 py-4 font-medium text-gray-900">{{ formatDate(obs.observed_at) }}</td>
+            <tr v-for="obs in observations" :key="obs.id" class="border-b hover:bg-gray-50 dark:bg-gray-900/50">
+              <td class="px-6 py-4 font-medium text-gray-900 dark:text-gray-100">{{ formatDate(obs.observed_at) }}</td>
               <td class="px-6 py-4">
-                <div class="font-medium text-gray-800">{{ obs.teacher?.name }} {{ obs.teacher?.last_name }}</div>
-                <div class="text-xs text-gray-500">Maestro Técnico</div>
+                <div class="font-medium text-gray-800 dark:text-gray-200">{{ obs.teacher?.name }} {{ obs.teacher?.last_name }}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">Maestro Técnico</div>
               </td>
               <td class="px-6 py-4">
-                <div class="text-gray-800">{{ obs.assignment?.materia?.nombre || '-' }}</div>
-                <div class="text-xs text-gray-500">{{ obs.assignment?.aula?.nombre || '-' }}</div>
+                <div class="text-gray-800 dark:text-gray-200">{{ obs.assignment?.materia?.nombre || '-' }}</div>
+                <div class="text-xs text-gray-500 dark:text-gray-400">{{ obs.assignment?.aula?.nombre || '-' }}</div>
               </td>
               <td class="px-6 py-4">
                 {{ obs.observer?.name }}
@@ -76,7 +76,7 @@
                       d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
                 </button>
-                <button class="text-gray-500 hover:text-primary-600 transition-colors" title="Ver Detalles"
+                <button class="text-gray-500 dark:text-gray-400 hover:text-primary-600 transition-colors" title="Ver Detalles"
                   @click="$router.push({ path: '/coordinacion/acompanamientos/crear', query: { id: obs.id, mode: 'view' } })">
                   <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -85,7 +85,7 @@
                       d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                   </svg>
                 </button>
-                <button v-if="obs.status === 'finalized'" class="ml-3 text-gray-500 hover:text-red-600"
+                <button v-if="obs.status === 'finalized'" class="ml-3 text-gray-500 dark:text-gray-400 hover:text-red-600"
                   title="Descargar PDF" @click="downloadPdf(obs.id)" :disabled="generatingPdfId === obs.id">
                   <svg v-if="generatingPdfId === obs.id" class="animate-spin h-5 w-5 text-red-600"
                     xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

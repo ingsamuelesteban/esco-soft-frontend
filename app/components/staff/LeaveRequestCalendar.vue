@@ -1,19 +1,19 @@
 <template>
     <div class="mt-4">
         <div v-for="month in months" :key="month.key"
-            class="mb-4 bg-white rounded-lg border border-gray-200 overflow-hidden">
-            <div class="bg-gray-50 px-4 py-2 border-b border-gray-200 font-medium text-center text-gray-700">
+            class="mb-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
+            <div class="bg-gray-50 dark:bg-gray-900/50 px-4 py-2 border-b border-gray-200 dark:border-gray-700 font-medium text-center text-gray-700 dark:text-gray-300">
                 {{ month.title }}
             </div>
             <div class="grid grid-cols-7 gap-px bg-gray-200 text-sm">
                 <!-- Days Header -->
                 <div v-for="day in weekDays" :key="day"
-                    class="bg-gray-50 p-2 text-center text-xs font-semibold text-gray-500">
+                    class="bg-gray-50 dark:bg-gray-900/50 p-2 text-center text-xs font-semibold text-gray-500 dark:text-gray-400">
                     {{ day }}
                 </div>
                 <!-- Calendar Days -->
                 <div v-for="(date, index) in month.days" :key="index"
-                    class="bg-white min-h-[40px] p-1 flex flex-col items-center justify-center relative group"
+                    class="bg-white dark:bg-gray-800 min-h-[40px] p-1 flex flex-col items-center justify-center relative group"
                     :class="getDateClass(date)">
 
                     <template v-if="date">
@@ -109,13 +109,13 @@ const months = computed(() => {
 })
 
 const getDateClass = (date: any) => {
-    if (!date) return 'bg-gray-50'
+    if (!date) return 'bg-gray-50 dark:bg-gray-900/50'
 
     switch (date.status) {
         case 'holiday':
             return 'bg-red-50 hover:bg-red-100 border-2 border-transparent hover:border-red-200 cursor-help'
         case 'weekend':
-            return 'bg-gray-100 text-gray-400'
+            return 'bg-gray-100 dark:bg-gray-800 text-gray-400'
         case 'workday':
             return 'bg-blue-50 text-blue-700 font-semibold border-b-2 border-blue-500'
         case 'out-of-range':
@@ -135,7 +135,7 @@ const getDateTextClass = (date: any) => {
         case 'workday':
             return 'text-blue-700'
         default:
-            return 'text-gray-500'
+            return 'text-gray-500 dark:text-gray-400'
     }
 }
 </script>

@@ -1,8 +1,8 @@
 <template>
     <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
         <div class="px-4 py-6 sm:px-0">
-            <h1 class="text-3xl font-bold text-gray-900 mb-6">Tienda de Uniformes</h1>
-            <p class="text-gray-600 mb-8">Selecciona los artículos que necesitas. Una vez generes tu orden, podrás
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-6">Tienda de Uniformes</h1>
+            <p class="text-gray-600 dark:text-gray-400 mb-8">Selecciona los artículos que necesitas. Una vez generes tu orden, podrás
                 pagarla y retirarla por administración.</p>
 
             <div class="flex flex-col lg:flex-row gap-8">
@@ -16,21 +16,21 @@
                                 d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                             </path>
                         </svg>
-                        <p class="mt-4 text-gray-500">Cargando catálogo...</p>
+                        <p class="mt-4 text-gray-500 dark:text-gray-400">Cargando catálogo...</p>
                     </div>
 
-                    <div v-else-if="catalogItems.length === 0" class="text-center py-12 bg-white rounded-lg shadow-sm">
-                        <p class="text-gray-500">No hay artículos disponibles en este momento.</p>
+                    <div v-else-if="catalogItems.length === 0" class="text-center py-12 bg-white dark:bg-gray-800 rounded-lg shadow-sm">
+                        <p class="text-gray-500 dark:text-gray-400">No hay artículos disponibles en este momento.</p>
                     </div>
 
                     <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div v-for="article in catalogItems" :key="article.id"
-                            class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow border border-gray-100 flex flex-col">
+                            class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow border border-gray-100 dark:border-gray-700 flex flex-col">
                             <div class="p-6 flex-1 flex flex-col">
-                                <h3 class="text-lg font-bold text-gray-900 mb-2">{{ article.name }}</h3>
+                                <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">{{ article.name }}</h3>
                                 <p class="text-2xl font-black text-primary-600 mb-4">${{
                                     parseFloat(article.price).toFixed(2) }}</p>
-                                <div class="mt-auto pt-4 border-t border-gray-100">
+                                <div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700">
                                     <button @click="addToCart(article)"
                                         class="w-full flex items-center justify-center space-x-2 bg-primary-50 text-primary-700 hover:bg-primary-600 hover:text-white px-4 py-2 rounded-md font-medium transition-colors">
                                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -47,9 +47,9 @@
 
                 <!-- Resumen de Orden (Carrito) -->
                 <div class="lg:w-1/3">
-                    <div class="bg-white rounded-xl shadow-lg border border-gray-200 sticky top-6">
-                        <div class="p-6 border-b border-gray-200 bg-gray-50 rounded-t-xl">
-                            <h2 class="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg border border-gray-200 dark:border-gray-700 sticky top-6">
+                        <div class="p-6 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 rounded-t-xl">
+                            <h2 class="text-xl font-bold text-gray-900 dark:text-gray-100 flex items-center gap-2">
                                 <svg class="w-6 h-6 text-primary-600" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -60,16 +60,16 @@
                         </div>
 
                         <div class="p-6 max-h-[50vh] overflow-y-auto">
-                            <div v-if="cart.length === 0" class="text-center text-gray-500 py-8">
+                            <div v-if="cart.length === 0" class="text-center text-gray-500 dark:text-gray-400 py-8">
                                 <p>Tu orden está vacía.</p>
                                 <p class="text-sm mt-2">Agrega artículos desde el catálogo.</p>
                             </div>
 
                             <ul v-else class="space-y-4">
                                 <li v-for="(item, index) in cart" :key="item.article.id"
-                                    class="flex flex-col gap-2 pb-4 border-b border-gray-100 last:border-0 last:pb-0">
+                                    class="flex flex-col gap-2 pb-4 border-b border-gray-100 dark:border-gray-700 last:border-0 last:pb-0">
                                     <div class="flex justify-between items-start">
-                                        <span class="font-medium text-gray-900">{{ item.article.name }}</span>
+                                        <span class="font-medium text-gray-900 dark:text-gray-100">{{ item.article.name }}</span>
                                         <button @click="removeFromCart(index)"
                                             class="text-gray-400 hover:text-red-500 transition-colors">
                                             <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -79,26 +79,26 @@
                                         </button>
                                     </div>
                                     <div class="flex justify-between items-center mt-1">
-                                        <div class="flex items-center border rounded-md border-gray-200 shadow-sm">
+                                        <div class="flex items-center border rounded-md border-gray-200 dark:border-gray-700 shadow-sm">
                                             <button @click="decreaseQty(index)"
-                                                class="px-2 py-1 text-gray-600 hover:bg-gray-100 transition-colors">-</button>
+                                                class="px-2 py-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:bg-gray-800 transition-colors">-</button>
                                             <span
-                                                class="px-3 py-1 font-medium text-sm w-8 text-center bg-gray-50 border-x border-gray-200">{{
+                                                class="px-3 py-1 font-medium text-sm w-8 text-center bg-gray-50 dark:bg-gray-900/50 border-x border-gray-200 dark:border-gray-700">{{
                                                     item.quantity }}</span>
                                             <button @click="increaseQty(index)"
-                                                class="px-2 py-1 text-gray-600 hover:bg-gray-100 transition-colors">+</button>
+                                                class="px-2 py-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:bg-gray-800 transition-colors">+</button>
                                         </div>
-                                        <span class="font-semibold text-gray-900">${{ (item.article.price *
+                                        <span class="font-semibold text-gray-900 dark:text-gray-100">${{ (item.article.price *
                                             item.quantity).toFixed(2) }}</span>
                                     </div>
                                 </li>
                             </ul>
                         </div>
 
-                        <div class="p-6 border-t border-gray-200 bg-gray-50 rounded-b-xl">
+                        <div class="p-6 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 rounded-b-xl">
                             <div class="flex justify-between items-center mb-6">
-                                <span class="text-lg font-medium text-gray-700">Total a Pagar:</span>
-                                <span class="text-2xl font-bold text-gray-900">${{ cartTotal.toFixed(2) }}</span>
+                                <span class="text-lg font-medium text-gray-700 dark:text-gray-300">Total a Pagar:</span>
+                                <span class="text-2xl font-bold text-gray-900 dark:text-gray-100">${{ cartTotal.toFixed(2) }}</span>
                             </div>
                             <button @click="submitOrder" :disabled="cart.length === 0 || isSubmitting"
                                 class="w-full flex justify-center items-center gap-2 bg-primary-600 text-white py-3 px-4 rounded-lg font-bold text-lg hover:bg-primary-700 shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed">
@@ -119,16 +119,16 @@
 
             <!-- Historial de Órdenes (Listado Simple) -->
             <div class="mt-16">
-                <h2 class="text-2xl font-bold text-gray-900 mb-6 border-b pb-2">Mis Órdenes de Uniformes</h2>
+                <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6 border-b pb-2">Mis Órdenes de Uniformes</h2>
                 <div v-if="loadingOrders" class="text-center py-4">Cargando órdenes...</div>
                 <div v-else-if="myOrders.length === 0"
-                    class="bg-white p-6 rounded-lg shadow-sm border border-gray-100 text-center text-gray-500">
+                    class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-sm border border-gray-100 dark:border-gray-700 text-center text-gray-500 dark:text-gray-400">
                     Aún no has realizado ninguna orden de uniformes.
                 </div>
-                <div v-else class="bg-white shadow overflow-hidden sm:rounded-md">
-                    <ul role="list" class="divide-y divide-gray-200">
+                <div v-else class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
+                    <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
                         <li v-for="order in myOrders" :key="order.id">
-                            <div class="block hover:bg-gray-50 p-4 sm:px-6">
+                            <div class="block hover:bg-gray-50 dark:bg-gray-900/50 p-4 sm:px-6">
                                 <div class="flex items-center justify-between">
                                     <div class="text-sm font-bold text-primary-600 truncate py-1">
                                         {{ order.invoice_number }}
@@ -150,9 +150,9 @@
                                     </div>
                                 </div>
                                 <div class="mt-2 sm:flex sm:justify-between">
-                                    <div class="sm:flex flex-col text-sm text-gray-500">
+                                    <div class="sm:flex flex-col text-sm text-gray-500 dark:text-gray-400">
                                         <p>
-                                            Total: <span class="font-bold text-gray-900">${{
+                                            Total: <span class="font-bold text-gray-900 dark:text-gray-100">${{
                                                 parseFloat(order.total_amount).toFixed(2) }}</span>
                                         </p>
                                         <ul class="mt-2 pl-4 list-disc list-inside">
@@ -163,7 +163,7 @@
                                             </li>
                                         </ul>
                                     </div>
-                                    <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
+                                    <div class="mt-2 flex items-center text-sm text-gray-500 dark:text-gray-400 sm:mt-0">
                                         <svg class="flex-shrink-0 mr-1.5 h-4 w-4 text-gray-400" fill="none"
                                             viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

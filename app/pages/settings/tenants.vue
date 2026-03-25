@@ -1,11 +1,11 @@
 <template>
     <div class="space-y-6">
         <!-- Header -->
-        <div class="bg-white shadow-sm rounded-lg p-6">
+        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
             <div class="flex items-center justify-between">
                 <div>
-                    <h1 class="text-2xl font-bold text-gray-900">Gestión de Instituciones</h1>
-                    <p class="text-sm text-gray-600 mt-1">Administra los tenants del sistema</p>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Gestión de Instituciones</h1>
+                    <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Administra los tenants del sistema</p>
                 </div>
                 <button @click="openCreateModal"
                     class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
@@ -18,7 +18,7 @@
         </div>
 
         <!-- Lista de Tenants -->
-        <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
             <div v-if="loading" class="p-12 text-center">
                 <svg class="animate-spin h-8 w-8 text-primary-600 mx-auto" xmlns="http://www.w3.org/2000/svg"
                     fill="none" viewBox="0 0 24 24">
@@ -27,31 +27,31 @@
                         d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                     </path>
                 </svg>
-                <p class="mt-2 text-gray-500">Cargando instituciones...</p>
+                <p class="mt-2 text-gray-500 dark:text-gray-400">Cargando instituciones...</p>
             </div>
 
             <div v-else-if="tenants.length === 0" class="p-12 text-center">
-                <p class="text-gray-500">No hay instituciones registradas.</p>
+                <p class="text-gray-500 dark:text-gray-400">No hay instituciones registradas.</p>
             </div>
 
-            <table v-else class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+            <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                <thead class="bg-gray-50 dark:bg-gray-900/50">
                     <tr>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Nombre</th>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Dominio</th>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Contacto</th>
                         <th scope="col"
-                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Acciones</th>
                     </tr>
                 </thead>
-                <tbody class="bg-white divide-y divide-gray-200">
+                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                     <tr v-for="tenant in tenants" :key="tenant.id">
                         <td class="px-6 py-4 whitespace-nowrap">
                             <div class="flex items-center">
@@ -60,15 +60,15 @@
                                     {{ tenant.name.charAt(0).toUpperCase() }}
                                 </div>
                                 <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">{{ tenant.name }}</div>
-                                    <div class="text-sm text-gray-500">{{ tenant.website || 'Sin web' }}</div>
+                                    <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ tenant.name }}</div>
+                                    <div class="text-sm text-gray-500 dark:text-gray-400">{{ tenant.website || 'Sin web' }}</div>
                                 </div>
                             </div>
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                             {{ tenant.domain || 'N/A' }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                             <div>{{ tenant.email }}</div>
                             <div>{{ tenant.phone }}</div>
                         </td>
@@ -93,25 +93,25 @@
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
                 <div
-                    class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                    class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                        <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-title">
                             {{ isEditing ? 'Editar Institución' : 'Nueva Institución' }}
                         </h3>
 
                         <!-- Pestañas del Modal -->
-                        <div class="mt-4 border-b border-gray-200">
+                        <div class="mt-4 border-b border-gray-200 dark:border-gray-700">
                             <nav class="-mb-px flex space-x-8">
                                 <button @click="activeTab = 'general'"
-                                    :class="[activeTab === 'general' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors']">
+                                    :class="[activeTab === 'general' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors']">
                                     Información General
                                 </button>
                                 <button @click="activeTab = 'reports'"
-                                    :class="[activeTab === 'reports' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors']">
+                                    :class="[activeTab === 'reports' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors']">
                                     Firmas / Reportes
                                 </button>
                                 <button @click="activeTab = 'public'"
-                                    :class="[activeTab === 'public' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors']">
+                                    :class="[activeTab === 'public' ? 'border-primary-500 text-primary-600' : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600', 'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-colors']">
                                     Página Pública / Director
                                 </button>
                             </nav>
@@ -121,31 +121,31 @@
                             <!-- Tab: General -->
                             <div v-if="activeTab === 'general'" class="space-y-4">
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">Nombre</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</label>
                                     <input v-model="form.name" type="text"
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">Abreviatura</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Abreviatura</label>
                                     <input v-model="form.abbreviation" type="text" maxlength="10" required
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">Dominio (opcional)</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Dominio (opcional)</label>
                                     <input v-model="form.domain" type="text"
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">Dirección</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Dirección</label>
                                     <input v-model="form.address" type="text"
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                 </div>
 
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">Provincia</label>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Provincia</label>
                                         <select v-model="form.provincia" @change="fetchMunicipiosConfig" required
-                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                             <option value="" disabled>Seleccione provincia</option>
                                             <option v-for="prov in provinciasList" :key="prov.id" :value="prov.nombre">
                                                 {{ prov.nombre }}
@@ -153,9 +153,9 @@
                                         </select>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">Municipio</label>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Municipio</label>
                                         <select v-model="form.municipio" required :disabled="!form.provincia"
-                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                             <option value="" disabled>Seleccione municipio</option>
                                             <option v-for="mun in municipiosList" :key="mun.nombre" :value="mun.nombre">
                                                 {{ mun.nombre }}
@@ -165,30 +165,30 @@
                                 </div>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">Teléfono</label>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Teléfono</label>
                                         <input v-model="form.phone" type="text"
-                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">Email</label>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
                                         <input v-model="form.email" type="email"
-                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                     </div>
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">Sitio Web</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sitio Web</label>
                                     <input v-model="form.website" type="url"
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                 </div>
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">Logo</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Logo</label>
                                     <div class="mt-1 flex items-center">
                                         <span v-if="logoPreview || form.logo_url"
-                                            class="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100 mr-4">
+                                            class="inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-800 mr-4">
                                             <img :src="logoPreview || form.logo_url" alt="Logo"
                                                 class="h-full w-full object-cover">
                                         </span>
-                                        <input type="file" @change="onLogoChange" accept="image/*" class="block w-full text-sm text-gray-500
+                                        <input type="file" @change="onLogoChange" accept="image/*" class="block w-full text-sm text-gray-500 dark:text-gray-400
                                               file:mr-4 file:py-2 file:px-4
                                               file:rounded-full file:border-0
                                               file:text-sm file:font-semibold
@@ -204,7 +204,7 @@
                                 <div class="bg-primary-50 p-4 rounded-lg border border-primary-100 mb-4">
                                     <div class="flex items-center">
                                         <input v-model="form.public_pages_enabled" type="checkbox" id="public_enabled"
-                                            class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 rounded">
+                                            class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
                                         <label for="public_enabled" class="ml-2 block text-sm font-medium text-primary-900">
                                             Habilitar página pública informativa
                                         </label>
@@ -216,96 +216,96 @@
 
                                 <!-- Hero Section -->
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">Descripción Pública (Landing)</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descripción Pública (Landing)</label>
                                     <textarea v-model="form.public_description" rows="3"
-                                        class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                                         placeholder="Breve descripción que aparecerá en la página de inicio..."></textarea>
                                 </div>
 
                                 <div>
-                                    <label class="block text-sm font-medium text-gray-700">Imagen Principal (Hero)</label>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Imagen Principal (Hero)</label>
                                     <div class="mt-1 flex items-center">
                                         <div v-if="heroImagePreview || form.hero_image_url" class="mr-4 relative">
                                             <img :src="heroImagePreview || form.hero_image_url" 
-                                                class="h-20 w-32 object-cover rounded border border-gray-200">
+                                                class="h-20 w-32 object-cover rounded border border-gray-200 dark:border-gray-700">
                                         </div>
                                         <input type="file" @change="onHeroImageChange" accept="image/*" 
-                                            class="text-xs text-gray-500 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100" />
+                                            class="text-xs text-gray-500 dark:text-gray-400 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100" />
                                     </div>
                                 </div>
 
                                 <!-- Identity Section -->
-                                <div class="border-t border-gray-200 pt-4 space-y-4">
-                                    <h4 class="text-sm font-semibold text-gray-900">Identidad Institucional</h4>
+                                <div class="border-t border-gray-200 dark:border-gray-700 pt-4 space-y-4">
+                                    <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Identidad Institucional</h4>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">Misión</label>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Misión</label>
                                         <textarea v-model="form.mission" rows="2"
-                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"></textarea>
+                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"></textarea>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">Visión</label>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Visión</label>
                                         <textarea v-model="form.vision" rows="2"
-                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"></textarea>
+                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"></textarea>
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">Valores</label>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Valores</label>
                                         <textarea v-model="form.values" rows="2"
-                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"></textarea>
+                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"></textarea>
                                     </div>
                                 </div>
 
                                 <!-- Director Section -->
-                                <div class="border-t border-gray-200 pt-4">
-                                    <h4 class="text-sm font-semibold text-gray-900 mb-3">Perfil del Director</h4>
+                                <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                                    <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">Perfil del Director</h4>
                                     <div class="grid grid-cols-1 gap-4">
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700">Nombre del Director</label>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre del Director</label>
                                             <input v-model="form.director_name" type="text"
-                                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                                class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700">Biografía/Mensaje del Director</label>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Biografía/Mensaje del Director</label>
                                             <textarea v-model="form.director_bio" rows="4"
-                                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                                class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                                                 placeholder="Escriba aquí la biografía o un mensaje de bienvenida del director..."></textarea>
                                         </div>
                                         <div>
-                                            <label class="block text-sm font-medium text-gray-700">Foto del Director</label>
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Foto del Director</label>
                                             <div class="mt-1 flex items-center">
                                                 <div v-if="directorImagePreview || form.director_image_url" class="mr-4">
                                                     <img :src="directorImagePreview || form.director_image_url" 
-                                                        class="h-16 w-16 object-cover rounded-full border border-gray-200">
+                                                        class="h-16 w-16 object-cover rounded-full border border-gray-200 dark:border-gray-700">
                                                 </div>
                                                 <input type="file" @change="onDirectorImageChange" accept="image/*"
-                                                    class="text-xs text-gray-500 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100" />
+                                                    class="text-xs text-gray-500 dark:text-gray-400 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100" />
                                             </div>
                                         </div>
                                     </div>
                                 </div>
 
                                 <!-- Social Media -->
-                                <div class="border-t border-gray-200 pt-4">
-                                    <h4 class="text-sm font-semibold text-gray-900 mb-3">Redes Sociales</h4>
+                                <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
+                                    <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">Redes Sociales</h4>
                                     <div class="grid grid-cols-2 gap-4">
                                         <div>
-                                            <label class="block text-xs font-medium text-gray-500 italic">Facebook</label>
+                                            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 italic">Facebook</label>
                                             <input v-model="form.social_media.facebook" type="text" placeholder="https://..."
-                                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-xs">
+                                                class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-xs">
                                         </div>
                                         <div>
-                                            <label class="block text-xs font-medium text-gray-500 italic">Instagram</label>
+                                            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 italic">Instagram</label>
                                             <input v-model="form.social_media.instagram" type="text" placeholder="https://..."
-                                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-xs">
+                                                class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-xs">
                                         </div>
                                         <div>
-                                            <label class="block text-xs font-medium text-gray-500 italic">Twitter / X</label>
+                                            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 italic">Twitter / X</label>
                                             <input v-model="form.social_media.twitter" type="text" placeholder="https://..."
-                                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-xs">
+                                                class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-xs">
                                         </div>
                                         <div>
-                                            <label class="block text-xs font-medium text-gray-500 italic">YouTube</label>
+                                            <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 italic">YouTube</label>
                                             <input v-model="form.social_media.youtube" type="text" placeholder="https://..."
-                                                class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-xs">
+                                                class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-xs">
                                         </div>
                                     </div>
                                 </div>
@@ -320,50 +320,50 @@
                                 </div>
                                 <div class="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">Departamento </label>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Departamento </label>
                                         <input v-model="form.departamento" type="text" placeholder="Ejem: La Altagracia"
-                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                     </div>
                                     <div>
-                                        <label class="block text-sm font-medium text-gray-700">Distrito Educativo</label>
+                                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Distrito Educativo</label>
                                         <input v-model="form.distrito" type="text" placeholder="Ejem: 12-01"
-                                            class="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                     </div>
                                 </div>
                                 
-                                <div class="border-t border-gray-100 pt-3">
-                                    <label class="block text-sm font-medium text-gray-700">Logo del Departamento / Regional</label>
+                                <div class="border-t border-gray-100 dark:border-gray-700 pt-3">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Logo del Departamento / Regional</label>
                                     <div class="mt-1 flex items-center">
                                         <div v-if="logoDepartamentoPreview || form.logo_departamento" class="mr-4">
                                             <img :src="logoDepartamentoPreview || form.logo_departamento" class="h-16 w-16 object-contain border rounded p-1">
                                         </div>
                                         <input type="file" @change="onLogoDepartamentoChange" accept="image/*"
-                                            class="text-xs text-gray-500 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100" />
+                                            class="text-xs text-gray-500 dark:text-gray-400 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100" />
                                     </div>
                                 </div>
 
-                                <div class="border-t border-gray-100 pt-3">
-                                    <label class="block text-sm font-medium text-gray-700">Sello Institucional (Para Reportes/Actas)</label>
+                                <div class="border-t border-gray-100 dark:border-gray-700 pt-3">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sello Institucional (Para Reportes/Actas)</label>
                                     <div class="mt-1 flex items-center">
                                         <div v-if="selloInstitucionalPreview || form.sello_institucional" class="mr-4">
                                             <img :src="selloInstitucionalPreview || form.sello_institucional" class="h-20 w-20 object-contain border rounded p-1">
                                         </div>
                                         <input type="file" @change="onSelloInstitucionalChange" accept="image/*"
-                                            class="text-xs text-gray-500 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100" />
+                                            class="text-xs text-gray-500 dark:text-gray-400 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100" />
                                     </div>
                                     <p class="mt-1 text-[10px] text-gray-400 italic">Este sello aparecerá como fondo en los certificados y documentos oficiales generados.</p>
                                 </div>
                             </div>
                         </div>
 
-                        <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-lg border-t border-gray-100">
+                        <div class="bg-gray-50 dark:bg-gray-900/50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-lg border-t border-gray-100 dark:border-gray-700">
                             <button @click="saveTenant" type="button"
                                 class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-6 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:ml-3 sm:w-auto sm:text-sm transition-all"
                                 :disabled="saving">
                                 {{ isEditing ? (saving ? 'Actualizando...' : 'Actualizar Institución') : (saving ? 'Creando...' : 'Crear Institución') }}
                             </button>
                             <button @click="closeModal" type="button"
-                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-all">
+                                class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-all">
                                 Cancelar
                             </button>
                         </div>

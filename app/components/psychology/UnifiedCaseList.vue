@@ -8,15 +8,15 @@
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 <div v-for="student in suggestions" :key="student.id"
-                    class="bg-white p-4 rounded shadow-sm border border-indigo-100">
+                    class="bg-white dark:bg-gray-800 p-4 rounded shadow-sm border border-indigo-100">
                     <div class="flex items-center justify-between mb-2">
-                        <span class="font-medium text-gray-900">{{ student.nombres }} {{ student.apellidos }}</span>
+                        <span class="font-medium text-gray-900 dark:text-gray-100">{{ student.nombres }} {{ student.apellidos }}</span>
                         <span
                             class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
                             {{ student.psychology_cases.length }} casos
                         </span>
                     </div>
-                    <div class="text-xs text-gray-500 mb-3 space-y-1">
+                    <div class="text-xs text-gray-500 dark:text-gray-400 mb-3 space-y-1">
                         <div v-for="caso in student.psychology_cases" :key="caso.id" class="flex justify-between">
                             <span>#{{ caso.id }} - {{ caso.title }}</span>
                             <span class="italic">{{ caso.referral?.reporter?.name ?? 'Psicología' }}</span>
@@ -31,10 +31,10 @@
         </div>
 
         <!-- Unified Cases List -->
-        <div class="bg-white shadow overflow-hidden sm:rounded-md">
-            <ul role="list" class="divide-y divide-gray-200">
+        <div class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-md">
+            <ul role="list" class="divide-y divide-gray-200 dark:divide-gray-700">
                 <li v-for="unified in unifiedCases" :key="unified.id">
-                    <a href="#" @click.prevent="$emit('select', unified)" class="block hover:bg-gray-50">
+                    <a href="#" @click.prevent="$emit('select', unified)" class="block hover:bg-gray-50 dark:bg-gray-900/50">
                         <div class="px-4 py-4 sm:px-6">
                             <div class="flex items-center justify-between">
                                 <p class="text-sm font-medium text-indigo-600 truncate">
@@ -43,7 +43,7 @@
                                 </p>
                                 <div class="ml-2 flex-shrink-0 flex">
                                     <span :class="[
-                                        unified.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800',
+                                        unified.status === 'open' ? 'bg-green-100 text-green-800' : 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200',
                                         'px-2 inline-flex text-xs leading-5 font-semibold rounded-full'
                                     ]">
                                         {{ unified.status === 'open' ? 'Abierto' : 'Cerrado' }}
@@ -52,7 +52,7 @@
                             </div>
                             <div class="mt-2 sm:flex sm:justify-between">
                                 <div class="sm:flex">
-                                    <p class="flex items-center text-sm text-gray-500">
+                                    <p class="flex items-center text-sm text-gray-500 dark:text-gray-400">
                                         <!-- Heroicon: users -->
                                         <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
                                             xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -63,7 +63,7 @@
                                         {{ unified.cases?.length || 0 }} casos vinculados
                                     </p>
                                 </div>
-                                <div class="mt-2 flex items-center text-sm text-gray-500 sm:mt-0">
+                                <div class="mt-2 flex items-center text-sm text-gray-500 dark:text-gray-400 sm:mt-0">
                                     <!-- Heroicon: calendar -->
                                     <svg class="flex-shrink-0 mr-1.5 h-5 w-5 text-gray-400"
                                         xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
@@ -80,7 +80,7 @@
                         </div>
                     </a>
                 </li>
-                <li v-if="unifiedCases.length === 0" class="px-4 py-8 text-center text-gray-500 text-sm">
+                <li v-if="unifiedCases.length === 0" class="px-4 py-8 text-center text-gray-500 dark:text-gray-400 text-sm">
                     <span v-if="loading">Cargando...</span>
                     <span v-else>No hay casos unificados registrados.</span>
                 </li>
@@ -95,9 +95,9 @@
                     @click="showModal = false"></div>
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
                 <div
-                    class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
-                    <h3 class="text-lg font-medium leading-6 text-gray-900 mb-4">Unificar Casos</h3>
-                    <p class="text-sm text-gray-500 mb-4">
+                    class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                    <h3 class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100 mb-4">Unificar Casos</h3>
+                    <p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
                         Seleccione los casos que desea unificar para {{ selectedStudent?.nombres }} {{
                             selectedStudent?.apellidos }}.
                         Al unificar, se creará una vista consolidada para psicología, manteniendo la privacidad
@@ -109,14 +109,14 @@
                             <div class="flex items-center h-5">
                                 <input :id="'case-' + caso.id" v-model="selectedCaseIds" :value="caso.id"
                                     type="checkbox"
-                                    class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded" />
+                                    class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 dark:border-gray-600 rounded" />
                             </div>
                             <div class="ml-3 text-sm">
-                                <label :for="'case-' + caso.id" class="font-medium text-gray-700">Caso #{{ caso.id }} -
+                                <label :for="'case-' + caso.id" class="font-medium text-gray-700 dark:text-gray-300">Caso #{{ caso.id }} -
                                     {{
                                         caso.title }}</label>
-                                <p class="text-gray-500">Reportado por: {{ caso.referral?.reporter?.name ?? 'N/A' }}</p>
-                                <p class="text-gray-500" v-if="caso.assigned_to">Asignado a: <span
+                                <p class="text-gray-500 dark:text-gray-400">Reportado por: {{ caso.referral?.reporter?.name ?? 'N/A' }}</p>
+                                <p class="text-gray-500 dark:text-gray-400" v-if="caso.assigned_to">Asignado a: <span
                                         class="font-medium">{{
                                             caso.assigned_to.name }}</span></p>
                             </div>
@@ -125,7 +125,7 @@
 
                     <div class="flex justify-end space-x-3">
                         <button @click="showModal = false" type="button"
-                            class="px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none">
+                            class="px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none">
                             Cancelar
                         </button>
                         <button @click="confirmUnify" :disabled="selectedCaseIds.length < 2 || loading" type="button"

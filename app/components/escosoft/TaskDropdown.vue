@@ -1,17 +1,17 @@
 <template>
   <div class="relative tasks-container">
     <button @click="toggleTasks"
-      class="p-2 rounded-md text-gray-500 hover:bg-gray-100 hover:text-gray-700 relative focus:outline-none transition-colors duration-200"
-      :class="{ 'bg-gray-100 text-primary-600': isOpen }">
+      class="p-2 rounded-md text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:bg-gray-800 hover:text-gray-700 dark:text-gray-300 dark:hover:bg-gray-700 dark:hover:text-gray-300 relative focus:outline-none transition-colors duration-200"
+      :class="{ 'bg-gray-100 dark:bg-gray-800 dark:bg-gray-700 text-primary-600 dark:text-primary-400': isOpen }">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
       </svg>
       <!-- Badge de tareas pendientes/vencidas -->
       <span v-if="taskStore.overdueCount > 0"
-        class="absolute top-1 right-1 h-3 w-3 rounded-full bg-red-500 ring-2 ring-white animate-pulse">
+        class="absolute top-1 right-1 h-3 w-3 rounded-full bg-red-500 ring-2 ring-white dark:ring-gray-800 animate-pulse">
       </span>
       <span v-else-if="taskStore.todayCount > 0"
-        class="absolute top-1 right-1 h-3 w-3 rounded-full bg-orange-400 ring-2 ring-white">
+        class="absolute top-1 right-1 h-3 w-3 rounded-full bg-orange-400 ring-2 ring-white dark:ring-gray-800">
       </span>
     </button>
 
@@ -23,18 +23,18 @@
       leave-from-class="transform opacity-100 scale-100 translate-y-0"
       leave-to-class="transform opacity-0 scale-95 -translate-y-2">
       <div v-if="isOpen"
-        class="absolute right-0 mt-3 w-80 sm:w-96 bg-white rounded-xl shadow-2xl ring-1 ring-black ring-opacity-5 z-50 overflow-hidden flex flex-col max-h-[600px]">
+        class="absolute right-0 mt-3 w-80 sm:w-96 bg-white dark:bg-gray-800 rounded-xl shadow-2xl ring-1 ring-black ring-opacity-5 z-50 overflow-hidden flex flex-col max-h-[600px] border border-transparent dark:border-gray-700">
         
         <!-- Header -->
-        <div class="p-4 border-b border-gray-100 bg-white flex justify-between items-center sticky top-0 z-10">
+        <div class="p-4 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 flex justify-between items-center sticky top-0 z-10 transition-colors">
           <div>
-            <h3 class="text-base font-bold text-gray-800">Mis Tareas</h3>
-            <p v-if="taskStore.overdueCount > 0" class="text-[10px] text-red-500 font-medium">
+            <h3 class="text-base font-bold text-gray-800 dark:text-gray-200 dark:text-gray-100">Mis Tareas</h3>
+            <p v-if="taskStore.overdueCount > 0" class="text-[10px] text-red-500 dark:text-red-400 font-medium">
               Tienes {{ taskStore.overdueCount }} tareas vencidas
             </p>
           </div>
           <button @click="isAdding = !isAdding" 
-            class="text-primary-600 hover:text-primary-700 p-1 rounded-full hover:bg-primary-50 transition-all duration-200">
+            class="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 p-1 rounded-full hover:bg-primary-50 dark:hover:bg-primary-900/30 transition-all duration-200">
             <svg v-if="!isAdding" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
             </svg>
@@ -45,19 +45,19 @@
         </div>
 
         <!-- Add Task Form -->
-        <div v-if="isAdding" class="p-4 bg-gray-50 border-b border-gray-100 space-y-3 shadow-inner">
+        <div v-if="isAdding" class="p-4 bg-gray-50 dark:bg-gray-900/50 dark:bg-gray-900 border-b border-gray-100 dark:border-gray-700 space-y-3 shadow-inner">
           <input v-model="newTask.title" type="text" placeholder="¿Qué hay que hacer?" 
-            class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none font-medium" />
+            class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-lg px-3 py-2 text-sm dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none font-medium" />
           <textarea v-model="newTask.details" placeholder="Detalles (opcional)" rows="2"
-            class="w-full bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none resize-none"></textarea>
+            class="w-full bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-lg px-3 py-2 text-sm dark:text-gray-100 focus:ring-2 focus:ring-primary-500 focus:border-transparent outline-none resize-none"></textarea>
           
           <div class="flex items-center space-x-2">
-            <button @click="setDueDate('today')" :class="newTask.due_date === todayFormatted ? 'bg-primary-100 text-primary-700 border-primary-200' : 'bg-white text-gray-600 border-gray-200'"
-              class="text-[11px] px-2 py-1.5 rounded-md border hover:border-primary-300 transition-all font-medium">Hoy</button>
-            <button @click="setDueDate('tomorrow')" :class="newTask.due_date === tomorrowFormatted ? 'bg-primary-100 text-primary-700 border-primary-200' : 'bg-white text-gray-600 border-gray-200'"
-              class="text-[11px] px-2 py-1.5 rounded-md border hover:border-primary-300 transition-all font-medium">Mañana</button>
+            <button @click="setDueDate('today')" :class="newTask.due_date === todayFormatted ? 'bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-400 border-primary-200 dark:border-primary-800' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 dark:border-gray-600'"
+              class="text-[11px] px-2 py-1.5 rounded-md border transition-all font-medium hover:border-primary-300 dark:hover:border-primary-500">Hoy</button>
+            <button @click="setDueDate('tomorrow')" :class="newTask.due_date === tomorrowFormatted ? 'bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-400 border-primary-200 dark:border-primary-800' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 dark:border-gray-600'"
+              class="text-[11px] px-2 py-1.5 rounded-md border transition-all font-medium hover:border-primary-300 dark:hover:border-primary-500">Mañana</button>
             <input type="date" v-model="newTask.due_date" 
-              class="text-[11px] px-2 py-1 bg-white border border-gray-200 rounded-md focus:ring-2 focus:ring-primary-500 outline-none h-[30px]" />
+              class="text-[11px] px-2 py-1 bg-white dark:bg-gray-800 dark:text-gray-100 border border-gray-200 dark:border-gray-700 dark:border-gray-600 rounded-md focus:ring-2 focus:ring-primary-500 outline-none h-[30px]" />
           </div>
 
           <div class="flex justify-end space-x-2 pt-1">
@@ -69,31 +69,31 @@
         </div>
 
         <!-- Task List -->
-        <div class="overflow-y-auto flex-1 bg-white">
+        <div class="overflow-y-auto flex-1 bg-white dark:bg-gray-800 transition-colors">
           <div v-if="taskStore.isLoading && taskStore.tasks.length === 0" class="p-8 text-center">
             <div class="animate-spin h-5 w-5 border-2 border-primary-500 border-t-transparent rounded-full mx-auto"></div>
           </div>
 
           <div v-else-if="taskStore.tasks.length === 0" class="p-12 text-center flex flex-col items-center opacity-60">
             <img src="https://cdni.iconscout.com/illustration/premium/thumb/no-task-found-illustration-download-in-svg-png-gif-formats--list-clipboard-results-empty-activity-management-pack-business-illustrations-4541703.png" 
-              class="w-32 h-32 object-contain grayscale mb-4" />
-            <p class="text-sm font-medium text-gray-500">No tienes tareas pendientes</p>
-            <button @click="isAdding = true" class="mt-4 text-xs font-bold text-primary-600 hover:underline">Añade tu primera tarea</button>
+              class="w-32 h-32 object-contain grayscale mb-4 dark:opacity-70 dark:invert" />
+            <p class="text-sm font-medium text-gray-500 dark:text-gray-400">No tienes tareas pendientes</p>
+            <button @click="isAdding = true" class="mt-4 text-xs font-bold text-primary-600 dark:text-primary-400 hover:underline">Añade tu primera tarea</button>
           </div>
 
           <div v-else class="pb-4">
             <!-- Pendientes Section -->
             <div v-if="pendingTasks.length > 0">
-              <div class="px-4 py-2 bg-gray-50/50 flex items-center justify-between">
-                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Pendientes ({{ pendingTasks.length }})</span>
+              <div class="px-4 py-2 bg-gray-50 dark:bg-gray-900/50/50 dark:bg-gray-700/30 flex items-center justify-between">
+                <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-widest">Pendientes ({{ pendingTasks.length }})</span>
               </div>
-              <ul class="divide-y divide-gray-50">
+              <ul class="divide-y divide-gray-50 dark:divide-gray-700 border-b border-gray-100 dark:border-gray-700">
                 <li v-for="task in pendingTasks" :key="task.id" 
-                  class="group hover:bg-blue-50/30 transition-colors duration-150 p-4 flex items-start space-x-3">
+                  class="group hover:bg-blue-50/30 dark:hover:bg-blue-900/10 transition-colors duration-150 p-4 flex items-start space-x-3">
                   <!-- Checkbox -->
                   <button @click="toggleComplete(task)" 
                     class="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-300"
-                    :class="task.is_completed ? 'bg-green-500 border-green-500' : 'border-gray-300 hover:border-primary-500'">
+                    :class="task.is_completed ? 'bg-green-500 border-green-500' : 'border-gray-300 dark:border-gray-600 dark:border-gray-500 hover:border-primary-500'">
                     <svg v-if="task.is_completed" class="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                       <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
                     </svg>
@@ -102,18 +102,18 @@
                   <!-- Content -->
                   <div class="flex-1 min-w-0">
                     <div class="flex justify-between items-start">
-                      <h4 class="text-sm font-bold truncate pr-4" :class="task.is_completed ? 'text-gray-400 line-through' : 'text-gray-800'">
+                      <h4 class="text-sm font-bold truncate pr-4" :class="task.is_completed ? 'text-gray-400 dark:text-gray-500 dark:text-gray-400 line-through' : 'text-gray-800 dark:text-gray-200 dark:text-gray-100'">
                         {{ task.title }}
                       </h4>
                       <div class="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button @click="deleteTask(task.id)" class="text-gray-400 hover:text-red-500 p-0.5">
+                        <button @click="deleteTask(task.id)" class="text-gray-400 dark:text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 p-0.5">
                           <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                           </svg>
                         </button>
                       </div>
                     </div>
-                    <p v-if="task.details" class="text-xs text-gray-500 mt-1 line-clamp-2">{{ task.details }}</p>
+                    <p v-if="task.details" class="text-xs text-gray-500 dark:text-gray-400 mt-1 line-clamp-2">{{ task.details }}</p>
                     <div class="flex items-center mt-2 space-x-2">
                       <span v-if="task.due_date" class="text-[10px] px-2 py-0.5 rounded-full font-bold flex items-center" :class="getDateBadgeClass(task)">
                         <svg class="h-3 w-3 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -121,7 +121,7 @@
                         </svg>
                         {{ formatDate(task.due_date) }}
                       </span>
-                      <span v-if="isUpcoming(task.due_date)" class="text-[9px] uppercase tracking-wider text-amber-600 font-extrabold bg-amber-50 px-1.5 py-0.5 rounded">Próxima</span>
+                      <span v-if="isUpcoming(task.due_date)" class="text-[9px] uppercase tracking-wider text-amber-600 dark:text-amber-400 font-extrabold bg-amber-50 dark:bg-amber-900/30 px-1.5 py-0.5 rounded">Próxima</span>
                     </div>
                   </div>
                 </li>
@@ -131,15 +131,15 @@
             <!-- Completadas Section -->
             <div v-if="completedTasks.length > 0" class="mt-2">
               <button @click="showCompleted = !showCompleted" 
-                class="w-full px-4 py-2 bg-gray-50/50 flex items-center justify-between hover:bg-gray-100 transition-colors">
-                <span class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Completadas ({{ completedTasks.length }})</span>
-                <svg class="h-4 w-4 text-gray-400 transition-transform duration-200" :class="{ 'rotate-180': showCompleted }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-900/50/50 dark:bg-gray-700/30 flex items-center justify-between hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700/50 transition-colors">
+                <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500 dark:text-gray-400 uppercase tracking-widest">Completadas ({{ completedTasks.length }})</span>
+                <svg class="h-4 w-4 text-gray-400 dark:text-gray-500 dark:text-gray-400 transition-transform duration-200" :class="{ 'rotate-180': showCompleted }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
                 </svg>
               </button>
-              <ul v-if="showCompleted" class="divide-y divide-gray-50">
+              <ul v-if="showCompleted" class="divide-y divide-gray-50 dark:divide-gray-700">
                 <li v-for="task in completedTasks" :key="task.id" 
-                  class="group hover:bg-gray-50/30 transition-colors duration-150 p-4 flex items-start space-x-3 bg-gray-50/20">
+                  class="group hover:bg-gray-50 dark:bg-gray-900/50/30 dark:hover:bg-gray-800 transition-colors duration-150 p-4 flex items-start space-x-3 bg-gray-50 dark:bg-gray-900/50/20 dark:bg-gray-800/50">
                   <!-- Checkbox -->
                   <button @click="toggleComplete(task)" 
                     class="mt-0.5 flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-300 bg-green-500 border-green-500">
@@ -151,7 +151,7 @@
                   <!-- Content -->
                   <div class="flex-1 min-w-0">
                     <div class="flex justify-between items-start">
-                      <h4 class="text-sm font-bold truncate pr-4 text-gray-400 line-through">
+                      <h4 class="text-sm font-bold truncate pr-4 text-gray-400 dark:text-gray-500 dark:text-gray-400 line-through">
                         {{ task.title }}
                       </h4>
                       <div class="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
@@ -169,8 +169,8 @@
           </div>
         </div>
 
-        <div class="p-3 border-t border-gray-100 bg-gray-50 flex justify-center sticky bottom-0 z-10">
-          <p class="text-[10px] text-gray-400 font-medium">Gestiona tus tareas diarias de forma eficiente</p>
+        <div class="p-3 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50 dark:bg-gray-800 flex justify-center sticky bottom-0 z-10 transition-colors">
+          <p class="text-[10px] text-gray-400 dark:text-gray-500 dark:text-gray-400 font-medium">Gestiona tus tareas diarias de forma eficiente</p>
         </div>
       </div>
     </Transition>
@@ -258,10 +258,10 @@ const isUpcoming = (date) => {
 }
 
 const getDateBadgeClass = (task) => {
-  if (task.is_completed) return 'bg-gray-100 text-gray-500 border border-gray-200'
-  if (isOverdue(task.due_date)) return 'bg-red-50 text-red-600 border border-red-100 animate-pulse'
-  if (dayjs(task.due_date).isSame(dayjs(), 'day')) return 'bg-orange-50 text-orange-600 border border-orange-100'
-  return 'bg-blue-50 text-blue-600 border border-blue-100'
+  if (task.is_completed) return 'bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700'
+  if (isOverdue(task.due_date)) return 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border border-red-100 dark:border-red-800 animate-pulse'
+  if (dayjs(task.due_date).isSame(dayjs(), 'day')) return 'bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 border border-orange-100 dark:border-orange-800'
+  return 'bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 border border-blue-100 dark:border-blue-800'
 }
 
 // Click outside to close

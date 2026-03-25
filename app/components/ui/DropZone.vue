@@ -1,24 +1,24 @@
 <template>
     <div class="w-full">
-        <label v-if="label" class="block text-sm font-medium text-gray-700 mb-2">
+        <label v-if="label" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             {{ label }}
         </label>
 
         <div @dragenter.prevent="isDragging = true" @dragleave.prevent="isDragging = false"
             @dragover.prevent="isDragging = true" @drop.prevent="handleDrop" @click="triggerFileInput" :class="[
                 'relative border-2 border-dashed rounded-lg p-6 transition-all duration-200 cursor-pointer flex flex-col items-center justify-center text-center',
-                isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300 hover:border-gray-400 bg-gray-50',
+                isDragging ? 'border-blue-500 bg-blue-50' : 'border-gray-300 dark:border-gray-600 hover:border-gray-400 bg-gray-50 dark:bg-gray-900/50',
                 error ? 'border-red-300 bg-red-50' : ''
             ]">
             <input ref="fileInput" type="file" class="hidden" :accept="accept" @change="handleFileChange" />
 
             <!-- Preview Mode -->
             <div v-if="modelValue" class="w-full">
-                <div class="flex items-center justify-between p-2 bg-white rounded border border-gray-200 shadow-sm">
+                <div class="flex items-center justify-between p-2 bg-white dark:bg-gray-800 rounded border border-gray-200 dark:border-gray-700 shadow-sm">
                     <div class="flex items-center space-x-3 overflow-hidden">
                         <!-- File Icon/Preview -->
                         <div
-                            class="flex-shrink-0 h-10 w-10 rounded bg-gray-100 flex items-center justify-center text-gray-400">
+                            class="flex-shrink-0 h-10 w-10 rounded bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-400">
                             <template v-if="isImage">
                                 <img v-if="previewUrl" :src="previewUrl" class="h-full w-full object-cover rounded" />
                             </template>
@@ -29,17 +29,17 @@
                         </div>
 
                         <div class="flex-1 min-w-0 text-left">
-                            <p class="text-sm font-medium text-gray-900 truncate">
+                            <p class="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">
                                 {{ modelValue.name }}
                             </p>
-                            <p class="text-xs text-gray-500">
+                            <p class="text-xs text-gray-500 dark:text-gray-400">
                                 {{ formatSize(modelValue.size) }}
                             </p>
                         </div>
                     </div>
 
                     <button @click.stop="removeFile"
-                        class="ml-2 p-1 text-gray-400 hover:text-red-500 rounded-full hover:bg-gray-100 transition-colors"
+                        class="ml-2 p-1 text-gray-400 hover:text-red-500 rounded-full hover:bg-gray-100 dark:bg-gray-800 transition-colors"
                         title="Eliminar archivo">
                         <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -57,13 +57,13 @@
                         d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02"
                         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
-                <div class="flex text-sm text-gray-600 justify-center">
+                <div class="flex text-sm text-gray-600 dark:text-gray-400 justify-center">
                     <span class="font-medium text-blue-600 hover:text-blue-500">
                         Seleccionar archivo
                     </span>
                     <p class="pl-1">o arrastrar aquí</p>
                 </div>
-                <p class="text-xs text-gray-500">
+                <p class="text-xs text-gray-500 dark:text-gray-400">
                     {{ accept ? accept.split(',').join(', ') : 'Cualquier archivo' }}
                     <span v-if="maxSize">(Max {{ formatSize(maxSize) }})</span>
                 </p>

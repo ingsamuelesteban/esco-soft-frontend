@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div class="min-h-screen bg-gray-50 dark:bg-gray-900/50 dark:bg-gray-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <!-- Header -->
             <div class="mb-8">
@@ -8,7 +8,7 @@
                 </NuxtLink>
                 <div class="flex items-center justify-between">
                     <div>
-                        <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
+                        <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 dark:text-white">
                             {{ classAssignment?.materia?.nombre }}
                         </h1>
                         <p class="mt-2 text-gray-600 dark:text-gray-400">
@@ -32,7 +32,7 @@
                     'px-4 py-2 rounded-lg transition-colors',
                     currentFilter === filter.value
                         ? 'bg-blue-600 text-white'
-                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'
+                        : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700'
                 ]">
                     {{ filter.label }}
                 </button>
@@ -52,7 +52,7 @@
                         <div class="flex-1">
                             <div class="flex items-center gap-2">
                                 <h3
-                                    class="text-lg font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 transition-colors">
+                                    class="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-white group-hover:text-blue-600 transition-colors">
                                     {{ homework.title }}
                                 </h3>
                                 <span v-if="homework.published_at && dayjs(homework.published_at).isAfter(dayjs())"
@@ -116,7 +116,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
-                    <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-white">No hay tareas</h3>
+                    <h3 class="mt-2 text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-white">No hay tareas</h3>
                     <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
                         Comienza creando una nueva tarea para esta clase.
                     </p>

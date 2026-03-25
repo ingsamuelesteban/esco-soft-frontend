@@ -1,7 +1,7 @@
 <template>
     <form @submit.prevent="sendMessage" class="flex items-center space-x-2">
         <input ref="messageInput" v-model="content" type="text" placeholder="Escribe un mensaje..."
-            class="flex-1 border border-gray-300 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+            class="flex-1 border border-gray-300 dark:border-gray-600 rounded-full px-4 py-2 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
         <button type="submit" :disabled="!content.trim()"
             class="bg-blue-600 text-white rounded-full p-2 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">

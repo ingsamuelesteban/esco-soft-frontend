@@ -5,51 +5,51 @@
       <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
       <div
-        class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+        class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
         <form @submit.prevent="handleSubmit">
-          <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">{{ isEdit ? 'Editar Título' : 'Añadir Título' }}</h3>
+          <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">{{ isEdit ? 'Editar Título' : 'Añadir Título' }}</h3>
             <div class="space-y-4">
               <div>
-                <label class="block text-sm font-medium text-gray-700">Familia *</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Familia *</label>
                 <select ref="initialInput" v-model.number="form.familia_profesional_id" required
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                  class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
                   <option disabled value="">Selecciona una familia</option>
                   <option v-for="f in familias" :key="f.id" :value="f.id">{{ f.nombre }}</option>
                 </select>
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Nombre *</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre *</label>
                 <input v-model.trim="form.nombre" type="text" required
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                  class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Código *</label>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Código *</label>
                 <input v-model.trim="form.codigo" type="text" required maxlength="50"
-                  class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                  class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
               </div>
               <div>
-                <label class="block text-sm font-medium text-gray-700">Años Lectivos de Vigencia</label>
-                <div class="mt-2 grid grid-cols-2 gap-2 border p-3 rounded-md bg-gray-50 max-h-40 overflow-y-auto">
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Años Lectivos de Vigencia</label>
+                <div class="mt-2 grid grid-cols-2 gap-2 border p-3 rounded-md bg-gray-50 dark:bg-gray-900/50 max-h-40 overflow-y-auto">
                   <label v-for="anio in aniosStore" :key="anio.id" class="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" :value="anio.id" v-model="form.anio_lectivo_ids"
-                      class="rounded border-gray-300 text-primary-600 focus:ring-primary-600" />
-                    <span class="text-xs text-gray-700">{{ anio.nombre }}</span>
+                      class="rounded border-gray-300 dark:border-gray-600 text-primary-600 focus:ring-primary-600" />
+                    <span class="text-xs text-gray-700 dark:text-gray-300">{{ anio.nombre }}</span>
                   </label>
                 </div>
-                <p class="mt-1 text-[10px] text-gray-500 italic">Los estudiantes solo podrán inscribirse en este título si está habilitado para el año seleccionado en la admisión.</p>
+                <p class="mt-1 text-[10px] text-gray-500 dark:text-gray-400 italic">Los estudiantes solo podrán inscribirse en este título si está habilitado para el año seleccionado en la admisión.</p>
               </div>
               <div>
                 <label class="flex items-center">
                   <input v-model="form.activo" type="checkbox"
-                    class="rounded border-gray-300 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-offset-0 focus:ring-primary-200 focus:ring-opacity-50" />
-                  <span class="ml-2 text-sm text-gray-700">Activo</span>
+                    class="rounded border-gray-300 dark:border-gray-600 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-offset-0 focus:ring-primary-200 focus:ring-opacity-50" />
+                  <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Activo</span>
                 </label>
               </div>
               <p v-if="error" class="text-sm text-red-600">{{ error }}</p>
             </div>
           </div>
-          <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+          <div class="bg-gray-50 dark:bg-gray-900/50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
             <button type="submit" :disabled="loading" class="btn-primary disabled:opacity-50">{{ loading ? 'Guardando…'
               : 'Guardar' }}</button>
             <button type="button" @click="$emit('close')" :disabled="loading"

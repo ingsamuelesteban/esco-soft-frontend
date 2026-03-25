@@ -9,12 +9,12 @@
 
       <!-- Modal content -->
       <div
-        class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+        class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
         <form @submit.prevent="handleSubmit">
-          <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+          <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
             <div class="sm:flex sm:items-start">
               <div class="w-full mt-3 text-center sm:mt-0 sm:text-left">
-                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4" id="modal-title">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100 mb-4" id="modal-title">
                   {{ isEdit ? 'Editar Personal' : 'Añadir Personal' }}
                 </h3>
 
@@ -28,23 +28,23 @@
 
                   <!-- Nombre -->
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Nombre *</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre *</label>
                     <input v-model="form.nombre" type="text" required
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
                   </div>
 
                   <!-- Apellido -->
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Apellido *</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Apellido *</label>
                     <input v-model="form.apellido" type="text" required
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
                   </div>
 
                   <!-- Sexo -->
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Sexo</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sexo</label>
                     <select v-model="form.sexo"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
                       <option :value="null">Seleccionar</option>
                       <option value="M">Masculino</option>
                       <option value="F">Femenino</option>
@@ -53,9 +53,9 @@
 
                   <!-- Cargo -->
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Cargo</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Cargo</label>
                     <select v-model.number="form.cargo_id"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
                       <option :value="''">Seleccionar</option>
                       <option v-for="opt in cargosOptions" :key="opt.value" :value="opt.value">
                         {{ opt.label }}
@@ -71,31 +71,31 @@
 
                   <!-- Tarjeta -->
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">No. de Tarjeta</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">No. de Tarjeta</label>
                     <input v-model="form.tarjeta_numero" type="text"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
                   </div>
 
                   <!-- Fecha de ingreso -->
                   <div>
-                    <label class="block text-sm font-medium text-gray-700">Fecha de Ingreso</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de Ingreso</label>
                     <input v-model="form.fecha_ingreso" type="date"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
                   </div>
 
                   <!-- Formación académica -->
                   <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700">Formación Académica</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Formación Académica</label>
                     <input v-model="form.formacion_academica" type="text"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
                       placeholder="Ej: Licenciatura en Educación" />
                   </div>
 
                   <!-- Otros títulos -->
                   <div class="md:col-span-2">
-                    <label class="block text-sm font-medium text-gray-700">Otros Títulos</label>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Otros Títulos</label>
                     <textarea v-model="form.otros_titulos" rows="2"
-                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
                       placeholder="Certificaciones, diplomados, etc."></textarea>
                   </div>
 
@@ -116,13 +116,13 @@
           </div>
 
           <!-- Botones -->
-          <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+          <div class="bg-gray-50 dark:bg-gray-900/50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
             <button type="submit" :disabled="loading"
               class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
               {{ loading ? 'Guardando...' : 'Guardar' }}
             </button>
             <button type="button" @click="$emit('close')" :disabled="loading"
-              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
+              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50">
               Cancelar
             </button>
           </div>

@@ -2,14 +2,14 @@
     <div class="px-4 py-4 sm:px-6 lg:px-8">
         <div class="sm:flex sm:items-center">
             <div class="sm:flex-auto">
-                <h1 class="text-xl font-semibold text-gray-900">Gestión de Feriados</h1>
-                <p class="mt-2 text-sm text-gray-700">
+                <h1 class="text-xl font-semibold text-gray-900 dark:text-gray-100">Gestión de Feriados</h1>
+                <p class="mt-2 text-sm text-gray-700 dark:text-gray-300">
                     Administra los días no laborables, feriados nacionales y días de contingencia.
                 </p>
             </div>
             <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none flex items-center gap-2">
                 <select v-model="selectedAnioLectivoId"
-                    class="block rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    class="block rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                     <option v-for="anio in aniosLectivos" :key="anio.id" :value="anio.id">{{ anio.nombre }}</option>
                 </select>
                 <button @click="openModal()" type="button"
@@ -23,30 +23,30 @@
             <div class="-my-2 -mx-4 overflow-x-auto sm:-mx-6 lg:-mx-8">
                 <div class="inline-block min-w-full py-2 align-middle md:px-6 lg:px-8">
                     <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-                        <table class="min-w-full divide-y divide-gray-300">
-                            <thead class="bg-gray-50">
+                        <table class="min-w-full divide-y divide-gray-300 dark:divide-gray-600">
+                            <thead class="bg-gray-50 dark:bg-gray-900/50">
                                 <tr>
                                     <th scope="col"
-                                        class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 sm:pl-6">
+                                        class="py-3.5 pl-4 pr-3 text-left text-sm font-semibold text-gray-900 dark:text-gray-100 sm:pl-6">
                                         Fecha</th>
-                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">
                                         Nombre</th>
-                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900">
+                                    <th scope="col" class="px-3 py-3.5 text-left text-sm font-semibold text-gray-900 dark:text-gray-100">
                                         Tipo</th>
                                     <th scope="col" class="relative py-3.5 pl-3 pr-4 sm:pr-6">
                                         <span class="sr-only">Acciones</span>
                                     </th>
                                 </tr>
                             </thead>
-                            <tbody class="divide-y divide-gray-200 bg-white">
+                            <tbody class="divide-y divide-gray-200 dark:divide-gray-700 bg-white dark:bg-gray-800">
                                 <tr v-for="holiday in holidays" :key="holiday.id">
                                     <td
-                                        class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 sm:pl-6">
+                                        class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-gray-100 sm:pl-6">
                                         {{ formatDate(holiday.date) }}
                                     </td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ holiday.name }}
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">{{ holiday.name }}
                                     </td>
-                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
+                                    <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500 dark:text-gray-400">
                                         <span class="inline-flex rounded-full px-2 text-xs font-semibold leading-5"
                                             :class="{
                                                 'bg-green-100 text-green-800': holiday.type === 'nacional',
@@ -73,7 +73,7 @@
                                     </td>
                                 </tr>
                                 <tr v-if="holidays.length === 0">
-                                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">
+                                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500 dark:text-gray-400">
                                         No hay feriados registrados para este año lectivo.
                                     </td>
                                 </tr>
@@ -100,27 +100,27 @@
                             leave-from="opacity-100 translate-y-0 sm:scale-100"
                             leave-to="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
                             <DialogPanel
-                                class="relative transform overflow-hidden rounded-lg bg-white px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
+                                class="relative transform overflow-hidden rounded-lg bg-white dark:bg-gray-800 px-4 pt-5 pb-4 text-left shadow-xl transition-all sm:my-8 sm:w-full sm:max-w-lg sm:p-6">
                                 <div>
                                     <div class="mt-3 text-center sm:mt-5">
-                                        <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900">
+                                        <DialogTitle as="h3" class="text-lg font-medium leading-6 text-gray-900 dark:text-gray-100">
                                             {{ isEditing ? 'Editar Feriado' : 'Nuevo Feriado' }}
                                         </DialogTitle>
                                         <div class="mt-2 space-y-4 text-left">
                                             <div>
-                                                <label class="block text-sm font-medium text-gray-700">Nombre</label>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</label>
                                                 <input v-model="form.name" type="text"
-                                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                             </div>
                                             <div>
-                                                <label class="block text-sm font-medium text-gray-700">Fecha</label>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha</label>
                                                 <input v-model="form.date" type="date"
-                                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                             </div>
                                             <div>
-                                                <label class="block text-sm font-medium text-gray-700">Tipo</label>
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo</label>
                                                 <select v-model="form.type"
-                                                    class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                                     <option value="nacional">Nacional</option>
                                                     <option value="local">Local</option>
                                                     <option value="contingencia">Contingencia (Lluvias, etc)</option>
@@ -135,7 +135,7 @@
                                         Guardar
                                     </button>
                                     <button @click="showModal = false" type="button"
-                                        class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-base font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm">
+                                        class="mt-3 inline-flex w-full justify-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2 text-base font-medium text-gray-700 dark:text-gray-300 shadow-sm hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:col-start-1 sm:mt-0 sm:text-sm">
                                         Cancelar
                                     </button>
                                 </div>

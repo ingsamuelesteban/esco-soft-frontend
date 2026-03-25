@@ -7,7 +7,7 @@
       <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
       <div
-        class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+        class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
         <div>
           <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100">
             <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -16,35 +16,35 @@
             </svg>
           </div>
           <div class="mt-3 text-center sm:mt-5">
-            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-title">
               Acceso Generado Exitosamente
             </h3>
             <div class="mt-2">
-              <p class="text-sm text-gray-500">
+              <p class="text-sm text-gray-500 dark:text-gray-400">
                 Se han generado las siguientes credenciales. Por favor, compártalas con el usuario.
               </p>
               
-              <div class="mt-4 bg-gray-50 p-4 rounded-md text-left">
+              <div class="mt-4 bg-gray-50 dark:bg-gray-900/50 p-4 rounded-md text-left">
                 <div class="mb-3">
-                  <label class="block text-xs font-medium text-gray-500 uppercase">Usuario</label>
+                  <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Usuario</label>
                   <div class="mt-1 flex justify-between items-center">
-                    <span class="text-lg font-mono font-bold text-gray-900">{{ credentials.username }}</span>
+                    <span class="text-lg font-mono font-bold text-gray-900 dark:text-gray-100">{{ credentials.username }}</span>
                     <button @click="copyToClipboard(credentials.username)" class="text-blue-600 hover:text-blue-800 text-sm">Copiar</button>
                   </div>
                 </div>
                 
                 <div class="mb-3">
-                  <label class="block text-xs font-medium text-gray-500 uppercase">Email (Login alternativo)</label>
+                  <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Email (Login alternativo)</label>
                   <div class="mt-1 flex justify-between items-center">
-                    <span class="text-md font-mono text-gray-700">{{ credentials.email }}</span>
+                    <span class="text-md font-mono text-gray-700 dark:text-gray-300">{{ credentials.email }}</span>
                     <button @click="copyToClipboard(credentials.email)" class="text-blue-600 hover:text-blue-800 text-sm">Copiar</button>
                   </div>
                 </div>
 
                 <div>
-                  <label class="block text-xs font-medium text-gray-500 uppercase">Contraseña Temporal</label>
+                  <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Contraseña Temporal</label>
                   <div class="mt-1 flex justify-between items-center">
-                    <span class="text-lg font-mono font-bold text-gray-900">{{ credentials.password }}</span>
+                    <span class="text-lg font-mono font-bold text-gray-900 dark:text-gray-100">{{ credentials.password }}</span>
                     <button @click="copyToClipboard(credentials.password)" class="text-blue-600 hover:text-blue-800 text-sm">Copiar</button>
                   </div>
                 </div>
