@@ -109,6 +109,9 @@
                   <path v-else-if="child.icon === 'user-plus'" stroke-linecap="round" stroke-linejoin="round"
                     stroke-width="2"
                     d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                  <path v-else-if="child.icon === 'flag'" stroke-linecap="round" stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6H11l-1-1H5a2 2 0 00-2 2zm9-13.5V9" />
                   <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>

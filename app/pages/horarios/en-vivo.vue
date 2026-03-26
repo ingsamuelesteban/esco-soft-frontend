@@ -53,6 +53,33 @@
         <span v-else class="px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">Fuera de período</span>
       </div>
 
+      <!-- ════ BANNER ACTO CÍVICO ════ -->
+      <div v-if="showCivicActBanner && civicActEntries.length"
+        class="mt-4 rounded-xl border border-amber-300 dark:border-amber-600 bg-amber-50 dark:bg-amber-900/30 p-4 shadow-sm">
+        <div class="flex items-start gap-3">
+          <span class="text-2xl select-none">🏛️</span>
+          <div class="flex-1 min-w-0">
+            <p class="font-semibold text-amber-900 dark:text-amber-200 text-base leading-tight">
+              Acto Cívico — {{ civicActDateLabel }}
+            </p>
+            <p class="text-xs text-amber-700 dark:text-amber-400 mt-0.5 mb-3">
+              Inicia a las {{ civicActStartLabel }}. Los docentes deben estar en la fila de su aula.
+            </p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+              <div v-for="item in civicActEntries" :key="item.aula_id"
+                class="flex items-center gap-2 rounded-lg bg-white dark:bg-gray-800 border border-amber-200 dark:border-amber-700 px-3 py-2 text-sm">
+                <span class="font-semibold text-amber-800 dark:text-amber-300 whitespace-nowrap">
+                  {{ item.aula_nombre }}<span v-if="item.titulo"> · {{ item.titulo }}</span>
+                </span>
+                <span class="text-gray-400 dark:text-gray-500">—</span>
+                <span class="text-gray-700 dark:text-gray-300 truncate">{{ item.profesor_nombre }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- ════ FIN BANNER ════ -->
+
       <div class="mt-4 grid grid-cols-1 lg:grid-cols-2 gap-4">
         <div v-if="!currentEntries.length" class="col-span-full p-4 text-center text-gray-500 dark:text-gray-400 border rounded">
           No hay clases en curso en este momento.
@@ -88,6 +115,7 @@ import { useClassAssignmentsStore, type ClassAssignment } from '../../stores/cla
 import { useAulasStore, type Aula } from '../../stores/aulas'
 import { useAniosLectivosStore } from '../../stores/anios_lectivos'
 import { formatTime12h } from '../../utils/timeFormat'
+import { api } from '../../utils/api'
 
 const entries = useTimetableEntriesStore()
 const periods = usePeriodsStore()
@@ -99,6 +127,10 @@ const now = ref<Date>(new Date())
 const overrideDate = ref('')
 const overrideTime = ref('')
 let timer: number | undefined
+
+// ─── Civic Act ─────────────────────────────────────────────────────────────
+const civicActEntries = ref<any[]>([])
+const civicActPeriod = ref<any>(null)
 
 const effectiveNow = computed(() => {
   if (overrideDate.value && overrideTime.value) {
@@ -123,17 +155,13 @@ const nowLabel = computed(() => {
   const d = effectiveNow.value
   const hours = d.getHours()
   const minutes = d.getMinutes()
-  
-  // Formato 12 horas
   const hours12 = hours % 12 || 12
   const ampm = hours >= 12 ? 'PM' : 'AM'
   const pad = (n: number) => String(n).padStart(2, '0')
-  
   return `${d.toLocaleDateString()} ${hours12}:${pad(minutes)} ${ampm}`
 })
 
 const diaActual = computed(() => {
-  // JS: 0=Dom .. 6=Sáb; App: 1=Lun .. 5=Vie
   const js = effectiveNow.value.getDay()
   return js >= 1 && js <= 5 ? js : -1
 })
@@ -151,14 +179,11 @@ const parseToMinutes = (hhmm: string) => {
 const currentPeriods = computed<Period[]>(() => {
   if (periods.items.length === 0) return []
   const minutes = effectiveNow.value.getHours() * 60 + effectiveNow.value.getMinutes()
-  
-  // Filtrar directamente sobre items para evitar cacheo del getter
   return periods.items
-    .filter(p => p.is_active) // Solo períodos activos
+    .filter(p => p.is_active)
     .filter(p => {
       const s = parseToMinutes(p.start_time)
       const e = parseToMinutes(p.end_time)
-      // Inclusivo al inicio, exclusivo al final
       return minutes >= s && minutes < e
     })
 })
@@ -167,7 +192,6 @@ const currentPeriodRange = computed(() => {
   if (!currentPeriods.value.length) return ''
   const p = currentPeriods.value[0]!
   const range = `${formatTime12h(p.start_time)} - ${formatTime12h(p.end_time)}`
-
   if (p.type === 'break') {
     return `En Receso de ${formatTime12h(p.start_time)} a ${formatTime12h(p.end_time)}`
   }
@@ -198,18 +222,54 @@ const currentEntries = computed(() => {
   return entries.items.filter(e => e.dia === diaActual.value && ids.has(e.period_id))
 })
 
+// ── Civic Act banner computed ─────────────────────────────────────────────
+/** Returns the first CLASS period ordered by order_index */
+const firstClassPeriod = computed<Period | null>(() => {
+  const classPeriods = periods.items
+    .filter(p => p.is_active && p.type === 'class')
+    .sort((a, b) => (a.order_index ?? 0) - (b.order_index ?? 0))
+  return classPeriods[0] ?? null
+})
+
+/** Show banner 60 min before the first class period starts */
+const showCivicActBanner = computed(() => {
+  if (!firstClassPeriod.value || diaActual.value === -1) return false
+  const startMinutes = parseToMinutes(firstClassPeriod.value.start_time)
+  if (startMinutes < 0) return false
+  const nowMinutes = effectiveNow.value.getHours() * 60 + effectiveNow.value.getMinutes()
+  return nowMinutes >= startMinutes - 60 && nowMinutes < startMinutes
+})
+
+const civicActStartLabel = computed(() =>
+  firstClassPeriod.value ? formatTime12h(firstClassPeriod.value.start_time) : ''
+)
+
+const civicActDateLabel = computed(() =>
+  effectiveNow.value.toLocaleDateString('es', { weekday: 'long', day: 'numeric', month: 'long' })
+)
+
+// Fetch civic act teacher list whenever we enter the 1-hour window (or on reload)
+const loadCivicActInfo = async () => {
+  if (diaActual.value === -1) return
+  try {
+    const dateStr = effectiveNow.value.toLocaleDateString('en-CA')
+    const res = await api.get<{ data: any[], period: any }>(`/api/civic-act/first-period-info?fecha=${dateStr}`)
+    civicActEntries.value = res.data ?? []
+    civicActPeriod.value = res.period ?? null
+  } catch (_) {
+    // silently ignore if not available
+  }
+}
+
 const reload = async () => {
   if (periods.items.length === 0) await periods.fetchAll()
   if (aulasStore.items.length === 0) await aulasStore.fetchAll()
 
-  // Ensure anio_lectivo is set
   if (!assignments.anioLectivoId) {
-    // Try to find the active year from the store if loaded
     const activeYear = aniosStore.items.find(a => a.activo)
     if (activeYear) {
       assignments.anioLectivoId = activeYear.id
     } else {
-      // If store empty or no active year found locally, try fetching
       await aniosStore.fetchAll({ activo: true })
       const fetchedActive = aniosStore.items.find(a => a.activo) || aniosStore.items[0]
       if (fetchedActive) {
@@ -219,7 +279,6 @@ const reload = async () => {
   }
 
   const d = diaActual.value
-  // Formato YYYY-MM-DD local
   const dateStr = effectiveNow.value.toLocaleDateString('en-CA')
 
   await entries.fetchAll({
@@ -228,18 +287,16 @@ const reload = async () => {
     include_attendance: true,
     date: dateStr
   })
+
+  await loadCivicActInfo()
 }
 
 onMounted(async () => {
   await reload()
   timer = window.setInterval(async () => {
-    // Only update 'now' if not overridden
     if (!isOverridden.value) {
       now.value = new Date()
     }
-
-    // Refresh every minute (checking seconds to align closest to 00 is overkill, just 1 min interval)
-    // Removed the % 5 check to update every minute
     const d = diaActual.value
     const dateStr = effectiveNow.value.toLocaleDateString('en-CA')
     await entries.fetchAll({
@@ -248,7 +305,11 @@ onMounted(async () => {
       include_attendance: true,
       date: dateStr
     })
-  }, 60 * 1000) // 1 minute
+    // Refresh civic act info once per minute as well
+    if (showCivicActBanner.value && civicActEntries.value.length === 0) {
+      await loadCivicActInfo()
+    }
+  }, 60 * 1000)
 })
 
 watch([overrideDate, overrideTime], async () => {

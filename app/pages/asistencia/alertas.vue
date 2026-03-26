@@ -23,7 +23,7 @@
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Mes</label>
           <select v-model="selectedMonth"
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
             <option v-for="month in months" :key="month.value" :value="month.value">
               {{ month.label }}
             </option>
@@ -33,7 +33,7 @@
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Año</label>
           <select v-model="selectedYear"
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
             <option v-for="year in years" :key="year" :value="year">
               {{ year }}
             </option>
@@ -43,7 +43,7 @@
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Aula</label>
           <select v-model="selectedAula"
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50"
             :disabled="loadingAulas">
             <option :value="null">Todas las aulas</option>
             <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
@@ -55,7 +55,7 @@
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Asignatura / Materia</label>
           <select v-model="selectedAssignment"
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 disabled:opacity-50"
             :disabled="loadingAssignments || !selectedAula">
             <option :value="null">{{ selectedAula ? 'Todas las asignaturas' : 'Seleccione un aula primero' }}</option>
             <option v-for="assignment in assignments" :key="assignment.id" :value="assignment.id">

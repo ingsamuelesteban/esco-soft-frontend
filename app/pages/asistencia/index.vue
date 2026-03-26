@@ -37,7 +37,7 @@
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fecha</label>
           <input v-model="selectedDate" type="date"
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500" />
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500" />
         </div>
 
         <!-- Selector de asignación/aula -->
@@ -51,7 +51,7 @@
           <!-- Para Administradores/Masters/Psicólogos/Coordinadores: Selector directo de Aulas -->
           <select v-if="authStore.isAdmin || authStore.isMaster || isPsychologist || authStore.isCoordinator"
             v-model="selectedAulaId" @change="selectedAssignmentId = null"
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
+            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
             :disabled="aulasStore.loading">
             <option :value="null">Seleccionar aula...</option>
             <option v-for="option in aulasStore.paraSelect" :key="option.value" :value="option.value">
@@ -65,7 +65,7 @@
             class="mt-4">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Clase / Asignatura</label>
             <select v-model="selectedAssignmentId" @change="loadAttendance"
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
               :disabled="attendanceStore.loadingDailyClasses">
               <option :value="null">
                 {{ attendanceStore.loadingDailyClasses ? 'Cargando horario...' : (attendanceStore.dailyClasses.length ?
@@ -84,7 +84,7 @@
           <!-- Para Profesores: Selector de Asignaciones (Filtrado por día) -->
           <div v-else-if="!(authStore.isAdmin || authStore.isMaster || isPsychologist || authStore.isCoordinator)">
             <select v-model="selectedAssignmentId" @change="onAssignmentChange"
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
               :disabled="attendanceStore.loadingDailyClasses">
               <option :value="null">
                 {{ attendanceStore.loadingDailyClasses ? 'Cargando horario...' : (attendanceStore.dailyClasses.length ?

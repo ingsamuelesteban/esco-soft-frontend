@@ -40,7 +40,7 @@
                     <div class="w-full sm:w-64">
                         <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Aula / Asignatura</label>
                         <select v-model="filters.aulaId"
-                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-white dark:bg-gray-800">
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-white dark:bg-gray-800 dark:text-gray-100">
                             <option :value="null">Seleccionar...</option>
                             <!-- Removed redundant option here, handled by aulaOptions -->
                             <option v-for="opt in aulaOptions" :key="opt.value" :value="opt.value">
@@ -53,7 +53,7 @@
                     <div v-if="viewMode === 'daily'" class="w-full sm:w-48">
                         <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Fecha</label>
                         <input v-model="filters.date" type="date"
-                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
                     </div>
 
                     <!-- Monthly Filters -->
@@ -61,21 +61,21 @@
                         <div class="w-full sm:w-40">
                             <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Mes</label>
                             <select v-model="filters.month"
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                 <option v-for="(m, i) in months" :key="i" :value="i + 1">{{ m }}</option>
                             </select>
                         </div>
                         <div class="w-24">
                             <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Año</label>
                             <input v-model="filters.year" type="number" min="2020" max="2100"
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
                         </div>
 
                         <!-- Assignment Filter (Available for both Admin and Teacher) -->
                         <div v-if="filters.aulaId && filters.aulaId !== 'all'" class="w-full sm:w-64">
                             <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Asignatura</label>
                             <select v-model="filters.assignmentId"
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-white dark:bg-gray-800"
+                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm bg-white dark:bg-gray-800 dark:text-gray-100"
                                 :disabled="loadingAssignments">
                                 <option :value="null" disabled>Seleccione materia...</option>
                                 <option v-for="opt in assignmentOptions" :key="opt.value" :value="opt.value">
