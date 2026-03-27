@@ -111,6 +111,32 @@
                         </label>
                     </div>
 
+                    <!-- Suggested Additional Classes -->
+                    <div v-if="!homework && suggestedClasses.length > 0" class="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-100 dark:border-blue-800">
+                        <div class="flex flex-col sm:flex-row items-start">
+                            <svg class="h-6 w-6 text-blue-600 dark:text-blue-400 mt-0.5 mr-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            <div class="flex-1">
+                                <h3 class="text-sm font-medium text-blue-800 dark:text-blue-300">
+                                    Tienes otros {{ suggestedClasses.length }} grupos de {{ currentClass?.materia?.nombre }}
+                                </h3>
+                                <p class="mt-1 text-sm text-blue-700 dark:text-blue-400">
+                                    ¿Deseas asignar esta misma tarea a ellos también? Al hacer esto, la tarea se enviará a todos los estudiantes.
+                                </p>
+                                <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <label v-for="sc in suggestedClasses" :key="sc.id" class="flex items-center p-3 bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700 rounded-lg cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition-colors">
+                                        <input type="checkbox" :value="sc.id" v-model="selectedAdditionalClasses" class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
+                                        <span class="ml-3 text-sm font-medium text-gray-900 dark:text-gray-100">
+                                            {{ sc.aula?.grado_cardinal }}° {{ sc.aula?.seccion }}
+                                            <span class="block text-xs text-gray-500 dark:text-gray-400 truncate">{{ sc.aula?.titulo?.nombre }}</span>
+                                        </span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Assign to all switch -->
                     <div class="flex items-center justify-between">
                         <span class="flex flex-col">
@@ -119,8 +145,12 @@
                                 estudiantes específicos</span>
                         </span>
                         <button type="button" @click="form.assign_to_all = !form.assign_to_all"
-                            :class="form.assign_to_all ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'"
-                            class="relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2">
+                            :disabled="selectedAdditionalClasses.length > 0"
+                            :class="[
+                                form.assign_to_all ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700',
+                                selectedAdditionalClasses.length > 0 ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'
+                            ]"
+                            class="relative inline-flex h-6 w-11 flex-shrink-0 rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2">
                             <span aria-hidden="true" :class="form.assign_to_all ? 'translate-x-5' : 'translate-x-0'"
                                 class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white dark:bg-gray-800 shadow ring-0 transition duration-200 ease-in-out"></span>
                         </button>
@@ -169,7 +199,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, watch } from 'vue'
 import { api } from '~/utils/api'
 import DropZone from '~/components/ui/DropZone.vue'
 
@@ -198,6 +228,15 @@ const form = reactive({
 
 const students = ref<any[]>([])
 const loadingStudents = ref(false)
+const currentClass = ref<any>(null)
+const suggestedClasses = ref<any[]>([])
+const selectedAdditionalClasses = ref<number[]>([])
+
+watch(selectedAdditionalClasses, (newVal) => {
+    if (newVal.length > 0) {
+        form.assign_to_all = true
+    }
+})
 
 onMounted(async () => {
     if (props.homework) {
@@ -217,34 +256,54 @@ onMounted(async () => {
             form.student_ids = props.homework.assignees.map((s: any) => s.id)
         }
     }
-
+    
+    await fetchClassDetails()
+    if (!props.homework) {
+        await fetchSuggestedClasses()
+    }
     await fetchStudents()
 })
+
+async function fetchClassDetails() {
+    try {
+        const response = await api.get(`/api/class-assignments/${props.classAssignmentId}`)
+        currentClass.value = response.data || response
+    } catch (error) {
+        console.error('Error fetching class details:', error)
+    }
+}
+
+async function fetchSuggestedClasses() {
+    if (!currentClass.value || !currentClass.value.materia_id) return
+    
+    try {
+        const response = await api.get('/api/class-assignments', {
+            params: {
+                materia_id: currentClass.value.materia_id,
+                profesor_id: currentClass.value.profesor_id,
+                only_active: 1
+            }
+        })
+        const allRelated = response.data?.data || response.data || []
+        suggestedClasses.value = allRelated.filter((c: any) => c.id !== Number(props.classAssignmentId))
+    } catch (error) {
+        console.error('Error fetching suggested classes:', error)
+    }
+}
 
 async function fetchStudents() {
     try {
         loadingStudents.value = true
-        // We need to fetch students for this class assignment.
-        // We can get the 'aula_id' from the class assignment or use a specific endpoint.
-        // Since we only have classAssignmentId props, let's hope we can fetch students by class assignment or we need to fetch the assignment details first?
-        // Actually, existing endpoints like /api/estudiantes might filter by aula.
-        // Let's assume we can fetch the class assignment first to get the aula_id if we don't have it.
-        // Or simpler: add an endpoint /api/class-assignments/{id}/students
-
-        // For now, let's fetch class assignment details to get aula_id, then fetch students.
-        // Optimization: pass class details as props? 
-        // Let's fetch class assignment first.
-        const classResponse = await api.get(`/api/class-assignments/${props.classAssignmentId}`)
-        const aulaId = classResponse.aula_id || classResponse.data?.aula_id
+        const aulaId = currentClass.value?.aula_id
 
         if (aulaId) {
             const response = await api.get('/api/estudiantes', {
                 params: {
                     aula_id: aulaId,
-                    per_page: 100 // Fetch all
+                    per_page: 200 // Fetch all
                 }
             })
-            students.value = response.data || []
+            students.value = response.data?.data || response.data || []
         }
     } catch (error) {
         console.error('Error fetching students:', error)
@@ -276,7 +335,12 @@ async function handleSubmit() {
         }
 
         const formData = new FormData()
-        formData.append('class_assignment_id', String(props.classAssignmentId))
+        
+        // Multi-course assignment logic
+        const allClassIds = [props.classAssignmentId, ...selectedAdditionalClasses.value]
+        allClassIds.forEach(id => {
+            formData.append('class_assignment_ids[]', String(id))
+        })
         formData.append('title', form.title)
         if (form.description) formData.append('description', form.description)
         if (form.instructions) formData.append('instructions', form.instructions)
@@ -288,19 +352,22 @@ async function handleSubmit() {
         if (form.attachment) formData.append('attachment', form.attachment)
 
         // New fields
-        formData.append('assign_to_all', form.assign_to_all ? '1' : '0')
-        if (!form.assign_to_all) {
+        const isMultiple = selectedAdditionalClasses.value.length > 0
+        const finalAssignToAll = isMultiple ? true : form.assign_to_all
+        
+        formData.append('assign_to_all', finalAssignToAll ? '1' : '0')
+        if (!finalAssignToAll) {
             form.student_ids.forEach(id => {
                 formData.append('students[]', String(id))
             })
         }
 
         if (props.homework) {
-            // Update existing homework
+            // Update existing homework (no multiple updates supported via one request yet, usually edit is context to one course)
             formData.append('_method', 'PUT')
             await api.post(`/api/homeworks/${props.homework.id}`, formData)
         } else {
-            // Create new homework
+            // Create new homework(s)
             await api.post('/api/homeworks', formData)
         }
 
