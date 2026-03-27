@@ -3,7 +3,7 @@
     <!-- Logo / Branding -->
     <div class="flex items-center justify-center h-16 border-b border-gray-200 dark:border-gray-700 px-4">
       <div class="flex items-center space-x-2">
-        <img src="/images/logo.png" alt="EscoSoft" class="h-14 w-auto max-w-[180px] object-contain scale-110" />
+        <img src="/images/logo.png?v=3" alt="EscoSoft" class="h-14 w-auto max-w-[180px] object-contain scale-110" />
       </div>
     </div>
 

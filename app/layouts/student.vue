@@ -5,7 +5,7 @@
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
         <div class="flex items-center">
           <!-- Logo -->
-          <img src="/images/logo.png" alt="EscoSoft" class="h-8 w-auto mr-3" />
+          <img src="/images/logo.png?v=3" alt="EscoSoft" class="h-8 w-auto mr-3" />
           <h1 class="text-xl font-bold text-gray-900 dark:text-white">Portal Estudiantil <span v-if="authStore.tenant"
               class="font-normal text-gray-500 dark:text-gray-400">| {{ authStore.tenant.name }}</span></h1>
         </div>

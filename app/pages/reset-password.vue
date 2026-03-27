@@ -4,7 +4,7 @@
       <div>
         <!-- Logo -->
         <div class="flex justify-center mb-8">
-          <img src="/images/logo.png?v=2" alt="EscoSoft Logo" class="h-32 w-auto" />
+          <img src="/images/logo.png?v=3" alt="EscoSoft Logo" class="h-32 w-auto" />
         </div>
         <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900 dark:text-gray-100">
           Nueva contraseña
