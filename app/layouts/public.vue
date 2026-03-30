@@ -19,9 +19,9 @@
 
           <!-- Desktop Desktop Menu -->
           <div class="hidden md:flex items-center space-x-8">
-            <a href="#inicio" class="text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors">Inicio</a>
-            <a href="#noticias" class="text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors">Noticias</a>
-            <a href="#contacto" class="text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors">Contacto</a>
+            <NuxtLink to="/#inicio" class="text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors">Inicio</NuxtLink>
+            <NuxtLink to="/#noticias" class="text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors">Noticias</NuxtLink>
+            <NuxtLink to="/#contacto" class="text-sm font-semibold text-gray-700 hover:text-blue-600 transition-colors">Contacto</NuxtLink>
             
             <button @click="goToLogin" class="bg-[#1a365d] text-white px-6 py-2.5 rounded-full text-sm font-bold shadow-lg hover:shadow-xl hover:bg-blue-800 transition-all transform hover:-translate-y-0.5">
               Portal Institucional
@@ -52,9 +52,9 @@
         <div v-show="mobileMenuOpen" class="md:hidden absolute top-20 inset-x-0 p-4 z-50">
           <div class="rounded-2xl shadow-2xl ring-1 ring-black ring-opacity-5 bg-white divide-y divide-gray-100 overflow-hidden">
             <div class="px-5 pt-5 pb-6 space-y-4">
-              <a href="#inicio" class="block text-base font-medium text-gray-900 border-l-4 border-transparent hover:border-blue-500 pl-3">Inicio</a>
-              <a href="#noticias" class="block text-base font-medium text-gray-900 border-l-4 border-transparent hover:border-blue-500 pl-3">Noticias</a>
-              <a href="#contacto" class="block text-base font-medium text-gray-900 border-l-4 border-transparent hover:border-blue-500 pl-3">Contacto</a>
+              <NuxtLink to="/#inicio" @click="mobileMenuOpen = false" class="block text-base font-medium text-gray-900 border-l-4 border-transparent hover:border-blue-500 pl-3">Inicio</NuxtLink>
+              <NuxtLink to="/#noticias" @click="mobileMenuOpen = false" class="block text-base font-medium text-gray-900 border-l-4 border-transparent hover:border-blue-500 pl-3">Noticias</NuxtLink>
+              <NuxtLink to="/#contacto" @click="mobileMenuOpen = false" class="block text-base font-medium text-gray-900 border-l-4 border-transparent hover:border-blue-500 pl-3">Contacto</NuxtLink>
 
               <button @click="goToLogin" class="w-full bg-[#1a365d] text-white px-6 py-3 rounded-xl text-base font-bold shadow-lg">
                 Portal Institucional
