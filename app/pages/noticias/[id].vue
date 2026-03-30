@@ -94,50 +94,37 @@ import { normalizeUrl } from '~/utils/url'
 
 const route = useRoute()
 const { subdomain } = useDomain()
+const config = useRuntimeConfig()
 
-const news = ref<any>(null)
-const loading = ref(true)
-const error = ref<string | null>(null)
-const downloading = ref(false)
-
-// Set layout to public
-definePageMeta({
-  layout: 'public'
-})
-
-async function fetchNewsDetail() {
-  if (!subdomain.value) {
-    // Si no hay subdominio, no podemos cargar la noticia
-    loading.value = false
-    error.value = 'No se pudo identificar la institución.'
-    return
-  }
-  
-  loading.value = true
-  error.value = null
-  
-  try {
-    const response = await api.get(`/api/${subdomain.value}/public-web/news/${route.params.id}`)
-    
-    if (response.success) {
-      // Normalize URL for display if it's an image
-      if (response.data.attachment_path) {
+// Use standard Nuxt lazy data fetching
+const { data: newsResponse, pending: loading, error: fetchError } = await useLazyAsyncData(
+  `news-${route.params.id}`,
+  () => api.get(`/api/${subdomain.value}/public-web/news/${route.params.id}`),
+  {
+    watch: [subdomain],
+    immediate: !!subdomain.value,
+    transform: (response) => {
+      if (response.success && response.data.attachment_path) {
         response.data.attachment_path = normalizeUrl(response.data.attachment_path)
       }
-      news.value = response.data
-    } else {
-      error.value = response.message || 'No se pudo cargar la noticia.'
+      return response
     }
-  } catch (err: any) {
-    console.error('Error fetching news detail:', err)
-    error.value = err.data?.message || 'La noticia que busca no está disponible o ha sido retirada.'
-  } finally {
-    loading.value = false
   }
-}
+)
+
+// Computed for easier access to news data
+const news = computed(() => newsResponse.value?.data || null)
+const error = computed(() => {
+  if (fetchError.value) return 'La noticia que busca no está disponible o ha sido retirada.'
+  if (newsResponse.value && !newsResponse.value.success) return newsResponse.value.message || 'No se pudo cargar la noticia.'
+  return null
+})
+
+const downloading = ref(false)
 
 function isImage(path: string) {
- return /\.(jpeg|jpg|gif|png|webp)$/i.test(path)
+  if (!path) return false
+  return /\.(jpeg|jpg|gif|png|webp)$/i.test(path)
 }
 
 function formatDate(dateStr: string) {
@@ -181,6 +168,4 @@ async function downloadFile() {
     downloading.value = false
   }
 }
-
-onMounted(fetchNewsDetail)
 </script>

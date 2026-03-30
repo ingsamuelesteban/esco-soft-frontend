@@ -5,15 +5,8 @@
   <!-- Global API loading bar -->
   <GlobalLoadingBar />
 
-  <div v-if="isPublicSite" class="font-inter text-gray-900 bg-white min-h-screen">
-    <NuxtLayout :name="(layout_name as any)">
-      <PublicLanding v-if="$route.path === '/'" />
-      <NuxtPage v-else />
-    </NuxtLayout>
-  </div>
-
-  <div v-else>
-    <NuxtLayout>
+  <div :class="[isPublicSite ? 'font-inter text-gray-900 bg-white min-h-screen' : '']">
+    <NuxtLayout :name="isPublicSite ? 'public' : 'default'">
       <NuxtPage />
     </NuxtLayout>
   </div>

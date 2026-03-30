@@ -1,5 +1,8 @@
 <template>
-  <section>
+  <div v-if="isPublicSite">
+    <PublicLanding />
+  </div>
+  <section v-else>
     <div class="mb-6">
       <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white transition-colors">Panel de Control</h1>
       <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 transition-colors">
@@ -38,7 +41,9 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useAuthStore } from '../stores/auth'
+import { useDomain } from '../composables/useDomain'
 import { api } from '../utils/api'
+import PublicLanding from '~/components/public/PublicLanding.vue'
 
 // Import Dashboard Components
 // Note: Depending on your Nuxt config, you might need manual imports or they might be auto-imported.
@@ -52,6 +57,7 @@ definePageMeta({
   middleware: 'auth'
 })
 
+const { isPublicSite } = useDomain()
 const authStore = useAuthStore()
 const loading = ref(true)
 const error = ref<string | null>(null)
