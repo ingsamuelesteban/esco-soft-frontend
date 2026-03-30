@@ -89,10 +89,11 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useDomain } from '~/composables/useDomain'
+import { api } from '~/utils/api'
+import { normalizeUrl } from '~/utils/url'
 
 const route = useRoute()
 const { subdomain } = useDomain()
-const config = useRuntimeConfig()
 
 const news = ref<any>(null)
 const loading = ref(true)
@@ -101,43 +102,38 @@ const downloading = ref(false)
 
 // Set layout to public
 definePageMeta({
- layout: 'public'
+  layout: 'public'
 })
 
 async function fetchNewsDetail() {
- if (!subdomain.value) return
- 
- loading.value = true
- error.value = null
- 
- try {
- const apiBase = config.public.apiBase.replace(/\/$/, '')
- const response = await $fetch<any>(`${apiBase}/api/${subdomain.value}/public-web/news/${route.params.id}`)
- 
- if (response.success) {
- // Normalize URL for display if it's an image
- if (response.data.attachment_path) {
- response.data.attachment_path = normalizeUrl(response.data.attachment_path)
- }
- news.value = response.data
- } else {
- error.value = response.message || 'No se pudo cargar la noticia.'
- }
- } catch (err: any) {
- console.error('Error fetching news detail:', err)
- error.value = 'La noticia que busca no está disponible o ha sido retirada.'
- } finally {
- loading.value = false
- }
-}
-
-function normalizeUrl(url: string) {
- if (!url) return ''
- const apiBase = config.public.apiBase.replace(/\/$/, '')
- if (url.startsWith('http')) {
- return url.replace(/https?:\/\/(localhost:8010|127\.0\.0\.1:8010|escosoft\.online|api\.escosoft\.online)/, apiBase)
- }
- return `${apiBase}${url.startsWith('/') ? '' : '/'}${url}`
+  if (!subdomain.value) {
+    // Si no hay subdominio, no podemos cargar la noticia
+    loading.value = false
+    error.value = 'No se pudo identificar la institución.'
+    return
+  }
+  
+  loading.value = true
+  error.value = null
+  
+  try {
+    const response = await api.get(`/api/${subdomain.value}/public-web/news/${route.params.id}`)
+    
+    if (response.success) {
+      // Normalize URL for display if it's an image
+      if (response.data.attachment_path) {
+        response.data.attachment_path = normalizeUrl(response.data.attachment_path)
+      }
+      news.value = response.data
+    } else {
+      error.value = response.message || 'No se pudo cargar la noticia.'
+    }
+  } catch (err: any) {
+    console.error('Error fetching news detail:', err)
+    error.value = err.data?.message || 'La noticia que busca no está disponible o ha sido retirada.'
+  } finally {
+    loading.value = false
+  }
 }
 
 function isImage(path: string) {
@@ -154,44 +150,36 @@ function formatDate(dateStr: string) {
 }
 
 async function downloadFile() {
- if (!news.value?.id || downloading.value) return
- 
- downloading.value = true
- try {
- const apiBase = config.public.apiBase.replace(/\/$/, '')
- const downloadUrl = `${apiBase}/api/${subdomain.value}/public-web/news/${news.value.id}/download`
- 
- // Fetch the file as a blob
- const response = await fetch(downloadUrl)
- if (!response.ok) throw new Error('Error al descargar el archivo')
- 
- const blob = await response.blob()
- const url = window.URL.createObjectURL(blob)
- const link = document.createElement('a')
- link.href = url
- 
- // Try to get filename from content-disposition or use a default
- const contentDisposition = response.headers.get('content-disposition')
- let fileName = 'adjunto-noticia'
- if (contentDisposition && contentDisposition.indexOf('filename=') !== -1) {
- fileName = contentDisposition.split('filename=')[1]?.replace(/['"]/g, '') || fileName
- } else if (news.value?.attachment_path) {
- fileName = news.value.attachment_path.split('/').pop() || fileName
- }
- 
- link.setAttribute('download', fileName)
- document.body.appendChild(link)
- link.click()
- 
- // Cleanup
- document.body.removeChild(link)
- window.URL.revokeObjectURL(url)
- } catch (err) {
- console.error('Error downloading file:', err)
- alert('No se pudo descargar el archivo. Por favor, intente de nuevo.')
- } finally {
- downloading.value = false
- }
+  if (!news.value?.id || downloading.value) return
+  
+  downloading.value = true
+  try {
+    const response = await api.getBlob(`/api/${subdomain.value}/public-web/news/${news.value.id}/download`)
+    
+    // In Nuxt, apiCall with responseType 'blob' returns the Blob directly if we use getBlob
+    const url = window.URL.createObjectURL(response)
+    const link = document.createElement('a')
+    link.href = url
+    
+    // Use filename from path or default
+    let fileName = 'adjunto-noticia'
+    if (news.value?.attachment_path) {
+      fileName = news.value.attachment_path.split('/').pop() || fileName
+    }
+    
+    link.setAttribute('download', fileName)
+    document.body.appendChild(link)
+    link.click()
+    
+    // Cleanup
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+  } catch (err) {
+    console.error('Error downloading file:', err)
+    alert('No se pudo descargar el archivo. Por favor, intente de nuevo.')
+  } finally {
+    downloading.value = false
+  }
 }
 
 onMounted(fetchNewsDetail)

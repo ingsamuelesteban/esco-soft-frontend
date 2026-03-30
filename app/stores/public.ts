@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { api } from '../utils/api'
+import { normalizeUrl } from '../utils/url'
 
 export interface PublicInfo {
   name: string
@@ -54,19 +55,6 @@ export const usePublicStore = defineStore('public', {
         ])
 
         if (infoRes.success && infoRes.data) {
-          const config = useRuntimeConfig()
-          const apiBase = (config.public.apiBase as string).replace(/\/$/, '')
-          
-          const normalizeUrl = (url?: string) => {
-            if (!url) return ''
-            if (url.startsWith('http')) {
-              // Si es una URL de localhost o del dominio base, normalizarla al apiBase actual
-              // Esto arregla problemas de CORS o puertos incorrectos en local
-              return url.replace(/https?:\/\/(localhost:8010|127\.0\.0\.1:8010|escosoft\.online|api\.escosoft\.online)/, apiBase)
-            }
-            return `${apiBase}${url.startsWith('/') ? '' : '/'}${url}`
-          }
-
           const data = infoRes.data
           this.info = {
             ...data,
@@ -79,15 +67,9 @@ export const usePublicStore = defineStore('public', {
         }
         
         if (newsRes.success && newsRes.data) {
-          const config = useRuntimeConfig()
-          const apiBase = (config.public.apiBase as string).replace(/\/$/, '')
           this.news = newsRes.data.map((item: any) => ({
             ...item,
-            attachment_path: item.attachment_path ? 
-              (item.attachment_path.startsWith('http') ? 
-                item.attachment_path.replace(/https?:\/\/(localhost:8010|127\.0\.0\.1:8010|escosoft\.online|api\.escosoft\.online)/, apiBase) : 
-                `${apiBase}${item.attachment_path.startsWith('/') ? '' : '/'}${item.attachment_path}`) : 
-              null
+            attachment_path: item.attachment_path ? normalizeUrl(item.attachment_path) : null
           }))
         }
 

@@ -137,11 +137,25 @@
           </div>
         </div>
 
-        <div class="mt-8 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-white/40 font-bold uppercase tracking-widest">
-          <p>© 2026 EscoSoft. Powering Education.</p>
-          <div class="flex space-x-6 mt-4 md:mt-0">
-            <a href="#" class="hover:text-white transition-colors">Términos</a>
-            <a href="#" class="hover:text-white transition-colors">Privacidad</a>
+        <div class="mt-8 pt-8 flex flex-col md:flex-row justify-between items-center text-xs text-white/40 font-bold uppercase tracking-widest border-t border-white/5">
+          <div class="flex flex-col md:flex-row items-center gap-2 md:gap-4">
+            <p>© 2026 EscoSoft. Powering Education.</p>
+            <span class="hidden md:inline">•</span>
+            <p>Todos los derechos reservados Ing. Samuel Esteban</p>
+          </div>
+          
+          <div class="flex items-center space-x-6 mt-6 md:mt-0">
+            <!-- WhatsApp Contact -->
+            <a href="https://wa.me/18097034173" target="_blank" class="flex items-center gap-2 text-green-400 hover:text-green-300 transition-colors">
+              <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.246 2.248 3.484 5.232 3.484 8.412-.003 6.557-5.338 11.892-11.893 11.892-1.997-.001-3.951-.5-5.688-1.448l-6.309 1.656zm6.29-4.143c1.589.943 3.133 1.441 4.734 1.442h.005c5.42 0 9.83-4.409 9.833-9.831.002-2.628-1.02-5.1-2.877-6.957-1.856-1.856-4.329-2.879-6.957-2.88-5.424 0-9.833 4.411-9.836 9.833-.001 1.734.457 3.422 1.326 4.908l-.88 3.219 3.289-.863zm11.721-6.872c-.322-.161-1.898-.937-2.187-1.042-.289-.105-.499-.158-.709.158-.211.315-.815 1.042-1.001 1.253-.185.21-.371.237-.693.076-.322-.161-1.359-.501-2.588-1.598-.958-.854-1.605-1.91-1.794-2.225-.189-.315-.02-.486.141-.646.144-.144.322-.376.483-.563.161-.188.214-.32.321-.531.107-.212.053-.398-.026-.558-.079-.161-.709-1.708-.971-2.339-.255-.615-.515-.531-.709-.541-.185-.01-.397-.012-.609-.012-.211 0-.553.079-.843.395-.29.316-1.107 1.081-1.107 2.637 0 1.556 1.133 3.058 1.289 3.269.157.211 2.23 3.404 5.399 4.773.754.326 1.341.521 1.8.665.757.241 1.446.207 1.991.127.608-.089 1.898-.775 2.162-1.525.263-.75.263-1.396.184-1.525-.079-.131-.29-.21-.611-.371z"/>
+              </svg>
+              WhatsApp
+            </a>
+            <div class="flex space-x-6">
+              <a href="#" class="hover:text-white transition-colors">Términos</a>
+              <a href="#" class="hover:text-white transition-colors">Privacidad</a>
+            </div>
           </div>
         </div>
       </div>
