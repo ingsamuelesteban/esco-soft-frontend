@@ -2,7 +2,7 @@
   <section>
     <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
       <div>
-        <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Pase de Lista — Acto Cívico</h1>
+        <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Pase de Lista — Cultura Escolar</h1>
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Historial de pases de lista registrados por coordinación.</p>
       </div>
       <NuxtLink
@@ -179,7 +179,7 @@ const imprimir = async (fecha: string) => {
   printingFecha.value = fecha
   try {
     const blob = await api.getBlob(`/api/civic-act/print/${fecha}`)
-    printPdfBlob(blob, `acto_civico_${fecha}.pdf`, 'Generando PDF...')
+    printPdfBlob(blob, `cultura_escolar_${fecha}.pdf`, 'Generando PDF...')
   } catch (e: any) {
     Swal.fire({
       icon: 'error',

@@ -53,14 +53,14 @@
         <span v-else class="px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400">Fuera de período</span>
       </div>
 
-      <!-- ════ BANNER ACTO CÍVICO ════ -->
+      <!-- ════ BANNER CULTURA ESCOLAR ════ -->
       <div v-if="showCivicActBanner && civicActEntries.length"
         class="mt-4 rounded-xl border border-amber-300 dark:border-amber-600 bg-amber-50 dark:bg-amber-900/30 p-4 shadow-sm">
         <div class="flex items-start gap-3">
           <span class="text-2xl select-none">🏛️</span>
           <div class="flex-1 min-w-0">
             <p class="font-semibold text-amber-900 dark:text-amber-200 text-base leading-tight">
-              Acto Cívico — {{ civicActDateLabel }}
+              Cultura Escolar — {{ civicActDateLabel }}
             </p>
             <p class="text-xs text-amber-700 dark:text-amber-400 mt-0.5 mb-3">
               Inicia a las {{ civicActStartLabel }}. Los docentes deben estar en la fila de su aula.

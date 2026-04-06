@@ -5,7 +5,7 @@
       <div>
         <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-1">
           <NuxtLink to="/coordinacion/acto-civico" class="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
-            Pase de Lista Acto Cívico
+            Pase de Lista Cultura Escolar
           </NuxtLink>
           <span>/</span>
           <span>{{ fechaLabel }}</span>
@@ -294,7 +294,7 @@ const imprimir = async () => {
   imprimiendo.value = true
   try {
     const blob = await api.getBlob(`/api/civic-act/print/${fecha.value}`)
-    printPdfBlob(blob, `acto_civico_${fecha.value}.pdf`, 'Generando PDF del pase de lista...')
+    printPdfBlob(blob, `cultura_escolar_${fecha.value}.pdf`, 'Generando PDF del pase de lista...')
   } catch (e: any) {
     Swal.fire({
       icon: 'error',
