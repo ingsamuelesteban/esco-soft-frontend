@@ -70,7 +70,8 @@
                   file:rounded-full file:border-0
                   file:text-sm file:font-semibold
                   file:bg-blue-50 file:text-blue-700
-                  hover:file:bg-blue-100
+                  dark:file:bg-blue-900/50 dark:file:text-blue-400
+                  hover:file:bg-blue-100 dark:hover:file:bg-blue-800
                   cursor-pointer" />
               <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">JPG, PNG. Máximo 1MB</p>
             </div>
@@ -85,7 +86,7 @@
                 v-model="profileEmail" 
                 type="email" 
                 required
-                class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                class="block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                 placeholder="tu@correo.com"
                 :disabled="photoLoading"
               />
@@ -134,7 +135,7 @@
                   Contraseña Actual
                 </label>
                 <input v-model="passwordForm.current_password" type="password" id="current_password" required
-                  class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+                  class="block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
               </div>
 
               <!-- New Password -->
@@ -143,7 +144,7 @@
                   Nueva Contraseña
                 </label>
                 <input v-model="passwordForm.password" type="password" id="new_password" required minlength="8"
-                  class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+                  class="block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
                 <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Mínimo 8 caracteres</p>
               </div>
 
@@ -154,7 +155,7 @@
                 </label>
                 <input v-model="passwordForm.password_confirmation" type="password" id="confirm_password" required
                   minlength="8"
-                  class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+                  class="block w-full px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
               </div>
 
               <!-- Error Message -->
