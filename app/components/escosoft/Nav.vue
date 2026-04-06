@@ -158,7 +158,9 @@
             <div v-if="isUserMenuOpen"
               class="absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 dark:ring-white dark:ring-opacity-10 divide-y divide-gray-100 dark:divide-gray-700 z-50">
               <div class="py-1">
-                <NuxtLink to="/perfil" @click="closeUserMenu"
+                <button v-if="authStore.user?.role === 'estudiante'" @click="openStudentProfile"
+                  class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700">Mi Perfil</button>
+                <NuxtLink v-else to="/perfil" @click="closeUserMenu"
                   class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700">Mi Perfil</NuxtLink>
                 <NuxtLink v-if="authStore.isMaster" to="/settings/tenants"
                   class="block px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:bg-gray-800 dark:hover:bg-gray-700">
@@ -179,6 +181,9 @@
         </div>
       </div>
     </div>
+    
+    <!-- Profile Edit Modal para Estudiantes -->
+    <StudentProfileEditModal :is-open="isStudentProfileOpen" @close="isStudentProfileOpen = false" />
   </header>
 </template>
 
@@ -187,6 +192,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useAuthStore } from '../../stores/auth'
 import { useNotificationStore } from '../../stores/notifications'
 import { useTheme } from '../../composables/useTheme'
+import StudentProfileEditModal from '../student/StudentProfileEditModal.vue'
 import dayjs from 'dayjs'
 import relativeTime from 'dayjs/plugin/relativeTime'
 import 'dayjs/locale/es'
@@ -205,6 +211,7 @@ const { isDark, toggleTheme } = useTheme()
 // Estados
 const isUserMenuOpen = ref(false)
 const isNotificationsOpen = ref(false)
+const isStudentProfileOpen = ref(false)
 
 // Datos del usuario desde el store
 const userName = computed(() => {
@@ -285,6 +292,11 @@ const logout = async () => {
 
 const closeUserMenu = () => {
   isUserMenuOpen.value = false
+}
+
+const openStudentProfile = () => {
+  closeUserMenu()
+  isStudentProfileOpen.value = true
 }
 
 const closeNotifications = () => {

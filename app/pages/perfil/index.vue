@@ -50,19 +50,19 @@
                             <div class="col-span-6 sm:col-span-3">
                                 <label for="first-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</label>
                                 <input type="text" v-model="form.nombre" id="first-name" autocomplete="given-name"
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 dark:border-gray-600 rounded-md">
+                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md">
                             </div>
 
                             <div class="col-span-6 sm:col-span-3">
                                 <label for="last-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Apellido</label>
                                 <input type="text" v-model="form.apellido" id="last-name" autocomplete="family-name"
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 dark:border-gray-600 rounded-md">
+                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md">
                             </div>
 
                             <div class="col-span-6 sm:col-span-4">
                                 <label for="username" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Usuario</label>
                                 <input type="text" v-model="form.username" id="username" autocomplete="username"
-                                    class="bg-gray-50 dark:bg-gray-900/50 mt-1 block w-full shadow-sm sm:text-sm border-gray-300 dark:border-gray-600 rounded-md cursor-not-allowed"
+                                    class="bg-gray-50 dark:bg-gray-900/50 mt-1 block w-full shadow-sm sm:text-sm border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 rounded-md cursor-not-allowed"
                                     readonly>
                                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">El nombre de usuario no se puede cambiar.</p>
                             </div>
@@ -71,7 +71,7 @@
                                 <label for="email" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Correo
                                     Electrónico</label>
                                 <input type="text" v-model="form.email" id="email" autocomplete="email"
-                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 dark:border-gray-600 rounded-md">
+                                    class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md">
                             </div>
 
                             <div class="col-span-6 sm:col-span-4">
@@ -194,7 +194,7 @@
                                     <input :type="showCurrentPassword ? 'text' : 'password'"
                                         v-model="passwordForm.current_password" id="current-password"
                                         @blur="checkCurrentPassword"
-                                        class="focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 dark:border-gray-600 rounded-md pr-10"
+                                        class="focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md pr-10"
                                         :class="{
                                             'border-red-300': currentPasswordStatus === 'invalid',
                                             'border-green-300': currentPasswordStatus === 'valid',
@@ -239,7 +239,7 @@
                                 <div class="relative mt-1">
                                     <input :type="showNewPassword ? 'text' : 'password'" v-model="passwordForm.password"
                                         id="new-password"
-                                        class="focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 dark:border-gray-600 rounded-md pr-10"
+                                        class="focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md pr-10"
                                         :class="{ 'border-red-300': passwordForm.password && !isPasswordLengthValid, 'border-green-300': isPasswordLengthValid, 'border-gray-300 dark:border-gray-600': !passwordForm.password }">
                                     <button type="button" @click="showNewPassword = !showNewPassword"
                                         class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:text-gray-400">
@@ -279,7 +279,7 @@
                                 <div class="relative mt-1">
                                     <input :type="showConfirmPassword ? 'text' : 'password'"
                                         v-model="passwordForm.password_confirmation" id="confirm-password"
-                                        class="focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 dark:border-gray-600 rounded-md pr-10"
+                                        class="focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-md pr-10"
                                         :class="{ 'border-red-300': passwordForm.password_confirmation && !doPasswordsMatch, 'border-green-300': doPasswordsMatch, 'border-gray-300 dark:border-gray-600': !passwordForm.password_confirmation }">
                                     <button type="button" @click="showConfirmPassword = !showConfirmPassword"
                                         class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 dark:text-gray-400">
