@@ -106,7 +106,7 @@
             </div>
             <div class="ml-3">
               <p class="text-sm text-green-700 leading-5">
-                ¡Inicio de sesión exitoso! Redirigiendo...
+                {{ successMsg || '¡Inicio de sesión exitoso! Redirigiendo...' }}
               </p>
             </div>
           </div>
@@ -166,6 +166,15 @@
             </div>
 
             <form @submit.prevent="handlePasswordChange" class="space-y-4">
+              <div v-if="passwordChangeData.needsEmailVerification">
+                <label for="change-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Verificación de Correo Electrónico
+                </label>
+                <p class="text-xs text-gray-500 mb-2">Para completar este proceso, debes proporcionar un correo válido que puedas revisar ahora mismo.</p>
+                <input id="change-email" v-model="passwordChangeData.email" type="email" required
+                  class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 mb-4"
+                  placeholder="ejemplo@correo.com" :disabled="isLoading" />
+              </div>
               <div>
                 <label for="new-password" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Nueva contraseña
@@ -267,6 +276,87 @@
         </div>
       </div>
 
+      <!-- Modal de Verificación de Email -->
+      <div v-if="showEmailVerification"
+        class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
+        <div class="relative bg-white dark:bg-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-4">
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
+                Verificación Requerida
+              </h3>
+            </div>
+
+            <div v-if="verificationStatus.success" class="mb-4 rounded-md bg-green-50 p-4">
+              <div class="flex">
+                <div class="flex-shrink-0">
+                  <svg class="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.857-9.809a.75.75 0 00-1.214-.882l-3.236 4.53L7.53 10.23a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="ml-3">
+                  <p class="text-sm font-medium text-green-800">{{ verificationStatus.message }}</p>
+                </div>
+              </div>
+            </div>
+            
+            <template v-else>
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">
+                Para tu seguridad, necesitamos que verifiques tu dirección de correo electrónico. 
+                Confirma o actualiza el correo a continuación para enviarte un enlace de verificación seguro.
+              </p>
+
+              <div v-if="error" class="mb-4 rounded-md bg-red-50 p-4">
+                <div class="flex">
+                  <div class="flex-shrink-0">
+                    <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                      <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+                    </svg>
+                  </div>
+                  <div class="ml-3">
+                    <p class="text-sm font-medium text-red-800">{{ error }}</p>
+                  </div>
+                </div>
+              </div>
+
+              <form @submit.prevent="handleEmailVerification" class="space-y-4">
+                <div>
+                  <label for="verify-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Correo electrónico
+                  </label>
+                  <input id="verify-email" v-model="emailVerificationData.email" type="email" required
+                    class="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    placeholder="ejemplo@correo.com" :disabled="verificationStatus.loading" />
+                </div>
+
+                <div class="flex space-x-3 pt-4">
+                  <button type="submit" :disabled="verificationStatus.loading"
+                    class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed">
+                    <span v-if="verificationStatus.loading" class="inline-flex items-center">
+                      <div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Enviando...
+                    </span>
+                    <span v-else>Enviar enlace de verificación</span>
+                  </button>
+
+                  <button type="button" @click="showEmailVerification = false; error = ''" :disabled="verificationStatus.loading"
+                    class="px-4 py-2 text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:text-gray-200 disabled:opacity-50">
+                    Cancelar
+                  </button>
+                </div>
+              </form>
+            </template>
+
+            <div v-if="verificationStatus.success" class="mt-6 flex justify-center">
+               <button type="button" @click="showEmailVerification = false" 
+                 class="bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700">
+                 Entendido
+               </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <!-- Modal de Olvidé mi contraseña -->
       <div v-if="showForgotPassword" 
         class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50 flex items-center justify-center">
@@ -344,11 +434,13 @@ const form = reactive({
 })
 
 const error = ref('')
+const successMsg = ref('')
 const isLoading = ref(false)
 const logoError = ref(false)
 const isSuccess = ref(false)
 const showPassword = ref(false)
 const showPasswordChange = ref(false)
+const showEmailVerification = ref(false)
 const showForgotPassword = ref(false)
 const forgotForm = reactive({
   username: '',
@@ -363,7 +455,18 @@ const passwordChangeData = ref({
   userId: null,
   currentPassword: '',
   newPassword: '',
-  newPasswordConfirmation: ''
+  newPasswordConfirmation: '',
+  email: '',
+  needsEmailVerification: false
+})
+const emailVerificationData = ref({
+  userId: null,
+  email: ''
+})
+const verificationStatus = reactive({
+  loading: false,
+  message: '',
+  success: false
 })
 
 // UI State para el modal
@@ -495,8 +598,17 @@ const handleLogin = async () => {
       // Usuario necesita cambiar contraseña
       showPasswordChange.value = true
       passwordChangeData.value.userId = result.userId
-      passwordChangeData.value.currentPassword = form.password // Usar la contraseña actual
+      passwordChangeData.value.currentPassword = form.password
+      passwordChangeData.value.email = result.email || ''
+      passwordChangeData.value.needsEmailVerification = result.needsEmailVerification || false
       error.value = '' // Limpiar errores previos
+    } else if (result.requiresEmailVerification) {
+      // Usuario necesita verificar correo
+      showEmailVerification.value = true
+      emailVerificationData.value.userId = result.userId
+      emailVerificationData.value.email = result.email || ''
+      verificationStatus.success = false
+      error.value = ''
     } else {
       error.value = getErrorMessage(result.message)
     }
@@ -576,10 +688,19 @@ const handlePasswordChange = async () => {
       userId: passwordChangeData.value.userId,
       currentPassword: passwordChangeData.value.currentPassword,
       newPassword: passwordChangeData.value.newPassword,
-      newPasswordConfirmation: passwordChangeData.value.newPasswordConfirmation
+      newPasswordConfirmation: passwordChangeData.value.newPasswordConfirmation,
+      // Solo enviarlo si necesita actualización 
+      email: passwordChangeData.value.needsEmailVerification ? passwordChangeData.value.email : undefined
     })
 
     if (result.success) {
+      if (result.requiresEmailVerification) {
+        showPasswordChange.value = false
+        isSuccess.value = true
+        successMsg.value = result.message || 'Contraseña cambiada. Por favor revisa tu correo para verificar tu cuenta.'
+        return // Nos detenemos aquí, la verificación tomará el control al pulsar en el email
+      }
+
       isSuccess.value = true
       showPasswordChange.value = false
 
@@ -615,6 +736,33 @@ const handlePasswordChange = async () => {
     console.error('Error en cambio de contraseña:', err)
   } finally {
     isLoading.value = false
+  }
+}
+
+// Manejar enviar correo de validación
+const handleEmailVerification = async () => {
+  verificationStatus.loading = true
+  verificationStatus.message = ''
+  error.value = ''
+
+  try {
+    const config = useRuntimeConfig()
+    const response = await $fetch('/api/verify-email/send-link', {
+      method: 'POST',
+      body: {
+        user_id: emailVerificationData.value.userId,
+        email: emailVerificationData.value.email
+      },
+      baseURL: config.public.apiBase
+    })
+
+    verificationStatus.success = response.success
+    verificationStatus.message = response.message || 'Enlace de verificación enviado. Por favor revisa tu bandeja.'
+  } catch (err) {
+    verificationStatus.success = false
+    error.value = getErrorMessage(err.data?.message || 'Error al solicitar enlace.')
+  } finally {
+    verificationStatus.loading = false
   }
 }
 

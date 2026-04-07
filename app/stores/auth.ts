@@ -14,7 +14,10 @@ export interface ApiResponse<T> {
   data: T
   message?: string
   requires_password_change?: boolean
+  requires_email_verification?: boolean
+  needs_email_verification?: boolean
   user_id?: number
+  email?: string
 }
 
 export interface Tenant {
@@ -158,8 +161,20 @@ export const useAuthStore = defineStore('auth', {
           return {
             success: false,
             requiresPasswordChange: true,
+            needsEmailVerification: data.needs_email_verification,
             userId: data.user_id,
+            email: data.email,
             message: data.message || 'Debes cambiar tu contraseña antes de continuar'
+          }
+        }
+
+        if (data.requires_email_verification) {
+          return {
+            success: false,
+            requiresEmailVerification: true,
+            userId: data.user_id,
+            email: data.email,
+            message: data.message || 'Debes verificar tu correo electrónico antes de continuar'
           }
         }
 
@@ -174,8 +189,19 @@ export const useAuthStore = defineStore('auth', {
             return {
               success: false,
               requiresPasswordChange: true,
+              needsEmailVerification: errorData.needs_email_verification,
               userId: errorData.user_id,
+              email: errorData.email,
               message: errorData.message || 'Debes cambiar tu contraseña antes de continuar'
+            }
+          }
+          if (errorData?.requires_email_verification) {
+            return {
+              success: false,
+              requiresEmailVerification: true,
+              userId: errorData.user_id,
+              email: errorData.email,
+              message: errorData.message || 'Debes verificar tu correo electrónico antes de continuar'
             }
           }
         }
@@ -185,8 +211,20 @@ export const useAuthStore = defineStore('auth', {
           return {
             success: false,
             requiresPasswordChange: true,
+            needsEmailVerification: errorData.needs_email_verification,
             userId: errorData.user_id,
+            email: errorData.email,
             message: errorData.message || 'Debes cambiar tu contraseña antes de continuar'
+          }
+        }
+
+        if (errorData?.requires_email_verification) {
+          return {
+            success: false,
+            requiresEmailVerification: true,
+            userId: errorData.user_id,
+            email: errorData.email,
+            message: errorData.message || 'Debes verificar tu correo electrónico antes de continuar'
           }
         }
 
@@ -383,19 +421,30 @@ export const useAuthStore = defineStore('auth', {
       userId: number,
       currentPassword: string,
       newPassword: string,
-      newPasswordConfirmation: string
+      newPasswordConfirmation: string,
+      email?: string
     }) {
       this.isLoading = true
       try {
         // Usar api.post que maneja el parsing automáticamente
-        const response = await api.post<ApiResponse<LoginResponse>>('/api/change-required-password', {
+        const response: any = await api.post('/api/change-required-password', {
           user_id: data.userId,
           current_password: data.currentPassword,
           new_password: data.newPassword,
-          new_password_confirmation: data.newPasswordConfirmation
+          new_password_confirmation: data.newPasswordConfirmation,
+          email: data.email
         })
 
         if (response.success) {
+          if (response.requires_email_verification) {
+            return {
+              success: true,
+              requiresEmailVerification: true,
+              userId: response.user_id,
+              email: response.email,
+              message: response.message
+            }
+          }
           this.user = response.data.user
           this.token = response.data.token
           this.isAuthenticated = true
