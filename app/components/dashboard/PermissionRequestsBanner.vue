@@ -3,13 +3,13 @@
     <!-- Loading state banner -->
   <div v-if="loadingRequests" class="relative overflow-hidden rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 shadow-lg">
     <!-- Decorative background shapes -->
-    <div class="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white dark:bg-gray-800/10"></div>
-    <div class="absolute -left-4 -bottom-6 h-24 w-24 rounded-full bg-white dark:bg-gray-800/10"></div>
+    <div class="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10 dark:bg-gray-800/10"></div>
+    <div class="absolute -left-4 -bottom-6 h-24 w-24 rounded-full bg-white/10 dark:bg-gray-800/10"></div>
     <!-- Header strip -->
     <div class="relative flex items-center justify-between px-5 pt-4 pb-4">
       <div class="flex items-center gap-2 animate-pulse">
-        <span class="flex h-7 w-7 items-center justify-center rounded-full bg-white dark:bg-gray-800/20"></span>
-        <div class="h-4 bg-white dark:bg-gray-800/30 rounded w-32"></div>
+        <span class="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 dark:bg-gray-800/20"></span>
+        <div class="h-4 bg-white/30 dark:bg-gray-800/30 rounded w-32"></div>
       </div>
       <!-- Refresh indicator -->
       <span class="text-xs text-white/60 flex items-center gap-1">
@@ -25,20 +25,20 @@
   <!-- Banner section -->
   <div v-else-if="requests.length > 0" class="relative overflow-hidden rounded-xl bg-gradient-to-r from-amber-500 to-orange-600 shadow-lg">
     <!-- Decorative background shapes -->
-    <div class="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white dark:bg-gray-800/10"></div>
-    <div class="absolute -left-4 -bottom-6 h-24 w-24 rounded-full bg-white dark:bg-gray-800/10"></div>
+    <div class="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10 dark:bg-gray-800/10"></div>
+    <div class="absolute -left-4 -bottom-6 h-24 w-24 rounded-full bg-white/10 dark:bg-gray-800/10"></div>
 
     <!-- Header strip -->
     <div class="relative flex items-center justify-between px-5 pt-4 pb-2">
       <div class="flex items-center gap-2">
-        <span class="flex h-7 w-7 items-center justify-center rounded-full bg-white dark:bg-gray-800/20">
+        <span class="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 dark:bg-gray-800/20">
           <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </span>
         <span class="text-sm font-bold uppercase tracking-widest text-white/90">Permisos Pendientes</span>
-        <span class="inline-flex items-center rounded-full bg-white dark:bg-gray-800/20 px-2 py-0.5 text-xs font-bold text-white">
+        <span class="inline-flex items-center rounded-full bg-white/20 dark:bg-gray-800/20 px-2 py-0.5 text-xs font-bold text-white">
           {{ requests.length }}
         </span>
       </div>
@@ -55,14 +55,14 @@
     <!-- Cards scroll row -->
     <div class="relative flex gap-3 overflow-x-auto px-5 pb-4 pt-1 scrollbar-hide snap-x snap-mandatory">
       <div v-for="req in requests" :key="req.id"
-        class="snap-start flex-shrink-0 w-72 sm:w-80 bg-white dark:bg-gray-800/15 backdrop-blur-sm border border-white/20 rounded-xl p-4 hover:bg-white dark:bg-gray-800/20 transition-all cursor-default flex flex-col justify-between">
+        class="snap-start flex-shrink-0 w-72 sm:w-80 bg-white/10 dark:bg-gray-800/15 backdrop-blur-sm border border-white/20 rounded-xl p-4 hover:bg-white/20 dark:hover:bg-gray-800/20 transition-all cursor-default flex flex-col justify-between">
         
         <!-- Card top: title + badge -->
         <div class="flex items-start justify-between gap-2 mb-2">
           <h4 class="text-sm font-bold text-white leading-snug line-clamp-1">
             {{ req.personal?.user?.name || [req.personal?.nombre, req.personal?.apellido].filter(Boolean).join(' ') || 'Personal' }}
           </h4>
-          <span class="flex-shrink-0 text-[10px] font-bold uppercase bg-white dark:bg-gray-800/20 text-white border border-white/30 rounded px-1.5 py-0.5">
+          <span class="flex-shrink-0 text-[10px] font-bold uppercase bg-white/20 dark:bg-gray-800/20 text-white border border-white/30 rounded px-1.5 py-0.5">
             {{ formatLeaveType(req.leave_type) }}
           </span>
         </div>

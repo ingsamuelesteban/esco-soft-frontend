@@ -303,7 +303,7 @@
             <template v-else>
               <p class="text-sm text-gray-600 dark:text-gray-400 mb-6">
                 Para tu seguridad, necesitamos que verifiques tu dirección de correo electrónico. 
-                Confirma o actualiza el correo a continuación para enviarte un enlace de verificación seguro.
+                Por favor, ingresa tu correo electrónico **personal y real** a continuación para enviarte un enlace de verificación seguro.
               </p>
 
               <div v-if="error" class="mb-4 rounded-md bg-red-50 p-4">
@@ -599,14 +599,14 @@ const handleLogin = async () => {
       showPasswordChange.value = true
       passwordChangeData.value.userId = result.userId
       passwordChangeData.value.currentPassword = form.password
-      passwordChangeData.value.email = result.email || ''
+      passwordChangeData.value.email = '' // No pre-llenar con el correo ficticio de la BD
       passwordChangeData.value.needsEmailVerification = result.needsEmailVerification || false
       error.value = '' // Limpiar errores previos
     } else if (result.requiresEmailVerification) {
       // Usuario necesita verificar correo
       showEmailVerification.value = true
       emailVerificationData.value.userId = result.userId
-      emailVerificationData.value.email = result.email || ''
+      emailVerificationData.value.email = '' // No pre-llenar con el correo ficticio de la BD
       verificationStatus.success = false
       error.value = ''
     } else {
@@ -661,6 +661,17 @@ const resetForgotForm = () => {
 
 // Manejar el cambio de contraseña obligatorio
 const handlePasswordChange = async () => {
+  if (!canSubmitPasswordChange.value) return
+
+  // Validar correo nuevo explícitamente si se requiere
+  if (passwordChangeData.value.needsEmailVerification) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(passwordChangeData.value.email)) {
+      error.value = 'Por favor, ingresa un correo electrónico válido (ejemplo@correo.com).'
+      return
+    }
+  }
+
   error.value = ''
   isLoading.value = true
 
@@ -741,6 +752,12 @@ const handlePasswordChange = async () => {
 
 // Manejar enviar correo de validación
 const handleEmailVerification = async () => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  if (!emailRegex.test(emailVerificationData.value.email)) {
+    error.value = 'Por favor, ingresa un correo electrónico válido (ejemplo@correo.com).'
+    return
+  }
+
   verificationStatus.loading = true
   verificationStatus.message = ''
   error.value = ''

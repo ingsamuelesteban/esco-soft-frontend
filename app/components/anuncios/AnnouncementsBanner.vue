@@ -10,20 +10,20 @@
   <div v-else class="relative overflow-hidden rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 shadow-lg">
 
     <!-- Decorative background shapes -->
-    <div class="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white dark:bg-gray-800/10"></div>
-    <div class="absolute -left-4 -bottom-6 h-24 w-24 rounded-full bg-white dark:bg-gray-800/10"></div>
+    <div class="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-white/10 dark:bg-gray-800/10"></div>
+    <div class="absolute -left-4 -bottom-6 h-24 w-24 rounded-full bg-white/10 dark:bg-gray-800/10"></div>
 
     <!-- Header strip -->
     <div class="relative flex items-center justify-between px-5 pt-4 pb-2">
       <div class="flex items-center gap-2">
-        <span class="flex h-7 w-7 items-center justify-center rounded-full bg-white dark:bg-gray-800/20">
+        <span class="flex h-7 w-7 items-center justify-center rounded-full bg-white/20 dark:bg-gray-800/20">
           <svg class="h-4 w-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
           </svg>
         </span>
         <span class="text-sm font-bold uppercase tracking-widest text-white/90">Anuncios</span>
-        <span class="inline-flex items-center rounded-full bg-white dark:bg-gray-800/20 px-2 py-0.5 text-xs font-bold text-white">
+        <span class="inline-flex items-center rounded-full bg-white/20 dark:bg-gray-800/20 px-2 py-0.5 text-xs font-bold text-white">
           {{ announcements.length }}
         </span>
       </div>
