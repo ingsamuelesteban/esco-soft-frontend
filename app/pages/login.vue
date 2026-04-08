@@ -585,13 +585,17 @@ const handleLogin = async () => {
       }
 
       try {
-        // Redirigir al dashboard (página principal)
-        await navigateTo('/', { replace: true })
+        // Redirigir según el rol del usuario
+        const role = authStore.user?.role?.toLowerCase() || ''
+        const targetRoute = ['sec4', 'sec5', 'sec6'].includes(role) ? '/calificaciones' : '/'
+        await navigateTo(targetRoute, { replace: true })
       } catch (navError) {
         console.error('Error en navegación:', navError)
-        // Fallback: usar window.location si navigateTo falla
+        // Fallback: usar window.location
         if (process.client) {
-          window.location.href = '/'
+          const role = authStore.user?.role?.toLowerCase() || ''
+          const targetRoute = ['sec4', 'sec5', 'sec6'].includes(role) ? '/calificaciones' : '/'
+          window.location.href = targetRoute
         }
       }
     } else if (result.requiresPasswordChange) {
@@ -719,12 +723,16 @@ const handlePasswordChange = async () => {
       await new Promise(resolve => setTimeout(resolve, 800))
 
       try {
-        // Redirigir al dashboard
-        await navigateTo('/', { replace: true })
+        // Redirigir según el rol del usuario
+        const role = authStore.user?.role?.toLowerCase() || ''
+        const targetRoute = ['sec4', 'sec5', 'sec6'].includes(role) ? '/calificaciones' : '/'
+        await navigateTo(targetRoute, { replace: true })
       } catch (navError) {
         console.error('Error en navegación:', navError)
         if (process.client) {
-          window.location.href = '/'
+          const role = authStore.user?.role?.toLowerCase() || ''
+          const targetRoute = ['sec4', 'sec5', 'sec6'].includes(role) ? '/calificaciones' : '/'
+          window.location.href = targetRoute
         }
       }
     } else {
