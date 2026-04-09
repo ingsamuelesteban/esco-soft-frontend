@@ -148,22 +148,15 @@
                 Examen Vocacional
               </h3>
               <!-- Completado -->
-              <div v-if="dashboardData.examen_admision?.completado" class="mt-1 space-y-1">
+              <div v-if="dashboardData.examen_admision?.completado" class="mt-1">
                 <p class="text-sm text-gray-600 dark:text-gray-400">
-                  Completado el <span class="font-medium text-gray-800 dark:text-gray-200">{{ dashboardData.examen_admision.completado_en }}</span>
+                  <span class="font-bold text-green-700 dark:text-green-400">Examinado: Sí</span>
                 </p>
-                <div class="flex flex-wrap gap-2 mt-2">
-                  <span v-if="dashboardData.examen_admision.area_primaria"
-                    class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300">
-                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
-                    Recomendación 1ª: {{ dashboardData.examen_admision.area_primaria }}
-                  </span>
-                  <span v-if="dashboardData.examen_admision.area_secundaria"
-                    class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">
-                    Alternativa: {{ dashboardData.examen_admision.area_secundaria }}
-                  </span>
-                </div>
+                <p class="text-[10px] text-gray-400 mt-1">
+                  Procesado el {{ dashboardData.examen_admision.completado_en }}
+                </p>
               </div>
+
               <!-- Pendiente -->
               <div v-else class="mt-1">
                 <p class="text-sm text-gray-600 dark:text-gray-400">
