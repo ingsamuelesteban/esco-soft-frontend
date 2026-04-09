@@ -2,13 +2,13 @@
   <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
     <div class="p-4">
       <div class="flex items-center gap-3 flex-wrap">
-        <input v-model="query" type="text" class="w-full md:w-64 rounded-md border-gray-300 dark:border-gray-600 text-sm"
+        <input v-model="query" type="text" class="w-full md:w-64 rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
           placeholder="Buscar por cédula, nombre..." />
-        <select v-model="filterCargo" class="rounded-md border-gray-300 dark:border-gray-600 text-sm">
+        <select v-model="filterCargo" class="rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm">
           <option :value="undefined">Todos los cargos</option>
           <option v-for="c in cargosStore.items" :key="c.id" :value="c.id">{{ c.nombre }}</option>
         </select>
-        <select v-model="filterUserStatus" class="rounded-md border-gray-300 dark:border-gray-600 text-sm">
+        <select v-model="filterUserStatus" class="rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm">
           <option value="all">Todos los estados</option>
           <option value="with_user">Con Usuario</option>
           <option value="without_user">Sin Usuario</option>

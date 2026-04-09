@@ -124,7 +124,66 @@
         </div>
       </div>
 
-      <!-- Documentos Solicitados (uploads) -->
+      <!-- Tarjeta: Examen Vocacional y Psicológico -->
+      <div class="glass-card p-5 rounded-xl"
+        :class="dashboardData.examen_admision?.completado
+          ? 'border-l-4 border-l-green-500'
+          : 'border-l-4 border-l-amber-400'">
+        <div class="flex items-start justify-between gap-4">
+          <!-- Ícono + texto -->
+          <div class="flex items-start gap-4">
+            <div class="flex-shrink-0 p-3 rounded-lg"
+              :class="dashboardData.examen_admision?.completado
+                ? 'bg-green-100 dark:bg-green-900/30'
+                : 'bg-amber-100 dark:bg-amber-900/30'">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6"
+                :class="dashboardData.examen_admision?.completado ? 'text-green-600 dark:text-green-400' : 'text-amber-600 dark:text-amber-400'"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-bold text-gray-900 dark:text-gray-100 text-base">
+                Examen Vocacional
+              </h3>
+              <!-- Completado -->
+              <div v-if="dashboardData.examen_admision?.completado" class="mt-1 space-y-1">
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                  Completado el <span class="font-medium text-gray-800 dark:text-gray-200">{{ dashboardData.examen_admision.completado_en }}</span>
+                </p>
+                <div class="flex flex-wrap gap-2 mt-2">
+                  <span v-if="dashboardData.examen_admision.area_primaria"
+                    class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300">
+                    <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
+                    Recomendación 1ª: {{ dashboardData.examen_admision.area_primaria }}
+                  </span>
+                  <span v-if="dashboardData.examen_admision.area_secundaria"
+                    class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300">
+                    Alternativa: {{ dashboardData.examen_admision.area_secundaria }}
+                  </span>
+                </div>
+              </div>
+              <!-- Pendiente -->
+              <div v-else class="mt-1">
+                <p class="text-sm text-gray-600 dark:text-gray-400">
+                  Aún no se han procesado tus resultados del examen vocacional.<br>
+                  <span class="text-amber-700 dark:text-amber-400 font-medium">Si ya lo realizaste, los resultados serán cargados próximamente.</span>
+                </p>
+              </div>
+            </div>
+          </div>
+          <!-- Badge estado -->
+          <span class="flex-shrink-0 inline-flex items-center px-2.5 py-1 rounded-full text-xs font-bold"
+            :class="dashboardData.examen_admision?.completado
+              ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300'
+              : 'bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300'">
+            {{ dashboardData.examen_admision?.completado ? '✓ Completado' : '⏳ Pendiente' }}
+          </span>
+        </div>
+      </div>
+
+
       <div v-if="dashboardData.document_requests?.length > 0" class="space-y-4">
         <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-white flex items-center">
           <ArrowUpTrayIcon class="w-5 h-5 mr-2 text-indigo-600 dark:text-indigo-400" />

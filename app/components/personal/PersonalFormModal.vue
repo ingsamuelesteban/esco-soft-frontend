@@ -30,21 +30,21 @@
                   <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre *</label>
                     <input v-model="form.nombre" type="text" required
-                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
                   </div>
 
                   <!-- Apellido -->
                   <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Apellido *</label>
                     <input v-model="form.apellido" type="text" required
-                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
                   </div>
 
                   <!-- Sexo -->
                   <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sexo</label>
                     <select v-model="form.sexo"
-                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
                       <option :value="null">Seleccionar</option>
                       <option value="M">Masculino</option>
                       <option value="F">Femenino</option>
@@ -55,7 +55,7 @@
                   <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Cargo</label>
                     <select v-model.number="form.cargo_id"
-                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
                       <option :value="''">Seleccionar</option>
                       <option v-for="opt in cargosOptions" :key="opt.value" :value="opt.value">
                         {{ opt.label }}
@@ -73,21 +73,21 @@
                   <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">No. de Tarjeta</label>
                     <input v-model="form.tarjeta_numero" type="text"
-                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
                   </div>
 
                   <!-- Fecha de ingreso -->
                   <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de Ingreso</label>
                     <input v-model="form.fecha_ingreso" type="date"
-                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
                   </div>
 
                   <!-- Formación académica -->
                   <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Formación Académica</label>
                     <input v-model="form.formacion_academica" type="text"
-                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
                       placeholder="Ej: Licenciatura en Educación" />
                   </div>
 
@@ -95,7 +95,7 @@
                   <div class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Otros Títulos</label>
                     <textarea v-model="form.otros_titulos" rows="2"
-                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                      class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
                       placeholder="Certificaciones, diplomados, etc."></textarea>
                   </div>
 
