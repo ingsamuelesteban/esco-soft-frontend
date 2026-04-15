@@ -4,7 +4,9 @@
       <!-- Header -->
       <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700">
         <div>
-          <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">Importar CSV de Google Forms</h2>
+          <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">
+            Importar CSV: {{ mode === 'academico' ? 'Examen de Admisión (Académico)' : 'Examen Vocacional' }}
+          </h2>
           <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
             Descarga el CSV desde Google Sheets y súbelo aquí.
           </p>
@@ -92,19 +94,21 @@
 
           <!-- Selectores de columna -->
           <div class="grid grid-cols-2 gap-4">
-            <div v-for="campo in camposMapa" :key="campo.key">
+            <div v-for="campo in camposFiltrados" :key="campo.key">
               <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
                 {{ campo.label }}
               </label>
               <select v-model="colMap[campo.key]"
                 class="w-full text-sm rounded-lg border border-gray-200 dark:border-gray-700 px-2 py-1.5 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+                <option :value="null" v-if="campo.key.includes('aciertos') || campo.key.includes('errores')">— No incluir —</option>
                 <option v-for="(h, i) in preview.headers" :key="i" :value="i">
                   {{ i }}: {{ h.substring(0, 40) }}{{ h.length > 40 ? '…' : '' }}
                 </option>
               </select>
             </div>
-            <!-- Selector de Paso -->
-            <div>
+            
+            <!-- Selector de Paso (Solo vocacional) -->
+            <div v-if="mode === 'vocacional'">
               <label class="block text-xs font-semibold text-gray-600 dark:text-gray-400 mb-1">
                 Paso entre preguntas
               </label>
@@ -117,7 +121,7 @@
             </div>
           </div>
 
-          <p class="text-xs text-blue-600 dark:text-blue-400 mt-3 font-medium">
+          <p v-if="mode === 'vocacional'" class="text-xs text-blue-600 dark:text-blue-400 mt-3 font-medium">
             💡 Nota: En cuestionarios con puntuación de Google, usa el paso 3. Se ignorarán las columnas marcadas como [Puntuación] y [Comentarios].
           </p>
 
@@ -136,23 +140,12 @@
             <div v-if="importResult.importados?.length" class="text-xs text-green-700 dark:text-green-400 space-y-0.5">
               <p class="font-bold mb-1">Importados:</p>
               <p v-for="(r, i) in importResult.importados.slice(0, 5)" :key="i">
-                Folder #{{ r.folder }}: {{ r.primaria }} / {{ r.secundaria }}
+                Folder #{{ r.folder }}: {{ mode === 'vocacional' ? (r.primaria + ' / ' + r.secundaria) : (r.puntuacion + ' pts') }}
               </p>
               <p v-if="importResult.importados.length > 5" class="text-gray-400 font-normal">
                 … y {{ importResult.importados.length - 5 }} más.
               </p>
             </div>
-            <!-- Omitidos -->
-            <div v-if="importResult.ignorados?.length" class="text-xs text-amber-700 dark:text-amber-400 space-y-0.5 pt-2 border-t border-amber-200 dark:border-amber-800/30">
-              <p class="font-bold mb-1">Omitidos (Ya tenían examen):</p>
-              <p v-for="(r, i) in importResult.ignorados.slice(0, 5)" :key="i">
-                Folder #{{ r.folder }}: {{ r.nombre }}
-              </p>
-              <p v-if="importResult.ignorados.length > 5" class="text-gray-400 font-normal">
-                … y {{ importResult.ignorados.length - 5 }} más.
-              </p>
-            </div>
-
           </div>
         </div>
 
@@ -162,7 +155,7 @@
       <div class="px-6 py-4 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
         <button @click="$emit('close')"
           class="px-4 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors">
-          Cerrar
+          {{ importResult ? 'Cerrar' : 'Cancelar' }}
         </button>
         <button v-if="preview && !importResult" @click="importar" :disabled="importing"
           class="px-5 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white text-sm font-semibold rounded-lg transition-colors flex items-center gap-2">
@@ -182,15 +175,18 @@
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 import { api } from '~/utils/api'
 import { ArrowUpTrayIcon, XMarkIcon } from '@heroicons/vue/24/outline'
 import Swal from 'sweetalert2'
 
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   anioLectivoId: number | null
   aniosLectivos: any[]
-}>()
+  mode?: 'vocacional' | 'academico'
+}>(), {
+  mode: 'vocacional'
+})
 
 const emit = defineEmits<{
   (e: 'close'): void
@@ -206,18 +202,26 @@ const fileInput = ref<HTMLInputElement | null>(null)
 
 // Columnas a mapear
 const camposMapa = [
-  { key: 'col_nombre',      label: 'Columna: Nombre' },
-  { key: 'col_folder',      label: 'Columna: No. de Folder' },
-  { key: 'col_preferencia', label: 'Columna: Preferencia de Área' },
-  { key: 'col_q1',          label: 'Columna: Inicio Pregunta 1' },
+  { key: 'col_nombre',      label: 'Columna: Nombre',            mode: ['vocacional', 'academico'] },
+  { key: 'col_folder',      label: 'Columna: No. de Folder',     mode: ['vocacional', 'academico'] },
+  { key: 'col_preferencia', label: 'Columna: Preferencia Área',  mode: ['vocacional'] },
+  { key: 'col_q1',          label: 'Columna: Inicio P1',         mode: ['vocacional'] },
+  { key: 'col_puntuacion',  label: 'Columna: Puntuación (100)',  mode: ['academico'] },
+  { key: 'col_aciertos',    label: 'Columna: Aciertos',          mode: ['academico'] },
+  { key: 'col_errores',     label: 'Columna: Errores',           mode: ['academico'] },
 ]
 
-const colMap = ref<Record<string, number>>({
+const camposFiltrados = computed(() => camposMapa.filter(c => c.mode.includes(props.mode)))
+
+const colMap = ref<Record<string, any>>({
   col_nombre:      0,
   col_folder:      1,
   col_preferencia: 2,
   col_q1:          3,
   col_step:        1,
+  col_puntuacion:  null,
+  col_aciertos:    null,
+  col_errores:     null,
 })
 
 
@@ -236,6 +240,9 @@ function onFileChange(e: Event) {
 function esColumnaRuido(header: string): boolean {
   if (!header) return true
   const h = header.toLowerCase()
+  if (props.mode === 'academico') {
+      return false
+  }
   return h.includes('[puntuación]') || h.includes('[comentarios]') || h.includes('[puntos]')
 }
 
@@ -260,23 +267,27 @@ async function procesarArchivo(file: File) {
         let hasScores = false
         data.headers.forEach((h: string, i: number) => {
           const norm = h.toLowerCase()
-          // Ignorar columnas de puntuación/comentarios para el mapeo principal
           const isMetadata = norm.includes('[puntuación]') || norm.includes('[comentarios]') || norm.includes('[puntos]')
           
           if (isMetadata) hasScores = true
-          if (isMetadata) return
+          if (norm.includes('puntuación total') || norm.includes('puntuacion total') || norm.includes('score')) colMap.value.col_puntuacion = i
 
           if (norm.includes('nombre') || norm.includes('nombre completo')) colMap.value.col_nombre = i
           if (norm.includes('folder') || norm.includes('número de folder') || norm.includes('numero de folder')) colMap.value.col_folder = i
-          if (norm.includes('área') || norm.includes('area') || norm.includes('preferencia') || norm.includes('elige')) colMap.value.col_preferencia = i
-          if (norm.includes('cuando veo') || norm.includes('pregunta 1') || norm.match(/^\s*1\.\s/)) colMap.value.col_q1 = i
+          
+          if (props.mode === 'vocacional') {
+              if (norm.includes('áre') || norm.includes('area') || norm.includes('preferencia') || norm.includes('elige')) colMap.value.col_preferencia = i
+              if (norm.includes('cuando veo') || norm.includes('pregunta 1') || norm.match(/^\s*1\.\s/)) colMap.value.col_q1 = i
+          }
         })
 
-        // Si detectamos columnas de puntuación, usualmente el paso es 3
-        if (hasScores) colMap.value.col_step = 3
+        if (props.mode === 'vocacional' && hasScores) colMap.value.col_step = 3
+        
+        if (props.mode === 'academico' && colMap.value.col_puntuacion === null) {
+            colMap.value.col_puntuacion = data.headers.length > 1 ? 1 : null
+        }
       }
     } catch (err: any) {
-
       Swal.fire('Error', 'No se pudo leer el CSV: ' + (err?.message || ''), 'error')
     }
 }
@@ -289,9 +300,22 @@ async function importar() {
     const formData = new FormData()
     formData.append('file', csvFile.value)
     formData.append('anio_lectivo_id', String(localAnioId.value))
-    Object.entries(colMap.value).forEach(([k, v]) => formData.append(k, String(v)))
+    
+    camposFiltrados.value.forEach(c => {
+        if (colMap.value[c.key] !== null) {
+            formData.append(c.key, String(colMap.value[c.key]))
+        }
+    })
+    
+    if (props.mode === 'vocacional') {
+        formData.append('col_step', String(colMap.value.col_step))
+    }
 
-    const resp = await api.post('/api/admisiones/examenes/import-csv', formData)
+    const endpoint = props.mode === 'academico' 
+        ? '/api/admisiones/examenes/import-academico-csv' 
+        : '/api/admisiones/examenes/import-csv'
+
+    const resp = await api.post(endpoint, formData)
     importResult.value = resp.data || resp
   } catch (err: any) {
     importResult.value = { success: false, message: err?.message || 'Error al importar.' }

@@ -26,7 +26,30 @@
         </div>
 
         <template v-else-if="examen">
+          <!-- Resultado Académico -->
+          <div v-if="examen.puntuacion_academica !== null" class="space-y-3 p-4 bg-indigo-50 dark:bg-indigo-900/20 rounded-xl border border-indigo-100 dark:border-indigo-800">
+            <h3 class="text-xs font-bold text-indigo-700 dark:text-indigo-300 uppercase tracking-wide flex items-center gap-2">
+              <AcademicCapIcon class="w-4 h-4" />
+              Resultado Administrativo / Académico
+            </h3>
+            
+            <div class="flex items-end gap-3">
+              <div class="text-4xl font-black text-indigo-600 dark:text-indigo-400">
+                {{ examen.puntuacion_academica }}<span class="text-lg font-bold opacity-60">/100</span>
+              </div>
+              <div v-if="examen.aciertos !== null || examen.errores !== null" class="flex gap-3 pb-1">
+                <span v-if="examen.aciertos !== null" class="text-xs font-semibold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/30 px-2 py-0.5 rounded-lg">
+                  {{ examen.aciertos }} correctas
+                </span>
+                <span v-if="examen.errores !== null" class="text-xs font-semibold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/30 px-2 py-0.5 rounded-lg">
+                  {{ examen.errores }} incorrectas
+                </span>
+              </div>
+            </div>
+          </div>
+
           <!-- Recomendación calculada -->
+
           <div class="space-y-3">
             <h3 class="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wide">
               Recomendación Automática
@@ -155,8 +178,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { api } from '~/utils/api'
-import { XMarkIcon, PencilSquareIcon } from '@heroicons/vue/24/outline'
+import { XMarkIcon, PencilSquareIcon, AcademicCapIcon } from '@heroicons/vue/24/outline'
 import Swal from 'sweetalert2'
+
 
 const props = defineProps<{
   examenId: number

@@ -8,11 +8,19 @@
           Resultados del examen vocacional de los estudiantes preadmitidos
         </p>
       </div>
-      <button @click="showImportModal = true"
-        class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-colors">
-        <ArrowUpTrayIcon class="w-4 h-4" />
-        Importar CSV de Google Forms
-      </button>
+      <div class="flex flex-wrap gap-2">
+        <button @click="abrirImportVocacional"
+          class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-colors">
+          <ArrowUpTrayIcon class="w-4 h-4" />
+          Vocacional
+        </button>
+        <button @click="abrirImportAcademico"
+          class="inline-flex items-center gap-2 px-4 py-2.5 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-colors">
+          <ArrowUpTrayIcon class="w-4 h-4" />
+          Examen de Admisión
+        </button>
+      </div>
+
     </div>
 
     <!-- Stats -->
@@ -66,10 +74,12 @@
               <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">#Folder</th>
               <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Estudiante</th>
               <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Examen</th>
+              <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Puntaje</th>
               <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Área Primaria</th>
               <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Área Secundaria</th>
               <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Preferencia Declarada</th>
               <th class="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider">Acciones</th>
+
             </tr>
           </thead>
           <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
@@ -104,6 +114,17 @@
                   ⏳ Pendiente
                 </span>
               </td>
+              <!-- Puntaje Académico -->
+              <td class="px-4 py-3">
+                <div v-if="est.puntuacion_academica !== null" class="flex flex-col">
+                  <span class="text-sm font-bold" :class="getPuntajeColor(est.puntuacion_academica)">
+                    {{ est.puntuacion_academica }}
+                    <span class="text-[10px] opacity-60">/100</span>
+                  </span>
+                </div>
+                <span v-else class="text-gray-300 dark:text-gray-600 text-xs">—</span>
+              </td>
+
               <!-- Área Primaria -->
               <td class="px-4 py-3">
                 <div v-if="est.override_area_label" class="space-y-0.5">
@@ -146,14 +167,15 @@
       </div>
     </div>
 
-    <!-- Modal importar CSV -->
     <ImportarExamenCSVModal
       v-if="showImportModal"
+      :mode="importMode"
       :anio-lectivo-id="filtros.anio_lectivo_id"
       :anios-lectivos="aniosLectivos"
       @close="showImportModal = false"
       @imported="onImported"
     />
+
 
     <!-- Modal ver/editar examen -->
     <ExamenDetalleModal
@@ -177,6 +199,7 @@ definePageMeta({ layout: 'default', middleware: ['auth'] })
 
 const loading = ref(true)
 const showImportModal = ref(false)
+const importMode = ref<'vocacional' | 'academico'>('vocacional')
 const examenSeleccionado = ref<any>(null)
 const estudiantes = ref<any[]>([])
 const stats = ref<any>(null)
@@ -187,6 +210,7 @@ const filtros = ref({
   anio_lectivo_id: null as number | null,
   estado: '',
 })
+
 
 const estudiantesFiltrados = computed(() => {
   if (!busqueda.value) return estudiantes.value
@@ -219,10 +243,27 @@ function abrirDetalle(est: any) {
   examenSeleccionado.value = est
 }
 
+function abrirImportVocacional() {
+  importMode.value = 'vocacional'
+  showImportModal.value = true
+}
+
+function abrirImportAcademico() {
+  importMode.value = 'academico'
+  showImportModal.value = true
+}
+
+function getPuntajeColor(p: number) {
+  if (p >= 85) return 'text-green-600 dark:text-green-400'
+  if (p >= 70) return 'text-blue-600 dark:text-blue-400'
+  return 'text-red-600 dark:text-red-400'
+}
+
 function onImported() {
   showImportModal.value = false
   cargar()
 }
+
 
 onMounted(async () => {
   // 1. Cargar años lectivos
