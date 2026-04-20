@@ -18,18 +18,22 @@
     </header>
 
     <div class="mt-6">
-      <TimetableTeacherGrid />
+      <TimetableTeacherGrid ref="gridRef" />
     </div>
   </section>
 </template>
 
 <script setup lang="ts">
-// Verificar permisos de administrador, profesor o psicólogo
+import { ref } from 'vue'
+
+// Verificar permisos
 definePageMeta({
   middleware: ['auth']
 })
 
+const gridRef = ref<any>(null)
+
 const reload = () => {
-  // Esta función será llamada desde el componente hijo
+  gridRef.value?.reload()
 }
-</script>
+</script>

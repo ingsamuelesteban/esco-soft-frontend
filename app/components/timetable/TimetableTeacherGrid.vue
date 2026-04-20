@@ -67,14 +67,19 @@
               <div class="h-20 border rounded p-1 text-xs relative min-w-0"
                 :class="entryAt(d.value, p.id) ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 dark:bg-gray-900/50'">
                 <template v-if="entryAt(d.value, p.id)">
-                  <div class="h-full w-full min-w-0 flex flex-col justify-between">
-                    <div class="font-semibold truncate text-blue-900"
-                      :title="entryAt(d.value, p.id)?.assignment?.materia?.nombre">
-                      {{ entryAt(d.value, p.id)?.assignment?.materia?.nombre }}
+                  <div class="h-full w-full min-w-0 flex flex-col justify-between" 
+                    :class="{'opacity-50': (entryAt(d.value, p.id) as any).isAbsent}">
+                    <div class="font-semibold truncate"
+                      :class="(entryAt(d.value, p.id) as any).isSubstitution ? 'text-green-900' : 'text-blue-900'"
+                      :title="(entryAt(d.value, p.id) as any)?.assignment?.materia?.nombre">
+                      {{ (entryAt(d.value, p.id) as any)?.assignment?.materia?.nombre }}
                     </div>
-                    <div class="text-blue-700 truncate text-xs"
-                      :title="aulaName(entryAt(d.value, p.id)?.assignment?.aula)">
-                      {{ aulaName(entryAt(d.value, p.id)?.assignment?.aula) }}
+                    <div class="truncate text-xs flex justify-between items-center"
+                      :class="(entryAt(d.value, p.id) as any).isSubstitution ? 'text-green-700' : 'text-blue-700'"
+                      :title="aulaName((entryAt(d.value, p.id) as any)?.assignment?.aula)">
+                      <span>{{ aulaName((entryAt(d.value, p.id) as any)?.assignment?.aula) }}</span>
+                      <span v-if="(entryAt(d.value, p.id) as any).isAbsent" class="text-[9px] bg-red-100 text-red-600 px-1 rounded font-bold">AUSENTE</span>
+                      <span v-if="(entryAt(d.value, p.id) as any).isSubstitution" class="text-[9px] bg-green-100 text-green-600 px-1 rounded font-bold">SUPLENCIA</span>
                     </div>
                   </div>
                 </template>
@@ -132,6 +137,7 @@ import { useTimetableEntriesStore } from '../../stores/timetable_entries'
 import { formatTime12h } from '../../utils/timeFormat'
 import { useAuthStore } from '../../stores/auth'
 import { useAniosLectivosStore } from '../../stores/anios_lectivos'
+import { api } from '../../utils/api'
 
 interface Profesor {
   id: number
@@ -189,6 +195,7 @@ const profesores = ref<Profesor[]>([])
 const loading = ref(false)
 const loadingProfesores = ref(true)
 const teacherEntries = ref<TimetableEntry[]>([])
+const substitutions = ref<any[]>([])
 const profesorAssignments = ref<any[]>([])
 
 const days = [
@@ -277,9 +284,18 @@ const loadTeacherSchedule = async () => {
     if ((assignmentsResponse as any).data) {
       profesorAssignments.value = (assignmentsResponse as any).data
     }
+
+    // Cargar suplencias del día actual
+    const subsResponse = await api.get('/api/substitutions', {
+      params: { date: new Date().toISOString().split('T')[0] }
+    })
+    if (subsResponse.success) {
+      substitutions.value = subsResponse.data
+    }
   } catch (error) {
     console.error('Error cargando horario del profesor:', error)
     teacherEntries.value = []
+    substitutions.value = []
     profesorAssignments.value = []
   } finally {
     loading.value = false
@@ -303,7 +319,48 @@ const entryMap = computed(() => {
   return map
 })
 
-const entryAt = (dia: number, periodId: number) => entryMap.value.get(keyOf(dia, periodId))
+const entryAt = (dia: number, periodId: number) => {
+  const baseEntry = entryMap.value.get(keyOf(dia, periodId))
+  
+  // Si es hoy, buscar si hay suplencias
+  const today = new Date()
+  const todayDayOfWeek = today.getDay() // 0-6 (Sun-Sat)
+  // PHP dayOfWeekIso is 1-7 (Mon-Sun), whereas JS getDay is 0-6 (Sun-Sat)
+  const adjustedToday = todayDayOfWeek === 0 ? 7 : todayDayOfWeek
+
+  if (dia === adjustedToday) {
+    // Caso 1: El profesor actual está AUSENTE (tiene una suplencia registrada como original)
+    const ausente = substitutions.value.find(s => 
+      s.original_profesor_id === profesorId.value && 
+      s.period_id === periodId
+    )
+    if (ausente) {
+      return { 
+        ...baseEntry, 
+        isAbsent: true, 
+        substituteName: ausente.substitute_profesor?.nombre 
+      }
+    }
+
+    // Caso 2: El profesor actual es SUPLENTE (tiene una suplencia registrada como substitute)
+    const suplencia = substitutions.value.find(s => 
+      s.substitute_profesor_id === profesorId.value && 
+      s.period_id === periodId
+    )
+    if (suplencia) {
+      return {
+        id: -suplencia.id,
+        isSubstitution: true,
+        assignment: {
+          materia: suplencia.materia,
+          aula: suplencia.aula
+        }
+      }
+    }
+  }
+
+  return baseEntry
+}
 
 const profesorName = (p: Profesor) => {
   return p.nombre_completo || `${p.nombre} ${p.apellido}`
@@ -351,5 +408,9 @@ const wrapperStyle = computed(() => {
   if (!props.fitViewport) return {}
   const offset = typeof props.viewportOffset === 'number' ? props.viewportOffset : 260
   return { maxHeight: `calc(100vh - ${offset}px)` }
+})
+defineExpose({
+  reload,
+  profesores
 })
 </script>
