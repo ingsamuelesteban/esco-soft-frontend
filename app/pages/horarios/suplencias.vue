@@ -43,6 +43,7 @@
       </div>
     </div>
 
+    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg">
       <div class="p-6">
         <div v-if="loading" class="flex justify-center py-12">
           <svg class="animate-spin h-8 w-8 text-primary-600" fill="none" viewBox="0 0 24 24">
