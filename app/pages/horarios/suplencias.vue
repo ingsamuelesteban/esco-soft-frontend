@@ -45,21 +45,27 @@
 
     <!-- Report View (Visible in print and screen) -->
     <div id="printable-report" class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
-      <!-- Print Header (Only visible in print) -->
-      <div class="hidden print:block p-8 border-b border-gray-200">
-        <div class="flex items-center justify-between mb-6">
-          <div class="flex items-center space-x-4">
-             <img src="/images/logo.png" alt="Logo" class="h-16 w-auto" />
-             <div>
-               <h2 class="text-xl font-bold text-gray-900">EscoSoft</h2>
-               <p class="text-sm text-gray-600">Sistema de Gestión Escolar</p>
-             </div>
-          </div>
-          <div class="text-right">
-            <h1 class="text-2xl font-bold text-gray-900 uppercase">Reporte de Suplencias</h1>
-            <p class="text-gray-600">Fecha: {{ formatDate(selectedDate) }}</p>
-          </div>
-        </div>
+      <!-- Print Header (Standard Institutional Layout) -->
+      <div class="hidden print:block p-8 border-b-2 border-primary-600">
+        <table class="w-full">
+          <tr>
+            <td class="w-[20%] align-top text-left">
+              <img v-if="authStore.tenant?.logo_url" :src="authStore.tenant.logo_url" class="max-h-20 w-auto" />
+              <img v-else src="/images/logo.png" alt="Logo" class="max-h-20 w-auto" />
+            </td>
+            <td class="w-[60%] align-top text-center px-4">
+              <div class="text-xs font-bold uppercase tracking-tight text-gray-700">Ministerio de Educación (MINERD)</div>
+              <div v-if="authStore.tenant?.departamento" class="text-[10px] text-gray-600 uppercase">{{ authStore.tenant.departamento }}</div>
+              <div v-if="authStore.tenant?.distrito" class="text-[10px] text-gray-600 uppercase mb-1">{{ authStore.tenant.distrito }}</div>
+              <div class="text-lg font-bold text-primary-700 leading-tight mb-1">{{ authStore.tenant?.name || 'EscoSoft' }}</div>
+              <div class="text-sm font-black uppercase border-t border-gray-200 pt-1 mt-1 tracking-widest text-gray-900">REPORTE DE CONTROL DE SUPLENCIAS</div>
+            </td>
+            <td class="w-[20%] align-top text-right">
+              <div class="text-[10px] text-gray-500 font-medium">FECHA DE REPORTE:</div>
+              <div class="text-xs font-bold text-gray-800">{{ formatDate(selectedDate) }}</div>
+            </td>
+          </tr>
+        </table>
       </div>
 
       <div class="p-6">
@@ -103,17 +109,17 @@
                     {{ sub.aula?.grado_cardinal }}° {{ sub.aula?.seccion }}
                   </span>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm text-red-600 dark:text-red-400 font-medium">{{ sub.original_profesor?.nombre }} {{ sub.original_profesor?.apellido }}</div>
+                <td class="px-6 py-4">
+                  <div class="text-sm text-red-600 dark:text-red-400 font-medium break-words leading-tight">{{ sub.original_profesor?.nombre }} {{ sub.original_profesor?.apellido }}</div>
                 </td>
-                <td class="px-6 py-4 whitespace-nowrap">
+                <td class="px-6 py-4">
                   <div class="flex items-center">
-                    <div class="flex-shrink-0 h-8 w-8 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center text-primary-700 dark:text-primary-400">
+                    <div class="flex-shrink-0 h-8 w-8 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center text-primary-700 dark:text-primary-400 print:hidden">
                       <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
                       </svg>
                     </div>
-                    <div class="ml-3 text-sm font-medium text-green-600 dark:text-green-400">
+                    <div class="ml-3 text-sm font-medium text-green-600 dark:text-green-400 break-words leading-tight">
                       {{ sub.substitute_profesor?.nombre }} {{ sub.substitute_profesor?.apellido }}
                     </div>
                   </div>
@@ -131,11 +137,32 @@
         </div>
       </div>
       
-      <!-- Print Footer (Only visible in print) -->
-      <div class="hidden print:block p-8 mt-12 border-t border-gray-200">
-        <div class="flex justify-between items-center text-sm text-gray-500">
-          <div>Generado por: EscoSoft - {{ new Date().toLocaleString() }}</div>
-          <div class="text-center border-t border-gray-400 pt-2 w-48">Firma Coordinador(a)</div>
+      <!-- Print Footer (Standard Institutional Layout) -->
+      <div class="hidden print:block p-8 mt-16">
+        <div class="grid grid-cols-2 gap-24">
+          <div class="text-center pt-2 relative">
+            <div v-if="authStore.director?.signature" class="absolute inset-x-0 -top-12 flex justify-center pb-2">
+              <img :src="authStore.director.signature" class="max-h-24 w-auto mix-blend-multiply" />
+            </div>
+            <div v-else class="h-24"></div>
+            <div class="border-t border-gray-400 mx-auto w-full mb-1"></div>
+            <div class="text-xs font-bold text-gray-900 uppercase">{{ authStore.director?.name || 'Firma del Director(a)' }}</div>
+            <div class="text-[10px] text-gray-500 italic">{{ authStore.director?.cargo || 'Director(a)' }}</div>
+          </div>
+          <div class="text-center pt-2">
+            <div class="h-24"></div>
+            <div class="border-t border-gray-400 mx-auto w-full mb-1"></div>
+            <div class="text-xs font-bold text-gray-900 uppercase">Sello Institucional</div>
+          </div>
+        </div>
+        
+        <div class="mt-12 pt-4 border-t border-gray-200 flex justify-between items-center text-[9px] text-gray-400">
+          <div>
+            {{ authStore.tenant?.name }} | 
+            {{ authStore.tenant?.address }} | 
+            Tel: {{ authStore.tenant?.phone }}
+          </div>
+          <div class="italic">Generado por EscoSoft - {{ new Date().toLocaleString('es-DO') }}</div>
         </div>
       </div>
     </div>
@@ -251,23 +278,30 @@ onMounted(() => {
 
 <style>
 @media print {
+  @page {
+    size: letter;
+    margin: 15mm 10mm;
+  }
+
   body {
     background: white !important;
     padding: 0 !important;
+    font-family: sans-serif !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
   
   .space-y-6 {
     margin: 0 !important;
-    space: 0 !important;
   }
 
-  /* Ocultar elementos de UI de Nuxt/Layout */
+  /* Ocultar elementos de UI */
   aside, nav, header, footer, .print\:hidden {
     display: none !important;
   }
 
   .bg-white, .dark\:bg-gray-800 {
-    background-color: white !important;
+    background-color: transparent !important;
     color: black !important;
     box-shadow: none !important;
     border: none !important;
@@ -277,20 +311,39 @@ onMounted(() => {
     width: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
+    box-shadow: none !important;
   }
 
   table {
     width: 100% !important;
     border-collapse: collapse !important;
+    table-layout: auto !important;
   }
 
   th, td {
-    padding: 12px 8px !important;
-    border: 1px solid #e2e8f0 !important;
+    padding: 8px 6px !important;
+    border: 1px solid #333 !important;
+    word-break: break-word !important;
+    overflow-wrap: break-word !important;
+    font-size: 9pt !important;
   }
 
+  th {
+    background-color: #f3f4f6 !important;
+    font-weight: bold !important;
+    color: black !important;
+    text-transform: uppercase !important;
+    font-size: 8pt !important;
+  }
+
+  /* Evitar saltos de página dentro de filas */
   tr {
     page-break-inside: avoid;
   }
+
+  .text-red-600 { color: #b91c1c !important; }
+  .text-green-600 { color: #15803d !important; }
+  .text-primary-700 { color: #1d4ed8 !important; }
+  .bg-blue-100 { background-color: #dbeafe !important; }
 }
 </style>
