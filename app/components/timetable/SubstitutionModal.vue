@@ -103,37 +103,79 @@
 
           <!-- Columna 2: Resultados del Sorteo -->
           <div class="flex flex-col h-full border-l pl-6 dark:border-gray-700 min-h-[300px]">
-            <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">Propuesta de Cobertura</h4>
+            <div class="flex items-center justify-between mb-4">
+              <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Propuesta de Cobertura</h4>
+              <button @click="addManualRow" 
+                class="text-[10px] bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 px-2 py-1 rounded transition-colors text-gray-600 dark:text-gray-300 flex items-center gap-1">
+                <svg class="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Fila Manual
+              </button>
+            </div>
             
             <div v-if="proposals.length === 0" class="flex-1 flex items-center justify-center text-gray-400 text-sm italic">
-               Genera una propuesta para ver los resultados aquí.
+               Genera una propuesta o añade una fila manual.
             </div>
 
             <div v-else class="flex-1 overflow-y-auto space-y-3 pr-2">
-              <div v-for="(prop, index) in proposals" :key="index" class="p-3 border rounded-lg bg-gray-50 dark:bg-gray-900/20">
+              <div v-for="(prop, index) in proposals" :key="index" 
+                class="p-3 border rounded-lg transition-all"
+                :class="[
+                  prop.is_already_covered ? 'bg-green-50/50 dark:bg-green-900/10 border-green-200 dark:border-green-800' : 
+                  prop.substitute ? 'bg-blue-50/50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-800' : 
+                  'bg-gray-50 dark:bg-gray-900/20 border-gray-200 dark:border-gray-700'
+                ]">
                 <div class="flex justify-between items-start mb-2">
                   <div>
-                    <div class="text-xs font-bold text-blue-600 uppercase">{{ prop.entry.period.label }}</div>
-                    <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ prop.entry.assignment.materia.nombre }}</div>
-                    <div class="text-xs text-gray-500">{{ prop.entry.aula.grado_cardinal }}°{{ prop.entry.aula.seccion }}</div>
+                    <div class="flex items-center gap-2 mb-1">
+                      <div class="text-xs font-bold text-gray-600 dark:text-gray-400 uppercase tracking-wider">{{ prop.entry.period?.label }}</div>
+                      
+                      <!-- Badges de Estado -->
+                      <span v-if="prop.is_already_covered" class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400 uppercase">Cubierto</span>
+                      <span v-else-if="prop.substitute && !prop.is_manual" class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-400 uppercase">Sugerido</span>
+                      <span v-else-if="prop.is_manual" class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-400 uppercase">Manual</span>
+                      <span v-else class="px-1.5 py-0.5 rounded text-[9px] font-bold bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-400 uppercase">Pendiente</span>
+                    </div>
+                    <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ prop.entry.assignment?.materia?.nombre || prop.entry.materia_nombre || 'N/A' }}</div>
+                    <div class="text-xs text-gray-500">{{ prop.entry.aula?.grado_cardinal }}°{{ prop.entry.aula?.seccion }}</div>
                   </div>
                   <div class="text-right">
-                    <div class="text-[10px] text-gray-400">Ausente</div>
-                    <div class="text-xs text-red-500 whitespace-nowrap">{{ prop.entry.assignment?.profesor?.nombre || 'Docente' }}</div>
+                    <div class="text-[10px] text-gray-400 uppercase tracking-tighter">Docente Ausente</div>
+                    <div class="text-xs text-red-500 font-medium whitespace-nowrap">{{ prop.entry.assignment?.profesor?.nombre || prop.entry.profesor_nombre || 'Docente' }}</div>
+                    
+                    <button v-if="prop.is_manual || !prop.is_already_covered" @click="removeRow(index)" class="mt-1 text-gray-400 hover:text-red-500 transition-colors">
+                      <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                      </svg>
+                    </button>
                   </div>
                 </div>
 
-                <div v-if="prop.substitute" class="mt-2 pt-2 border-t dark:border-gray-700">
-                  <label class="block text-[10px] text-gray-500 uppercase mb-1">Suplente Asignado</label>
-                  <select v-model="prop.substitute.id" @change="updateSubstitute(index, $event)"
-                    class="block w-full text-xs rounded border-gray-300 dark:bg-gray-700">
-                    <option v-for="c in prop.all_candidates" :key="c.id" :value="c.id">
-                      {{ c.nombre }} {{ c.apellido }}
+                <div v-if="!prop.is_already_covered" class="mt-2 pt-2 border-t dark:border-gray-700">
+                  <label class="block text-[10px] text-gray-500 uppercase mb-1 font-semibold tracking-tight">Asignar Suplente</label>
+                  <select v-model="prop.substitute_id" @change="updateSubstitute(index, $event)"
+                    class="block w-full text-xs rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:ring-blue-500 focus:border-blue-500">
+                    <option :value="null">-- Seleccionar Suplente --</option>
+                    <option v-for="c in (prop.all_candidates?.length ? prop.all_candidates : extraStaffList)" :key="c.id" :value="c.id"
+                      :disabled="isCandidateBusy(c.id, prop.entry.period_id, index)">
+                      {{ c.nombre }} {{ c.apellido }} {{ isCandidateBusy(c.id, prop.entry.period_id, index) ? '(Ocupado en esta hora)' : '' }}
                     </option>
                   </select>
                 </div>
-                <div v-else class="mt-2 text-xs text-amber-600 italic">
-                  {{ prop.message || 'Sin profesores disponibles' }}
+                <div v-else class="mt-2 pt-2 border-t border-green-100 dark:border-green-900 flex justify-between items-center">
+                  <div class="flex items-center gap-2">
+                    <div class="h-5 w-5 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center">
+                      <svg class="h-3 w-3 text-green-600 dark:text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                        <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                      </svg>
+                    </div>
+                    <span class="text-xs font-bold text-green-700 dark:text-green-500">{{ prop.substitute.nombre }} {{ prop.substitute.apellido }}</span>
+                  </div>
+                </div>
+                
+                <div v-if="!prop.is_already_covered && !prop.substitute && prop.message" class="mt-2 text-[10px] text-amber-600 italic">
+                  {{ prop.message }}
                 </div>
               </div>
             </div>
@@ -252,7 +294,10 @@ const proposeSubstitutions = async () => {
     })
 
     if (response.success) {
-      proposals.value = response.data
+      proposals.value = response.data.map((p: any) => ({
+        ...p,
+        substitute_id: p.substitute?.id || null
+      }))
     }
   } catch (error) {
     console.error('Error al generar propuesta:', error)
@@ -268,11 +313,47 @@ const proposeSubstitutions = async () => {
 
 const updateSubstitute = (propIndex: number, event: any) => {
   const selectedId = parseInt(event.target.value)
+  if (!selectedId) {
+    proposals.value[propIndex].substitute = null
+    proposals.value[propIndex].substitute_id = null
+    return
+  }
+
   const prop = proposals.value[propIndex]
-  const newSub = prop.all_candidates.find((c: any) => c.id === selectedId)
+  const candidates = prop.all_candidates?.length ? prop.all_candidates : extraStaffList.value
+  const newSub = candidates.find((c: any) => c.id === selectedId)
   if (newSub) {
     prop.substitute = newSub
+    prop.substitute_id = newSub.id
   }
+}
+
+const isCandidateBusy = (candidateId: number, periodId: number, currentRowIndex: number) => {
+  return proposals.value.some((p, idx) => {
+    return idx !== currentRowIndex && 
+           p.entry.period_id === periodId && 
+           (p.substitute_id === candidateId || (p.is_already_covered && p.substitute?.id === candidateId))
+  })
+}
+
+const addManualRow = async () => {
+  // Simple prompt to get basic data or just add a blank row
+  proposals.value.unshift({
+    is_manual: true,
+    entry: {
+      period_id: null,
+      aula_id: null,
+      profesor_nombre: 'Docente Ausente',
+      materia_nombre: 'Clase Manual'
+    },
+    substitute: null,
+    substitute_id: null,
+    all_candidates: extraStaffList.value
+  })
+}
+
+const removeRow = (index: number) => {
+  proposals.value.splice(index, 1)
 }
 
 const saveSubstitutions = async () => {
@@ -295,15 +376,20 @@ const saveSubstitutions = async () => {
     
     // Preparar datos para el backend
     const subsToSave = proposals.value
-      .filter(p => p.substitute)
+      .filter(p => p.substitute && !p.is_already_covered)
       .map(p => ({
         original_profesor_id: p.entry.profesor_id,
         substitute_profesor_id: p.substitute.id,
         period_id: p.entry.period_id,
         aula_id: p.entry.aula_id,
-        materia_id: p.entry.assignment.materia_id,
+        materia_id: p.entry.assignment?.materia_id || p.entry.materia_id,
         timetable_entry_id: p.entry.id
       }))
+
+    if (subsToSave.length === 0) {
+      Swal.fire('Atención', 'No hay nuevas suplencias que guardar.', 'info')
+      return
+    }
 
     const response = await api.post('/api/substitutions', {
       date: form.value.date,
