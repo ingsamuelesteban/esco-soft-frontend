@@ -55,21 +55,41 @@
               </div>
             </div>
 
-            <div>
-              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                Incluir personal adicional en sorteo
-                <span class="text-[10px] text-gray-500 block font-normal">(Psicólogos, coordinadores, etc. disponibles para cubrir)</span>
-              </label>
-              <div class="border rounded-md dark:border-gray-600 max-h-40 overflow-y-auto p-2 bg-gray-50 dark:bg-gray-900/30">
-                <div v-if="loadingStaff" class="text-xs text-gray-500 p-2">Cargando personal...</div>
-                <div v-else-if="extraStaffList.length === 0" class="text-xs text-gray-400 p-2 italic">No hay personal adicional disponible.</div>
-                <div v-for="p in extraStaffList" :key="p.id" class="flex items-center p-1">
-                  <input :id="'extra-' + p.id" type="checkbox" :value="p.id" v-model="form.extra_staff_ids"
-                    class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded" />
-                  <label :for="'extra-' + p.id" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
-                    {{ p.nombre }} {{ p.apellido }}
-                    <span class="text-[10px] text-gray-500">({{ p.cargo?.nombre || 'Personal' }})</span>
-                  </label>
+            <div class="grid grid-cols-1 gap-4">
+              <!-- Excluir Aulas -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Excluir Aulas del Sorteo
+                  <span class="text-[10px] text-gray-500 block font-normal">(Las clases en estas aulas no se cubrirán)</span>
+                </label>
+                <div class="border rounded-md dark:border-gray-600 max-h-32 overflow-y-auto p-2 bg-gray-50 dark:bg-gray-900/30">
+                  <div v-if="loadingAulas" class="text-xs text-gray-500 p-2">Cargando aulas...</div>
+                  <div v-for="a in aulasList" :key="a.id" class="flex items-center p-1">
+                    <input :id="'aula-ex-' + a.id" type="checkbox" :value="a.id" v-model="form.excluded_aula_ids"
+                      class="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded" />
+                    <label :for="'aula-ex-' + a.id" class="ml-2 block text-[11px] text-gray-700 dark:text-gray-300">
+                      {{ a.grado_cardinal }}°{{ a.seccion }} - <span class="text-gray-500">{{ a.titulo?.nombre }}</span>
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Personal Extra -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  Incluir personal adicional en sorteo
+                </label>
+                <div class="border rounded-md dark:border-gray-600 max-h-32 overflow-y-auto p-2 bg-gray-50 dark:bg-gray-900/30">
+                  <div v-if="loadingStaff" class="text-xs text-gray-500 p-2">Cargando personal...</div>
+                  <div v-else-if="extraStaffList.length === 0" class="text-xs text-gray-400 p-2 italic">No hay personal adicional disponible.</div>
+                  <div v-for="p in extraStaffList" :key="p.id" class="flex items-center p-1">
+                    <input :id="'extra-' + p.id" type="checkbox" :value="p.id" v-model="form.extra_staff_ids"
+                      class="h-4 w-4 text-green-600 focus:ring-green-500 border-gray-300 rounded" />
+                    <label :for="'extra-' + p.id" class="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+                      {{ p.nombre }} {{ p.apellido }}
+                      <span class="text-[10px] text-gray-500">({{ p.cargo?.nombre || 'Personal' }})</span>
+                    </label>
+                  </div>
                 </div>
               </div>
             </div>
@@ -151,14 +171,17 @@ const emit = defineEmits(['update:modelValue', 'saved'])
 const form = ref({
   date: new Date().toISOString().split('T')[0],
   absent_ids: [] as number[],
-  extra_staff_ids: [] as number[]
+  extra_staff_ids: [] as number[],
+  excluded_aula_ids: [] as number[]
 })
 
 const loadingPropose = ref(false)
 const loadingSave = ref(false)
 const loadingStaff = ref(false)
+const loadingAulas = ref(false)
 const proposals = ref<any[]>([])
 const allStaff = ref<any[]>([])
+const aulasList = ref<any[]>([])
 
 // Filtrar el personal que no es el que ya viene como profesor (opcional para evitar duplicados visuales)
 const extraStaffList = computed(() => {
@@ -167,7 +190,10 @@ const extraStaffList = computed(() => {
 })
 
 onMounted(async () => {
-  await loadAllStaff()
+  await Promise.all([
+    loadAllStaff(),
+    loadAulas()
+  ])
 })
 
 const loadAllStaff = async () => {
@@ -184,12 +210,35 @@ const loadAllStaff = async () => {
   }
 }
 
+const loadAulas = async () => {
+  try {
+    loadingAulas.value = true
+    const response = await api.get('/api/aulas')
+    
+    // El endpoint /api/aulas retorna el array directamente, no envuelto en .data
+    const data = Array.isArray(response) ? response : (response?.data || [])
+    
+    if (data && Array.isArray(data)) {
+      // Ordenar por grado y sección
+      aulasList.value = data.sort((a: any, b: any) => {
+        if (a.grado_cardinal !== b.grado_cardinal) return a.grado_cardinal - b.grado_cardinal
+        return a.seccion.localeCompare(b.seccion)
+      })
+    }
+  } catch (error) {
+    console.error('Error cargando aulas:', error)
+  } finally {
+    loadingAulas.value = false
+  }
+}
+
 const close = () => {
   emit('update:modelValue', false)
   // Reset state
   proposals.value = []
   form.value.absent_ids = []
   form.value.extra_staff_ids = []
+  form.value.excluded_aula_ids = []
 }
 
 const proposeSubstitutions = async () => {
@@ -198,7 +247,8 @@ const proposeSubstitutions = async () => {
     const response = await api.post('/api/substitutions/propose', {
       date: form.value.date,
       absent_profesor_ids: form.value.absent_ids,
-      extra_staff_ids: form.value.extra_staff_ids
+      extra_staff_ids: form.value.extra_staff_ids,
+      excluded_aula_ids: form.value.excluded_aula_ids
     })
 
     if (response.success) {
