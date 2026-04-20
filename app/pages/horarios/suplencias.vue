@@ -44,20 +44,20 @@
     </div>
 
     <!-- Report View (Visible in print and screen) -->
-    <div id="printable-report" class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
+    <div id="printable-report" class="bg-white dark:bg-gray-800 shadow-sm rounded-lg print:overflow-visible">
       <!-- Print Header (Standard Institutional Layout) -->
       <div class="hidden print:block p-8 border-b-2 border-primary-600">
         <table class="w-full">
           <tr>
             <td class="w-[20%] align-top text-left">
-              <img v-if="authStore.tenant?.logo_url" :src="authStore.tenant.logo_url" class="max-h-20 w-auto" />
-              <img v-else src="/images/logo.png" alt="Logo" class="max-h-20 w-auto" />
+              <img v-if="tenantLogo" :src="tenantLogo" class="max-h-20 w-auto object-contain" />
+              <img v-else src="/images/logo.png" alt="Logo" class="max-h-20 w-auto object-contain" />
             </td>
             <td class="w-[60%] align-top text-center px-4">
               <div class="text-xs font-bold uppercase tracking-tight text-gray-700">Ministerio de Educación (MINERD)</div>
               <div v-if="authStore.tenant?.departamento" class="text-[10px] text-gray-600 uppercase">{{ authStore.tenant.departamento }}</div>
               <div v-if="authStore.tenant?.distrito" class="text-[10px] text-gray-600 uppercase mb-1">{{ authStore.tenant.distrito }}</div>
-              <div class="text-lg font-bold text-primary-700 leading-tight mb-1">{{ authStore.tenant?.name || 'EscoSoft' }}</div>
+              <div class="text-lg font-bold text-primary-700 leading-tight mb-1">{{ tenantName }}</div>
               <div class="text-sm font-black uppercase border-t border-gray-200 pt-1 mt-1 tracking-widest text-gray-900">REPORTE DE CONTROL DE SUPLENCIAS</div>
             </td>
             <td class="w-[20%] align-top text-right">
@@ -195,6 +195,21 @@ const selectedDate = ref(dayjs().format('YYYY-MM-DD'))
 const substitutions = ref<any[]>([])
 const loading = ref(false)
 
+const tenantName = computed(() => {
+  return authStore.tenant?.name || 'EscoSoft'
+})
+
+const tenantLogo = computed(() => {
+  if (!authStore.tenant?.logo_url) return null
+  if (authStore.tenant.logo_url.startsWith('http')) return authStore.tenant.logo_url
+
+  const config = useRuntimeConfig()
+  const apiBase = config.public.apiBase
+  const baseUrl = apiBase.endsWith('/') ? apiBase.slice(0, -1) : apiBase
+  const path = authStore.tenant.logo_url.startsWith('/') ? authStore.tenant.logo_url : `/${authStore.tenant.logo_url}`
+  return `${baseUrl}${path}`
+})
+
 // Estado para el modal de creación
 const showSubstitutionModal = ref(false)
 const profesores = ref<any[]>([])
@@ -296,8 +311,16 @@ onMounted(() => {
   }
 
   /* Ocultar elementos de UI */
-  aside, nav, header, footer, .print\:hidden {
+  aside, nav, header, footer, .print\:hidden, [role="navigation"] {
     display: none !important;
+  }
+
+  /* Asegurar que el contenido fluya en múltiples páginas */
+  html, body, #__nuxt, #__layout, main, .space-y-6 {
+    height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+    min-height: 0 !important;
   }
 
   .bg-white, .dark\:bg-gray-800 {
