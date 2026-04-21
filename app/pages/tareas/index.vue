@@ -127,7 +127,7 @@ interface Teacher {
 
 definePageMeta({
     middleware: ['auth', 'role'],
-    roles: ['profesor', 'admin', 'master']
+    roles: ['profesor', 'admin', 'master', 'psicologia', 'orientacion']
 })
 
 const router = useRouter()
@@ -138,7 +138,8 @@ const teachers = ref<Teacher[]>([])
 const selectedTeacherId = ref<number | null>(null)
 
 const canSelectTeacher = computed(() => {
-    return authStore.user?.role === 'admin' || authStore.user?.role === 'master'
+    const role = authStore.user?.role?.toLowerCase() || ''
+    return role === 'admin' || role === 'master' || role.includes('psic') || role.includes('orient')
 })
 
 onMounted(async () => {

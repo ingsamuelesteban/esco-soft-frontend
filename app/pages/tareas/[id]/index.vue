@@ -144,7 +144,7 @@ dayjs.locale('es')
 
 definePageMeta({
     middleware: ['auth', 'role'],
-    roles: ['profesor', 'admin', 'master']
+    roles: ['profesor', 'admin', 'master', 'psicologia', 'orientacion']
 })
 
 const route = useRoute()
