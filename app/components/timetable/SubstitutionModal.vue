@@ -114,8 +114,18 @@
               </button>
             </div>
             
-            <div v-if="proposals.length === 0" class="flex-1 flex items-center justify-center text-gray-400 text-sm italic">
-               Genera una propuesta o añade una fila manual.
+            <div v-if="proposals.length === 0" class="flex-1 flex flex-col items-center justify-center text-center p-6 bg-gray-50 dark:bg-gray-900/10 rounded-xl border-2 border-dashed border-gray-200 dark:border-gray-700">
+               <div class="h-12 w-12 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mb-3">
+                 <svg class="h-6 w-6 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                 </svg>
+               </div>
+               <p class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">No se encontraron clases para cubrir</p>
+               <p class="text-[10px] text-gray-500 max-w-[180px]">Verifica que los docentes seleccionados tengan clases programadas en el horario para la fecha {{ form.date }}.</p>
+               
+               <button @click="addManualRow" class="mt-4 text-[10px] font-bold text-blue-600 dark:text-blue-400 hover:underline">
+                 Agregar suplencia manual
+               </button>
             </div>
 
             <div v-else class="flex-1 overflow-y-auto space-y-3 pr-2">
@@ -142,7 +152,14 @@
                   </div>
                   <div class="text-right">
                     <div class="text-[10px] text-gray-400 uppercase tracking-tighter">Docente Ausente</div>
-                    <div class="text-xs text-red-500 font-medium whitespace-nowrap">{{ prop.entry.assignment?.profesor?.nombre || prop.entry.profesor_nombre || 'Docente' }}</div>
+                    <div v-if="!prop.is_manual" class="text-xs text-red-500 font-medium whitespace-nowrap">{{ prop.entry.assignment?.profesor?.nombre || prop.entry.profesor_nombre || 'Docente' }}</div>
+                    <div v-else>
+                       <select v-model="prop.entry.profesor_id" @change="updateManualRow(index)"
+                        class="block w-full text-[10px] py-0.5 mt-0.5 rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 text-red-600 font-medium">
+                        <option :value="null">-- Elegir Docente --</option>
+                        <option v-for="p in profesoresList" :key="p.id" :value="p.id">{{ p.nombre }} {{ p.apellido }}</option>
+                      </select>
+                    </div>
                     
                     <button v-if="prop.is_manual || !prop.is_already_covered" @click="removeRow(index)" class="mt-1 text-gray-400 hover:text-red-500 transition-colors">
                       <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -152,7 +169,33 @@
                   </div>
                 </div>
 
-                <div v-if="!prop.is_already_covered" class="mt-2 pt-2 border-t dark:border-gray-700">
+                <div v-if="!prop.is_already_covered" class="mt-2 grid grid-cols-1 gap-2 border-t dark:border-gray-700 pt-2">
+                  <div v-if="prop.is_manual" class="space-y-2 mb-1">
+                    <div class="grid grid-cols-2 gap-2">
+                      <div>
+                        <label class="block text-[9px] text-gray-500 uppercase mb-0.5">Periodo</label>
+                        <select v-model="prop.entry.period_id" @change="updateManualRow(index)"
+                          class="block w-full text-[10px] rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                          <option :value="null">-- Per. --</option>
+                          <option v-for="p in periodsList" :key="p.id" :value="p.id">{{ p.label }}</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label class="block text-[9px] text-gray-500 uppercase mb-0.5">Aula</label>
+                        <select v-model="prop.entry.aula_id" @change="updateManualRow(index)"
+                          class="block w-full text-[10px] rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700">
+                          <option :value="null">-- Aula --</option>
+                          <option v-for="a in aulasList" :key="a.id" :value="a.id">{{ a.grado_cardinal }}°{{ a.seccion }}</option>
+                        </select>
+                      </div>
+                    </div>
+                    <div>
+                      <label class="block text-[9px] text-gray-500 uppercase mb-0.5">Materia (Opcional)</label>
+                      <input v-model="prop.entry.materia_nombre" @blur="updateManualRow(index)" placeholder="Nombre de la materia..."
+                        class="block w-full text-[10px] rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700" />
+                    </div>
+                  </div>
+
                   <label class="block text-[10px] text-gray-500 uppercase mb-1 font-semibold tracking-tight">Asignar Suplente</label>
                   <select v-model="prop.substitute_id" @change="updateSubstitute(index, $event)"
                     class="block w-full text-xs rounded border-gray-300 dark:border-gray-600 dark:bg-gray-700 focus:ring-blue-500 focus:border-blue-500">
@@ -206,9 +249,13 @@ import Swal from 'sweetalert2'
 const props = defineProps<{
   modelValue: boolean
   profesoresList: any[]
+  editBatchId?: string | null
 }>()
 
-const emit = defineEmits(['update:modelValue', 'saved'])
+const emit = defineEmits(['update:modelValue', 'saved', 'closed'])
+
+const currentBatchId = ref<string | null>(null)
+const periodsList = ref<any[]>([])
 
 const form = ref({
   date: new Date().toISOString().split('T')[0],
@@ -234,9 +281,60 @@ const extraStaffList = computed(() => {
 onMounted(async () => {
   await Promise.all([
     loadAllStaff(),
-    loadAulas()
+    loadAulas(),
+    loadPeriods()
   ])
+  
+  if (props.editBatchId) {
+    loadDraft(props.editBatchId)
+  }
 })
+
+const loadPeriods = async () => {
+  try {
+    const response = await api.get('/api/periods')
+    periodsList.value = response.data || response || []
+  } catch (error) {
+    console.error('Error cargando periodos:', error)
+  }
+}
+
+const loadDraft = async (batchId: string) => {
+  try {
+    loadingPropose.value = true
+    const response = await api.get('/api/substitutions', {
+      params: { date: form.value.date, batch_id: batchId }
+    })
+    
+    if (response.success && response.data.length > 0) {
+      currentBatchId.value = batchId
+      form.value.date = response.data[0].date.split('T')[0]
+      proposals.value = response.data.map((s: any) => ({
+        id: s.id,
+        is_manual: !s.timetable_entry_id,
+        is_already_covered: s.status === 'confirmed',
+        entry: {
+          id: s.timetable_entry_id,
+          period_id: s.period_id,
+          period: s.period,
+          aula_id: s.aula_id,
+          aula: s.aula,
+          profesor_id: s.original_profesor_id,
+          profesor_nombre: s.original_profesor ? `${s.original_profesor.nombre} ${s.original_profesor.apellido}` : 'Docente Ausente',
+          materia_id: s.materia_id,
+          materia_nombre: s.materia ? s.materia.nombre : 'Clase Manual'
+        },
+        substitute: s.substitute_profesor,
+        substitute_id: s.substitute_profesor_id,
+        all_candidates: extraStaffList.value // En edición mostramos el personal extra para todos
+      }))
+    }
+  } catch (error) {
+    console.error('Error cargando borrador:', error)
+  } finally {
+    loadingPropose.value = false
+  }
+}
 
 const loadAllStaff = async () => {
   try {
@@ -276,8 +374,10 @@ const loadAulas = async () => {
 
 const close = () => {
   emit('update:modelValue', false)
+  emit('closed')
   // Reset state
   proposals.value = []
+  currentBatchId.value = null
   form.value.absent_ids = []
   form.value.extra_staff_ids = []
   form.value.excluded_aula_ids = []
@@ -294,9 +394,24 @@ const proposeSubstitutions = async () => {
     })
 
     if (response.success) {
+      currentBatchId.value = response.batch_id
       proposals.value = response.data.map((p: any) => ({
-        ...p,
-        substitute_id: p.substitute?.id || null
+        id: p.id,
+        is_already_covered: p.status === 'confirmed',
+        entry: {
+          id: p.timetable_entry_id,
+          period_id: p.period_id,
+          period: p.period,
+          aula_id: p.aula_id,
+          aula: p.aula,
+          profesor_id: p.original_profesor_id,
+          profesor_nombre: p.original_profesor ? `${p.original_profesor.nombre} ${p.original_profesor.apellido}` : 'Docente',
+          materia_id: p.materia_id,
+          materia_nombre: p.materia ? p.materia.nombre : 'N/A'
+        },
+        substitute: p.substitute_profesor,
+        substitute_id: p.substitute_profesor_id,
+        all_candidates: extraStaffList.value // Simplified for now
       }))
     }
   } catch (error) {
@@ -311,20 +426,38 @@ const proposeSubstitutions = async () => {
   }
 }
 
-const updateSubstitute = (propIndex: number, event: any) => {
+const updateSubstitute = async (propIndex: number, event: any) => {
   const selectedId = parseInt(event.target.value)
-  if (!selectedId) {
-    proposals.value[propIndex].substitute = null
-    proposals.value[propIndex].substitute_id = null
-    return
-  }
-
   const prop = proposals.value[propIndex]
+  
+  prop.substitute_id = selectedId || null
   const candidates = prop.all_candidates?.length ? prop.all_candidates : extraStaffList.value
-  const newSub = candidates.find((c: any) => c.id === selectedId)
-  if (newSub) {
-    prop.substitute = newSub
-    prop.substitute_id = newSub.id
+  prop.substitute = candidates.find((c: any) => c.id === selectedId) || null
+
+  // --- AUTO SAVE ---
+  if (prop.id) {
+    try {
+      await api.patch(`/api/substitutions/${prop.id}`, {
+        substitute_profesor_id: prop.substitute_id
+      })
+    } catch (error) {
+      console.error('Error en auto-guardado:', error)
+    }
+  }
+}
+
+const updateManualRow = async (index: number) => {
+  const prop = proposals.value[index]
+  if (prop.id) {
+    try {
+      await api.patch(`/api/substitutions/${prop.id}`, {
+        period_id: prop.entry.period_id,
+        aula_id: prop.entry.aula_id,
+        original_profesor_id: prop.entry.profesor_id
+      })
+    } catch (error) {
+      console.error('Error actualizando fila manual:', error)
+    }
   }
 }
 
@@ -337,29 +470,65 @@ const isCandidateBusy = (candidateId: number, periodId: number, currentRowIndex:
 }
 
 const addManualRow = async () => {
-  // Simple prompt to get basic data or just add a blank row
-  proposals.value.unshift({
-    is_manual: true,
-    entry: {
-      period_id: null,
-      aula_id: null,
-      profesor_nombre: 'Docente Ausente',
-      materia_nombre: 'Clase Manual'
-    },
-    substitute: null,
-    substitute_id: null,
-    all_candidates: extraStaffList.value
-  })
+  if (!currentBatchId.value) {
+    // Si no hay batch, creamos uno al vuelo o pedimos generar propuesta primero?
+    // El usuario quiere que al cliquear "Proponer" genere el borrador.
+    // Pero si añade una fila manual ANTES de proponer, deberíamos manejarlo.
+    // Sin embargo, el flujo normal es Proponer -> Editar.
+    // Si quiere empezar puramente manual, generamos un batch_id.
+    currentBatchId.value = uniqid('batch_') 
+  }
+
+  try {
+    const response = await api.post('/api/substitutions', {
+      date: form.value.date,
+      batch_id: currentBatchId.value,
+      period_id: periodsList.value[0]?.id || 1, // Default to first period
+      aula_id: aulasList.value[0]?.id || 1,
+      status: 'draft'
+    })
+
+    if (response.success) {
+      const s = response.data
+      proposals.value.unshift({
+        id: s.id,
+        is_manual: true,
+        entry: {
+          period_id: s.period_id,
+          aula_id: s.aula_id,
+          profesor_nombre: 'Fila Manual',
+          materia_nombre: 'Clase Manual'
+        },
+        substitute: null,
+        substitute_id: null,
+        all_candidates: extraStaffList.value
+      })
+    }
+  } catch (error) {
+    console.error('Error creando fila manual:', error)
+  }
 }
 
-const removeRow = (index: number) => {
-  proposals.value.splice(index, 1)
+const uniqid = (prefix = '') => prefix + Math.random().toString(36).substr(2, 9)
+
+const removeRow = async (index: number) => {
+  const prop = proposals.value[index]
+  if (prop.id) {
+    try {
+      await api.delete(`/api/substitutions/${prop.id}`)
+      proposals.value.splice(index, 1)
+    } catch (error) {
+      console.error('Error eliminando fila:', error)
+    }
+  } else {
+    proposals.value.splice(index, 1)
+  }
 }
 
 const saveSubstitutions = async () => {
   const result = await Swal.fire({
     title: '¿Confirmar suplencias?',
-    text: 'Se guardarán las asignaciones y se enviarán notificaciones a los docentes.',
+    text: 'Se enviarán notificaciones a los docentes y el borrador pasará a historial.',
     icon: 'question',
     showCancelButton: true,
     confirmButtonText: 'Sí, confirmar',
@@ -367,39 +536,19 @@ const saveSubstitutions = async () => {
     confirmButtonColor: '#2563eb'
   })
 
-  if (!result.isConfirmed) {
+  if (!result.isConfirmed || !currentBatchId.value) {
     return
   }
 
   try {
     loadingSave.value = true
     
-    // Preparar datos para el backend
-    const subsToSave = proposals.value
-      .filter(p => p.substitute && !p.is_already_covered)
-      .map(p => ({
-        original_profesor_id: p.entry.profesor_id,
-        substitute_profesor_id: p.substitute.id,
-        period_id: p.entry.period_id,
-        aula_id: p.entry.aula_id,
-        materia_id: p.entry.assignment?.materia_id || p.entry.materia_id,
-        timetable_entry_id: p.entry.id
-      }))
-
-    if (subsToSave.length === 0) {
-      Swal.fire('Atención', 'No hay nuevas suplencias que guardar.', 'info')
-      return
-    }
-
-    const response = await api.post('/api/substitutions', {
-      date: form.value.date,
-      substitutions: subsToSave
-    })
+    const response = await api.post(`/api/substitutions/batch/${currentBatchId.value}/confirm`)
 
     if (response.success) {
       await Swal.fire({
         icon: 'success',
-        title: '¡Guardado!',
+        title: '¡Confirmado!',
         text: 'Las suplencias han sido registradas y los docentes notificados.',
         timer: 2000,
         showConfirmButton: false
@@ -407,12 +556,12 @@ const saveSubstitutions = async () => {
       emit('saved')
       close()
     }
-  } catch (error) {
-    console.error('Error al guardar:', error)
+  } catch (error: any) {
+    console.error('Error al confirmar:', error)
     Swal.fire({
       icon: 'error',
-      title: 'Error al guardar',
-      text: 'Ocurrió un error inesperado al intentar guardar las suplencias.'
+      title: 'Error al confirmar',
+      text: error.response?.data?.message || 'Ocurrió un error inesperado.'
     })
   } finally {
     loadingSave.value = false

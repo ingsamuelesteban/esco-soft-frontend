@@ -25,43 +25,69 @@
         </div>
       </div>
     </div>
-
-    <!-- Filtros -->
-    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6 print:hidden">
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-        <div>
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fecha</label>
-          <input v-model="selectedDate" type="date" @change="fetchSubstitutions"
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500" />
-        </div>
-        <div>
-          <button @click="fetchSubstitutions" :disabled="loading"
-            class="w-full md:w-auto px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 disabled:opacity-50 transition-colors">
-            Actualizar
-          </button>
-        </div>
+    <!-- Filtros y Tabs -->
+    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-4 flex flex-col md:flex-row items-center justify-between gap-4 print:hidden">
+      <div class="flex items-center bg-gray-100 dark:bg-gray-900/50 p-1 rounded-lg w-full md:w-auto">
+        <button @click="activeTab = 'confirmed'" 
+          class="flex-1 md:flex-none px-6 py-2 rounded-md text-sm font-medium transition-all"
+          :class="activeTab === 'confirmed' ? 'bg-white dark:bg-gray-800 shadow-sm text-blue-600 dark:text-blue-400' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'">
+          Confirmadas
+        </button>
+        <button @click="activeTab = 'drafts'" 
+          class="flex-1 md:flex-none px-6 py-2 rounded-md text-sm font-medium transition-all relative"
+          :class="activeTab === 'drafts' ? 'bg-white dark:bg-gray-800 shadow-sm text-blue-600 dark:text-blue-400' : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'">
+          Borradores
+          <span v-if="drafts.length > 0" class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white">
+            {{ drafts.length }}
+          </span>
+        </button>
+      </div>
+      
+      <div class="flex items-center gap-3 w-full md:w-auto">
+        <input v-model="selectedDate" type="date" @change="fetchAll"
+          class="flex-1 md:flex-none px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 text-sm" />
+        <button @click="fetchAll" :disabled="loading"
+          class="p-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-md hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors">
+          <svg class="h-5 w-5" :class="{ 'animate-spin': loading }" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+        </button>
       </div>
     </div>
 
-    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg">
-      <div class="p-6">
-        <div v-if="loading" class="flex justify-center py-12">
-          <svg class="animate-spin h-8 w-8 text-primary-600" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
+    <!-- Contenido Principal -->
+    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
+      <!-- Vista de Confirmadas -->
+      <div v-if="activeTab === 'confirmed'" class="p-0">
+        <div v-if="loading" class="flex justify-center py-20">
+          <div class="flex flex-col items-center gap-3">
+            <svg class="animate-spin h-10 w-10 text-blue-600" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <span class="text-sm text-gray-500 animate-pulse">Cargando suplencias...</span>
+          </div>
         </div>
 
-        <div v-else-if="substitutions.length === 0" class="text-center py-12">
-          <svg class="mx-auto h-12 w-12 text-gray-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-          </svg>
-          <p class="text-gray-600 dark:text-gray-400">No se encontraron suplencias para la fecha seleccionada.</p>
+        <div v-else-if="substitutions.length === 0" class="text-center py-20 px-6">
+          <div class="max-w-md mx-auto">
+            <div class="mx-auto h-20 w-20 bg-gray-100 dark:bg-gray-900/50 rounded-full flex items-center justify-center mb-4">
+              <svg class="h-10 w-10 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+            <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1">Sin suplencias confirmadas</h3>
+            <p class="text-gray-500 dark:text-gray-400">No se encontraron registros finalizados para el {{ formatDate(selectedDate) }}.</p>
+            <button @click="showSubstitutionModal = true" class="mt-6 inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-all shadow-md active:scale-95">
+              Crear Nueva Propuesta
+            </button>
+          </div>
         </div>
 
         <div v-else class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead>
+          <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700 shadow-sm">
+            <thead class="bg-gray-50 dark:bg-gray-900/50">
+
               <tr class="bg-gray-50 dark:bg-gray-900/50">
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Hora / Periodo</th>
                 <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Clase / Materia</th>
@@ -112,13 +138,77 @@
           </table>
         </div>
       </div>
+
+      <!-- Vista de Borradores -->
+      <div v-if="activeTab === 'drafts'" class="p-6">
+        <div v-if="loading" class="flex justify-center py-12">
+           <!-- Mismo loader -->
+        </div>
+
+        <div v-else-if="drafts.length === 0" class="text-center py-12">
+          <div class="max-w-xs mx-auto text-center">
+            <div class="bg-amber-50 dark:bg-amber-900/10 rounded-full h-16 w-16 flex items-center justify-center mx-auto mb-4">
+              <svg class="h-8 w-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+              </svg>
+            </div>
+            <h3 class="text-sm font-medium text-gray-900 dark:text-gray-100">Sin borradores pendientes</h3>
+            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">Todas las propuestas de hoy han sido confirmadas.</p>
+          </div>
+        </div>
+
+        <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div v-for="draft in drafts" :key="draft.batch_id" 
+            class="group bg-white dark:bg-gray-800 border-2 border-transparent hover:border-blue-500 dark:hover:border-blue-400 rounded-xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden flex flex-col">
+            <div class="p-5 flex-1">
+              <div class="flex items-center justify-between mb-3">
+                <div class="bg-blue-100 dark:bg-blue-900/30 px-2 py-1 rounded text-[10px] font-bold text-blue-700 dark:text-blue-400 uppercase tracking-wide">
+                  {{ draft.count }} Suplencias
+                </div>
+                <div class="text-[10px] text-gray-400 font-medium whitespace-nowrap">
+                  Hace poco
+                </div>
+              </div>
+              
+              <h4 class="text-sm font-bold text-gray-900 dark:text-gray-100 mb-2 truncate">Borrador: {{ draft.batch_id }}</h4>
+              
+              <div class="space-y-1.5 mb-4">
+                <div class="text-[11px] text-gray-500 font-semibold uppercase tracking-tighter">Docentes Ausentes:</div>
+                <div class="flex flex-wrap gap-1">
+                  <span v-for="t in draft.teachers" :key="t" class="bg-gray-100 dark:bg-gray-700 px-2 py-0.5 rounded-full text-[10px] text-gray-600 dark:text-gray-300">
+                    {{ t }}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            <div class="bg-gray-50 dark:bg-gray-900/30 p-3 flex items-center justify-between border-t dark:border-gray-700">
+              <button @click="editDraft(draft.batch_id)" 
+                class="flex-1 mr-2 px-3 py-1.5 bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold rounded-lg shadow-sm transition-colors active:scale-95 flex items-center justify-center gap-1.5">
+                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+                Continuar
+              </button>
+              <button @click="deleteDraft(draft.batch_id)" 
+                class="p-1.5 text-gray-400 hover:text-red-500 transition-colors" title="Descartar borrador">
+                <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <!-- Modal de Creación de Suplencias -->
     <TimetableSubstitutionModal 
       v-model="showSubstitutionModal" 
       :profesores-list="profesores"
+      :edit-batch-id="selectedBatchId"
       @saved="onSubstitutionsSaved"
+      @closed="selectedBatchId = null"
     />
   </div>
 </template>
@@ -142,7 +232,10 @@ const authStore = useAuthStore()
 const { printPdfBlob, loading: printing } = usePrint()
 const selectedDate = ref(dayjs().format('YYYY-MM-DD'))
 const substitutions = ref<any[]>([])
+const drafts = ref<any[]>([])
 const loading = ref(false)
+const activeTab = ref<'confirmed' | 'drafts'>('confirmed')
+const selectedBatchId = ref<string | null>(null)
 
 const tenantName = computed(() => {
   return authStore.tenant?.name || 'EscoSoft'
@@ -163,11 +256,19 @@ const tenantLogo = computed(() => {
 const showSubstitutionModal = ref(false)
 const profesores = ref<any[]>([])
 
+const fetchAll = async () => {
+  loading.value = true
+  await Promise.all([
+    fetchSubstitutions(),
+    fetchDrafts()
+  ])
+  loading.value = false
+}
+
 const fetchSubstitutions = async () => {
   try {
-    loading.value = true
     const response = await api.get('/api/substitutions', {
-      params: { date: selectedDate.value }
+      params: { date: selectedDate.value, status: 'confirmed' }
     })
     
     if (response.success) {
@@ -175,13 +276,20 @@ const fetchSubstitutions = async () => {
     }
   } catch (error) {
     console.error('Error fetching substitutions:', error)
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'No se pudieron cargar las suplencias.'
+  }
+}
+
+const fetchDrafts = async () => {
+  try {
+    const response = await api.get('/api/substitutions', {
+      params: { date: selectedDate.value, status: 'draft', summary: true }
     })
-  } finally {
-    loading.value = false
+    
+    if (response.success) {
+      drafts.value = response.data
+    }
+  } catch (error) {
+    console.error('Error fetching drafts:', error)
   }
 }
 
@@ -196,34 +304,40 @@ const loadProfesores = async () => {
   }
 }
 
-const deleteSubstitution = async (id: number) => {
+const editDraft = (batchId: string) => {
+  selectedBatchId.value = batchId
+  showSubstitutionModal.value = true
+}
+
+const deleteDraft = async (batchId: string) => {
   const result = await Swal.fire({
-    title: '¿Eliminar suplencia?',
-    text: 'Esta acción revertirá la asignación y el profesor original volverá a aparecer como ausente en el horario.',
+    title: '¿Descartar borrador?',
+    text: 'Se eliminarán todas las propuestas guardadas en este lote.',
     icon: 'warning',
     showCancelButton: true,
     confirmButtonColor: '#d33',
-    cancelButtonColor: '#3085d6',
-    confirmButtonText: 'Sí, eliminar',
-    cancelButtonText: 'Cancelar'
+    confirmButtonText: 'Sí, descartar'
   })
 
   if (result.isConfirmed) {
     try {
-      const response = await api.delete(`/api/substitutions/${id}`)
+      // Eliminar por batch_id - tendríamos que implementar un destroyBatch en el backend
+      // o simplemente iterar. Para simplicidad, usemos el batch_id si implementamos el endpoint.
+      // Por ahora, el controlador tiene destroy($id). Implementaré destroyBatch.
+      const response = await api.delete(`/api/substitutions/batch/${batchId}`)
       if (response.success) {
-        Swal.fire('Eliminado', 'La suplencia ha sido eliminada.', 'success')
-        fetchSubstitutions()
+        Swal.fire('Descartado', 'El borrador ha sido eliminado.', 'success')
+        fetchDrafts()
       }
     } catch (error) {
-      console.error('Error deleting substitution:', error)
-      Swal.fire('Error', 'No se pudo eliminar la suplencia.', 'error')
+       // Fallback si no hay destroyBatch
+       Swal.fire('Error', 'No se pudo eliminar el borrador.', 'error')
     }
   }
 }
 
 const onSubstitutionsSaved = () => {
-  fetchSubstitutions()
+  fetchAll()
 }
 
 const printReport = async () => {
@@ -249,7 +363,7 @@ const formatDate = (date: string) => {
 }
 
 onMounted(() => {
-  fetchSubstitutions()
+  fetchAll()
   loadProfesores()
 })
 </script>
