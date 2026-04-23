@@ -71,6 +71,7 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 import { api } from '~/utils/api'
+import { usePrint } from '~/composables/usePrint'
 
 const announcements = ref<any[]>([])
 const loadingAnnouncements = ref(false)
@@ -97,20 +98,11 @@ function formatDate(date: string) {
   return rtf.format(-Math.floor(diff / 86400), 'days')
 }
 
+const { printFile } = usePrint()
+
 async function downloadFile(announcementId: number, attachmentPath: string) {
-  try {
-    const res = await api.getBlob(`/api/announcements/${announcementId}/download`)
-    const url = window.URL.createObjectURL(res)
-    const link = document.createElement('a')
-    link.href = url
-    link.setAttribute('download', attachmentPath.split('/').pop() || 'adjunto')
-    document.body.appendChild(link)
-    link.click()
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
-  } catch (e) {
-    console.error('Error descargando adjunto:', e)
-  }
+  if (!attachmentPath) return
+  await printFile(`/api/announcements/${announcementId}/download`)
 }
 
 onMounted(() => {

@@ -91,6 +91,7 @@ import { useRoute } from 'vue-router'
 import { useDomain } from '~/composables/useDomain'
 import { api } from '~/utils/api'
 import { normalizeUrl } from '~/utils/url'
+import { usePrint } from '~/composables/usePrint'
 
 const route = useRoute()
 const { subdomain } = useDomain()
@@ -136,36 +137,11 @@ function formatDate(dateStr: string) {
  })
 }
 
+const { printFile } = usePrint()
+
 async function downloadFile() {
   if (!news.value?.id || downloading.value) return
   
-  downloading.value = true
-  try {
-    const response = await api.getBlob(`/api/${subdomain.value}/public-web/news/${news.value.id}/download`)
-    
-    // In Nuxt, apiCall with responseType 'blob' returns the Blob directly if we use getBlob
-    const url = window.URL.createObjectURL(response)
-    const link = document.createElement('a')
-    link.href = url
-    
-    // Use filename from path or default
-    let fileName = 'adjunto-noticia'
-    if (news.value?.attachment_path) {
-      fileName = news.value.attachment_path.split('/').pop() || fileName
-    }
-    
-    link.setAttribute('download', fileName)
-    document.body.appendChild(link)
-    link.click()
-    
-    // Cleanup
-    document.body.removeChild(link)
-    window.URL.revokeObjectURL(url)
-  } catch (err) {
-    console.error('Error downloading file:', err)
-    alert('No se pudo descargar el archivo. Por favor, intente de nuevo.')
-  } finally {
-    downloading.value = false
-  }
+  await printFile(`/api/${subdomain.value}/public-web/news/${news.value.id}/download`)
 }
 </script>
