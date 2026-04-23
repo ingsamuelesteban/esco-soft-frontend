@@ -50,7 +50,7 @@
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Aula</label>
             <div class="relative">
               <select v-model="aulaSeleccionada" @change="cargarModulosYEstudiantes" :disabled="loadingAulas"
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 dark:bg-gray-800 disabled:cursor-not-allowed">
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 dark:bg-gray-700 dark:text-gray-100 disabled:cursor-not-allowed">
                 <option value="">{{ loadingAulas ? 'Cargando aulas...' : 'Seleccionar aula...' }}</option>
                 <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
                   {{ aula.grado_cardinal }}° {{ aula.seccion }}
@@ -73,7 +73,7 @@
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Módulo Formativo</label>
             <div class="relative">
               <select v-model="moduloSeleccionado" @change="cargarCalificaciones" :disabled="loadingModulosYEstudiantes"
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 dark:bg-gray-800 disabled:cursor-not-allowed">
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 dark:bg-gray-700 dark:text-gray-100 disabled:cursor-not-allowed">
                 <option value="">{{ loadingModulosYEstudiantes ? 'Cargando módulos...' : 'Seleccionar módulo...' }}
                 </option>
                 <option v-for="modulo in modulosDisponibles" :key="modulo.id" :value="modulo.id">
@@ -524,7 +524,7 @@
 
             <input v-model="valorRAActual" type="number" min="0" :max="porcentajeDisponible" step="0.1"
               :disabled="guardandoValorRA"
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 dark:bg-gray-800 disabled:cursor-not-allowed"
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 dark:bg-gray-700 dark:text-gray-100 disabled:cursor-not-allowed"
               :placeholder="`Máximo ${porcentajeDisponible}%`" />
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
               Ingresa el porcentaje que representa este RA (todos los RA deben sumar 100%)
@@ -543,12 +543,12 @@
               <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha Inicio</label>
                 <input v-model="fechaInicioRA" type="date" :disabled="guardandoValorRA"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha Fin</label>
                 <input v-model="fechaFinRA" type="date" :disabled="guardandoValorRA"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
               </div>
             </div>
             <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Definir el periodo de evaluación para este RA.</p>

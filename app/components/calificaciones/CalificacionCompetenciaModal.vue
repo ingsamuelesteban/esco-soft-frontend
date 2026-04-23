@@ -31,14 +31,14 @@
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Calificación (0-100) *</label>
                                 <input ref="gradeInput" v-model.number="form.nota" type="number" min="0" max="100"
                                     step="1" required
-                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                                     placeholder="Ingrese la nota" @keypress="isNumber($event)" />
                             </div>
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Observaciones</label>
                                 <textarea v-model="form.observaciones" rows="3"
-                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                                     placeholder="Observaciones opcionales..."></textarea>
                             </div>
                         </div>

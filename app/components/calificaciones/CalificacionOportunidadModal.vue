@@ -49,7 +49,7 @@
                                 </label>
                                 <input ref="notaInput" v-model="form.nota" type="number" min="0" :max="valorRa"
                                     step="0.1"
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 dark:bg-gray-800 disabled:cursor-not-allowed"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 dark:bg-gray-700 dark:text-gray-100 disabled:cursor-not-allowed"
                                     placeholder="Ingresa la calificación" />
                                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                     Ingresa un valor entre 0 y {{ valorRa }}
@@ -61,7 +61,7 @@
                                     Observaciones (opcional)
                                 </label>
                                 <textarea v-model="form.observaciones" rows="4"
-                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
+                                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"
                                     placeholder="Comentarios sobre el desempeño..."></textarea>
                             </div>
                         </div>
