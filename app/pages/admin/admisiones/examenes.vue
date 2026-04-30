@@ -19,6 +19,15 @@
           <ArrowUpTrayIcon class="w-4 h-4" />
           Examen de Admisión
         </button>
+        <button @click="imprimirListado" :disabled="printing"
+          class="inline-flex items-center gap-2 px-4 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-700 dark:bg-gray-700 dark:hover:bg-gray-600 dark:text-gray-100 text-sm font-semibold rounded-xl shadow-sm transition-colors disabled:opacity-50">
+          <PrinterIcon v-if="!printing" class="w-4 h-4" />
+          <svg v-else class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Imprimir
+        </button>
       </div>
 
     </div>
@@ -52,6 +61,12 @@
         <option value="">Todos los estados</option>
         <option value="completado">Con examen</option>
         <option value="pendiente">Sin examen</option>
+      </select>
+      <!-- Área -->
+      <select v-model="filtros.area_id" @change="cargar"
+        class="input-field text-sm rounded-lg px-3 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+        <option value="">Todas las áreas</option>
+        <option v-for="a in areas" :key="a.id" :value="a.id">{{ a.nombre }}</option>
       </select>
       <!-- Búsqueda -->
       <input v-model="busqueda" @input="filtrarLocal" type="text" placeholder="Buscar por nombre o folder..."
@@ -191,11 +206,15 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { api } from '~/utils/api'
-import { ArrowUpTrayIcon, PencilSquareIcon } from '@heroicons/vue/24/outline'
+import { ArrowUpTrayIcon, PencilSquareIcon, PrinterIcon } from '@heroicons/vue/24/outline'
 import ImportarExamenCSVModal from '~/components/examenes/ImportarExamenCSVModal.vue'
 import ExamenDetalleModal from '~/components/examenes/ExamenDetalleModal.vue'
+import { usePrint } from '~/composables/usePrint'
 
 definePageMeta({ layout: 'default', middleware: ['auth'] })
+
+const { printPdfBlob } = usePrint()
+const printing = ref(false)
 
 const loading = ref(true)
 const showImportModal = ref(false)
@@ -204,11 +223,13 @@ const examenSeleccionado = ref<any>(null)
 const estudiantes = ref<any[]>([])
 const stats = ref<any>(null)
 const aniosLectivos = ref<any[]>([])
+const areas = ref<any[]>([])
 const busqueda = ref('')
 
 const filtros = ref({
   anio_lectivo_id: null as number | null,
   estado: '',
+  area_id: '',
 })
 
 
@@ -227,11 +248,31 @@ async function cargar() {
     const params: any = {}
     if (filtros.value.anio_lectivo_id) params.anio_lectivo_id = filtros.value.anio_lectivo_id
     if (filtros.value.estado) params.estado = filtros.value.estado
+    if (filtros.value.area_id) params.area_id = filtros.value.area_id
     const res = await api.get('/api/admisiones/examenes', { params })
     estudiantes.value = res.data?.data ?? []
     stats.value = res.data?.stats ?? null
   } finally {
     loading.value = false
+  }
+}
+
+async function imprimirListado() {
+  printing.value = true
+  try {
+    const params: any = {}
+    if (filtros.value.anio_lectivo_id) params.anio_lectivo_id = filtros.value.anio_lectivo_id
+    if (filtros.value.estado) params.estado = filtros.value.estado
+    if (filtros.value.area_id) params.area_id = filtros.value.area_id
+    
+    const blob = await api.getBlob('/api/admisiones/examenes/listado-pdf', { 
+        params
+    })
+    printPdfBlob(blob, 'listado_examenes_vocacionales.pdf')
+  } catch (error) {
+    console.error('Error al imprimir', error)
+  } finally {
+    printing.value = false
   }
 }
 
@@ -266,10 +307,17 @@ function onImported() {
 
 
 onMounted(async () => {
-  // 1. Cargar años lectivos
+  // 1. Cargar años lectivos y áreas
   const resAnios = await api.get('/api/anios-lectivos')
   const data: any[] = resAnios.data || resAnios || []
   aniosLectivos.value = data
+
+  try {
+    const resAreas = await api.get('/api/titulos')
+    areas.value = resAreas.data?.data || resAreas.data || []
+  } catch (e) {
+    console.error('Error cargando áreas', e)
+  }
 
 
   if (data.length > 0) {
