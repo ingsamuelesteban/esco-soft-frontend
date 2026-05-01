@@ -17,13 +17,13 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Nombres <span class="text-red-500">*</span></label>
-              <input ref="initialInput" v-model="form.nombres" type="text" class="border rounded px-2 py-2 w-full"
+              <input ref="initialInput" v-model="form.nombres" type="text" class="w-full px-2 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Nombres del estudiante" />
               <p v-if="errors.nombres" class="text-sm text-red-600 mt-1">{{ errors.nombres }}</p>
             </div>
             <div>
               <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Apellidos <span class="text-red-500">*</span></label>
-              <input v-model="form.apellidos" type="text" class="border rounded px-2 py-2 w-full"
+              <input v-model="form.apellidos" type="text" class="w-full px-2 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Apellidos del estudiante" />
               <p v-if="errors.apellidos" class="text-sm text-red-600 mt-1">{{ errors.apellidos }}</p>
             </div>
@@ -36,13 +36,13 @@
             </div>
             <div>
               <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">RNE</label>
-              <input v-model="form.rne" type="text" class="border rounded px-2 py-2 w-full"
+              <input v-model="form.rne" type="text" class="w-full px-2 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="Código único" />
               <p v-if="errors.rne" class="text-sm text-red-600 mt-1">{{ errors.rne }}</p>
             </div>
             <div>
               <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Sexo <span class="text-red-500">*</span></label>
-              <select v-model="form.sexo" class="border rounded px-2 py-2 w-full">
+              <select v-model="form.sexo" class="w-full px-2 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 <option value="">Seleccionar...</option>
                 <option value="Masculino">Masculino</option>
                 <option value="Femenino">Femenino</option>
@@ -55,12 +55,12 @@
             <div>
               <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Fecha de Nacimiento <span
                   class="text-red-500">*</span></label>
-              <input v-model="form.fecha_nacimiento" type="date" class="border rounded px-2 py-2 w-full" />
+              <input v-model="form.fecha_nacimiento" type="date" class="w-full px-2 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
               <p v-if="errors.fecha_nacimiento" class="text-sm text-red-600 mt-1">{{ errors.fecha_nacimiento }}</p>
             </div>
             <div v-if="form.fecha_nacimiento">
               <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Edad (calculada automáticamente)</label>
-              <input :value="edadCalculada + ' años'" type="text" class="border rounded px-2 py-2 w-full bg-gray-50 dark:bg-gray-900/50"
+              <input :value="edadCalculada + ' años'" type="text" class="w-full px-2 py-2 bg-gray-50 dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 rounded focus:outline-none"
                 readonly />
             </div>
           </div>
@@ -69,7 +69,7 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Aula</label>
               <select v-model="form.aula_id"
-                class="w-full border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                class="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 <option :value="undefined">Sin aula asignada</option>
                 <option v-for="aula in aulasStore.items" :key="aula.id" :value="aula.id">
                   {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo?.nombre }}
@@ -81,7 +81,7 @@
             <div v-if="!isEdit">
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Año Lectivo de Ingreso</label>
               <select v-model="form.anio_lectivo_id"
-                class="w-full border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                class="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 <option :value="undefined">Seleccionar año...</option>
                 <option v-for="anio in aniosStore.items" :key="anio.id" :value="anio.id">
                   {{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}
@@ -95,7 +95,7 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Estado</label>
               <select v-model="form.estado"
-                class="w-full border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                class="w-full bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500">
                 <option value="activo">Activo</option>
                 <option value="retirado">Retirado</option>
               </select>
@@ -115,7 +115,7 @@
               <div class="ml-3 w-full">
                 <h3 class="text-sm font-medium text-red-800">Fecha de Retiro</h3>
                 <div class="mt-2">
-                  <input v-model="form.fecha_retiro" type="date" class="border rounded px-2 py-2 w-full" />
+                  <input v-model="form.fecha_retiro" type="date" class="w-full px-2 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
                 </div>
                 <p class="mt-2 text-xs text-red-700">
                   El estudiante mantendrá su número de orden (se activará orden manual). Su asistencia y calificaciones
@@ -147,7 +147,7 @@
             <div v-if="form.orden_manual" class="mt-4">
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Número de Orden</label>
               <input type="number" v-model.number="form.numero_orden"
-                class="w-32 border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500" min="1">
+                class="w-32 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-white rounded-lg shadow-sm focus:border-blue-500 focus:ring-blue-500" min="1">
               <p class="text-xs text-amber-600 mt-1">Este estudiante mantendrá este número fijo. Los demás se reodenarán
                 alrededor.</p>
             </div>
