@@ -351,30 +351,7 @@ interface ListaItem {
   entrego_fisica: boolean | null
 }
 
-// Edit modal
-const showEditModal = ref(false)
-const editTarget = ref<ListaItem | null>(null)
-const editForm = reactive({ fue_evaluado: null as boolean | null, cargo_digital: null as boolean | null, entrego_fisica: null as boolean | null })
-
-function openEdit(lista: ListaItem) {
-  editTarget.value = lista
-  editForm.fue_evaluado = lista.fue_evaluado
-  editForm.cargo_digital = lista.cargo_digital
-  editForm.entrego_fisica = lista.entrego_fisica
-  showEditModal.value = true
-}
-
-function guardarEvaluacion() {
-  if (!editTarget.value) return
-  const idx = listas.value.findIndex(l => l.id === editTarget.value!.id)
-  if (idx !== -1) {
-    listas.value[idx].fue_evaluado = editForm.fue_evaluado
-    listas.value[idx].cargo_digital = editForm.cargo_digital
-    listas.value[idx].entrego_fisica = editForm.entrego_fisica
-  }
-  showEditModal.value = false
-}
-
+// Datos principales — declarados antes de los helpers que los usan
 const listas = ref<ListaItem[]>([])
 
 const form = reactive({
@@ -388,6 +365,34 @@ const form = reactive({
 const formValido = computed(() =>
   form.fecha && form.personal_id && form.aula_id && form.period_id
 )
+
+// ── Modal Editar ──────────────────────────────────────────────
+const showEditModal = ref(false)
+const editTarget = ref<ListaItem | null>(null)
+const editForm = reactive({
+  fue_evaluado: null as boolean | null,
+  cargo_digital: null as boolean | null,
+  entrego_fisica: null as boolean | null,
+})
+
+function openEdit(lista: ListaItem) {
+  editTarget.value = lista
+  editForm.fue_evaluado = lista.fue_evaluado
+  editForm.cargo_digital = lista.cargo_digital
+  editForm.entrego_fisica = lista.entrego_fisica
+  showEditModal.value = true
+}
+
+function guardarEvaluacion() {
+  if (!editTarget.value) return
+  const item = listas.value.find(l => l.id === editTarget.value!.id)
+  if (item) {
+    item.fue_evaluado = editForm.fue_evaluado
+    item.cargo_digital = editForm.cargo_digital
+    item.entrego_fisica = editForm.entrego_fisica
+  }
+  showEditModal.value = false
+}
 
 // ── Métodos ───────────────────────────────────────────────────
 function formatDate(iso: string) {
