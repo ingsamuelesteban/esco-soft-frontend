@@ -10,7 +10,7 @@
             <div class="w-full md:w-64">
                <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Año Lectivo</label>
                <select v-model="selectedAnioId" v-if="aniosStore.items.length > 0"
-                  class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg shadow-sm">
+                  class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                   <option :value="null">Año Activo (Por defecto)</option>
                   <option v-for="anio in aniosStore.items" :key="anio.id" :value="anio.id">
                      {{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}
@@ -46,7 +46,7 @@
                   <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Buscar Estudiante</label>
                   <div class="relative">
                      <input v-model="studentSearch" @input="searchStudents" type="text"
-                        class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border"
+                        class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                         placeholder="Escribe nombre, apellido o RNE..." />
                      <!-- Resultados de búsqueda -->
                      <div v-if="studentJsonResults.length > 0"
@@ -204,7 +204,7 @@
                   <div>
                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Aula</label>
                      <select v-model="selectedAula" @change="loadSubjects"
-                        class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border">
+                        class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                         <option value="">Seleccionar Aula...</option>
                         <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
                            {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo ? aula.titulo.nombre : '' }}
@@ -294,7 +294,7 @@
                   <div>
                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Aula</label>
                      <select v-model="selectedAula" @change="loadSubjects"
-                        class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border">
+                        class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                         <option value="">Seleccionar Aula...</option>
                         <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
                            {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo ? aula.titulo.nombre : '' }}
@@ -305,7 +305,7 @@
                   <div>
                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Materia</label>
                      <select v-model="selectedMateria" :disabled="!selectedAula"
-                        class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border disabled:bg-gray-100 dark:bg-gray-800">
+                        class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 disabled:dark:bg-gray-800 disabled:cursor-not-allowed">
                         <option value="">Seleccionar Materia...</option>
                         <option v-for="subj in subjects" :key="subj.materia_id" :value="subj.materia_id">
                            {{ subj.nombre }} ({{ subj.tipo }}) - {{ subj.profesor ? subj.profesor.nombre_completo :
@@ -461,7 +461,7 @@
                   <div>
                      <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Aula</label>
                      <select v-model="selectedAula"
-                        class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border">
+                        class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                         <option value="">Seleccionar Aula...</option>
                         <option value="all">Todas las Aulas</option>
                         <option v-for="aula in aulas" :key="aula.id" :value="aula.id">

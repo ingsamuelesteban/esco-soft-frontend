@@ -131,7 +131,7 @@ const reset = () => {
                                     Nota máxima permitida: <strong>{{ maxNota }}</strong>
                                 </div>
                                 <textarea v-model="pastedContent" rows="10"
-                                    class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md"
+                                    class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 disabled:dark:bg-gray-800 disabled:cursor-not-allowed"
                                     placeholder="Pega aquí tus notas..."></textarea>
                             </div>
 

@@ -82,7 +82,7 @@
                 <div>
                   <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Estado *</label>
                   <select ref="initialInput" v-model="form.estado" required
-                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                     <option value="">Seleccionar estado...</option>
                     <option value="Logrado">Logrado</option>
                     <option value="No Logrado">No Logrado</option>
@@ -92,13 +92,13 @@
                 <div>
                   <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de Evaluación *</label>
                   <input v-model="form.fecha_evaluacion" type="date" required
-                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm" />
+                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
                 </div>
 
                 <div>
                   <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Observaciones</label>
                   <textarea v-model="form.observaciones" rows="3"
-                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
+                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                     placeholder="Observaciones adicionales sobre la evaluación..."></textarea>
                 </div>
               </div>
