@@ -428,29 +428,40 @@ function guardarLista() {
   if (!formValido.value) return
   saving.value = true
 
-  api.post('/api/performance-evaluations', {
+  api.post<{ success: boolean; data: ListaItem }>('/api/performance-evaluations', {
     personal_id: form.personal_id,
     aula_id:     form.aula_id,
     period_id:   form.period_id,
     fecha:       form.fecha,
   })
     .then((res: any) => {
-      const created = res.data ?? res
+      // El controlador devuelve { success, message, data: { ...evaluation } }
+      const created = res?.data ?? res
       listas.value.unshift(created)
       closeModal()
     })
-    .catch((e: any) => console.error('Error creando evaluación:', e))
+    .catch((e: any) => {
+      console.error('Error creando evaluación:', e?.data ?? e)
+    })
     .finally(() => { saving.value = false })
 }
 
 // ── Carga inicial ───────────────────────────────────────────────
 onMounted(async () => {
-  const [listRes] = await Promise.all([
-    api.get<{ success: boolean; data: ListaItem[] }>('/api/performance-evaluations'),
+  // Cargar catálogos en paralelo
+  await Promise.all([
     aulasStore.fetchAll(),
     personalStore.fetchTeachers(),
     periodsStore.fetchAll(),
   ])
-  listas.value = (listRes as any).data ?? []
+
+  // Cargar lista de evaluaciones (independiente para no bloquear si falla)
+  try {
+    const res = await api.get<{ success: boolean; data: ListaItem[] }>('/api/performance-evaluations')
+    // La respuesta viene como { success: true, data: [...] }
+    listas.value = (res as any)?.data ?? []
+  } catch (e: any) {
+    console.error('Error cargando evaluaciones:', e?.data ?? e)
+  }
 })
 </script>
