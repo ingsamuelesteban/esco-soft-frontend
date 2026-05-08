@@ -215,9 +215,8 @@ function formatDate(iso: string) {
 
 onMounted(async () => {
   try {
-    // TODO: conectar con /api/performance-evaluations/me cuando esté disponible
-    // Por ahora retorna lista vacía
-    evaluaciones.value = []
+    const res = await api.get<{ success: boolean; data: Evaluacion[] }>('/api/performance-evaluations/me')
+    evaluaciones.value = (res as any).data ?? []
   } catch (e) {
     console.error(e)
   } finally {

@@ -324,6 +324,7 @@ import { ref, computed, reactive, onMounted } from 'vue'
 import { useAulasStore } from '~/stores/aulas'
 import { usePersonalStore } from '~/stores/personal'
 import { usePeriodsStore } from '~/stores/periods'
+import { api } from '~/utils/api'
 
 definePageMeta({
   middleware: ['auth', 'role']
@@ -385,13 +386,23 @@ function openEdit(lista: ListaItem) {
 
 function guardarEvaluacion() {
   if (!editTarget.value) return
-  const item = listas.value.find(l => l.id === editTarget.value!.id)
-  if (item) {
-    item.fue_evaluado = editForm.fue_evaluado
-    item.cargo_digital = editForm.cargo_digital
-    item.entrego_fisica = editForm.entrego_fisica
+  const payload = {
+    fue_evaluado:   editForm.fue_evaluado,
+    cargo_digital:  editForm.cargo_digital,
+    entrego_fisica: editForm.entrego_fisica,
   }
-  showEditModal.value = false
+  api.put(`/api/performance-evaluations/${editTarget.value.id}`, payload)
+    .then((res: any) => {
+      const updated = res.data ?? res
+      const item = listas.value.find(l => l.id === editTarget.value!.id)
+      if (item) {
+        item.fue_evaluado   = updated.fue_evaluado
+        item.cargo_digital  = updated.cargo_digital
+        item.entrego_fisica = updated.entrego_fisica
+      }
+      showEditModal.value = false
+    })
+    .catch((e: any) => console.error('Error guardando evaluación:', e))
 }
 
 // ── Métodos ───────────────────────────────────────────────────
@@ -417,36 +428,29 @@ function guardarLista() {
   if (!formValido.value) return
   saving.value = true
 
-  // Resolver etiquetas para la tabla
-  const profesor = personalStore.items.find(p => p.id === form.personal_id)
-  const aula = aulasStore.items.find(a => a.id === form.aula_id)
-  const period = periodsStore.items.find(p => p.id === form.period_id)
-
-  setTimeout(() => {
-    listas.value.push({
-      id: Date.now(),
-      fecha: form.fecha,
-      personal_id: form.personal_id,
-      profesor_nombre: profesor ? `${profesor.nombre} ${profesor.apellido}` : '—',
-      aula_id: form.aula_id,
-      seccion_label: aula ? `${aula.grado_cardinal}° ${aula.seccion}` : '—',
-      period_id: form.period_id,
-      periodo_label: period ? `${period.label} (${period.start_time.slice(0, 5)})` : '—',
-      fue_evaluado: null,
-      cargo_digital: null,
-      entrego_fisica: null,
+  api.post('/api/performance-evaluations', {
+    personal_id: form.personal_id,
+    aula_id:     form.aula_id,
+    period_id:   form.period_id,
+    fecha:       form.fecha,
+  })
+    .then((res: any) => {
+      const created = res.data ?? res
+      listas.value.unshift(created)
+      closeModal()
     })
-    saving.value = false
-    closeModal()
-  }, 600)
+    .catch((e: any) => console.error('Error creando evaluación:', e))
+    .finally(() => { saving.value = false })
 }
 
-// ── Carga inicial ─────────────────────────────────────────────
+// ── Carga inicial ───────────────────────────────────────────────
 onMounted(async () => {
-  await Promise.all([
+  const [listRes] = await Promise.all([
+    api.get<{ success: boolean; data: ListaItem[] }>('/api/performance-evaluations'),
     aulasStore.fetchAll(),
     personalStore.fetchTeachers(),
     periodsStore.fetchAll(),
   ])
+  listas.value = (listRes as any).data ?? []
 })
 </script>
