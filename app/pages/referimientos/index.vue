@@ -17,14 +17,14 @@
                 <div v-if="isTeacher">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fecha</label>
                     <input v-model="selectedDate" type="date"
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500" />
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
                 </div>
 
                 <!-- Selector de Materia/Aula (Profesor) -->
                 <div v-if="isTeacher">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Materia y Aula</label>
                     <select v-model="selectedAssignmentId" @change="onAssignmentChange"
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                         :disabled="attendanceStore.loadingDailyClasses">
                         <option :value="null">
                             {{ attendanceStore.loadingDailyClasses ? 'Cargando horario...' :
@@ -44,7 +44,7 @@
                 <div v-if="isAdminOrPsychologist" class="md:col-span-2">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Seleccionar Aula</label>
                     <select v-model="selectedAulaId" @change="onAulaChange"
-                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500">
+                        class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                         <option :value="null">Seleccione un aula...</option>
                         <option v-for="aula in aulasStore.items" :key="aula.id" :value="aula.id">
                             {{ aula.grado_cardinal }} - {{ aula.seccion }}
@@ -171,7 +171,7 @@
                                 <div v-if="form.reportType === 'warning'">
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo de Advertencia</label>
                                     <select v-model="form.warning_type_id"
-                                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                         <option value="">Seleccione un tipo</option>
                                         <option v-for="type in warningTypes" :key="type.id" :value="type.id">
                                             {{ type.name }}
@@ -183,7 +183,7 @@
                                 <div v-if="form.reportType === 'warning'">
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Título</label>
                                     <input v-model="form.title" type="text" required
-                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                         placeholder="Título breve de la advertencia" />
                                 </div>
 
@@ -191,7 +191,7 @@
                                 <div v-if="form.reportType === 'case'">
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Prioridad</label>
                                     <select v-model="form.priority"
-                                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                         <option value="low">Baja</option>
                                         <option value="medium">Media</option>
                                         <option value="high">Alta</option>
@@ -201,7 +201,7 @@
                                 <div v-if="form.reportType === 'case' && !isPsychologistRole">
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Asignar a (Opcional)</label>
                                     <select v-model="form.assigned_to"
-                                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                        class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                         <option value="">Automático (Según disponibilidad)</option>
                                         <option v-for="psych in psychologists" :key="psych.id" :value="psych.id">
                                             {{ psych.name }}
@@ -215,7 +215,7 @@
                                         {{ form.reportType === 'warning' ? 'Comentario Inicial' : 'Motivo' }}
                                     </label>
                                     <textarea v-model="form.reason" rows="3" required
-                                        class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md"
+                                        class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                         placeholder="Describa el motivo..."></textarea>
                                 </div>
 

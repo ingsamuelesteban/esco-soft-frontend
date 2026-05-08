@@ -99,7 +99,7 @@
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Aula afectada</label>
             <select v-model="form.aula_id"
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white dark:bg-gray-800">
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
               <option :value="null">Seleccionar aula (opcional)</option>
               <option v-for="a in aulas" :key="a.id" :value="a.id">{{ a.grado_cardinal }}° {{ a.seccion }}</option>
             </select>
@@ -109,7 +109,7 @@
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Categoría *</label>
             <select v-model="form.categoria" required
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white dark:bg-gray-800">
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
               <option value="">Seleccionar...</option>
               <option value="mobiliario">Mobiliario</option>
               <option value="equipo">Equipo / Tecnología</option>
@@ -124,7 +124,7 @@
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Título *</label>
             <input v-model="form.titulo" type="text" required maxlength="255"
               placeholder="Ej: Silla rota en la fila 3"
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500" />
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
           </div>
 
           <!-- Descripción -->
@@ -132,7 +132,7 @@
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripción *</label>
             <textarea v-model="form.descripcion" rows="4" required
               placeholder="Describe el problema con el mayor detalle posible..."
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none"></textarea>
+              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"></textarea>
           </div>
 
           <!-- Prioridad -->

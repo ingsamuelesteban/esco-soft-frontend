@@ -38,7 +38,7 @@
       <!-- Filtros -->
       <div class="flex flex-wrap gap-3 mb-5">
         <select v-model="filters.categoria" @change="fetchReports()"
-          class="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-orange-500">
+          class="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-orange-500">
           <option value="">Todas las categorías</option>
           <option value="mobiliario">Mobiliario</option>
           <option value="equipo">Equipo</option>
@@ -47,7 +47,7 @@
           <option value="otro">Otro</option>
         </select>
         <select v-model="filters.prioridad" @change="fetchReports()"
-          class="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-orange-500">
+          class="px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-orange-500">
           <option value="">Todas las prioridades</option>
           <option value="alta">Alta</option>
           <option value="media">Media</option>
@@ -233,7 +233,7 @@
               <textarea v-model="newEntry"
                 rows="3"
                 placeholder="Escribe una nota de seguimiento..."
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none"></textarea>
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"></textarea>
               <div class="flex justify-end mt-2">
                 <button @click="addEntry"
                   :disabled="!newEntry.trim() || savingEntry"

@@ -25,7 +25,7 @@
                             Estudiante</label>
                         <div class="relative">
                             <input type="text" id="search" v-model="searchQuery"
-                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-gray-800 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-blue-300 focus:ring focus:ring-blue-200 sm:text-sm transition duration-150 ease-in-out"
+                                class="block w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md leading-5 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-blue-300 focus:ring focus:ring-blue-200 sm:text-sm transition duration-150 ease-in-out"
                                 placeholder="Nombre o apellido..." />
                             <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                 <svg class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
@@ -39,7 +39,7 @@
                     <div class="w-full md:w-64">
                         <label for="aula" class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Filtrar por Aula</label>
                         <select id="aula" v-model="selectedAulaId"
-                            class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md">
+                            class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                             <option value="">Todas las aulas</option>
                             <option v-for="aula in aulasOptions" :key="aula.value" :value="aula.value">
                                 {{ aula.label }}
@@ -115,14 +115,14 @@
 
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ID Estudiante</label>
-                        <input v-model="form.student_id" type="number" class="w-full border rounded px-3 py-2"
+                        <input v-model="form.student_id" type="number" class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                             placeholder="ID del estudiante">
                         <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Ingresa el ID del sistema del estudiante.</p>
                     </div>
 
                     <div class="mb-4">
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Motivo</label>
-                        <textarea v-model="form.reason" class="w-full border rounded px-3 py-2" rows="2"></textarea>
+                        <textarea v-model="form.reason" class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" rows="2"></textarea>
                     </div>
 
                     <div class="flex justify-end gap-2">
