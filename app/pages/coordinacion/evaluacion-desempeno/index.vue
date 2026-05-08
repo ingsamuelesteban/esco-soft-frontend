@@ -40,38 +40,58 @@
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Fecha</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Profesor</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Sección</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Período / Hora</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Período</th>
+            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Evaluado</th>
+            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Plan. Digital</th>
+            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Plan. Física</th>
             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
           </tr>
         </thead>
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
           <tr v-for="lista in listas" :key="lista.id" class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-              {{ formatDate(lista.fecha) }}
-            </td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ formatDate(lista.fecha) }}</td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="flex items-center gap-3">
-                <div class="h-8 w-8 rounded-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center text-indigo-700 dark:text-indigo-300 text-sm font-semibold">
-                  {{ lista.profesor_nombre?.charAt(0) }}
-                </div>
+                <div class="h-8 w-8 rounded-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center text-indigo-700 dark:text-indigo-300 text-sm font-semibold">{{ lista.profesor_nombre?.charAt(0) }}</div>
                 <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ lista.profesor_nombre }}</span>
               </div>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-              {{ lista.seccion_label }}
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ lista.seccion_label }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">{{ lista.periodo_label }}</td>
+            <!-- Evaluado -->
+            <td class="px-6 py-4 text-center">
+              <span v-if="lista.fue_evaluado === null" class="text-gray-300 dark:text-gray-600 text-lg">—</span>
+              <span v-else-if="lista.fue_evaluado" class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/40">
+                <svg class="w-3.5 h-3.5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              </span>
+              <span v-else class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/40">
+                <svg class="w-3.5 h-3.5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
+              </span>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-              {{ lista.periodo_label }}
+            <!-- Plan. Digital -->
+            <td class="px-6 py-4 text-center">
+              <span v-if="lista.cargo_digital === null" class="text-gray-300 dark:text-gray-600 text-lg">—</span>
+              <span v-else-if="lista.cargo_digital" class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/40">
+                <svg class="w-3.5 h-3.5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              </span>
+              <span v-else class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/40">
+                <svg class="w-3.5 h-3.5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
+              </span>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap">
-              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300">
-                Pendiente
+            <!-- Plan. Física -->
+            <td class="px-6 py-4 text-center">
+              <span v-if="lista.entrego_fisica === null" class="text-gray-300 dark:text-gray-600 text-lg">—</span>
+              <span v-else-if="lista.entrego_fisica" class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100 dark:bg-green-900/40">
+                <svg class="w-3.5 h-3.5 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"/></svg>
+              </span>
+              <span v-else class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/40">
+                <svg class="w-3.5 h-3.5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
               </span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
-              <button class="text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-200 font-medium transition-colors">
-                Ver
+              <button @click="openEdit(lista)" class="inline-flex items-center gap-1 text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-200 font-medium transition-colors">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                Editar
               </button>
             </td>
           </tr>
@@ -225,6 +245,77 @@
       </div>
     </Transition>
 
+    <!-- Modal: Editar Evaluación -->
+    <Transition enter-active-class="transition ease-out duration-200" enter-from-class="opacity-0" enter-to-class="opacity-100" leave-active-class="transition ease-in duration-150" leave-from-class="opacity-100" leave-to-class="opacity-0">
+      <div v-if="showEditModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+        <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden">
+
+          <!-- Header -->
+          <div class="flex items-center justify-between px-6 py-5 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-violet-600 to-violet-500">
+            <div class="flex items-center gap-3">
+              <div class="h-8 w-8 rounded-lg bg-white/20 flex items-center justify-center">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              </div>
+              <div>
+                <h2 class="text-base font-bold text-white">Registrar Evaluación</h2>
+                <p class="text-violet-200 text-xs mt-0.5">{{ editTarget?.profesor_nombre }}</p>
+              </div>
+            </div>
+            <button @click="showEditModal = false" class="text-white/70 hover:text-white transition-colors">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          <!-- Body -->
+          <div class="px-6 py-6 space-y-4">
+            <!-- Pregunta 1 -->
+            <div class="flex items-center justify-between p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40">
+              <span class="text-sm font-medium text-gray-800 dark:text-gray-200">¿Fue evaluado?</span>
+              <div class="flex gap-2">
+                <button @click="editForm.fue_evaluado = true"
+                  :class="editForm.fue_evaluado === true ? 'bg-green-600 text-white ring-2 ring-green-500' : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600'"
+                  class="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all">Sí</button>
+                <button @click="editForm.fue_evaluado = false"
+                  :class="editForm.fue_evaluado === false ? 'bg-red-600 text-white ring-2 ring-red-500' : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600'"
+                  class="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all">No</button>
+              </div>
+            </div>
+            <!-- Pregunta 2 -->
+            <div class="flex items-center justify-between p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40">
+              <span class="text-sm font-medium text-gray-800 dark:text-gray-200">¿Cargó planificación a la plataforma?</span>
+              <div class="flex gap-2">
+                <button @click="editForm.cargo_digital = true"
+                  :class="editForm.cargo_digital === true ? 'bg-green-600 text-white ring-2 ring-green-500' : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600'"
+                  class="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all">Sí</button>
+                <button @click="editForm.cargo_digital = false"
+                  :class="editForm.cargo_digital === false ? 'bg-red-600 text-white ring-2 ring-red-500' : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600'"
+                  class="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all">No</button>
+              </div>
+            </div>
+            <!-- Pregunta 3 -->
+            <div class="flex items-center justify-between p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40">
+              <span class="text-sm font-medium text-gray-800 dark:text-gray-200">¿Entregó planificación física?</span>
+              <div class="flex gap-2">
+                <button @click="editForm.entrego_fisica = true"
+                  :class="editForm.entrego_fisica === true ? 'bg-green-600 text-white ring-2 ring-green-500' : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600'"
+                  class="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all">Sí</button>
+                <button @click="editForm.entrego_fisica = false"
+                  :class="editForm.entrego_fisica === false ? 'bg-red-600 text-white ring-2 ring-red-500' : 'bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 border border-gray-300 dark:border-gray-600'"
+                  class="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all">No</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 border-t border-gray-200 dark:border-gray-700 flex justify-end gap-3">
+            <button @click="showEditModal = false" class="px-4 py-2.5 text-sm font-medium rounded-xl border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Cancelar</button>
+            <button @click="guardarEvaluacion" class="px-5 py-2.5 text-sm font-semibold rounded-xl bg-violet-600 hover:bg-violet-700 text-white shadow-sm transition-all">Guardar</button>
+          </div>
+
+        </div>
+      </div>
+    </Transition>
+
   </div>
 </template>
 
@@ -246,7 +337,6 @@ const periodsStore = usePeriodsStore()
 const showModal = ref(false)
 const saving = ref(false)
 
-// Lista temporal (sin backend todavía)
 interface ListaItem {
   id: number
   fecha: string
@@ -256,6 +346,33 @@ interface ListaItem {
   seccion_label: string
   period_id: number | null
   periodo_label: string
+  fue_evaluado: boolean | null
+  cargo_digital: boolean | null
+  entrego_fisica: boolean | null
+}
+
+// Edit modal
+const showEditModal = ref(false)
+const editTarget = ref<ListaItem | null>(null)
+const editForm = reactive({ fue_evaluado: null as boolean | null, cargo_digital: null as boolean | null, entrego_fisica: null as boolean | null })
+
+function openEdit(lista: ListaItem) {
+  editTarget.value = lista
+  editForm.fue_evaluado = lista.fue_evaluado
+  editForm.cargo_digital = lista.cargo_digital
+  editForm.entrego_fisica = lista.entrego_fisica
+  showEditModal.value = true
+}
+
+function guardarEvaluacion() {
+  if (!editTarget.value) return
+  const idx = listas.value.findIndex(l => l.id === editTarget.value!.id)
+  if (idx !== -1) {
+    listas.value[idx].fue_evaluado = editForm.fue_evaluado
+    listas.value[idx].cargo_digital = editForm.cargo_digital
+    listas.value[idx].entrego_fisica = editForm.entrego_fisica
+  }
+  showEditModal.value = false
 }
 
 const listas = ref<ListaItem[]>([])
@@ -310,6 +427,9 @@ function guardarLista() {
       seccion_label: aula ? `${aula.grado_cardinal}° ${aula.seccion}` : '—',
       period_id: form.period_id,
       periodo_label: period ? `${period.label} (${period.start_time.slice(0, 5)})` : '—',
+      fue_evaluado: null,
+      cargo_digital: null,
+      entrego_fisica: null,
     })
     saving.value = false
     closeModal()
