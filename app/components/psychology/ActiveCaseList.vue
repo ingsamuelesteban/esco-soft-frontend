@@ -3,7 +3,7 @@
         <!-- Filter for Admin/Master -->
         <div v-if="authStore.user?.role === 'admin' || authStore.user?.role === 'master'" class="flex justify-end">
             <select v-model="selectedPsychologist" 
-                class="block w-64 pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                class="block w-64 pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                 <option :value="null">Todos los psicólogos</option>
                 <option v-for="psych in psychologists" :key="psych.id" :value="psych.id">
                     {{ psych.name }}

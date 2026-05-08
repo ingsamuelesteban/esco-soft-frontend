@@ -68,13 +68,13 @@
             <div>
               <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha de Observación</label>
               <input type="date" v-model="form.observed_at"
-                class="w-full rounded-lg border-gray-300 dark:border-gray-600 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border" />
+                class="w-full rounded-lg border-gray-300 dark:border-gray-600 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
             </div>
             <div class="flex gap-4">
               <div class="flex-1">
                 <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Hora Inicio</label>
                 <input type="time" v-model="form.start_time"
-                  class="w-full rounded-lg border-gray-300 dark:border-gray-600 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border" />
+                  class="w-full rounded-lg border-gray-300 dark:border-gray-600 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
               </div>
             </div>
             <div>
@@ -97,7 +97,7 @@
             <div class="md:col-span-2">
               <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Seleccionar Maestro</label>
               <select v-model="form.teacher_id" @change="onTeacherSelect"
-                class="w-full rounded-lg border-gray-300 dark:border-gray-600 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border">
+                class="w-full rounded-lg border-gray-300 dark:border-gray-600 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                 <option value="" disabled>Seleccione un maestro...</option>
                 <option v-for="t in availableTeachers" :key="t.id" :value="t.user.id">{{ t.nombre }} {{ t.apellido }}
                 </option>
@@ -134,7 +134,7 @@
             <div>
               <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Seleccionar Asignación (Clase)</label>
               <select v-model="form.assignment_id" @change="onAssignmentSelect"
-                class="w-full rounded-lg border-gray-300 dark:border-gray-600 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border">
+                class="w-full rounded-lg border-gray-300 dark:border-gray-600 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                 <option value="" disabled>Seleccione una asignación...</option>
                 <option v-for="a in assignments" :key="a.id" :value="a.id">
                   {{ a.materia?.nombre }} - {{ a.aula?.nombre }} ({{ a.aula?.grado_cardinal }}° {{ a.aula?.seccion }})
@@ -187,7 +187,7 @@
             <div>
               <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Resultado de Aprendizaje (Tema)</label>
               <textarea v-model="form.topic" rows="3"
-                class="w-full rounded-lg border-gray-300 dark:border-gray-600 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border"
+                class="w-full rounded-lg border-gray-300 dark:border-gray-600 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                 placeholder="Ingrese el resultado de aprendizaje o tema tratado..."></textarea>
             </div>
           </div>
@@ -229,7 +229,7 @@
 
               <!-- Observation -->
               <input type="text" v-model="form.data[q.id]!.obs" placeholder="Observaciones..."
-                class="w-full rounded-md border-gray-300 dark:border-gray-600 py-1.5 px-3 text-sm focus:border-primary-500 border" />
+                class="w-full rounded-md border-gray-300 dark:border-gray-600 py-1.5 px-3 text-sm focus:border-primary-500 border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
             </div>
           </div>
         </div>
@@ -241,7 +241,7 @@
           <div class="mb-6">
             <label class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300">Acuerdos y/o compromisos para la mejora</label>
             <textarea v-model="form.agreements" rows="6"
-              class="w-full rounded-lg border-gray-300 dark:border-gray-600 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border"
+              class="w-full rounded-lg border-gray-300 dark:border-gray-600 p-2.5 text-sm focus:border-primary-500 focus:ring-primary-500 shadow-sm border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               placeholder="Describa los acuerdos establecidos..."></textarea>
           </div>
 

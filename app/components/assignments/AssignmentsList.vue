@@ -3,7 +3,7 @@
     <div class="p-4 flex items-center justify-between gap-4 flex-wrap">
       <div class="flex items-center gap-2">
         <label class="text-sm text-gray-600 dark:text-gray-400">Año lectivo</label>
-        <select v-model="anioId" class="border rounded px-2 py-1 text-sm h-8 w-40">
+        <select v-model="anioId" class="border dark:border-gray-600 rounded px-2 py-1 text-sm h-8 w-40 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
            <option :value="null">Seleccione...</option>
            <option v-for="a in anios" :key="a.id" :value="a.id">
              {{ a.nombre }}
@@ -12,7 +12,7 @@
       </div>
       <div class="flex items-center gap-2">
         <label class="text-sm text-gray-600 dark:text-gray-400">Aula</label>
-        <select v-model.number="aulaId" class="border rounded px-2 py-1 text-sm h-8">
+        <select v-model.number="aulaId" class="border dark:border-gray-600 rounded px-2 py-1 text-sm h-8 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
           <option :value="undefined">Todas</option>
           <option v-for="a in aulas" :key="a.id" :value="a.id">
             {{ aulaLabel(a) }}

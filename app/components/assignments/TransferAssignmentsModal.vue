@@ -30,7 +30,7 @@
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Profesor Origen
                                         (Actual)</label>
                                     <select ref="initialInput" v-model="form.from_profesor_id"
-                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                         <option :value="null" disabled>Seleccione...</option>
                                         <option v-for="p in props.teachers" :key="p.id" :value="p.id">
                                             {{ p.nombre }} {{ p.apellido }}
@@ -51,7 +51,7 @@
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Profesor Destino
                                         (Nuevo)</label>
                                     <select v-model="form.to_profesor_id"
-                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                         <option :value="null" disabled>Seleccione...</option>
                                         <option v-for="p in availableTargets" :key="p.id" :value="p.id">
                                             {{ p.nombre }} {{ p.apellido }}

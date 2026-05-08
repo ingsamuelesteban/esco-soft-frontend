@@ -9,7 +9,7 @@
                 </div>
                 <div class="flex items-center space-x-4">
                     <select v-model="selectedAnioId" v-if="aniosStore.items.length > 0"
-                        class="block w-48 pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm">
+                        class="block w-48 pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                         <option :value="'all'">Todos los años</option>
                         <option v-for="anio in aniosStore.items" :key="anio.id" :value="anio.id">
                             {{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}
@@ -32,7 +32,7 @@
                                 Estudiante</label>
                             <div class="mt-1 relative rounded-md shadow-sm">
                                 <input type="text" name="search" id="search" v-model="search"
-                                    class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-3 sm:text-sm border-gray-300 dark:border-gray-600 rounded-md"
+                                    class="focus:ring-indigo-500 focus:border-indigo-500 block w-full pl-3 sm:text-sm border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                     placeholder="Nombre, apellido o cédula">
                             </div>
                         </div>
@@ -41,7 +41,7 @@
                             <label for="reported_by" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Reportado
                                 Por</label>
                             <select id="reported_by" name="reported_by" v-model="reportedBy"
-                                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                 <option value="">Todos los profesores</option>
                                 <option v-for="reporter in warningsStore.reporters" :key="reporter.id"
                                     :value="reporter.id">
@@ -54,7 +54,7 @@
                             <label for="date_from" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Desde</label>
                             <div class="mt-1">
                                 <input type="date" name="date_from" id="date_from" v-model="dateFrom"
-                                    class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md">
+                                    class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                             </div>
                         </div>
 
@@ -62,7 +62,7 @@
                             <label for="date_to" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Hasta</label>
                             <div class="mt-1">
                                 <input type="date" name="date_to" id="date_to" v-model="dateTo"
-                                    class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md">
+                                    class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                             </div>
                         </div>
                     </div>

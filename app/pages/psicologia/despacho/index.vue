@@ -31,7 +31,7 @@
             <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow mb-6">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Seleccionar Aula</label>
                 <select v-model="selectedAulaId" @change="onAulaChange"
-                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm">
+                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                     <option value="">-- Seleccione un aula --</option>
                     <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
                         {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo?.nombre }}
@@ -129,7 +129,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Filtrar por Fecha</label>
                     <input type="date" v-model="filters.date" @change="onDateChange"
-                        class="block rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                        class="block rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                 </div>
 
                 <div class="flex items-center text-gray-400 pb-2">o</div>
@@ -138,14 +138,14 @@
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Filtrar por Mes</label>
                     <div class="flex space-x-2">
                         <select v-model="filters.month" @change="onMonthChange"
-                            class="block rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            class="block rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                             <option value="">-- Mes --</option>
                             <option v-for="(mes, index) in meses" :key="index" :value="String(index + 1)">
                                 {{ mes }}
                             </option>
                         </select>
                         <select v-model="filters.year" @change="onMonthChange"
-                            class="block rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            class="block rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                             <option v-for="y in years" :key="y" :value="y">{{ y }}</option>
                         </select>
                     </div>
@@ -280,7 +280,7 @@
                                         Motivo del despacho / Comentario <span class="text-red-500">*</span>
                                     </label>
                                     <textarea v-model="dismissReason" rows="3"
-                                        class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm"
+                                        class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-red-500 focus:ring-red-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                         placeholder="Ingrese el motivo detallado..."></textarea>
 
                                     <div class="mt-4">

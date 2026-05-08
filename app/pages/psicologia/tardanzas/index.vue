@@ -51,7 +51,7 @@
                                 <i class="fas fa-door-open mr-1"></i> Aula
                             </label>
                             <select v-model="selectedAula" @change="loadRegistro"
-                                class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                                class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                 :disabled="isLoading">
                                 <option value="">Seleccione un aula...</option>
                                 <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
@@ -69,7 +69,7 @@
                                     <i class="fas fa-search text-gray-400"></i>
                                 </div>
                                 <input type="text" v-model="searchQuery"
-                                    class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-gray-600 rounded-md dark:bg-gray-800 dark:border-gray-600 dark:text-white"
+                                    class="focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 sm:text-sm border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                     placeholder="Filtrar por nombre..." :disabled="!selectedAula || isLoading" />
                             </div>
                         </div>
@@ -166,7 +166,7 @@
                                 <i class="fas fa-door-open mr-1"></i> Aula
                             </label>
                             <select v-model="historyFilters.aula_id"
-                                class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white">
+                                class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                 <option value="">Todas las aulas</option>
                                 <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
                                     {{ aula.grado_cardinal }} {{ aula.seccion }}
@@ -178,14 +178,14 @@
                                 <i class="fas fa-calendar mr-1"></i> Fecha Inicio
                             </label>
                             <input type="date" v-model="historyFilters.fecha_inicio"
-                                class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white" />
+                                class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
                         </div>
                         <div>
                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                 <i class="fas fa-calendar mr-1"></i> Fecha Fin
                             </label>
                             <input type="date" v-model="historyFilters.fecha_fin"
-                                class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm dark:bg-gray-800 dark:border-gray-600 dark:text-white" />
+                                class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" />
                         </div>
                         <div class="flex items-end">
                             <button @click="loadHistory(1)" :disabled="isHistoryLoading"

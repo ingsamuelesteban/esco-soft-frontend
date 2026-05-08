@@ -3,7 +3,7 @@
     <div class="p-4 flex items-center gap-3 flex-wrap">
       <div class="flex items-center gap-2">
         <label class="text-sm text-gray-600 dark:text-gray-400">Año lectivo</label>
-        <select v-model.number="anioId" class="border rounded px-2 py-1 text-sm h-8">
+        <select v-model.number="anioId" class="border dark:border-gray-600 rounded px-2 py-1 text-sm h-8 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
           <option :value="undefined">Seleccionar...</option>
           <option v-for="a in aniosLectivosStore.items" :key="a.id" :value="a.id">
             {{ a.nombre }}
@@ -12,14 +12,14 @@
       </div>
       <div class="flex items-center gap-2">
         <label class="text-sm text-gray-600 dark:text-gray-400">Aula</label>
-        <select v-model.number="aulaId" class="border rounded px-2 py-1 text-sm h-8">
+        <select v-model.number="aulaId" class="border dark:border-gray-600 rounded px-2 py-1 text-sm h-8 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
           <option :value="undefined">Seleccionar…</option>
           <option v-for="a in aulas" :key="a.id" :value="a.id">{{ aulaName(a) }}</option>
         </select>
       </div>
       <div class="flex items-center gap-2" v-if="!readOnly">
         <label class="text-sm text-gray-600 dark:text-gray-400">Asignación</label>
-        <select v-model.number="selectedAssignmentId" class="border rounded px-2 py-1 text-sm h-8 min-w-[220px]"
+        <select v-model.number="selectedAssignmentId" class="border dark:border-gray-600 rounded px-2 py-1 text-sm h-8 min-w-[220px] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
           :disabled="!aulaId || !anioId">
           <option :value="undefined">Seleccionar asignación…</option>
           <option v-for="a in assignmentsForAula" :key="a.id" :value="a.id">

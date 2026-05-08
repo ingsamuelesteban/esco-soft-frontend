@@ -8,7 +8,7 @@
             </div>
             <div class="flex items-center space-x-3">
                 <select v-model="selectedAnioId" v-if="aniosStore.items.length > 0"
-                    class="block w-48 pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg shadow-sm">
+                    class="block w-48 pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                     <option :value="'all'">Todos los años</option>
                     <option v-for="anio in aniosStore.items" :key="anio.id" :value="anio.id">
                         {{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}
@@ -32,7 +32,7 @@
                 <div class="relative">
                     <input v-model="filters.search" type="text" placeholder="Nombre o matrícula..."
                         @input="debouncedFetch"
-                        class="w-full pl-9 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                        class="w-full pl-9 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                     <svg class="w-4 h-4 text-gray-400 absolute left-3 top-2.5" fill="none" viewBox="0 0 24 24"
                         stroke="currentColor">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -44,7 +44,7 @@
             <div class="w-full sm:w-64">
                 <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Aula</label>
                 <select v-model="filters.aula_id" @change="fetchExcuses"
-                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500">
+                    class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                     <option value="">Todas las aulas</option>
                     <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
                         {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.nivel }}
@@ -324,7 +324,7 @@
                                         <div class="relative">
                                             <input type="text" v-model="studentSearch" @input="searchStudents"
                                                 placeholder="Escribe el nombre del estudiante..."
-                                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                                 :class="{ 'border-red-300': errors.student_id }">
 
                                             <!-- Suggestion Dropdown -->
@@ -359,7 +359,7 @@
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha Inicio
                                                 *</label>
                                             <input type="date" v-model="form.start_date"
-                                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                                 :class="{ 'border-red-300': errors.start_date }">
                                             <p v-if="errors.start_date" class="text-red-500 text-xs mt-1">{{
                                                 errors.start_date }}</p>
@@ -368,7 +368,7 @@
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha Fin
                                                 *</label>
                                             <input type="date" v-model="form.end_date"
-                                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                                 :class="{ 'border-red-300': errors.end_date }">
                                             <p v-if="errors.end_date" class="text-red-500 text-xs mt-1">{{
                                                 errors.end_date }}</p>
@@ -380,7 +380,7 @@
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Concepto / Motivo
                                             *</label>
                                         <textarea v-model="form.concept" rows="3" maxlength="1000"
-                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500"
+                                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-primary-500 focus:border-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                             placeholder="Describe el motivo de la excusa (ej. Licencia Médica)..."
                                             :class="{ 'border-red-300': errors.concept }"></textarea>
                                         <div class="flex justify-end mt-1">

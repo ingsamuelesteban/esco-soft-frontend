@@ -232,7 +232,7 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo</label>
                                 <select v-model="newEntry.type"
-                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                    class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                     <option value="observation">Observación</option>
                                     <option value="interview">Entrevista</option>
                                     <option value="agreement">Acuerdo/Compromiso</option>
@@ -243,12 +243,12 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha del Evento</label>
                                 <input type="date" v-model="newEntry.date_of_event"
-                                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Contenido</label>
                                 <textarea v-model="newEntry.content" rows="4"
-                                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                                    class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                     placeholder="Describa los detalles..."></textarea>
                             </div>
                         </div>

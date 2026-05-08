@@ -33,7 +33,7 @@
                                         <label for="priority"
                                             class="block text-sm font-medium text-gray-700 dark:text-gray-300">Prioridad</label>
                                         <select ref="priorityInput" id="priority" v-model="form.priority"
-                                            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                             <option value="low">Baja</option>
                                             <option value="medium">Media</option>
                                             <option value="high">Alta</option>
@@ -45,7 +45,7 @@
                                             a
                                             (Opcional)</label>
                                         <select id="assigned_to" v-model="form.assigned_to"
-                                            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                            class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                             <option value="">Automático (Según disponibilidad)</option>
                                             <option v-for="psych in psychologists" :key="psych.id" :value="psych.id">
                                                 {{ psych.name }}
@@ -60,7 +60,7 @@
                                         <label for="reason" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Motivo del
                                             Reporte</label>
                                         <textarea id="reason" v-model="form.reason" rows="3" required
-                                            class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md"
+                                            class="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 mt-1 block w-full sm:text-sm border border-gray-300 dark:border-gray-600 rounded-md bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                                             placeholder="Describa la situación o comportamiento observado..."></textarea>
                                     </div>
 

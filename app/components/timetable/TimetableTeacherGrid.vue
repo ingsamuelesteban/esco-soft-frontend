@@ -3,7 +3,7 @@
     <div class="p-4 flex items-center gap-3 flex-wrap">
       <div class="flex items-center gap-2">
         <label class="text-sm text-gray-600 dark:text-gray-400">Año lectivo</label>
-        <select v-model="anioId" class="border rounded px-2 py-1 text-sm h-8 min-w-[120px]">
+        <select v-model="anioId" class="border dark:border-gray-600 rounded px-2 py-1 text-sm h-8 min-w-[120px] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
           <option :value="undefined">Seleccionar...</option>
           <option v-for="a in anios" :key="a.id" :value="a.id">{{ a.nombre }}</option>
         </select>
@@ -11,7 +11,7 @@
       <!-- Selector de profesores: Visible si es admin/master -->
       <div class="flex items-center gap-2" v-if="!authStore.isProfesor">
         <label class="text-sm text-gray-600 dark:text-gray-400">Profesor</label>
-        <select v-model.number="profesorId" class="border rounded px-2 py-1 text-sm h-8 min-w-[250px]"
+        <select v-model.number="profesorId" class="border dark:border-gray-600 rounded px-2 py-1 text-sm h-8 min-w-[250px] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
           :disabled="loadingProfesores">
           <option :value="undefined">{{ loadingProfesores ? 'Cargando profesores...' : 'Seleccionar profesor…' }}
           </option>
