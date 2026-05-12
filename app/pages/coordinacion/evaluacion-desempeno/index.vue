@@ -257,8 +257,8 @@
                 <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
               </div>
               <div>
-                <h2 class="text-base font-bold text-white">Registrar Evaluación</h2>
-                <p class="text-violet-200 text-xs mt-0.5">{{ editTarget?.profesor_nombre }}</p>
+                <h2 class="text-base font-bold text-white">Editar Evaluación</h2>
+                <p class="text-violet-200 text-xs mt-0.5">{{ editTarget?.seccion_label }} - {{ editTarget?.periodo_label }}</p>
               </div>
             </div>
             <button @click="showEditModal = false" class="text-white/70 hover:text-white transition-colors">
@@ -268,6 +268,45 @@
 
           <!-- Body -->
           <div class="px-6 py-6 space-y-4">
+            <!-- Datos Generales -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pb-4 border-b border-gray-200 dark:border-gray-700">
+              <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Fecha</label>
+                <input v-model="editForm.fecha" type="date"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition" />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Profesor</label>
+                <select v-model="editForm.personal_id"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition">
+                  <option :value="null">Seleccionar...</option>
+                  <option v-for="p in personalStore.items" :key="p.id" :value="p.id">
+                    {{ p.nombre }} {{ p.apellido }}
+                  </option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Sección (Aula)</label>
+                <select v-model="editForm.aula_id"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition">
+                  <option :value="null">Seleccionar...</option>
+                  <option v-for="aula in aulasStore.activas" :key="aula.id" :value="aula.id">
+                    {{ aula.grado_cardinal }}° {{ aula.seccion }}
+                  </option>
+                </select>
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Período</label>
+                <select v-model="editForm.period_id"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition">
+                  <option :value="null">Seleccionar...</option>
+                  <option v-for="p in periodsStore.clases" :key="p.id" :value="p.id">
+                    {{ p.label }} — {{ p.start_time.slice(0, 5) }} a {{ p.end_time.slice(0, 5) }}
+                  </option>
+                </select>
+              </div>
+            </div>
+
             <!-- Pregunta 1 -->
             <div class="flex items-center justify-between p-4 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/40">
               <span class="text-sm font-medium text-gray-800 dark:text-gray-200">¿Fue evaluado?</span>
@@ -371,6 +410,10 @@ const formValido = computed(() =>
 const showEditModal = ref(false)
 const editTarget = ref<ListaItem | null>(null)
 const editForm = reactive({
+  fecha: '',
+  personal_id: null as number | null,
+  aula_id: null as number | null,
+  period_id: null as number | null,
   fue_evaluado: null as boolean | null,
   cargo_digital: null as boolean | null,
   entrego_fisica: null as boolean | null,
@@ -378,6 +421,10 @@ const editForm = reactive({
 
 function openEdit(lista: ListaItem) {
   editTarget.value = lista
+  editForm.fecha = lista.fecha || ''
+  editForm.personal_id = lista.personal_id
+  editForm.aula_id = lista.aula_id
+  editForm.period_id = lista.period_id
   editForm.fue_evaluado = lista.fue_evaluado
   editForm.cargo_digital = lista.cargo_digital
   editForm.entrego_fisica = lista.entrego_fisica
@@ -387,6 +434,10 @@ function openEdit(lista: ListaItem) {
 function guardarEvaluacion() {
   if (!editTarget.value) return
   const payload = {
+    fecha:          editForm.fecha,
+    personal_id:    editForm.personal_id,
+    aula_id:        editForm.aula_id,
+    period_id:      editForm.period_id,
     fue_evaluado:   editForm.fue_evaluado,
     cargo_digital:  editForm.cargo_digital,
     entrego_fisica: editForm.entrego_fisica,
@@ -396,6 +447,13 @@ function guardarEvaluacion() {
       const updated = res.data ?? res
       const item = listas.value.find(l => l.id === editTarget.value!.id)
       if (item) {
+        item.fecha          = updated.fecha
+        item.personal_id    = updated.personal_id
+        item.profesor_nombre = updated.profesor_nombre
+        item.aula_id        = updated.aula_id
+        item.seccion_label  = updated.seccion_label
+        item.period_id      = updated.period_id
+        item.periodo_label  = updated.periodo_label
         item.fue_evaluado   = updated.fue_evaluado
         item.cargo_digital  = updated.cargo_digital
         item.entrego_fisica = updated.entrego_fisica
