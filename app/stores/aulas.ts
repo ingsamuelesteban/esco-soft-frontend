@@ -10,6 +10,7 @@ export interface Aula {
   capacidad: number | null
   activo: boolean
   estudiantes_count?: number
+  tiene_config_anio?: boolean
   titulo?: { id: number; nombre: string; familia?: { id: number; nombre: string } }
 }
 
@@ -31,7 +32,7 @@ export const useAulasStore = defineStore('aulas', {
       }))
   },
   actions: {
-    async fetchAll(params: { tituloId?: number; search?: string } = {}) {
+    async fetchAll(params: { tituloId?: number; search?: string; anioLectivoId?: number } = {}) {
       this.loading = true
       this.error = null
       startLoading()
@@ -39,6 +40,7 @@ export const useAulasStore = defineStore('aulas', {
         const query: Record<string, any> = {}
         if (params.tituloId) query.titulo_id = params.tituloId
         if (params.search) query.search = params.search
+        if (params.anioLectivoId) query.anio_lectivo_id = params.anioLectivoId
         const data = await api.get<Aula[]>('/api/aulas', { params: query })
         if (Array.isArray(data)) {
           this.items = data
@@ -95,6 +97,17 @@ export const useAulasStore = defineStore('aulas', {
         const updated = await api.delete<Aula>(`/api/aulas/${id}`)
         const idx = this.items.findIndex(a => a.id === id)
         if (idx !== -1) this.items[idx] = updated
+      } catch (e) {
+        console.error(e)
+        throw e
+      } finally {
+        finishLoading()
+      }
+    },
+    async configurarAnio(aulaId: number, payload: { anio_lectivo_id: number; titulo_id?: number | null; capacidad?: number | null }) {
+      startLoading()
+      try {
+        await api.put(`/api/aulas/${aulaId}/configurar-anio`, payload)
       } catch (e) {
         console.error(e)
         throw e

@@ -27,11 +27,25 @@
                 </p>
               </div>
             </div>
-            <button @click="$emit('close')" class="text-gray-400 hover:text-gray-600 dark:text-gray-400">
-              <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
+            <div class="flex items-center gap-3">
+              <button v-if="anioLectivoId && activeTab === 'assigned' && estudiantesAsignados.length > 0" 
+                @click="reordenarHistorial" :disabled="loadingReorder"
+                class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 rounded-md transition-colors disabled:opacity-50">
+                <svg v-if="loadingReorder" class="animate-spin -ml-1 mr-2 h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <svg v-else class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                </svg>
+                {{ loadingReorder ? 'Reordenando...' : 'Reordenar Alfabéticamente' }}
+              </button>
+              <button @click="$emit('close')" class="text-gray-400 hover:text-gray-600 dark:text-gray-400">
+                <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
 
@@ -98,7 +112,7 @@
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                   <tr v-for="estudiante in estudiantesAsignados" :key="estudiante.id" class="hover:bg-gray-50 dark:bg-gray-900/50">
                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-                      {{ estudiante.numero_orden }}
+                      {{ (estudiante as any).numero_orden_historial || estudiante.numero_orden || '-' }}
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
@@ -225,6 +239,7 @@ import type { Aula } from '../../stores/aulas'
 interface Props {
   open: boolean
   aula: Aula | null
+  anioLectivoId?: number | null
 }
 
 const props = defineProps<Props>()
@@ -238,6 +253,7 @@ const estudiantesStore = useEstudiantesStore()
 const activeTab = ref<'assigned' | 'unassigned'>('assigned')
 const loading = ref(false)
 const loadingUnassigned = ref(false)
+const loadingReorder = ref(false)
 const estudiantesAsignados = ref<Estudiante[]>([])
 const estudiantesSinAula = ref<Estudiante[]>([])
 const estudiantesSeleccionados = ref<Set<number>>(new Set())
@@ -270,7 +286,10 @@ const cargarEstudiantesAsignados = async () => {
 
   loading.value = true
   try {
-    const response = await api.get<{ success: boolean; data: Estudiante[] }>(`/api/aulas/${props.aula.id}/estudiantes`)
+    const params: any = {}
+    if (props.anioLectivoId) params.anio_lectivo_id = props.anioLectivoId
+    
+    const response = await api.get<{ success: boolean; data: Estudiante[] }>(`/api/aulas/${props.aula.id}/estudiantes`, { params })
     estudiantesAsignados.value = response.data
   } catch (error) {
     console.error('Error al cargar estudiantes asignados:', error)
@@ -295,6 +314,24 @@ const cargarEstudiantesSinAula = async () => {
     showError('Error al cargar estudiantes sin aula')
   } finally {
     loadingUnassigned.value = false
+  }
+}
+
+const reordenarHistorial = async () => {
+  if (!props.aula?.id || !props.anioLectivoId) return
+
+  loadingReorder.value = true
+  try {
+    await api.post(`/api/aulas/${props.aula.id}/reordenar-historial`, {
+      anio_lectivo_id: props.anioLectivoId
+    })
+    showToast('Estudiantes reordenados alfabéticamente', 'success')
+    await cargarEstudiantesAsignados()
+  } catch (error) {
+    console.error('Error al reordenar historial:', error)
+    showError('No se pudo reordenar la lista')
+  } finally {
+    loadingReorder.value = false
   }
 }
 

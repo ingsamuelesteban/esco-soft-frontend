@@ -1,8 +1,8 @@
-﻿<template>
+<template>
   <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
     <div class="p-4">
       <div class="flex items-center gap-3 flex-wrap">
-        <input v-model="query" type="text" class="w-full md:w-64 rounded-md border-gray-300 dark:border-gray-600 text-sm"
+        <input v-model="query" type="text" class="w-full md:w-64 rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500 transition-colors text-sm"
           placeholder="Buscar por título, grado o sección..." />
         <div class="ml-auto text-sm text-gray-500 dark:text-gray-400" v-if="!loading">Total: {{ filtered.length }}</div>
       </div>
@@ -20,7 +20,16 @@
         </thead>
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
           <tr v-for="a in filtered" :key="a.id">
-            <td class="px-4 py-3 whitespace-nowrap text-sm">{{ a.titulo?.nombre || '' }}</td>
+            <td class="px-4 py-3 whitespace-nowrap text-sm">
+              <div class="flex items-center gap-2">
+                <span>{{ a.titulo?.nombre || '' }}</span>
+                <span v-if="a.tiene_config_anio" 
+                  class="px-1.5 py-0.5 text-[10px] font-bold bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-400 rounded border border-amber-200 dark:border-amber-800 uppercase tracking-tighter"
+                  title="Configuración personalizada para este año">
+                  Año
+                </span>
+              </div>
+            </td>
             <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">
               <div class="flex items-center">
                 <span class="text-base font-semibold">{{ gradoLabel(a.grado_cardinal) }}</span>

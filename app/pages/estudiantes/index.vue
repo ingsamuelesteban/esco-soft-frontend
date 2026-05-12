@@ -16,9 +16,20 @@
       </div>
     </header>
 
-    <!-- Filtro de estado -->
-    <div class="mt-4 flex justify-between items-center">
+    <!-- Filtros -->
+    <div class="mt-4 flex flex-wrap justify-between items-center gap-4">
       <FilterStatus v-model="statusFilter" />
+      
+      <div class="flex items-center gap-2">
+        <label class="text-sm font-medium text-gray-600 dark:text-gray-400 whitespace-nowrap">Año Lectivo:</label>
+        <select v-model="selectedAnioLectivo"
+          class="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 transition-colors py-2 px-3">
+          <option v-if="aniosStore.loading" :value="null" disabled>Cargando años...</option>
+          <option v-for="anio in aniosStore.items" :key="anio.id" :value="anio.id">
+            {{ anio.nombre }}{{ anio.activo ? ' ★' : '' }}
+          </option>
+        </select>
+      </div>
     </div>
 
     <div class="mt-6">
@@ -43,6 +54,8 @@ import { useEstudiantesStore, type Estudiante } from '../../stores/estudiantes'
 import { showConfirm, showError, showToast } from '../../utils/sweetalert'
 import FilterStatus from '../../components/common/FilterStatus.vue'
 import CredentialsModal from '../../components/estudiantes/CredentialsModal.vue'
+import { useAniosLectivosStore } from '../../stores/anios_lectivos'
+import { onMounted } from 'vue'
 
 definePageMeta({
   middleware: ['auth', 'admin']
@@ -52,16 +65,33 @@ const store = useEstudiantesStore()
 const showModal = ref(false)
 const selectedEstudiante = ref<Estudiante | null>(null)
 const statusFilter = ref<'active' | 'inactive' | 'retirado' | 'all'>('active')
+const aniosStore = useAniosLectivosStore()
+const selectedAnioLectivo = ref<number | null>(null)
 
 // Estado para credenciales
 const showCredentialsModal = ref(false)
 const generatedCredentials = ref<any[]>([])
 const currentPdfToken = ref<string | undefined>(undefined)
 
-// Watcher para el filtro de estado
-watch(statusFilter, async (newStatus) => {
-  await store.fetchAll(newStatus)
-}, { immediate: true })
+onMounted(async () => {
+  if (aniosStore.items.length === 0) {
+    await aniosStore.fetchAll()
+  }
+  const activo = aniosStore.activos[0]
+  if (activo) {
+    selectedAnioLectivo.value = activo.id
+  }
+})
+
+// Watcher para los filtros
+watch([statusFilter, selectedAnioLectivo], async () => {
+  if (selectedAnioLectivo.value) {
+    await store.fetchAll({ 
+      status: statusFilter.value, 
+      anio_lectivo_id: selectedAnioLectivo.value 
+    })
+  }
+})
 
 const openCreateModal = () => {
   selectedEstudiante.value = null
@@ -98,7 +128,10 @@ const reloadData = async (message: string) => {
 
   try {
     await store.reordenarNumeros()
-    await store.fetchAll(statusFilter.value)
+    await store.fetchAll({ 
+      status: statusFilter.value, 
+      anio_lectivo_id: selectedAnioLectivo.value || undefined 
+    })
     Swal.close()
   } catch (error) {
     Swal.close()

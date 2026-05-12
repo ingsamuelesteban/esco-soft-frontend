@@ -62,7 +62,7 @@
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700 text-gray-900 dark:text-gray-100">
           <tr v-for="e in filtered" :key="e.id">
             <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-              {{ e.numero_orden ?? '-' }}
+              {{ e.numero_orden_historial ?? e.numero_orden ?? '-' }}
             </td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">
               {{ e.nombres }}
@@ -83,7 +83,11 @@
               </span>
             </td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">
-              <span v-if="e.aula"
+              <span v-if="e.aula_id_historial"
+                class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
+                {{ e.aula_grado_historial }}° {{ e.aula_seccion_historial }}
+              </span>
+              <span v-else-if="e.aula"
                 class="inline-flex items-center px-2 py-1 rounded-md text-xs font-medium bg-green-100 text-green-800">
                 {{ e.aula.grado_cardinal }}° {{ e.aula.seccion }}
               </span>

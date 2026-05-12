@@ -5,6 +5,9 @@ import { startLoading, finishLoading } from '../utils/loading'
 export interface Estudiante {
   id: number
   numero_orden: number | null
+  numero_orden_historial?: number | null
+  aula_grado_historial?: number | null
+  aula_seccion_historial?: string | null
   orden_manual?: boolean
   nombres: string
   apellidos: string
@@ -81,13 +84,13 @@ export const useEstudiantesStore = defineStore('estudiantes', {
   },
 
   actions: {
-    async fetchAll(options: { status?: 'active' | 'inactive' | 'retirado' | 'all', aula_id?: number, include_psychology?: boolean } | string = 'active') {
+    async fetchAll(options: { status?: 'active' | 'inactive' | 'retirado' | 'all', aula_id?: number, anio_lectivo_id?: number, include_psychology?: boolean } | string = 'active') {
       this.loading = true
       this.error = null
-
-      // Backward compatibility for string argument
+      
       const status = (typeof options === 'string' ? options : (options.status || 'active')) as 'active' | 'inactive' | 'retirado' | 'all'
       const aula_id = typeof options === 'object' ? options.aula_id : undefined
+      const anio_lectivo_id = typeof options === 'object' ? options.anio_lectivo_id : undefined
       const include_psychology = typeof options === 'object' ? options.include_psychology : undefined
 
       this.statusFilter = status
@@ -96,6 +99,7 @@ export const useEstudiantesStore = defineStore('estudiantes', {
         const params = new URLSearchParams()
         params.append('status', status)
         if (aula_id) params.append('aula_id', aula_id.toString())
+        if (anio_lectivo_id) params.append('anio_lectivo_id', anio_lectivo_id.toString())
         if (include_psychology) params.append('include_psychology', '1')
 
         const url = `/api/estudiantes?${params.toString()}`

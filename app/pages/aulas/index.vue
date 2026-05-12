@@ -24,57 +24,87 @@
       </div>
     </header>
 
-    <!-- Filtro de estado -->
-    <div class="mt-4 flex justify-between items-center">
+    <!-- Filtros -->
+    <div class="mt-4 flex flex-wrap gap-4 items-center">
       <FilterStatus v-model="statusFilter" />
+      <div class="flex items-center gap-2">
+        <label class="text-sm font-medium text-gray-600 dark:text-gray-400">Año Lectivo:</label>
+        <select v-model="selectedAnioLectivo"
+          class="border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-sm rounded-md focus:ring-blue-500 focus:border-blue-500 transition-colors py-2 px-3">
+          <option :value="null">Todos los años</option>
+          <option v-if="aniosStore.loading" :value="null" disabled>Cargando años...</option>
+          <option v-for="anio in aniosStore.items" :key="anio.id" :value="anio.id">
+            {{ anio.nombre }}{{ anio.activo ? ' ★' : '' }}
+          </option>
+        </select>
+      </div>
     </div>
 
     <div class="mt-6">
       <AulasList :status-filter="statusFilter" @delete="onDelete" @edit="onEdit" @viewStudents="onViewStudents" />
     </div>
 
-    <AulasFormModal v-model="showModal" :aula="current" @saved="onSaved" />
-    <AulaStudentsModal :open="showStudentsModal" :aula="selectedAula" @close="closeStudentsModal"
-      @updated="onStudentsUpdated" />
+    <AulasFormModal v-model="showModal" :aula="current" :anio-lectivo-id="selectedAnioLectivo" @saved="onSaved" />
+    <AulaStudentsModal :open="showStudentsModal" :aula="selectedAula" :anio-lectivo-id="selectedAnioLectivo"
+      @close="closeStudentsModal" @updated="onStudentsUpdated" />
   </section>
 </template>
 
 <script setup lang="ts">
 import { useAulasStore, type Aula } from '../../stores/aulas'
 import Swal from 'sweetalert2'
-import { ref } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import AulasFormModal from '../../components/aulas/AulasFormModal.vue'
 import AulaStudentsModal from '../../components/aulas/AulaStudentsModal.vue'
 import FilterStatus from '../../components/common/FilterStatus.vue'
+import { useAniosLectivosStore } from '../../stores/anios_lectivos'
 
 definePageMeta({
   middleware: ['auth', 'admin']
 })
 
 const store = useAulasStore()
-const refresh = () => { store.fetchAll() }
+const refresh = () => { fetchAulas() }
 
 const statusFilter = ref<'active' | 'inactive' | 'all'>('active')
 const showModal = ref(false)
 const current = ref<any>(null)
 
-// Forzar carga de datos al entrar y al cambiar filtro
-import { watch } from 'vue'
-watch(statusFilter, () => {
-  store.fetchAll({ tituloId: undefined, search: undefined }) // O pasar el status si la API de aulas lo soportara, pero por ahora fetchAll no toma filtro de status en parametros?
-  // Espera, fetchAll en el store NO toma status. El filtrado es en el cliente (computed en AulasList).
-  // Pero necesitamos cargar los datos de todas formas.
-  // El problema original es que AulasList NO cargaba si ya había datos.
-  // Aquí forzamos la carga siempre.
-  store.fetchAll()
-}, { immediate: true })
+const aniosStore = useAniosLectivosStore()
+const selectedAnioLectivo = ref<number | null>(null)
+
+onMounted(async () => {
+  if (aniosStore.items.length === 0) {
+    await aniosStore.fetchAll()
+  }
+  const activo = aniosStore.activos[0]
+  if (activo) {
+    selectedAnioLectivo.value = activo.id
+  } else {
+    fetchAulas()
+  }
+})
+
+function fetchAulas() {
+  store.fetchAll({ anioLectivoId: selectedAnioLectivo.value ?? undefined })
+}
+
+// Recargar aulas cuando cambia el año o el estado
+watch([selectedAnioLectivo, statusFilter], () => {
+  fetchAulas()
+}, { immediate: false })
+
+// Esperar a que se seleccione el año activo para cargar por primera vez
+watch(selectedAnioLectivo, (val) => {
+  if (val !== null) fetchAulas()
+}, { once: true })
 
 const showStudentsModal = ref(false)
 const selectedAula = ref<Aula | null>(null)
 
 const openNew = () => { current.value = null; showModal.value = true }
 const onEdit = (aula: any) => { current.value = aula; showModal.value = true }
-const onSaved = () => { /* opcional: ya se actualiza el store */ }
+const onSaved = () => { refresh() }
 
 const onViewStudents = (aula: Aula) => {
   selectedAula.value = aula
