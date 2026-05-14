@@ -9,9 +9,9 @@
         </p>
       </div>
       <div class="flex items-center gap-3">
-        <button @click="imprimirReporte" :disabled="printing"
+        <button @click="imprimirReporte" :disabled="loadingReport"
           class="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-semibold shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50">
-          <svg v-if="printing" class="animate-spin h-4 w-4 border-2 border-indigo-500 border-t-transparent rounded-full" viewBox="0 0 24 24"></svg>
+          <svg v-if="loadingReport" class="animate-spin h-4 w-4 border-2 border-indigo-500 border-t-transparent rounded-full" viewBox="0 0 24 24"></svg>
           <svg v-else class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
           </svg>
@@ -377,7 +377,8 @@ import { usePrint } from '~/composables/usePrint'
 import { api } from '~/utils/api'
 import Swal from 'sweetalert2'
 
-const { printPdfBlob, loading: printing } = usePrint()
+const { printPdfBlob } = usePrint()
+const loadingReport = ref(false)
 
 definePageMeta({
   middleware: ['auth', 'role']
@@ -520,11 +521,14 @@ function guardarLista() {
 
 async function imprimirReporte() {
   try {
+    loadingReport.value = true
     const blob = await api.getBlob('/api/performance-evaluations/pdf')
     printPdfBlob(blob, 'seguimiento_evaluacion_desempeno.pdf', 'Preparando reporte...')
   } catch (e: any) {
     console.error('Error generando reporte:', e)
     Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo generar el reporte PDF.' })
+  } finally {
+    loadingReport.value = false
   }
 }
 
