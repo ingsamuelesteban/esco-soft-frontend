@@ -375,10 +375,9 @@ import { usePersonalStore } from '~/stores/personal'
 import { usePeriodsStore } from '~/stores/periods'
 import { usePrint } from '~/composables/usePrint'
 import { api } from '~/utils/api'
-import { useDomain } from '~/composables/useDomain'
+import Swal from 'sweetalert2'
 
-const { getTenantContext } = useDomain()
-const { printFile, loading: printing } = usePrint()
+const { printPdfBlob, loading: printing } = usePrint()
 
 definePageMeta({
   middleware: ['auth', 'role']
@@ -519,10 +518,14 @@ function guardarLista() {
     .finally(() => { saving.value = false })
 }
 
-function imprimirReporte() {
-  const context = getTenantContext()
-  const url = `/api/${context}/performance-evaluations/pdf`
-  printFile(url)
+async function imprimirReporte() {
+  try {
+    const blob = await api.getBlob('/api/performance-evaluations/pdf')
+    printPdfBlob(blob, 'seguimiento_evaluacion_desempeno.pdf', 'Preparando reporte...')
+  } catch (e: any) {
+    console.error('Error generando reporte:', e)
+    Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo generar el reporte PDF.' })
+  }
 }
 
 // ── Carga inicial ───────────────────────────────────────────────
