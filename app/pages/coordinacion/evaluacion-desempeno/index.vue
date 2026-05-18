@@ -54,12 +54,16 @@
             <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Evaluado</th>
             <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Plan. Digital</th>
             <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Plan. Física</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Observaciones</th>
             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
           </tr>
         </thead>
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
           <tr v-for="lista in listas" :key="lista.id" class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">{{ formatDate(lista.fecha) }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+              <span v-if="lista.fecha">{{ formatDate(lista.fecha) }}</span>
+              <span v-else class="text-gray-400 italic">Sin fecha</span>
+            </td>
             <td class="px-6 py-4 whitespace-nowrap">
               <div class="flex items-center gap-3">
                 <div class="h-8 w-8 rounded-full bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center text-indigo-700 dark:text-indigo-300 text-sm font-semibold">{{ lista.profesor_nombre?.charAt(0) }}</div>
@@ -97,6 +101,10 @@
               <span v-else class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/40">
                 <svg class="w-3.5 h-3.5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
               </span>
+            </td>
+            <!-- Observaciones -->
+            <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 max-w-xs truncate" :title="lista.observaciones || ''">
+              {{ lista.observaciones || '—' }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
               <button @click="openEdit(lista)" class="inline-flex items-center gap-1 text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-200 font-medium transition-colors">
@@ -235,6 +243,20 @@
                 </select>
               </div>
 
+              <!-- Observaciones -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
+                  <span class="flex items-center gap-1.5">
+                    <svg class="w-4 h-4 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                    </svg>
+                    Observaciones (Opcional)
+                  </span>
+                </label>
+                <textarea v-model="form.observaciones" rows="3"
+                  class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"></textarea>
+              </div>
+
             </div>
 
             <!-- Modal Footer -->
@@ -353,6 +375,13 @@
                   class="px-4 py-1.5 rounded-lg text-sm font-semibold transition-all">No</button>
               </div>
             </div>
+
+            <!-- Observaciones -->
+            <div>
+              <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Observaciones</label>
+              <textarea v-model="editForm.observaciones" rows="3"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition"></textarea>
+            </div>
           </div>
 
           <!-- Footer -->
@@ -404,6 +433,7 @@ interface ListaItem {
   fue_evaluado: boolean | null
   cargo_digital: boolean | null
   entrego_fisica: boolean | null
+  observaciones: string | null
 }
 
 // Datos principales — declarados antes de los helpers que los usan
@@ -414,11 +444,12 @@ const form = reactive({
   personal_id: null as number | null,
   aula_id: null as number | null,
   period_id: null as number | null,
+  observaciones: '',
 })
 
 // ── Computed ──────────────────────────────────────────────────
 const formValido = computed(() =>
-  form.fecha && form.personal_id && form.aula_id && form.period_id
+  form.personal_id && form.aula_id && form.period_id
 )
 
 // ── Modal Editar ──────────────────────────────────────────────
@@ -432,6 +463,7 @@ const editForm = reactive({
   fue_evaluado: null as boolean | null,
   cargo_digital: null as boolean | null,
   entrego_fisica: null as boolean | null,
+  observaciones: '',
 })
 
 function openEdit(lista: ListaItem) {
@@ -443,6 +475,7 @@ function openEdit(lista: ListaItem) {
   editForm.fue_evaluado = lista.fue_evaluado
   editForm.cargo_digital = lista.cargo_digital
   editForm.entrego_fisica = lista.entrego_fisica
+  editForm.observaciones = lista.observaciones || ''
   showEditModal.value = true
 }
 
@@ -456,6 +489,7 @@ function guardarEvaluacion() {
     fue_evaluado:   editForm.fue_evaluado,
     cargo_digital:  editForm.cargo_digital,
     entrego_fisica: editForm.entrego_fisica,
+    observaciones:  editForm.observaciones,
   }
   api.put(`/api/performance-evaluations/${editTarget.value.id}`, payload)
     .then((res: any) => {
@@ -472,6 +506,7 @@ function guardarEvaluacion() {
         item.fue_evaluado   = updated.fue_evaluado
         item.cargo_digital  = updated.cargo_digital
         item.entrego_fisica = updated.entrego_fisica
+        item.observaciones  = updated.observaciones
       }
       showEditModal.value = false
     })
@@ -480,6 +515,7 @@ function guardarEvaluacion() {
 
 // ── Métodos ───────────────────────────────────────────────────
 function formatDate(iso: string) {
+  if (!iso) return ''
   return new Date(iso + 'T00:00:00').toLocaleDateString('es-DO', {
     weekday: 'short', day: '2-digit', month: 'short', year: 'numeric'
   })
@@ -490,6 +526,7 @@ function openModal() {
   form.personal_id = null
   form.aula_id = null
   form.period_id = null
+  form.observaciones = ''
   showModal.value = true
 }
 
@@ -505,7 +542,8 @@ function guardarLista() {
     personal_id: form.personal_id,
     aula_id:     form.aula_id,
     period_id:   form.period_id,
-    fecha:       form.fecha,
+    fecha:       form.fecha || null,
+    observaciones: form.observaciones,
   })
     .then((res: any) => {
       // El controlador devuelve { success, message, data: { ...evaluation } }
