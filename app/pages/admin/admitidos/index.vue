@@ -1,0 +1,221 @@
+<template>
+  <div class="space-y-6">
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Admitidos</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
+          Listado de estudiantes admitidos con su aula asignada.
+        </p>
+      </div>
+      <div class="text-sm text-gray-500 dark:text-gray-400">
+        Total: <span class="font-semibold text-gray-800 dark:text-gray-100">{{ total }}</span>
+      </div>
+    </div>
+
+    <!-- Filtros -->
+    <div class="glass-card p-4 rounded-xl flex flex-wrap items-end gap-4">
+      <!-- Búsqueda -->
+      <div class="flex-1 min-w-[220px]">
+        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Buscar</label>
+        <input
+          v-model="search"
+          type="text"
+          placeholder="Nombre, apellido o # folder..."
+          class="input-field w-full text-sm rounded-lg px-3 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+          @keyup.enter="loadAdmitidos(1)"
+        />
+      </div>
+
+      <!-- Filtro por aula -->
+      <div class="min-w-[200px]">
+        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Aula</label>
+        <select
+          v-model="aulaId"
+          @change="loadAdmitidos(1)"
+          class="input-field w-full text-sm rounded-lg px-3 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+        >
+          <option value="">Todas las aulas</option>
+          <option v-for="a in aulas" :key="a.id" :value="a.id">{{ aulaLabel(a) }}</option>
+        </select>
+      </div>
+
+      <!-- Botón buscar -->
+      <div>
+        <button
+          @click="loadAdmitidos(1)"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+          </svg>
+          Buscar
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabla -->
+    <div class="glass-card rounded-xl overflow-hidden">
+      <!-- Loading -->
+      <div v-if="loading" class="flex justify-center py-16">
+        <svg class="animate-spin h-8 w-8 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+        </svg>
+      </div>
+
+      <div v-else class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+          <thead class="bg-gray-50 dark:bg-gray-900/50">
+            <tr>
+              <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-24">#Folder</th>
+              <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Estudiante</th>
+              <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Aula</th>
+              <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Área</th>
+              <th class="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider w-24">Acciones</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
+            <tr v-if="admitidos.length === 0">
+              <td colspan="5" class="px-4 py-12 text-center text-gray-400 dark:text-gray-500">
+                No se encontraron estudiantes admitidos.
+              </td>
+            </tr>
+            <tr
+              v-for="est in admitidos"
+              :key="est.id"
+              class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+            >
+              <!-- Folder -->
+              <td class="px-4 py-3">
+                <span class="font-mono font-bold text-indigo-700 dark:text-indigo-400 text-sm">
+                  #{{ est.admision?.no_folder ?? '—' }}
+                </span>
+              </td>
+              <!-- Nombre -->
+              <td class="px-4 py-3">
+                <div class="font-medium text-gray-900 dark:text-gray-100 text-sm">
+                  {{ est.apellidos }}, {{ est.nombres }}
+                </div>
+                <div class="text-xs text-gray-400">{{ est.cedula ?? 'Sin cédula' }}</div>
+              </td>
+              <!-- Aula -->
+              <td class="px-4 py-3">
+                <span v-if="est.aula" class="text-sm text-gray-800 dark:text-gray-200">
+                  {{ aulaLabel(est.aula) }}
+                </span>
+                <span v-else class="text-xs text-gray-400 italic">Sin aula</span>
+              </td>
+              <!-- Área -->
+              <td class="px-4 py-3">
+                <span
+                  v-if="est.admision?.titulo?.nombre"
+                  class="text-xs font-semibold text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/30 px-2.5 py-1 rounded-full border border-blue-200 dark:border-blue-800"
+                >
+                  {{ est.admision.titulo.nombre }}
+                </span>
+                <span v-else class="text-xs text-gray-400 italic">—</span>
+              </td>
+              <!-- Acciones -->
+              <td class="px-4 py-3 text-center">
+                <NuxtLink
+                  :to="`/admin/admitidos/${est.id}`"
+                  class="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-800/50 text-indigo-700 dark:text-indigo-300 text-xs font-semibold rounded-lg border border-indigo-200 dark:border-indigo-700 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                  Ver perfil
+                </NuxtLink>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Paginación -->
+      <div v-if="!loading && lastPage > 1" class="flex items-center justify-between px-4 py-3 border-t border-gray-200 dark:border-gray-700">
+        <p class="text-sm text-gray-500">
+          Página {{ currentPage }} de {{ lastPage }}
+        </p>
+        <div class="flex gap-2">
+          <button
+            :disabled="currentPage <= 1"
+            @click="loadAdmitidos(currentPage - 1)"
+            class="px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 transition-colors"
+          >
+            Anterior
+          </button>
+          <button
+            :disabled="currentPage >= lastPage"
+            @click="loadAdmitidos(currentPage + 1)"
+            class="px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 transition-colors"
+          >
+            Siguiente
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref, onMounted } from 'vue'
+import { api } from '~/utils/api'
+import Swal from 'sweetalert2'
+
+definePageMeta({ layout: 'default', middleware: ['auth'] })
+
+const admitidos    = ref([])
+const aulas        = ref([])
+const loading      = ref(true)
+const search       = ref('')
+const aulaId       = ref('')
+const currentPage  = ref(1)
+const lastPage     = ref(1)
+const total        = ref(0)
+
+const aulaLabel = (aula) => {
+  if (!aula) return ''
+  const grado   = aula.grado_cardinal ?? ''
+  const seccion = aula.seccion        ?? ''
+  const titulo  = aula.titulo?.nombre ?? ''
+  return `${grado}° ${seccion}${titulo ? ' – ' + titulo : ''}`.trim()
+}
+
+const loadAulas = async () => {
+  try {
+    const res = await api.get('/api/aulas')
+    aulas.value = res.data ?? res ?? []
+  } catch (e) {
+    console.error('Error cargando aulas:', e)
+  }
+}
+
+const loadAdmitidos = async (page = 1) => {
+  loading.value = true
+  currentPage.value = page
+  try {
+    const params = { page }
+    if (search.value.trim())  params.search  = search.value.trim()
+    if (aulaId.value)         params.aula_id = aulaId.value
+
+    const res = await api.get('/api/admitidos', { params })
+    const paginado = res.data
+
+    admitidos.value  = paginado?.data      ?? []
+    lastPage.value   = paginado?.last_page ?? 1
+    total.value      = paginado?.total     ?? admitidos.value.length
+  } catch (e) {
+    console.error('Error cargando admitidos:', e)
+    Swal.fire('Error', 'No se pudo cargar el listado de admitidos.', 'error')
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(async () => {
+  await Promise.all([loadAulas(), loadAdmitidos(1)])
+})
+</script>
