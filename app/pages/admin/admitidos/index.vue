@@ -15,6 +15,18 @@
 
     <!-- Filtros -->
     <div class="glass-card p-4 rounded-xl flex flex-wrap items-end gap-4">
+      <!-- Año Lectivo -->
+      <div class="min-w-[180px]">
+        <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Año Lectivo</label>
+        <select
+          v-model="anioLectivoId"
+          @change="loadAdmitidos(1)"
+          class="input-field w-full text-sm rounded-lg px-3 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+        >
+          <option v-for="a in aniosLectivos" :key="a.id" :value="a.id">{{ a.nombre }}</option>
+        </select>
+      </div>
+
       <!-- Búsqueda -->
       <div class="flex-1 min-w-[220px]">
         <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Buscar</label>
@@ -167,14 +179,16 @@ import Swal from 'sweetalert2'
 
 definePageMeta({ layout: 'default', middleware: ['auth'] })
 
-const admitidos    = ref([])
-const aulas        = ref([])
-const loading      = ref(true)
-const search       = ref('')
-const aulaId       = ref('')
-const currentPage  = ref(1)
-const lastPage     = ref(1)
-const total        = ref(0)
+const admitidos      = ref([])
+const aulas          = ref([])
+const aniosLectivos  = ref([])
+const loading        = ref(true)
+const search         = ref('')
+const aulaId         = ref('')
+const anioLectivoId  = ref(null)
+const currentPage    = ref(1)
+const lastPage       = ref(1)
+const total          = ref(0)
 
 const aulaLabel = (aula) => {
   if (!aula) return ''
@@ -194,10 +208,11 @@ const loadAulas = async () => {
 }
 
 const loadAdmitidos = async (page = 1) => {
+  if (!anioLectivoId.value) return
   loading.value = true
   currentPage.value = page
   try {
-    let url = `/api/admitidos?page=${page}`
+    let url = `/api/admitidos?page=${page}&anio_lectivo_id=${anioLectivoId.value}`
     if (search.value.trim()) url += `&search=${encodeURIComponent(search.value.trim())}`
     if (aulaId.value)        url += `&aula_id=${aulaId.value}`
 
@@ -216,6 +231,19 @@ const loadAdmitidos = async (page = 1) => {
 }
 
 onMounted(async () => {
-  await Promise.all([loadAulas(), loadAdmitidos(1)])
+  await loadAulas()
+  try {
+    const resAnios = await api.get('/api/anios-lectivos')
+    const data = resAnios.data ?? resAnios ?? []
+    aniosLectivos.value = data
+    if (data.length > 0) {
+      const activeAnio = data.find((a) => a.activo)
+      const nextAnio   = data.find((a) => !a.activo && (!activeAnio || a.nombre > activeAnio.nombre))
+      anioLectivoId.value = nextAnio?.id ?? activeAnio?.id ?? data[0].id
+      await loadAdmitidos(1)
+    }
+  } catch (e) {
+    console.error('Error cargando años lectivos:', e)
+  }
 })
 </script>
