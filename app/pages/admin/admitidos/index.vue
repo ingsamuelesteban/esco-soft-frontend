@@ -197,11 +197,11 @@ const loadAdmitidos = async (page = 1) => {
   loading.value = true
   currentPage.value = page
   try {
-    const params = { page }
-    if (search.value.trim())  params.search  = search.value.trim()
-    if (aulaId.value)         params.aula_id = aulaId.value
+    let url = `/api/admitidos?page=${page}`
+    if (search.value.trim()) url += `&search=${encodeURIComponent(search.value.trim())}`
+    if (aulaId.value)        url += `&aula_id=${aulaId.value}`
 
-    const res = await api.get('/api/admitidos', { params })
+    const res = await api.get(url)
     const paginado = res.data
 
     admitidos.value  = paginado?.data      ?? []
