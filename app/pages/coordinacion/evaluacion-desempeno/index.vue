@@ -43,7 +43,7 @@
     </div>
 
     <!-- Tabla de listas -->
-    <div v-else class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden">
+    <div v-else class="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-x-auto tabla-scroll">
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-900/50">
           <tr>
@@ -54,6 +54,9 @@
             <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Evaluado</th>
             <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Plan. Digital</th>
             <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Plan. Física</th>
+            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Eval. Planif.</th>
+            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Obs. Clase</th>
+            <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider font-bold">Total</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Observaciones</th>
             <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
           </tr>
@@ -101,6 +104,21 @@
               <span v-else class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-red-100 dark:bg-red-900/40">
                 <svg class="w-3.5 h-3.5 text-red-600 dark:text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12"/></svg>
               </span>
+            </td>
+            <!-- Eval. Planificación -->
+            <td class="px-6 py-4 text-center text-sm text-gray-900 dark:text-gray-100">
+              <span v-if="lista.evaluacion_planificacion == null" class="text-gray-300 dark:text-gray-600">—</span>
+              <span v-else>{{ lista.evaluacion_planificacion }}</span>
+            </td>
+            <!-- Obs. Clase -->
+            <td class="px-6 py-4 text-center text-sm text-gray-900 dark:text-gray-100">
+              <span v-if="lista.observacion_clase == null" class="text-gray-300 dark:text-gray-600">—</span>
+              <span v-else>{{ lista.observacion_clase }}</span>
+            </td>
+            <!-- Total -->
+            <td class="px-6 py-4 text-center">
+              <span v-if="lista.total_evaluacion != null" class="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-sm font-bold bg-indigo-100 dark:bg-indigo-900/40 text-indigo-800 dark:text-indigo-300">{{ lista.total_evaluacion }}</span>
+              <span v-else class="text-gray-300 dark:text-gray-600">—</span>
             </td>
             <!-- Observaciones -->
             <td class="px-6 py-4 text-sm text-gray-700 dark:text-gray-300 max-w-xs truncate" :title="lista.observaciones || ''">
@@ -243,6 +261,20 @@
                 </select>
               </div>
 
+              <!-- Evaluación Planificación + Observación Clase -->
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Eval. Planificación <span class="text-gray-400 font-normal">(Opcional)</span></label>
+                  <input v-model.number="form.evaluacion_planificacion" type="number" min="0"
+                    class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+                </div>
+                <div>
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">Observación de Clase <span class="text-gray-400 font-normal">(Opcional)</span></label>
+                  <input v-model.number="form.observacion_clase" type="number" min="0"
+                    class="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl shadow-sm text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition" />
+                </div>
+              </div>
+
               <!-- Observaciones -->
               <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5">
@@ -376,6 +408,20 @@
               </div>
             </div>
 
+            <!-- Eval. Planificación + Obs. Clase -->
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Eval. Planificación</label>
+                <input v-model.number="editForm.evaluacion_planificacion" type="number" min="0"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition" />
+              </div>
+              <div>
+                <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Observación de Clase</label>
+                <input v-model.number="editForm.observacion_clase" type="number" min="0"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg shadow-sm text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-2 focus:ring-violet-500 focus:border-violet-500 transition" />
+              </div>
+            </div>
+
             <!-- Observaciones -->
             <div>
               <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Observaciones</label>
@@ -434,6 +480,9 @@ interface ListaItem {
   cargo_digital: boolean | null
   entrego_fisica: boolean | null
   observaciones: string | null
+  evaluacion_planificacion: number | null
+  observacion_clase: number | null
+  total_evaluacion: number | null
 }
 
 // Datos principales — declarados antes de los helpers que los usan
@@ -445,6 +494,8 @@ const form = reactive({
   aula_id: null as number | null,
   period_id: null as number | null,
   observaciones: '',
+  evaluacion_planificacion: null as number | null,
+  observacion_clase: null as number | null,
 })
 
 // ── Computed ──────────────────────────────────────────────────
@@ -464,6 +515,8 @@ const editForm = reactive({
   cargo_digital: null as boolean | null,
   entrego_fisica: null as boolean | null,
   observaciones: '',
+  evaluacion_planificacion: null as number | null,
+  observacion_clase: null as number | null,
 })
 
 function openEdit(lista: ListaItem) {
@@ -476,6 +529,8 @@ function openEdit(lista: ListaItem) {
   editForm.cargo_digital = lista.cargo_digital
   editForm.entrego_fisica = lista.entrego_fisica
   editForm.observaciones = lista.observaciones || ''
+  editForm.evaluacion_planificacion = lista.evaluacion_planificacion ?? null
+  editForm.observacion_clase = lista.observacion_clase ?? null
   showEditModal.value = true
 }
 
@@ -486,10 +541,12 @@ function guardarEvaluacion() {
     personal_id:    editForm.personal_id,
     aula_id:        editForm.aula_id,
     period_id:      editForm.period_id,
-    fue_evaluado:   editForm.fue_evaluado,
-    cargo_digital:  editForm.cargo_digital,
-    entrego_fisica: editForm.entrego_fisica,
-    observaciones:  editForm.observaciones,
+    fue_evaluado:              editForm.fue_evaluado,
+    cargo_digital:             editForm.cargo_digital,
+    entrego_fisica:            editForm.entrego_fisica,
+    observaciones:             editForm.observaciones,
+    evaluacion_planificacion:  editForm.evaluacion_planificacion,
+    observacion_clase:         editForm.observacion_clase,
   }
   api.put(`/api/performance-evaluations/${editTarget.value.id}`, payload)
     .then((res: any) => {
@@ -507,6 +564,9 @@ function guardarEvaluacion() {
         item.cargo_digital  = updated.cargo_digital
         item.entrego_fisica = updated.entrego_fisica
         item.observaciones  = updated.observaciones
+        item.evaluacion_planificacion = updated.evaluacion_planificacion
+        item.observacion_clase        = updated.observacion_clase
+        item.total_evaluacion         = updated.total_evaluacion
       }
       showEditModal.value = false
     })
@@ -527,6 +587,8 @@ function openModal() {
   form.aula_id = null
   form.period_id = null
   form.observaciones = ''
+  form.evaluacion_planificacion = null
+  form.observacion_clase = null
   showModal.value = true
 }
 
@@ -539,11 +601,13 @@ function guardarLista() {
   saving.value = true
 
   api.post<{ success: boolean; data: ListaItem }>('/api/performance-evaluations', {
-    personal_id: form.personal_id,
-    aula_id:     form.aula_id,
-    period_id:   form.period_id,
-    fecha:       form.fecha || null,
-    observaciones: form.observaciones,
+    personal_id:              form.personal_id,
+    aula_id:                  form.aula_id,
+    period_id:                form.period_id,
+    fecha:                    form.fecha || null,
+    observaciones:            form.observaciones,
+    evaluacion_planificacion: form.evaluacion_planificacion,
+    observacion_clase:        form.observacion_clase,
   })
     .then((res: any) => {
       // El controlador devuelve { success, message, data: { ...evaluation } }
@@ -589,3 +653,31 @@ onMounted(async () => {
   }
 })
 </script>
+
+<style scoped>
+.tabla-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #a5b4fc #f1f5f9;
+}
+.tabla-scroll::-webkit-scrollbar {
+  height: 6px;
+}
+.tabla-scroll::-webkit-scrollbar-track {
+  background: #f1f5f9;
+  border-radius: 0 0 1rem 1rem;
+}
+.tabla-scroll::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #818cf8, #a78bfa);
+  border-radius: 9999px;
+}
+.tabla-scroll::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #6366f1, #8b5cf6);
+}
+/* dark mode */
+:global(.dark) .tabla-scroll {
+  scrollbar-color: #6366f1 #1f2937;
+}
+:global(.dark) .tabla-scroll::-webkit-scrollbar-track {
+  background: #1f2937;
+}
+</style>
