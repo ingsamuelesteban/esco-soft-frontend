@@ -604,6 +604,143 @@
                </div>
             </div>
 
+            <!-- Tab 5: Boletín Final (Por Estudiante) -->
+            <div v-if="currentTab === 'final'" class="space-y-6">
+
+               <!-- Student search -->
+               <div class="max-w-xl">
+                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Buscar Estudiante</label>
+                  <div class="relative">
+                     <input v-model="finalStudentSearch" @input="searchFinalStudents" type="text"
+                        class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2 border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                        placeholder="Escribe nombre, apellido o RNE..." />
+                     <div v-if="finalStudentResults.length > 0"
+                        class="absolute z-10 w-full bg-white dark:bg-gray-800 shadow-lg rounded-md mt-1 border border-gray-200 dark:border-gray-700 max-h-60 overflow-auto">
+                        <div v-for="s in finalStudentResults" :key="s.id" @click="selectFinalStudent(s)"
+                           class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm">
+                           <div class="font-medium text-gray-900 dark:text-gray-100">{{ s.apellidos }}, {{ s.nombres }}</div>
+                           <div class="text-xs text-gray-500 dark:text-gray-400">
+                              {{ s.aula ? `${s.aula.grado_cardinal}° ${s.aula.seccion}` : 'Sin Aula' }} | {{ s.rne }}
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+               </div>
+
+               <!-- Selected student chip -->
+               <div v-if="selectedFinalStudent"
+                  class="bg-indigo-50 p-4 rounded-md border border-indigo-200 flex justify-between items-center">
+                  <div>
+                     <h3 class="text-sm font-bold text-indigo-900">{{ selectedFinalStudent.apellidos }}, {{ selectedFinalStudent.nombres }}</h3>
+                     <p class="text-xs text-indigo-700 mt-1">
+                        {{ selectedFinalStudent.aula ? `${selectedFinalStudent.aula.grado_cardinal}° ${selectedFinalStudent.aula.seccion}` : 'Sin Aula' }}
+                        &nbsp;|&nbsp; RNE: {{ selectedFinalStudent.rne }}
+                     </p>
+                  </div>
+                  <button @click="selectedFinalStudent = null; finalPreview = null" class="text-indigo-500 hover:text-indigo-700 text-sm">Cambiar</button>
+               </div>
+
+               <!-- Action buttons -->
+               <div class="pt-2 flex gap-3">
+                  <button @click="generateFinalReport" :disabled="!selectedFinalStudent || loadingGenerate"
+                     class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                     <svg v-if="loadingGenerate" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                     </svg>
+                     Generar Boletín Final PDF
+                  </button>
+
+                  <button @click="previewFinalReport" :disabled="!selectedFinalStudent || loadingPreview"
+                     class="inline-flex items-center px-4 py-2 border border-indigo-600 shadow-sm text-sm font-medium rounded-md text-indigo-600 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50 disabled:opacity-50 disabled:cursor-not-allowed">
+                     <svg v-if="loadingPreview" class="animate-spin -ml-1 mr-2 h-4 w-4 text-indigo-600" fill="none" viewBox="0 0 24 24">
+                        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                     </svg>
+                     Vista Previa
+                  </button>
+               </div>
+
+               <!-- Final Report Preview -->
+               <div v-if="finalPreview" class="border border-gray-300 dark:border-gray-600 rounded-lg p-6 bg-gray-50 dark:bg-gray-900/50 mt-6 overflow-x-auto">
+
+                  <!-- Institutional header -->
+                  <div class="text-center border-b border-gray-300 dark:border-gray-600 pb-4 mb-4">
+                     <p class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase">Ministerio de Educación (MINERD)</p>
+                     <h2 class="text-base font-bold text-gray-900 dark:text-gray-100 mt-1">{{ finalPreview.tenant?.name }}</h2>
+                     <h3 class="font-bold mt-2 text-sm">BOLETÍN FINAL DE CALIFICACIONES</h3>
+                     <p class="text-xs text-gray-500 dark:text-gray-400">Año Lectivo: {{ finalPreview.year }}</p>
+                  </div>
+
+                  <!-- Student info -->
+                  <div class="grid grid-cols-2 gap-2 text-xs mb-4 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-700 rounded p-3">
+                     <div>
+                        <span class="font-bold">Estudiante:</span> {{ finalPreview.estudiante?.apellidos }}, {{ finalPreview.estudiante?.nombres }}<br>
+                        <span class="font-bold">Código (RNE):</span> {{ finalPreview.estudiante?.rne }}
+                     </div>
+                     <div>
+                        <span class="font-bold">Grado/Aula:</span>
+                        {{ finalPreview.aula?.grado_cardinal }}° {{ finalPreview.aula?.seccion }}
+                        <span v-if="finalPreview.aula?.titulo"> — {{ finalPreview.aula.titulo.nombre }}</span><br>
+                        <span class="font-bold">No. Orden:</span> {{ finalPreview.estudiante?.numero_orden }}
+                     </div>
+                  </div>
+
+                  <!-- Section header -->
+                  <div class="mb-2">
+                     <h4 class="text-sm font-bold text-white bg-indigo-700 px-3 py-1 rounded-t">
+                        PROMEDIO DE COMPETENCIAS ESPECÍFICAS
+                     </h4>
+                  </div>
+
+                  <!-- One sub-table per bloque -->
+                  <div v-for="(bloqueLabel, bloqueNum) in finalPreview.bloque_labels" :key="bloqueNum" class="mb-5">
+                     <div class="text-xs font-bold bg-indigo-100 dark:bg-indigo-900/40 text-indigo-800 dark:text-indigo-300 px-3 py-1 border-l-4 border-indigo-600 mb-1">
+                        Bloque {{ bloqueNum }}: {{ bloqueLabel }}
+                     </div>
+                     <div class="overflow-x-auto">
+                        <table class="min-w-full text-[10px] border-collapse border border-gray-400">
+                           <thead class="bg-gray-200 dark:bg-gray-700">
+                              <tr>
+                                 <th v-for="subject in finalPreview.academic_subjects" :key="subject.id"
+                                    class="border border-gray-400 p-1 text-center bg-indigo-50 dark:bg-indigo-900/30" colspan="4">
+                                    {{ subject.nombre }}
+                                 </th>
+                              </tr>
+                              <tr>
+                                 <template v-for="subject in finalPreview.academic_subjects" :key="subject.id + '-p'">
+                                    <th class="border border-gray-400 p-1 text-center" style="min-width:28px">P1</th>
+                                    <th class="border border-gray-400 p-1 text-center" style="min-width:28px">P2</th>
+                                    <th class="border border-gray-400 p-1 text-center" style="min-width:28px">P3</th>
+                                    <th class="border border-gray-400 p-1 text-center" style="min-width:28px">P4</th>
+                                 </template>
+                              </tr>
+                           </thead>
+                           <tbody>
+                              <tr class="bg-white dark:bg-gray-800">
+                                 <template v-for="subject in finalPreview.academic_subjects" :key="subject.id + '-g'">
+                                    <td v-for="p in [1,2,3,4]" :key="p"
+                                       class="border border-gray-400 p-1 text-center font-bold"
+                                       :class="{
+                                          'text-gray-300 dark:text-gray-600': finalPreview.bloques?.[subject.id]?.[bloqueNum]?.[p] == null,
+                                          'text-red-600': finalPreview.bloques?.[subject.id]?.[bloqueNum]?.[p] != null && finalPreview.bloques[subject.id][bloqueNum][p] < 70,
+                                          'text-green-700': finalPreview.bloques?.[subject.id]?.[bloqueNum]?.[p] != null && finalPreview.bloques[subject.id][bloqueNum][p] >= 90
+                                       }">
+                                       {{ finalPreview.bloques?.[subject.id]?.[bloqueNum]?.[p] ?? '–' }}
+                                    </td>
+                                 </template>
+                              </tr>
+                           </tbody>
+                        </table>
+                     </div>
+                  </div>
+
+                  <div class="mt-4 text-[10px] text-center text-gray-500 dark:text-gray-400">
+                     Vista previa generada para consulta.
+                  </div>
+               </div>
+            </div>
+
          </div>
       </div>
    </div>
@@ -613,6 +750,7 @@
 import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { apiCall as useApi, api } from '@/utils/api'
 import { useAniosLectivosStore } from '~/stores/anios_lectivos'
+import Swal from 'sweetalert2'
 
 const config = useRuntimeConfig()
 import { usePrint } from '~/composables/usePrint'
@@ -694,6 +832,7 @@ const allTabs = [
    { id: 'classroom', name: 'Sábana por Aula' },
    { id: 'subject', name: 'Planilla por Asignatura' },
    { id: 'merit', name: 'Meritorios' },
+   { id: 'final', name: 'Boletín Final' },
 ]
 
 const tabs = computed(() => {
@@ -766,6 +905,7 @@ const reportPreview = ref<ReportPreview | null>(null)
 const classroomPreview = ref<any | null>(null)
 const subjectPreview = ref<any | null>(null)
 const meritPreview = ref<any | null>(null)
+const finalPreview = ref<any | null>(null)
 let searchTimeout: any = null
 
 // Watchers
@@ -777,6 +917,10 @@ watch(selectedAnioId, () => {
    classroomPreview.value = null
    subjectPreview.value = null
    meritPreview.value = null
+   finalPreview.value = null
+   selectedFinalStudent.value = null
+   finalStudentSearch.value = ''
+   finalStudentResults.value = []
 })
 
 // Search Students
@@ -833,6 +977,7 @@ watch(currentTab, () => {
    classroomPreview.value = null
    subjectPreview.value = null
    meritPreview.value = null
+   finalPreview.value = null
 })
 
 // Generators
@@ -850,7 +995,7 @@ const generateStudentReport = async () => {
 
    } catch (e) {
       console.error(e)
-      alert('Error generando reporte')
+      Swal.fire({ icon: 'error', title: 'Error', text: 'Error generando reporte' })
    } finally {
       loadingGenerate.value = false
    }
@@ -868,7 +1013,7 @@ const previewStudentReport = async () => {
       reportPreview.value = res as unknown as ReportPreview
    } catch (e) {
       console.error(e)
-      alert('Error cargando vista previa')
+      Swal.fire({ icon: 'error', title: 'Error', text: 'Error cargando vista previa' })
    } finally {
       loadingPreview.value = false
    }
@@ -889,7 +1034,7 @@ const generateClassroomReport = async () => {
 
    } catch (e) {
       console.error(e)
-      alert('Error generando sábana')
+      Swal.fire({ icon: 'error', title: 'Error', text: 'Error generando sábana' })
    } finally {
       loadingGenerate.value = false
    }
@@ -910,7 +1055,7 @@ const generateSubjectReport = async () => {
 
    } catch (e) {
       console.error(e)
-      alert('Error generando planilla')
+      Swal.fire({ icon: 'error', title: 'Error', text: 'Error generando planilla' })
    } finally {
       loadingGenerate.value = false
    }
@@ -928,7 +1073,7 @@ const previewClassroomReport = async () => {
       classroomPreview.value = response
    } catch (e) {
       console.error(e)
-      alert('Error cargando vista previa de sábana')
+      Swal.fire({ icon: 'error', title: 'Error', text: 'Error cargando vista previa de sábana' })
    } finally {
       loadingPreview.value = false
    }
@@ -946,7 +1091,7 @@ const previewSubjectReport = async () => {
       subjectPreview.value = res
    } catch (e) {
       console.error(e)
-      alert('Error cargando vista previa de planilla')
+      Swal.fire({ icon: 'error', title: 'Error', text: 'Error cargando vista previa de planilla' })
    } finally {
       loadingPreview.value = false
    }
@@ -974,7 +1119,7 @@ const generateMeritReport = async () => {
 
    } catch (e) {
       console.error(e)
-      alert('Error generando listado de meritorios')
+      Swal.fire({ icon: 'error', title: 'Error', text: 'Error generando listado de meritorios' })
    } finally {
       loadingGenerate.value = false
    }
@@ -993,7 +1138,71 @@ const previewMeritReport = async () => {
       meritPreview.value = response
    } catch (e) {
       console.error(e)
-      alert('Error cargando vista previa de meritorios')
+      Swal.fire({ icon: 'error', title: 'Error', text: 'Error cargando vista previa de meritorios' })
+   } finally {
+      loadingPreview.value = false
+   }
+}
+// --- Boletín Final (per student) ---
+const finalStudentSearch = ref('')
+const finalStudentResults = ref<any[]>([])
+const selectedFinalStudent = ref<any>(null)
+let finalSearchTimeout: any = null
+
+const searchFinalStudents = () => {
+   if (finalSearchTimeout) clearTimeout(finalSearchTimeout)
+   if (!finalStudentSearch.value || finalStudentSearch.value.length < 3) {
+      finalStudentResults.value = []
+      return
+   }
+   finalSearchTimeout = setTimeout(async () => {
+      try {
+         const res = await api.get(`/api/estudiantes?search=${finalStudentSearch.value}&per_page=10`)
+         finalStudentResults.value = (res.data as any) || []
+      } catch (e) {
+         console.error(e)
+      }
+   }, 300)
+}
+
+const selectFinalStudent = (s: any) => {
+   selectedFinalStudent.value = s
+   finalStudentSearch.value = ''
+   finalStudentResults.value = []
+   finalPreview.value = null
+}
+
+const generateFinalReport = async () => {
+   if (!selectedFinalStudent.value) return
+   loadingGenerate.value = true
+   try {
+      let url = `/api/reports/grades/final?estudiante_id=${selectedFinalStudent.value.id}`
+      if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
+
+      const blob = await api.get(url, { responseType: 'blob' }) as Blob
+      const filename = `boletin_final_${selectedFinalStudent.value.apellidos}_${selectedFinalStudent.value.nombres}.pdf`
+      printPdfBlob(blob, filename, 'Generando boletín final...')
+   } catch (e) {
+      console.error(e)
+      Swal.fire({ icon: 'error', title: 'Error', text: 'Error generando boletín final' })
+   } finally {
+      loadingGenerate.value = false
+   }
+}
+
+const previewFinalReport = async () => {
+   if (!selectedFinalStudent.value) return
+   loadingPreview.value = true
+   finalPreview.value = null
+   try {
+      let url = `/api/reports/grades/final?estudiante_id=${selectedFinalStudent.value.id}&format=json`
+      if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
+
+      const response = await api.get(url)
+      finalPreview.value = response
+   } catch (e) {
+      console.error(e)
+      Swal.fire({ icon: 'error', title: 'Error', text: 'Error cargando vista previa del boletín final' })
    } finally {
       loadingPreview.value = false
    }
