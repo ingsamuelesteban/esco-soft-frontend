@@ -13,6 +13,7 @@
           <tr>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Título</th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Grado</th>
+            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Maestro a cargo</th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estudiantes</th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado</th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
@@ -37,6 +38,10 @@
                   {{ a.seccion }}
                 </span>
               </div>
+            </td>
+            <td class="px-4 py-3 whitespace-nowrap text-sm">
+              <span v-if="a.dueno" class="text-gray-900 dark:text-gray-100">{{ a.dueno.nombre_completo }}</span>
+              <span v-else class="text-gray-400 dark:text-gray-500 italic">Sin asignar</span>
             </td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">
               <div class="flex items-center space-x-2">
@@ -65,6 +70,14 @@
               <span :class="a.activo ? 'text-green-600' : 'text-red-600'">{{ a.activo ? 'Activa' : 'Inactiva' }}</span>
             </td>
             <td class="px-4 py-3 whitespace-nowrap text-sm space-x-1">
+              <button @click="$emit('assignDueno', a)"
+                class="inline-flex items-center justify-center p-1.5 text-purple-600 hover:text-purple-800 hover:bg-purple-50 rounded-md transition-colors"
+                title="Asignar maestro dueño">
+                <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </button>
               <button @click="$emit('viewStudents', a)"
                 class="inline-flex items-center justify-center p-1.5 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-md transition-colors"
                 title="Ver estudiantes">
@@ -100,10 +113,10 @@
             </td>
           </tr>
           <tr v-if="!loading && filtered.length === 0">
-            <td colspan="5" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Sin resultados</td>
+            <td colspan="6" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Sin resultados</td>
           </tr>
           <tr v-if="loading">
-            <td colspan="5" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Cargando...</td>
+            <td colspan="6" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Cargando...</td>
           </tr>
         </tbody>
       </table>
@@ -128,6 +141,7 @@ defineEmits<{
   edit: [aula: Aula]
   delete: [id: number]
   viewStudents: [aula: Aula]
+  assignDueno: [aula: Aula]
 }>()
 
 const store = useAulasStore()

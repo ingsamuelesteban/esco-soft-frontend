@@ -41,12 +41,14 @@
     </div>
 
     <div class="mt-6">
-      <AulasList :status-filter="statusFilter" @delete="onDelete" @edit="onEdit" @viewStudents="onViewStudents" />
+      <AulasList :status-filter="statusFilter" @delete="onDelete" @edit="onEdit" @viewStudents="onViewStudents" @assignDueno="onAssignDueno" />
     </div>
 
     <AulasFormModal v-model="showModal" :aula="current" :anio-lectivo-id="selectedAnioLectivo" @saved="onSaved" />
     <AulaStudentsModal :open="showStudentsModal" :aula="selectedAula" :anio-lectivo-id="selectedAnioLectivo"
       @close="closeStudentsModal" @updated="onStudentsUpdated" />
+    <AulaDuenoModal :open="showDuenoModal" :aula="selectedAula" :anio-lectivo-id="selectedAnioLectivo"
+      @close="closeDuenoModal" @saved="onDuenoSaved" />
   </section>
 </template>
 
@@ -56,6 +58,7 @@ import Swal from 'sweetalert2'
 import { ref, watch, onMounted } from 'vue'
 import AulasFormModal from '../../components/aulas/AulasFormModal.vue'
 import AulaStudentsModal from '../../components/aulas/AulaStudentsModal.vue'
+import AulaDuenoModal from '../../components/aulas/AulaDuenoModal.vue'
 import FilterStatus from '../../components/common/FilterStatus.vue'
 import { useAniosLectivosStore } from '../../stores/anios_lectivos'
 
@@ -102,6 +105,8 @@ watch(selectedAnioLectivo, (val) => {
 const showStudentsModal = ref(false)
 const selectedAula = ref<Aula | null>(null)
 
+const showDuenoModal = ref(false)
+
 const openNew = () => { current.value = null; showModal.value = true }
 const onEdit = (aula: any) => { current.value = aula; showModal.value = true }
 const onSaved = () => { refresh() }
@@ -118,6 +123,20 @@ const closeStudentsModal = () => {
 
 const onStudentsUpdated = () => {
   // Opcionalmente refrescar datos si es necesario
+}
+
+const onAssignDueno = (aula: Aula) => {
+  selectedAula.value = aula
+  showDuenoModal.value = true
+}
+
+const closeDuenoModal = () => {
+  showDuenoModal.value = false
+  selectedAula.value = null
+}
+
+const onDuenoSaved = () => {
+  // El store ya actualiza el item; refrescar si se quiere sincronizar desde el servidor
 }
 
 const onDelete = async (id: number) => {

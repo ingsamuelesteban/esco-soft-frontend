@@ -2,6 +2,13 @@ import { defineStore } from 'pinia'
 import { startLoading, finishLoading } from '../utils/loading'
 import { api } from '../utils/api'
 
+export interface AulaDueno {
+  personal_id: number
+  nombre: string
+  apellido: string
+  nombre_completo: string
+}
+
 export interface Aula {
   id: number
   titulo_id: number | null
@@ -12,6 +19,7 @@ export interface Aula {
   estudiantes_count?: number
   tiene_config_anio?: boolean
   titulo?: { id: number; nombre: string; familia?: { id: number; nombre: string } }
+  dueno?: AulaDueno | null
 }
 
 export const useAulasStore = defineStore('aulas', {
@@ -108,6 +116,33 @@ export const useAulasStore = defineStore('aulas', {
       startLoading()
       try {
         await api.put(`/api/aulas/${aulaId}/configurar-anio`, payload)
+      } catch (e) {
+        console.error(e)
+        throw e
+      } finally {
+        finishLoading()
+      }
+    },
+    async setDueno(aulaId: number, payload: { anio_lectivo_id: number; personal_id: number }) {
+      startLoading()
+      try {
+        const res = await api.put<{ success: boolean; dueno: AulaDueno }>(`/api/aulas/${aulaId}/dueno`, payload)
+        const idx = this.items.findIndex(a => a.id === aulaId)
+        if (idx !== -1) this.items[idx] = { ...this.items[idx], dueno: res.dueno }
+        return res
+      } catch (e) {
+        console.error(e)
+        throw e
+      } finally {
+        finishLoading()
+      }
+    },
+    async removeDueno(aulaId: number, anioLectivoId: number) {
+      startLoading()
+      try {
+        await api.delete(`/api/aulas/${aulaId}/dueno`, { params: { anio_lectivo_id: anioLectivoId } })
+        const idx = this.items.findIndex(a => a.id === aulaId)
+        if (idx !== -1) this.items[idx] = { ...this.items[idx], dueno: null }
       } catch (e) {
         console.error(e)
         throw e
