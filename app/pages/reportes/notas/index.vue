@@ -805,7 +805,7 @@
                                  <td class="border border-gray-400 p-1 text-left pl-2 font-medium">{{ module.nombre }}</td>
                                  <td class="border border-gray-400 p-1 text-center font-bold"
                                     :class="[idx % 2 === 1 ? 'bg-red-100/60 dark:bg-red-900/20' : 'bg-red-50 dark:bg-red-900/10',
-                                             gradeClass(module.final)]">
+                                             techGradeClass(module.final, module.is_fct)]">
                                     {{ module.final ?? '–' }}
                                  </td>
                               </tr>
@@ -994,6 +994,15 @@ const gradeClass = (grade: number | null | undefined): string => {
    return ''
 }
 
+const techGradeClass = (grade: number | null | undefined, isFct: boolean): string => {
+   if (grade == null) return 'text-gray-300 dark:text-gray-600'
+   const low  = isFct ? 6  : 70
+   const high = isFct ? 9  : 90
+   if (grade < low)  return 'text-red-600'
+   if (grade >= high) return 'text-green-700'
+   return ''
+}
+
 const calcPC = (
    bloques: any,
    subjectId: number,
@@ -1032,7 +1041,8 @@ const finalReportStatus = (preview: any): { aplazado: boolean } => {
    }
    if (!aplazado && preview?.technical_modules) {
       for (const module of preview.technical_modules) {
-         if (module.final != null && module.final < 70) { aplazado = true; break }
+         const threshold = module.is_fct ? 6 : 70
+         if (module.final != null && module.final < threshold) { aplazado = true; break }
       }
    }
    return { aplazado }
