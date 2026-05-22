@@ -710,8 +710,8 @@
                      <p class="text-xs text-gray-500 dark:text-gray-400">Año Lectivo: {{ finalPreview.year }}</p>
                   </div>
 
-                  <!-- Student info -->
-                  <div class="grid grid-cols-2 gap-2 text-xs mb-4 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-700 rounded p-3">
+                  <!-- Student info bar -->
+                  <div class="grid grid-cols-2 gap-2 text-xs mb-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded p-3">
                      <div>
                         <span class="font-bold">Estudiante:</span> {{ finalPreview.estudiante?.apellidos }}, {{ finalPreview.estudiante?.nombres }}<br>
                         <span class="font-bold">Código (RNE):</span> {{ finalPreview.estudiante?.rne }}
@@ -724,56 +724,97 @@
                      </div>
                   </div>
 
-                  <!-- Section header -->
-                  <div class="mb-2">
-                     <h4 class="text-sm font-bold text-white bg-indigo-700 px-3 py-1 rounded-t">
-                        PROMEDIO DE COMPETENCIAS ESPECÍFICAS
-                     </h4>
+                  <!-- Status badge -->
+                  <div class="flex justify-end mb-4">
+                     <span :class="finalReportStatus(finalPreview).aplazado ? 'bg-red-600' : 'bg-green-700'"
+                        class="text-white text-xs font-bold px-4 py-1 rounded tracking-widest uppercase">
+                        {{ finalReportStatus(finalPreview).aplazado ? 'APLAZADO' : 'PROMOVIDO' }}
+                     </span>
                   </div>
 
-                  <!-- One sub-table per bloque -->
-                  <div v-for="(bloqueLabel, bloqueNum) in finalPreview.bloque_labels" :key="bloqueNum" class="mb-5">
-                     <div class="text-xs font-bold bg-indigo-100 dark:bg-indigo-900/40 text-indigo-800 dark:text-indigo-300 px-3 py-1 border-l-4 border-indigo-600 mb-1">
-                        Bloque {{ bloqueNum }}: {{ bloqueLabel }}
+                  <!-- Section: Promedio de Competencias Específicas -->
+                  <div class="text-xs font-bold text-white bg-blue-800 dark:bg-blue-900 px-3 py-1.5 rounded-t mb-0 uppercase tracking-wide">
+                     Promedio de Competencias Específicas
+                  </div>
+                  <div class="overflow-x-auto mb-4">
+                     <table class="min-w-full text-[10px] border-collapse border border-gray-400">
+                        <thead>
+                           <!-- Row 1: Asignatura | Bloque labels | Promedio C.E. | Calif.Final -->
+                           <tr>
+                              <th rowspan="2" class="border border-gray-400 p-1 text-left bg-gray-100 dark:bg-gray-700" style="min-width:120px;">Asignatura</th>
+                              <th v-for="(bloqueLabel, bloqueNum) in finalPreview.bloque_labels" :key="'bh-' + bloqueNum"
+                                 colspan="4" class="border border-gray-400 p-1 text-center bg-blue-100 dark:bg-blue-900/50 text-blue-900 dark:text-blue-200 text-[9px]">
+                                 {{ bloqueLabel }}
+                              </th>
+                              <th colspan="4" class="border border-gray-400 p-1 text-center bg-blue-900 text-white text-[9px]">Promedio C.E.</th>
+                              <th rowspan="2" class="border border-gray-400 p-1 text-center bg-red-900 text-white text-[9px]" style="min-width:28px;">Calif.<br>Final</th>
+                           </tr>
+                           <!-- Row 2: P1-P4 per bloque + PC1-PC4 -->
+                           <tr class="bg-gray-100 dark:bg-gray-700">
+                              <template v-for="(_, bloqueNum) in finalPreview.bloque_labels" :key="'pp-' + bloqueNum">
+                                 <th v-for="p in [1,2,3,4]" :key="p" class="border border-gray-400 p-1 text-center text-[9px]" style="min-width:24px;">P{{ p }}</th>
+                              </template>
+                              <th v-for="p in [1,2,3,4]" :key="'pc' + p" class="border border-gray-400 p-1 text-center bg-blue-800 text-white text-[9px]" style="min-width:24px;">PC{{ p }}</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           <tr v-for="(subject, idx) in finalPreview.academic_subjects" :key="subject.id"
+                              :class="idx % 2 === 1 ? 'bg-blue-50/40 dark:bg-blue-900/10' : 'bg-white dark:bg-gray-800'">
+                              <td class="border border-gray-400 p-1 text-left font-medium pl-2">{{ subject.nombre }}</td>
+                              <!-- Bloque period grades -->
+                              <template v-for="(_, bloqueNum) in finalPreview.bloque_labels" :key="'bg-' + bloqueNum">
+                                 <td v-for="p in [1,2,3,4]" :key="p" class="border border-gray-400 p-1 text-center font-bold"
+                                    :class="gradeClass(finalPreview.bloques?.[subject.id]?.[bloqueNum]?.[p])">
+                                    {{ finalPreview.bloques?.[subject.id]?.[bloqueNum]?.[p] ?? '–' }}
+                                 </td>
+                              </template>
+                              <!-- PC1-PC4 -->
+                              <td v-for="p in [1,2,3,4]" :key="'pc-' + p"
+                                 class="border border-gray-400 p-1 text-center font-bold"
+                                 :class="[idx % 2 === 1 ? 'bg-green-100/60 dark:bg-green-900/20' : 'bg-green-50 dark:bg-green-900/10',
+                                          gradeClass(calcPC(finalPreview.bloques, subject.id, finalPreview.bloque_labels, p))]">
+                                 {{ calcPC(finalPreview.bloques, subject.id, finalPreview.bloque_labels, p) ?? '–' }}
+                              </td>
+                              <!-- Calificación Final -->
+                              <td class="border border-gray-400 p-1 text-center font-bold"
+                                 :class="[idx % 2 === 1 ? 'bg-red-100/60 dark:bg-red-900/20' : 'bg-red-50 dark:bg-red-900/10',
+                                          gradeClass(calcCF(finalPreview.bloques, subject.id, finalPreview.bloque_labels))]">
+                                 {{ calcCF(finalPreview.bloques, subject.id, finalPreview.bloque_labels) ?? '–' }}
+                              </td>
+                           </tr>
+                        </tbody>
+                     </table>
+                  </div>
+
+                  <!-- Section: Resultado de Aprendizaje (módulos técnicos) -->
+                  <template v-if="finalPreview.technical_modules?.length > 0">
+                     <div class="text-xs font-bold text-white bg-blue-800 dark:bg-blue-900 px-3 py-1.5 rounded-t mb-0 mt-3 uppercase tracking-wide">
+                        Resultado de Aprendizaje
                      </div>
-                     <div class="overflow-x-auto">
+                     <div class="overflow-x-auto mb-4">
                         <table class="min-w-full text-[10px] border-collapse border border-gray-400">
-                           <thead class="bg-gray-200 dark:bg-gray-700">
-                              <tr>
-                                 <th v-for="subject in finalPreview.academic_subjects" :key="subject.id"
-                                    class="border border-gray-400 p-1 text-center bg-indigo-50 dark:bg-indigo-900/30" colspan="4">
-                                    {{ subject.nombre }}
-                                 </th>
-                              </tr>
-                              <tr>
-                                 <template v-for="subject in finalPreview.academic_subjects" :key="subject.id + '-p'">
-                                    <th class="border border-gray-400 p-1 text-center" style="min-width:28px">P1</th>
-                                    <th class="border border-gray-400 p-1 text-center" style="min-width:28px">P2</th>
-                                    <th class="border border-gray-400 p-1 text-center" style="min-width:28px">P3</th>
-                                    <th class="border border-gray-400 p-1 text-center" style="min-width:28px">P4</th>
-                                 </template>
+                           <thead>
+                              <tr class="bg-gray-100 dark:bg-gray-700">
+                                 <th class="border border-gray-400 p-1 text-left pl-2" style="min-width:160px;">Módulo Técnico</th>
+                                 <th class="border border-gray-400 p-1 text-center bg-red-900 text-white" style="min-width:40px;">C.F.</th>
                               </tr>
                            </thead>
                            <tbody>
-                              <tr class="bg-white dark:bg-gray-800">
-                                 <template v-for="subject in finalPreview.academic_subjects" :key="subject.id + '-g'">
-                                    <td v-for="p in [1,2,3,4]" :key="p"
-                                       class="border border-gray-400 p-1 text-center font-bold"
-                                       :class="{
-                                          'text-gray-300 dark:text-gray-600': finalPreview.bloques?.[subject.id]?.[bloqueNum]?.[p] == null,
-                                          'text-red-600': finalPreview.bloques?.[subject.id]?.[bloqueNum]?.[p] != null && finalPreview.bloques[subject.id][bloqueNum][p] < 70,
-                                          'text-green-700': finalPreview.bloques?.[subject.id]?.[bloqueNum]?.[p] != null && finalPreview.bloques[subject.id][bloqueNum][p] >= 90
-                                       }">
-                                       {{ finalPreview.bloques?.[subject.id]?.[bloqueNum]?.[p] ?? '–' }}
-                                    </td>
-                                 </template>
+                              <tr v-for="(module, idx) in finalPreview.technical_modules" :key="module.nombre"
+                                 :class="idx % 2 === 1 ? 'bg-blue-50/40 dark:bg-blue-900/10' : 'bg-white dark:bg-gray-800'">
+                                 <td class="border border-gray-400 p-1 text-left pl-2 font-medium">{{ module.nombre }}</td>
+                                 <td class="border border-gray-400 p-1 text-center font-bold"
+                                    :class="[idx % 2 === 1 ? 'bg-red-100/60 dark:bg-red-900/20' : 'bg-red-50 dark:bg-red-900/10',
+                                             gradeClass(module.final)]">
+                                    {{ module.final ?? '–' }}
+                                 </td>
                               </tr>
                            </tbody>
                         </table>
                      </div>
-                  </div>
+                  </template>
 
-                  <div class="mt-4 text-[10px] text-center text-gray-500 dark:text-gray-400">
+                  <div class="mt-2 text-[10px] text-center text-gray-500 dark:text-gray-400">
                      Vista previa generada para consulta.
                   </div>
                </div>
@@ -944,6 +985,60 @@ const classroomPreview = ref<any | null>(null)
 const subjectPreview = ref<any | null>(null)
 const meritPreview = ref<any | null>(null)
 const finalPreview = ref<any | null>(null)
+
+// ── Helpers for final report preview ──────────────────────────────────────────
+const gradeClass = (grade: number | null | undefined): string => {
+   if (grade == null) return 'text-gray-300 dark:text-gray-600'
+   if (grade < 70) return 'text-red-600'
+   if (grade >= 90) return 'text-green-700'
+   return ''
+}
+
+const calcPC = (
+   bloques: any,
+   subjectId: number,
+   bloqueLabels: Record<string, string>,
+   period: number
+): number | null => {
+   if (!bloques?.[subjectId]) return null
+   const vals: number[] = []
+   for (const bn of Object.keys(bloqueLabels)) {
+      const v = bloques[subjectId]?.[bn]?.[period]
+      if (v != null) vals.push(v)
+   }
+   return vals.length > 0 ? Math.round(vals.reduce((a: number, b: number) => a + b, 0) / vals.length) : null
+}
+
+const calcCF = (
+   bloques: any,
+   subjectId: number,
+   bloqueLabels: Record<string, string>
+): number | null => {
+   const pcVals: number[] = []
+   for (let p = 1; p <= 4; p++) {
+      const pc = calcPC(bloques, subjectId, bloqueLabels, p)
+      if (pc != null) pcVals.push(pc)
+   }
+   return pcVals.length > 0 ? Math.round(pcVals.reduce((a: number, b: number) => a + b, 0) / pcVals.length) : null
+}
+
+const finalReportStatus = (preview: any): { aplazado: boolean } => {
+   let aplazado = false
+   if (preview?.academic_subjects && preview?.bloques && preview?.bloque_labels) {
+      for (const subject of preview.academic_subjects) {
+         const cf = calcCF(preview.bloques, subject.id, preview.bloque_labels)
+         if (cf != null && cf < 70) { aplazado = true; break }
+      }
+   }
+   if (!aplazado && preview?.technical_modules) {
+      for (const module of preview.technical_modules) {
+         if (module.final != null && module.final < 70) { aplazado = true; break }
+      }
+   }
+   return { aplazado }
+}
+// ──────────────────────────────────────────────────────────────────────────────
+
 let searchTimeout: any = null
 
 // Watchers
