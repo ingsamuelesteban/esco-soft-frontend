@@ -361,8 +361,8 @@
                <div v-if="subjectPreview" class="border border-gray-300 dark:border-gray-600 rounded-lg p-6 bg-gray-50 dark:bg-gray-900/50 mt-6 overflow-x-auto">
                   <div class="text-center border-b border-gray-300 dark:border-gray-600 pb-4 mb-4">
                      <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ subjectPreview.tenant?.nombre }}</h2>
-                     <h3 class="font-bold mt-2">PLANILLA DE CALIFICACIONES</h3>
-                     <p class="text-sm font-bold mt-1">{{ subjectPreview.materia?.nombre }} ({{
+                     <h3 class="font-bold mt-2 dark:text-gray-100">PLANILLA DE CALIFICACIONES</h3>
+                     <p class="text-sm font-bold mt-1 dark:text-gray-200">{{ subjectPreview.materia?.nombre }} ({{
                         subjectPreview.materia?.tipo }})</p>
                      <p class="text-xs text-gray-500 dark:text-gray-400">{{ subjectPreview.assignment?.aula?.grado_cardinal }}° {{
                         subjectPreview.assignment?.aula?.seccion }} - Profesor: {{
@@ -372,19 +372,19 @@
                   <!-- Technical Subject Table -->
                   <table v-if="subjectPreview.materia?.tipo === 'Tecnico'"
                      class="min-w-full text-xs border-collapse border border-gray-400">
-                     <thead class="bg-gray-200">
+                     <thead class="bg-gray-200 dark:bg-gray-700">
                         <tr>
-                           <th class="border border-gray-400 p-1 text-left sticky left-0 bg-gray-200 z-10">No.</th>
-                           <th class="border border-gray-400 p-1 text-left sticky left-12 bg-gray-200 z-10">Estudiante
+                           <th class="border border-gray-400 p-1 text-left sticky left-0 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10">No.</th>
+                           <th class="border border-gray-400 p-1 text-left sticky left-12 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10">Estudiante
                            </th>
                            <th v-for="i in subjectPreview.assignment?.cantidad_ra" :key="i"
-                              class="border border-gray-400 p-1 text-center">
+                              class="border border-gray-400 p-1 text-center dark:text-gray-100">
                               RA{{ i }}
                            </th>
-                           <th class="border border-gray-400 p-1 text-center bg-yellow-100 font-bold">Total</th>
+                           <th class="border border-gray-400 p-1 text-center bg-yellow-100 dark:bg-yellow-900/30 dark:text-yellow-200 font-bold">Total</th>
                            <template v-if="subjectPreview.data?.[0]?.is_fct">
-                              <th class="border border-gray-400 p-1 text-center bg-gray-200 font-bold">Promedio</th>
-                              <th class="border border-gray-400 p-1 text-center bg-gray-200 font-bold">Situación</th>
+                              <th class="border border-gray-400 p-1 text-center bg-gray-200 dark:bg-gray-700 dark:text-gray-100 font-bold">Promedio</th>
+                              <th class="border border-gray-400 p-1 text-center bg-gray-200 dark:bg-gray-700 dark:text-gray-100 font-bold">Situación</th>
                            </template>
                         </tr>
                      </thead>
@@ -397,13 +397,13 @@
                               row.estudiante.apellidos }} {{
                                  row.estudiante.nombres }}</td>
                            <td v-for="i in subjectPreview.assignment?.cantidad_ra" :key="i"
-                              class="border border-gray-400 p-1 text-center font-bold">
+                              class="border border-gray-400 p-1 text-center font-bold dark:text-gray-100">
                               {{ row.is_fct ? (parseFloat(row.ras?.[i] ?? 0).toFixed(1)) : (row.ras?.[i] ?? 0) }}
                            </td>
-                           <td class="border border-gray-400 p-1 text-center font-bold bg-yellow-50">{{ row.total }}
+                           <td class="border border-gray-400 p-1 text-center font-bold bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-200">{{ row.total }}
                            </td>
                            <template v-if="row.is_fct">
-                              <td class="border border-gray-400 p-1 text-center font-bold">{{ row.promedio }}</td>
+                              <td class="border border-gray-400 p-1 text-center font-bold dark:text-gray-100">{{ row.promedio }}</td>
                               <td class="border border-gray-400 p-1 text-center font-bold"
                                  :class="row.promedio >= 6 ? 'text-green-700' : 'text-red-700'">
                                  {{ row.situacion }}
@@ -415,16 +415,16 @@
 
                   <!-- Academic Subject Table -->
                   <table v-else class="min-w-full text-xs border-collapse border border-gray-400">
-                     <thead class="bg-gray-200">
+                     <thead class="bg-gray-200 dark:bg-gray-700">
                         <tr>
-                           <th class="border border-gray-400 p-1 text-left sticky left-0 bg-gray-200 z-10">No.</th>
-                           <th class="border border-gray-400 p-1 text-left sticky left-12 bg-gray-200 z-10">Estudiante
+                           <th class="border border-gray-400 p-1 text-left sticky left-0 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10">No.</th>
+                           <th class="border border-gray-400 p-1 text-left sticky left-12 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10">Estudiante
                            </th>
-                           <th class="border border-gray-400 p-1 text-center">P1</th>
-                           <th class="border border-gray-400 p-1 text-center">P2</th>
-                           <th class="border border-gray-400 p-1 text-center">P3</th>
-                           <th class="border border-gray-400 p-1 text-center">P4</th>
-                           <th class="border border-gray-400 p-1 text-center bg-yellow-100 font-bold">Final</th>
+                           <th class="border border-gray-400 p-1 text-center dark:text-gray-100">P1</th>
+                           <th class="border border-gray-400 p-1 text-center dark:text-gray-100">P2</th>
+                           <th class="border border-gray-400 p-1 text-center dark:text-gray-100">P3</th>
+                           <th class="border border-gray-400 p-1 text-center dark:text-gray-100">P4</th>
+                           <th class="border border-gray-400 p-1 text-center bg-yellow-100 dark:bg-yellow-900/30 dark:text-yellow-200 font-bold">Final</th>
                         </tr>
                      </thead>
                      <tbody>
@@ -435,15 +435,15 @@
                            <td class="border border-gray-400 p-1 sticky left-12 bg-white dark:bg-gray-800 z-10">{{
                               row.estudiante.apellidos }} {{
                                  row.estudiante.nombres }}</td>
-                           <td class="border border-gray-400 p-1 text-center font-bold">{{ row.periodos?.[1] ?? '-' }}
+                           <td class="border border-gray-400 p-1 text-center font-bold dark:text-gray-100">{{ row.periodos?.[1] ?? '-' }}
                            </td>
-                           <td class="border border-gray-400 p-1 text-center font-bold">{{ row.periodos?.[2] ?? '-' }}
+                           <td class="border border-gray-400 p-1 text-center font-bold dark:text-gray-100">{{ row.periodos?.[2] ?? '-' }}
                            </td>
-                           <td class="border border-gray-400 p-1 text-center font-bold">{{ row.periodos?.[3] ?? '-' }}
+                           <td class="border border-gray-400 p-1 text-center font-bold dark:text-gray-100">{{ row.periodos?.[3] ?? '-' }}
                            </td>
-                           <td class="border border-gray-400 p-1 text-center font-bold">{{ row.periodos?.[4] ?? '-' }}
+                           <td class="border border-gray-400 p-1 text-center font-bold dark:text-gray-100">{{ row.periodos?.[4] ?? '-' }}
                            </td>
-                           <td class="border border-gray-400 p-1 text-center font-bold bg-yellow-50">{{ row.final }}
+                           <td class="border border-gray-400 p-1 text-center font-bold bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-200">{{ row.final }}
                            </td>
                         </tr>
                      </tbody>
