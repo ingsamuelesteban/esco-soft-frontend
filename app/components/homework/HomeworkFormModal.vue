@@ -95,7 +95,14 @@
                             Archivo adjunto
                         </label>
                         <DropZone v-model="form.attachment" label="Arrastra tu archivo aquí o haz clic para seleccionar"
-                            :max-size="10 * 1024 * 1024" />
+                            :max-size="20 * 1024 * 1024" />
+                        <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                            <svg class="h-3.5 w-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            Tamaño máximo permitido: <strong>20 MB</strong>
+                        </p>
                         <p v-if="homework?.attachment_path && !form.attachment"
                             class="text-sm text-gray-500 dark:text-gray-400 mt-2 p-2 bg-gray-50 dark:bg-gray-900/50 rounded border border-gray-200 dark:border-gray-700">
                             Archivo actual: <strong>{{ homework.attachment_path.split('/').pop() }}</strong>
