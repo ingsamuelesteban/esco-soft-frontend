@@ -33,6 +33,7 @@
 
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import Swal from 'sweetalert2'
 import { usePersonalStore, type Personal } from '../../stores/personal'
 import { showConfirm, showError, showToast } from '../../utils/sweetalert'
 import FilterStatus from '../../components/common/FilterStatus.vue'
@@ -86,7 +87,17 @@ const handleDelete = async (personal: Personal) => {
       await store.delete(personal.id)
       showToast('Personal eliminado correctamente', 'success')
     } catch (error: any) {
-      showError(error?.data?.message || 'Error al eliminar el personal')
+      if (error?.data?.has_assignments) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'No se puede eliminar',
+          text: error.data.message,
+          confirmButtonColor: '#3b82f6',
+          confirmButtonText: 'Entendido',
+        })
+      } else {
+        showError(error?.data?.message || 'Error al eliminar el personal')
+      }
     }
   }
 }
