@@ -122,7 +122,7 @@ const closeStudentsModal = () => {
 }
 
 const onStudentsUpdated = () => {
-  // Opcionalmente refrescar datos si es necesario
+  fetchAulas()
 }
 
 const onAssignDueno = (aula: Aula) => {

@@ -378,14 +378,25 @@ const removerDeAula = async (estudiante: Estudiante) => {
   if (!result.isConfirmed) return
 
   try {
-    await estudiantesStore.update(estudiante.id, {
-      ...estudiante,
-      aula_id: null
-    })
+    // Students in 'admitido' state were assigned via the admission flow;
+    // revert them back to 'pre-admitido' using the dedicated endpoint.
+    if (estudiante.estado === 'admitido' && props.anioLectivoId) {
+      await api.post(`/api/admisiones/asignaciones/${estudiante.id}/revertir`, {
+        anio_lectivo_id: props.anioLectivoId
+      })
+    } else {
+      await estudiantesStore.update(estudiante.id, {
+        ...estudiante,
+        aula_id: null
+      })
+    }
+
+    // Optimistic update: remove from local list immediately for instant feedback
+    estudiantesAsignados.value = estudiantesAsignados.value.filter(e => e.id !== estudiante.id)
 
     showToast('Estudiante removido exitosamente', 'success')
 
-    // Recargar datos
+    // Re-fetch to sync with server state
     await cargarEstudiantesAsignados()
     await cargarEstudiantesSinAula()
     emit('updated')

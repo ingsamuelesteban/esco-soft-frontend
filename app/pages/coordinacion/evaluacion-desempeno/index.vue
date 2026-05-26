@@ -125,10 +125,16 @@
               {{ lista.observaciones || '—' }}
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm">
-              <button @click="openEdit(lista)" class="inline-flex items-center gap-1 text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-200 font-medium transition-colors">
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
-                Editar
-              </button>
+              <div class="flex items-center justify-end gap-3">
+                <button @click="openEdit(lista)" class="inline-flex items-center gap-1 text-indigo-600 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-200 font-medium transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                  Editar
+                </button>
+                <button @click="eliminarLista(lista)" class="inline-flex items-center gap-1 text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 font-medium transition-colors">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  Eliminar
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -571,6 +577,30 @@ function guardarEvaluacion() {
       showEditModal.value = false
     })
     .catch((e: any) => console.error('Error guardando evaluación:', e))
+}
+
+async function eliminarLista(lista: ListaItem) {
+  const result = await Swal.fire({
+    title: '¿Eliminar evaluación?',
+    text: `Se eliminará la evaluación de ${lista.profesor_nombre}. Esta acción no se puede deshacer.`,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ef4444',
+    cancelButtonColor: '#6b7280',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+  })
+
+  if (!result.isConfirmed) return
+
+  try {
+    await api.delete(`/api/performance-evaluations/${lista.id}`)
+    listas.value = listas.value.filter(l => l.id !== lista.id)
+    Swal.fire({ icon: 'success', title: 'Eliminada', text: 'La evaluación fue eliminada correctamente.', timer: 2000, showConfirmButton: false })
+  } catch (e: any) {
+    console.error('Error eliminando evaluación:', e)
+    Swal.fire({ icon: 'error', title: 'Error', text: 'No se pudo eliminar la evaluación.' })
+  }
 }
 
 // ── Métodos ───────────────────────────────────────────────────
