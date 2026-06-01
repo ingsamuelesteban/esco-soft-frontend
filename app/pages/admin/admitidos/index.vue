@@ -3,19 +3,40 @@
     <!-- Header -->
     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
-        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Admitidos</h1>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">
+          {{ modo === 'admitidos' ? 'Admitidos' : 'No Admitidos' }}
+        </h1>
         <p class="text-sm text-gray-500 dark:text-gray-400 mt-0.5">
-          Listado de estudiantes admitidos con su aula asignada.
+          {{ modo === 'admitidos' ? 'Listado de estudiantes admitidos con su aula asignada.' : 'Listado de estudiantes que no fueron admitidos.' }}
         </p>
       </div>
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-3 flex-wrap">
+        <!-- Toggle Admitidos / No Admitidos -->
+        <div class="flex rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden text-sm font-semibold">
+          <button @click="cambiarModo('admitidos')" :class="modo === 'admitidos' ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'"
+            class="px-4 py-2 transition-colors flex items-center gap-1.5">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Admitidos
+          </button>
+          <button @click="cambiarModo('no-admitidos')" :class="modo === 'no-admitidos' ? 'bg-red-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'"
+            class="px-4 py-2 transition-colors flex items-center gap-1.5 border-l border-gray-200 dark:border-gray-700">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+            </svg>
+            No Admitidos
+          </button>
+        </div>
+
         <div class="text-sm text-gray-500 dark:text-gray-400">
           Total: <span class="font-semibold text-gray-800 dark:text-gray-100">{{ total }}</span>
         </div>
         <button
           @click="printPdf"
           :disabled="printLoading || !anioLectivoId"
-          class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+          :class="modo === 'no-admitidos' ? 'bg-red-600 hover:bg-red-700' : 'bg-blue-600 hover:bg-blue-700'"
+          class="inline-flex items-center gap-2 px-4 py-2 text-white text-sm font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
         >
           <svg v-if="printLoading" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
@@ -25,7 +46,7 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
           </svg>
-          {{ aulaId ? 'Imprimir Aula' : 'Imprimir Todas' }}
+          {{ modo === 'admitidos' ? (aulaId ? 'Imprimir Aula' : 'Imprimir Todas') : 'Imprimir No Admitidos' }}
         </button>
       </div>
     </div>
@@ -37,7 +58,7 @@
         <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Año Lectivo</label>
         <select
           v-model="anioLectivoId"
-          @change="loadAdmitidos(1)"
+          @change="cargar(1)"
           class="input-field w-full text-sm rounded-lg px-3 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
         >
           <option v-for="a in aniosLectivos" :key="a.id" :value="a.id">{{ a.nombre }}</option>
@@ -52,16 +73,16 @@
           type="text"
           placeholder="Nombre, apellido o # folder..."
           class="input-field w-full text-sm rounded-lg px-3 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
-          @keyup.enter="loadAdmitidos(1)"
+          @keyup.enter="cargar(1)"
         />
       </div>
 
-      <!-- Filtro por aula -->
-      <div class="min-w-[200px]">
+      <!-- Filtro por aula (solo admitidos) -->
+      <div v-if="modo === 'admitidos'" class="min-w-[200px]">
         <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Aula</label>
         <select
           v-model="aulaId"
-          @change="loadAdmitidos(1)"
+          @change="cargar(1)"
           class="input-field w-full text-sm rounded-lg px-3 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
         >
           <option value="">Todas las aulas</option>
@@ -72,7 +93,7 @@
       <!-- Botón buscar -->
       <div>
         <button
-          @click="loadAdmitidos(1)"
+          @click="cargar(1)"
           class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg transition-colors"
         >
           <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -99,25 +120,27 @@
             <tr>
               <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-24">#Folder</th>
               <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Estudiante</th>
-              <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Aula</th>
+              <th v-if="modo === 'admitidos'" class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Aula</th>
               <th class="px-4 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Área</th>
               <th class="px-4 py-3 text-center text-xs font-bold text-gray-500 uppercase tracking-wider w-24">Acciones</th>
             </tr>
           </thead>
           <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-100 dark:divide-gray-700">
             <tr v-if="admitidos.length === 0">
-              <td colspan="5" class="px-4 py-12 text-center text-gray-400 dark:text-gray-500">
-                No se encontraron estudiantes admitidos.
+              <td :colspan="modo === 'admitidos' ? 5 : 4" class="px-4 py-12 text-center text-gray-400 dark:text-gray-500">
+                {{ modo === 'admitidos' ? 'No se encontraron estudiantes admitidos.' : 'No se encontraron estudiantes no admitidos.' }}
               </td>
             </tr>
             <tr
               v-for="est in admitidos"
               :key="est.id"
               class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
+              :class="{ 'bg-red-50/30 dark:bg-red-900/10': modo === 'no-admitidos' }"
             >
               <!-- Folder -->
               <td class="px-4 py-3">
-                <span class="font-mono font-bold text-indigo-700 dark:text-indigo-400 text-sm">
+                <span :class="modo === 'no-admitidos' ? 'text-red-700 dark:text-red-400' : 'text-indigo-700 dark:text-indigo-400'"
+                  class="font-mono font-bold text-sm">
                   #{{ est.admision?.no_folder ?? '—' }}
                 </span>
               </td>
@@ -128,8 +151,8 @@
                 </div>
                 <div class="text-xs text-gray-400">{{ est.cedula ?? 'Sin cédula' }}</div>
               </td>
-              <!-- Aula -->
-              <td class="px-4 py-3">
+              <!-- Aula (solo admitidos) -->
+              <td v-if="modo === 'admitidos'" class="px-4 py-3">
                 <span v-if="est.aula" class="text-sm text-gray-800 dark:text-gray-200">
                   {{ aulaLabel(est.aula) }}
                 </span>
@@ -171,14 +194,14 @@
         <div class="flex gap-2">
           <button
             :disabled="currentPage <= 1"
-            @click="loadAdmitidos(currentPage - 1)"
+            @click="cargar(currentPage - 1)"
             class="px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 transition-colors"
           >
             Anterior
           </button>
           <button
             :disabled="currentPage >= lastPage"
-            @click="loadAdmitidos(currentPage + 1)"
+            @click="cargar(currentPage + 1)"
             class="px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 transition-colors"
           >
             Siguiente
@@ -208,6 +231,7 @@ const currentPage    = ref(1)
 const lastPage       = ref(1)
 const total          = ref(0)
 const printLoading   = ref(false)
+const modo           = ref('admitidos') // 'admitidos' | 'no-admitidos'
 
 const { printPdfBlob } = usePrint()
 
@@ -225,6 +249,22 @@ const loadAulas = async () => {
     aulas.value = res.data ?? res ?? []
   } catch (e) {
     console.error('Error cargando aulas:', e)
+  }
+}
+
+const cambiarModo = (nuevoModo) => {
+  if (modo.value === nuevoModo) return
+  modo.value = nuevoModo
+  search.value = ''
+  aulaId.value = ''
+  cargar(1)
+}
+
+const cargar = async (page = 1) => {
+  if (modo.value === 'admitidos') {
+    await loadAdmitidos(page)
+  } else {
+    await loadNoAdmitidos(page)
   }
 }
 
@@ -251,15 +291,43 @@ const loadAdmitidos = async (page = 1) => {
   }
 }
 
+const loadNoAdmitidos = async (page = 1) => {
+  if (!anioLectivoId.value) return
+  loading.value = true
+  currentPage.value = page
+  try {
+    let url = `/api/no-admitidos?page=${page}&anio_lectivo_id=${anioLectivoId.value}`
+    if (search.value.trim()) url += `&search=${encodeURIComponent(search.value.trim())}`
+
+    const res = await api.get(url)
+    const paginado = res.data
+
+    admitidos.value  = paginado?.data      ?? []
+    lastPage.value   = paginado?.last_page ?? 1
+    total.value      = paginado?.total     ?? admitidos.value.length
+  } catch (e) {
+    console.error('Error cargando no admitidos:', e)
+    Swal.fire('Error', 'No se pudo cargar el listado de no admitidos.', 'error')
+  } finally {
+    loading.value = false
+  }
+}
+
 const printPdf = async () => {
   if (!anioLectivoId.value) return
   printLoading.value = true
   try {
-    let url = `/api/admitidos/pdf?anio_lectivo_id=${anioLectivoId.value}`
-    if (aulaId.value) url += `&aula_id=${aulaId.value}`
-    const blob = await api.getBlob(url)
-    const filename = aulaId.value ? 'admitidos_aula.pdf' : 'admitidos_todos.pdf'
-    printPdfBlob(blob, filename, 'Preparando listado de admitidos...')
+    if (modo.value === 'no-admitidos') {
+      const url = `/api/no-admitidos/pdf?anio_lectivo_id=${anioLectivoId.value}`
+      const blob = await api.getBlob(url)
+      printPdfBlob(blob, 'no-admitidos.pdf', 'Preparando listado de no admitidos...')
+    } else {
+      let url = `/api/admitidos/pdf?anio_lectivo_id=${anioLectivoId.value}`
+      if (aulaId.value) url += `&aula_id=${aulaId.value}`
+      const blob = await api.getBlob(url)
+      const filename = aulaId.value ? 'admitidos_aula.pdf' : 'admitidos_todos.pdf'
+      printPdfBlob(blob, filename, 'Preparando listado de admitidos...')
+    }
   } catch (e) {
     Swal.fire('Error', 'No se pudo generar el PDF.', 'error')
   } finally {
@@ -277,7 +345,7 @@ onMounted(async () => {
       const activeAnio = data.find((a) => a.activo)
       const nextAnio   = data.find((a) => !a.activo && (!activeAnio || a.nombre > activeAnio.nombre))
       anioLectivoId.value = nextAnio?.id ?? activeAnio?.id ?? data[0].id
-      await loadAdmitidos(1)
+      await cargar(1)
     }
   } catch (e) {
     console.error('Error cargando años lectivos:', e)
