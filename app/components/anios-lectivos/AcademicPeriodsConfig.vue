@@ -23,7 +23,7 @@
                         <div v-for="(period, idx) in periods" :key="idx"
                             class="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg border border-gray-200 dark:border-gray-700">
                             <div class="flex items-center justify-between mb-4">
-                                <h4 class="text-md font-bold text-blue-800">{{ period.nombre }} (P{{ period.numero }})
+                                <h4 class="text-md font-bold text-blue-800 dark:text-blue-400">{{ period.nombre }} (P{{ period.numero }})
                                 </h4>
                             </div>
 
@@ -32,19 +32,19 @@
                                     <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Clase Inicio
                                         (Opcional)</label>
                                     <input type="date" v-model="period.fecha_inicio"
-                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500">
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Clase Fin
                                         (Opcional)</label>
                                     <input type="date" v-model="period.fecha_fin"
-                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500">
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                 </div>
                                 <div>
                                     <label class="block text-xs font-bold text-red-600 uppercase">Fecha Publicación
                                         Boletín</label>
                                     <input type="date" v-model="period.fecha_publicacion" required
-                                        class="mt-1 block w-full border-red-300 rounded-md shadow-sm text-sm focus:ring-red-500 focus:border-red-500 bg-red-50">
+                                        class="mt-1 block w-full border-red-300 dark:border-red-700 rounded-md shadow-sm text-sm focus:ring-red-500 focus:border-red-500 bg-red-50 dark:bg-red-900/20 text-gray-900 dark:text-gray-100">
                                     <p class="text-xs text-red-500 mt-1">Fecha en que se muestran notas y activan
                                         bloqueos.</p>
                                 </div>
@@ -52,7 +52,7 @@
                         </div>
                     </div>
 
-                    <div v-if="error" class="mt-4 p-3 bg-red-100 text-red-700 rounded text-sm">
+                    <div v-if="error" class="mt-4 p-3 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded text-sm">
                         {{ error }}
                     </div>
                 </form>

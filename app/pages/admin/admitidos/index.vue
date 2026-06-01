@@ -8,8 +8,25 @@
           Listado de estudiantes admitidos con su aula asignada.
         </p>
       </div>
-      <div class="text-sm text-gray-500 dark:text-gray-400">
-        Total: <span class="font-semibold text-gray-800 dark:text-gray-100">{{ total }}</span>
+      <div class="flex items-center gap-3">
+        <div class="text-sm text-gray-500 dark:text-gray-400">
+          Total: <span class="font-semibold text-gray-800 dark:text-gray-100">{{ total }}</span>
+        </div>
+        <button
+          @click="printPdf"
+          :disabled="printLoading || !anioLectivoId"
+          class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+        >
+          <svg v-if="printLoading" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+          </svg>
+          <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+          </svg>
+          {{ aulaId ? 'Imprimir Aula' : 'Imprimir Todas' }}
+        </button>
       </div>
     </div>
 
@@ -175,6 +192,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { api } from '~/utils/api'
+import { usePrint } from '~/composables/usePrint'
 import Swal from 'sweetalert2'
 
 definePageMeta({ layout: 'default', middleware: ['auth'] })
@@ -189,6 +207,9 @@ const anioLectivoId  = ref(null)
 const currentPage    = ref(1)
 const lastPage       = ref(1)
 const total          = ref(0)
+const printLoading   = ref(false)
+
+const { printPdfBlob } = usePrint()
 
 const aulaLabel = (aula) => {
   if (!aula) return ''
@@ -227,6 +248,22 @@ const loadAdmitidos = async (page = 1) => {
     Swal.fire('Error', 'No se pudo cargar el listado de admitidos.', 'error')
   } finally {
     loading.value = false
+  }
+}
+
+const printPdf = async () => {
+  if (!anioLectivoId.value) return
+  printLoading.value = true
+  try {
+    let url = `/api/admitidos/pdf?anio_lectivo_id=${anioLectivoId.value}`
+    if (aulaId.value) url += `&aula_id=${aulaId.value}`
+    const blob = await api.getBlob(url)
+    const filename = aulaId.value ? 'admitidos_aula.pdf' : 'admitidos_todos.pdf'
+    printPdfBlob(blob, filename, 'Preparando listado de admitidos...')
+  } catch (e) {
+    Swal.fire('Error', 'No se pudo generar el PDF.', 'error')
+  } finally {
+    printLoading.value = false
   }
 }
 
