@@ -307,19 +307,36 @@
           </div>
         </div>
       </div>
-      <!-- Próximos pasos -->
-      <div class="glass-card rounded-xl p-5 flex gap-4 items-start">
-        <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex-shrink-0">
-          <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-          </svg>
+      <!-- Próximos pasos / Actividades -->
+      <div class="glass-card rounded-xl p-5">
+        <div class="flex items-center gap-3 mb-4">
+          <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex-shrink-0">
+            <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+            </svg>
+          </div>
+          <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">Próximas Actividades</p>
         </div>
-        <div>
-          <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">¿Qué sigue?</p>
-          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
-            La institución te indicará la fecha de presentación de documentos y los pasos a seguir para completar tu proceso de matrícula. ¡Bienvenido a nuestra familia!
-          </p>
+        <div v-if="dashboardData.admision_resultado?.actividades?.length" class="space-y-3">
+          <div
+            v-for="act in dashboardData.admision_resultado.actividades"
+            :key="act.id"
+            class="flex items-start gap-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800"
+          >
+            <div class="flex-shrink-0 mt-0.5 p-1.5 bg-blue-200 dark:bg-blue-800 rounded">
+              <svg class="w-3.5 h-3.5 text-blue-700 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-snug">{{ act.actividad }}</p>
+              <p class="text-xs text-blue-700 dark:text-blue-300 mt-0.5">{{ formatDate(act.fecha) }}</p>
+            </div>
+          </div>
         </div>
+        <p v-else class="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">
+          La institución te indicará la fecha de presentación de documentos y los pasos a seguir para completar tu proceso de matrícula. ¡Bienvenido a nuestra familia!
+        </p>
       </div>
     </div>
 
