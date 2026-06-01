@@ -8,8 +8,21 @@
           Asigna a los estudiantes preadmitidos a sus aulas de 4to grado basándose en los resultados vocacionales.
         </p>
       </div>
-      <div class="flex flex-wrap gap-2">
-        <button @click="confirmarTodo" :disabled="!puedeConfirmar || saving"
+      <div class="flex flex-wrap gap-2 items-center">
+        <!-- Toggle de modo -->
+        <div class="flex rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden text-sm font-semibold">
+          <button @click="accion = 'asignar'" :class="accion === 'asignar' ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'"
+            class="px-4 py-2 transition-colors flex items-center gap-1.5">
+            <CheckCircleIcon class="w-4 h-4" /> Asignar Aulas
+          </button>
+          <button @click="accion = 'no-admitir'" :class="accion === 'no-admitir' ? 'bg-red-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'"
+            class="px-4 py-2 transition-colors flex items-center gap-1.5 border-l border-gray-200 dark:border-gray-700">
+            <NoSymbolIcon class="w-4 h-4" /> No Admitir
+          </button>
+        </div>
+
+        <!-- Botón de acción contextual -->
+        <button v-if="accion === 'asignar'" @click="confirmarTodo" :disabled="!puedeConfirmar || saving"
           class="inline-flex items-center gap-2 px-4 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-colors disabled:opacity-50">
           <CheckIcon v-if="!saving" class="w-4 h-4" />
           <svg v-else class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -17,6 +30,16 @@
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
           Confirmar Asignaciones ({{ asignacionesPendientes.length }})
+        </button>
+
+        <button v-else @click="marcarNoAdmitidos" :disabled="seleccionados.length === 0 || saving"
+          class="inline-flex items-center gap-2 px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-semibold rounded-xl shadow-sm transition-colors disabled:opacity-50">
+          <NoSymbolIcon v-if="!saving" class="w-4 h-4" />
+          <svg v-else class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          Marcar No Admitidos ({{ seleccionados.length }})
         </button>
       </div>
     </div>
@@ -49,6 +72,11 @@
 
     <!-- Tabla -->
     <div class="glass-card rounded-xl overflow-hidden">
+      <!-- Banner modo No Admitir -->
+      <div v-if="accion === 'no-admitir'" class="bg-red-50 dark:bg-red-900/20 border-b border-red-200 dark:border-red-800 px-4 py-3 flex items-center gap-2 text-sm text-red-700 dark:text-red-300">
+        <NoSymbolIcon class="w-4 h-4 flex-shrink-0" />
+        Selecciona los estudiantes que <strong class="mx-1">NO serán admitidos</strong> y pulsa "Marcar No Admitidos".
+      </div>
       <div v-if="loading" class="flex justify-center py-16">
         <svg class="animate-spin h-8 w-8 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
@@ -77,7 +105,7 @@
             </tr>
             <tr v-for="est in filtrados" :key="est.id"
               class="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors"
-              :class="{ 'bg-blue-50/30 dark:bg-blue-900/10': isSelected(est.id) }">
+              :class="{ 'bg-blue-50/30 dark:bg-blue-900/10': isSelected(est.id) && accion === 'asignar', 'bg-red-50/40 dark:bg-red-900/10': isSelected(est.id) && accion === 'no-admitir' }">
               <!-- Folder -->
               <td class="px-4 py-3">
                 <span class="font-mono font-bold text-indigo-700 dark:text-indigo-400 text-sm">
@@ -112,9 +140,10 @@
               </td>
               <!-- Checkbox -->
               <td class="px-4 py-3 text-center">
-                <input type="checkbox" :value="est.id" v-model="seleccionados" 
-                  :disabled="!asignaciones[est.id]"
-                  class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 disabled:opacity-20" />
+                <input type="checkbox" :value="est.id" v-model="seleccionados"
+                  :disabled="accion === 'asignar' && !asignaciones[est.id]"
+                  :class="accion === 'no-admitir' ? 'text-red-600 focus:ring-red-500' : 'text-indigo-600 focus:ring-indigo-500'"
+                  class="rounded border-gray-300 disabled:opacity-20" />
               </td>
             </tr>
           </tbody>
@@ -125,10 +154,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import { api } from '~/utils/api'
-import { CheckIcon, CheckCircleIcon } from '@heroicons/vue/24/solid'
+import { CheckIcon, CheckCircleIcon, NoSymbolIcon } from '@heroicons/vue/24/solid'
 import { showToast } from '~/utils/sweetalert'
+import Swal from 'sweetalert2'
 
 definePageMeta({ layout: 'default', middleware: ['auth'] })
 
@@ -143,6 +173,10 @@ const filterArea = ref('')
 
 const asignaciones = ref<{ [key: number]: number | null }>({})
 const seleccionados = ref<number[]>([])
+const accion = ref<'asignar' | 'no-admitir'>('asignar')
+
+// Reset selection when switching modes
+watch(accion, () => { seleccionados.value = [] })
 
 const areasList = computed(() => {
   const areas = estudiantes.value.map(e => e.area_examen).filter(Boolean)
@@ -172,12 +206,16 @@ const asignacionesPendientes = computed(() => seleccionados.value.filter(id => !
 const puedeConfirmar = computed(() => asignacionesPendientes.value.length > 0)
 
 const allSelected = computed(() => {
-  const validIds = filtrados.value.filter(e => !!asignaciones.value[e.id]).map(e => e.id)
+  const validIds = accion.value === 'no-admitir'
+    ? filtrados.value.map(e => e.id)
+    : filtrados.value.filter(e => !!asignaciones.value[e.id]).map(e => e.id)
   return validIds.length > 0 && validIds.every(id => seleccionados.value.includes(id))
 })
 
 function toggleAll() {
-  const validIds = filtrados.value.filter(e => !!asignaciones.value[e.id]).map(e => e.id)
+  const validIds = accion.value === 'no-admitir'
+    ? filtrados.value.map(e => e.id)
+    : filtrados.value.filter(e => !!asignaciones.value[e.id]).map(e => e.id)
   if (allSelected.value) {
     seleccionados.value = seleccionados.value.filter(id => !validIds.includes(id))
   } else {
@@ -207,6 +245,37 @@ async function cargar() {
     showToast('Error al cargar datos', 'error')
   } finally {
     loading.value = false
+  }
+}
+
+async function marcarNoAdmitidos() {
+  if (!anioLectivoId.value || seleccionados.value.length === 0) return
+
+  const result = await Swal.fire({
+    title: `¿Marcar ${seleccionados.value.length} estudiante(s) como No Admitidos?`,
+    text: 'Esta acción cambiará su estado a No Admitido. Se puede revertir desde el perfil del estudiante.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#dc2626',
+    cancelButtonColor: '#6b7280',
+    confirmButtonText: 'Sí, marcar No Admitidos',
+    cancelButtonText: 'Cancelar',
+  })
+
+  if (!result.isConfirmed) return
+
+  saving.value = true
+  try {
+    await api.post('/api/admisiones/asignaciones/no-admitir', {
+      anio_lectivo_id: anioLectivoId.value,
+      student_ids: seleccionados.value,
+    })
+    showToast(`${seleccionados.value.length} estudiante(s) marcados como No Admitidos.`, 'success')
+    await cargar()
+  } catch (e: any) {
+    showToast(e?.data?.message || 'Error al procesar', 'error')
+  } finally {
+    saving.value = false
   }
 }
 
