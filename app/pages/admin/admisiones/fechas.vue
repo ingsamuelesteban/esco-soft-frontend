@@ -52,17 +52,21 @@
                     </div>
 
                     <div class="border-t border-gray-100 dark:border-gray-700 pt-4">
-                        <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Grupos y Horarios
-                        </h4>
-                        <div class="space-y-2">
-                            <div v-for="grupo in actividad.grupos" :key="grupo.id"
-                                class="flex items-center justify-between text-sm py-1 border-b border-gray-50 last:border-0">
-                                <span class="text-gray-700 dark:text-gray-300 font-medium">Folder {{ grupo.folder_desde }} - {{
-                                    grupo.folder_hasta }}</span>
-                                <span class="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-2 py-0.5 rounded text-xs font-bold">{{
-                                    grupo.hora }}</span>
-                            </div>
+                        <div v-if="actividad.tipo === 'admitido'" class="flex items-center gap-2">
+                            <span class="inline-flex items-center rounded-full bg-green-100 dark:bg-green-900/30 px-2.5 py-1 text-xs font-medium text-green-800 dark:text-green-300">
+                                Para todos los admitidos
+                            </span>
                         </div>
+                        <template v-else>
+                            <h4 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Grupos y Horarios</h4>
+                            <div class="space-y-2">
+                                <div v-for="grupo in actividad.grupos" :key="grupo.id"
+                                    class="flex items-center justify-between text-sm py-1 border-b border-gray-50 last:border-0">
+                                    <span class="text-gray-700 dark:text-gray-300 font-medium">Folder {{ grupo.folder_desde }} - {{ grupo.folder_hasta }}</span>
+                                    <span class="bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 px-2 py-0.5 rounded text-xs font-bold">{{ grupo.hora }}</span>
+                                </div>
+                            </div>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -107,16 +111,26 @@
                                                         Actividad</label>
                                                     <input v-model="form.actividad" type="text" required
                                                         placeholder="Ej: Charla y Evaluación"
-                                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
                                                 </div>
                                                 <div>
                                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha</label>
                                                     <input v-model="form.fecha" type="date" required
-                                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                                                        class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
                                                 </div>
                                             </div>
 
-                                            <div class="space-y-4">
+                                            <!-- Tipo select -->
+                                            <div class="mb-4">
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Dirigido a</label>
+                                                <select v-model="form.tipo"
+                                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                                                    <option value="preadmitido">Preadmitidos (por rango de folder)</option>
+                                                    <option value="admitido">Admitidos (todos los admitidos)</option>
+                                                </select>
+                                            </div>
+
+                                            <div v-if="form.tipo === 'preadmitido'" class="space-y-4">
                                                 <div class="flex items-center justify-between border-b pb-2">
                                                     <h4 class="text-sm font-bold text-gray-900 dark:text-gray-100">Configuración de Grupos
                                                         (Folder/Hora)</h4>
@@ -132,13 +146,13 @@
                                                         <label v-if="index === 0"
                                                             class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Desde</label>
                                                         <input v-model="grupo.folder_desde" type="number" required
-                                                            class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                                                            class="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
                                                     </div>
                                                     <div class="w-24">
                                                         <label v-if="index === 0"
                                                             class="block text-[10px] uppercase font-bold text-gray-400 mb-1">Hasta</label>
                                                         <input v-model="grupo.folder_hasta" type="number" required
-                                                            class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                                                            class="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
                                                     </div>
                                                     <div class="flex-1">
                                                         <label v-if="index === 0"
@@ -146,7 +160,7 @@
                                                             / Turno</label>
                                                         <input v-model="grupo.hora" type="text" required
                                                             placeholder="9:00 am"
-                                                            class="block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                                                            class="block w-full rounded-md border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
                                                     </div>
                                                     <div class="pt-5" :class="index === 0 ? 'pt-5' : ''">
                                                         <button type="button" @click="removeGrupo(index)"
@@ -197,6 +211,7 @@ const form = reactive({
     actividad: '',
     fecha: '',
     anio_lectivo_id: '',
+    tipo: 'preadmitido',
     grupos: [
         { folder_desde: '', folder_hasta: '', hora: '' }
     ]
@@ -246,12 +261,14 @@ const openModal = (actividad = null) => {
         form.actividad = actividad.actividad
         form.fecha = actividad.fecha.split('T')[0]
         form.anio_lectivo_id = actividad.anio_lectivo_id
-        form.grupos = JSON.parse(JSON.stringify(actividad.grupos))
+        form.tipo = actividad.tipo || 'preadmitido'
+        form.grupos = actividad.grupos?.length ? JSON.parse(JSON.stringify(actividad.grupos)) : [{ folder_desde: '', folder_hasta: '', hora: '' }]
     } else {
         form.id = null
         form.actividad = ''
         form.fecha = ''
         form.anio_lectivo_id = selectedAnioLectivoId.value
+        form.tipo = 'preadmitido'
         form.grupos = [{ folder_desde: '', folder_hasta: '', hora: '' }]
     }
     modalOpen.value = true
@@ -268,10 +285,17 @@ const removeGrupo = (index) => {
 const saveActividad = async () => {
     loading.value = true
     try {
+        const payload = {
+            actividad: form.actividad,
+            fecha: form.fecha,
+            anio_lectivo_id: form.anio_lectivo_id,
+            tipo: form.tipo,
+            ...(form.tipo === 'preadmitido' ? { grupos: form.grupos } : {})
+        }
         if (form.id) {
-            await api.put(`/api/admision-actividades/${form.id}`, form)
+            await api.put(`/api/admision-actividades/${form.id}`, payload)
         } else {
-            await api.post('/api/admision-actividades', form)
+            await api.post('/api/admision-actividades', payload)
         }
         modalOpen.value = false
         Swal.fire('Éxito', 'Actividad guardada correctamente', 'success')
