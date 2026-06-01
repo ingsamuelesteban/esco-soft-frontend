@@ -104,6 +104,69 @@
       </div>
     </div>
 
+    <!-- Visible en Plataforma -->
+    <div
+      v-if="anioLectivoId"
+      class="glass-card p-4 rounded-xl border-l-4 transition-colors"
+      :class="publicado ? 'border-l-green-500' : 'border-l-gray-300 dark:border-l-gray-600'"
+    >
+      <div class="flex flex-col sm:flex-row sm:items-center gap-4 flex-wrap">
+        <!-- Icono + texto -->
+        <div class="flex items-center gap-3 flex-1 min-w-0">
+          <div class="p-2 rounded-lg flex-shrink-0" :class="publicado ? 'bg-green-100 dark:bg-green-900/30' : 'bg-gray-100 dark:bg-gray-800'">
+            <svg class="w-5 h-5" :class="publicado ? 'text-green-600 dark:text-green-400' : 'text-gray-400 dark:text-gray-500'" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-sm font-bold text-gray-900 dark:text-gray-100">Visible en Plataforma</p>
+            <p class="text-xs text-gray-500 dark:text-gray-400">Los estudiantes admitidos y no admitidos verán sus resultados a partir de esta fecha</p>
+          </div>
+          <span
+            class="ml-2 flex-shrink-0 text-xs font-bold px-2.5 py-1 rounded-full"
+            :class="publicado
+              ? 'bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300'
+              : 'bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400'"
+          >
+            {{ publicado ? '✓ Publicado' : 'No publicado' }}
+          </span>
+        </div>
+        <!-- Controles -->
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <input
+            v-model="fechaPublicacion"
+            type="datetime-local"
+            class="text-sm rounded-lg px-3 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          />
+          <button
+            v-if="fechaPublicacion"
+            @click="fechaPublicacion = ''; guardarFechaPublicacion()"
+            title="Quitar fecha"
+            class="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+          </button>
+          <button
+            @click="guardarFechaPublicacion"
+            :disabled="savingFecha"
+            class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold rounded-lg disabled:opacity-50 transition-colors"
+          >
+            <svg v-if="savingFecha" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/>
+            </svg>
+            <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            Guardar
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Tabla -->
     <div class="glass-card rounded-xl overflow-hidden">
       <!-- Loading -->
@@ -230,8 +293,11 @@ const anioLectivoId  = ref(null)
 const currentPage    = ref(1)
 const lastPage       = ref(1)
 const total          = ref(0)
-const printLoading   = ref(false)
-const modo           = ref('admitidos') // 'admitidos' | 'no-admitidos'
+const printLoading       = ref(false)
+const modo               = ref('admitidos') // 'admitidos' | 'no-admitidos'
+const fechaPublicacion   = ref('')
+const savingFecha        = ref(false)
+const publicado          = ref(false)
 
 const { printPdfBlob } = usePrint()
 
@@ -252,12 +318,55 @@ const loadAulas = async () => {
   }
 }
 
+const onAnioChange = () => {
+  cargar(1)
+  loadFechaPublicacion()
+}
+
 const cambiarModo = (nuevoModo) => {
   if (modo.value === nuevoModo) return
   modo.value = nuevoModo
   search.value = ''
   aulaId.value = ''
   cargar(1)
+}
+
+const loadFechaPublicacion = async () => {
+  if (!anioLectivoId.value) return
+  try {
+    const res = await api.get(`/api/admisiones/publicacion-resultados?anio_lectivo_id=${anioLectivoId.value}`)
+    const data = res.data ?? res
+    publicado.value = data.publicado ?? false
+    if (data.fecha_publicacion_resultados) {
+      const d = new Date(data.fecha_publicacion_resultados)
+      // Format for datetime-local input: 'YYYY-MM-DDTHH:mm'
+      const pad = (n) => String(n).padStart(2, '0')
+      fechaPublicacion.value = `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+    } else {
+      fechaPublicacion.value = ''
+    }
+  } catch (e) {
+    console.error('Error cargando fecha publicacion:', e)
+  }
+}
+
+const guardarFechaPublicacion = async () => {
+  if (!anioLectivoId.value) return
+  savingFecha.value = true
+  try {
+    const payload = {
+      anio_lectivo_id: anioLectivoId.value,
+      fecha_publicacion_resultados: fechaPublicacion.value || null,
+    }
+    const res = await api.post('/api/admisiones/publicacion-resultados', payload)
+    const data = res.data ?? res
+    publicado.value = data.publicado ?? false
+    Swal.fire({ icon: 'success', title: fechaPublicacion.value ? 'Fecha guardada' : 'Fecha eliminada', toast: true, position: 'top-end', showConfirmButton: false, timer: 2000 })
+  } catch (e) {
+    Swal.fire('Error', 'No se pudo guardar la configuración.', 'error')
+  } finally {
+    savingFecha.value = false
+  }
 }
 
 const cargar = async (page = 1) => {
@@ -345,7 +454,7 @@ onMounted(async () => {
       const activeAnio = data.find((a) => a.activo)
       const nextAnio   = data.find((a) => !a.activo && (!activeAnio || a.nombre > activeAnio.nombre))
       anioLectivoId.value = nextAnio?.id ?? activeAnio?.id ?? data[0].id
-      await cargar(1)
+      await Promise.all([cargar(1), loadFechaPublicacion()])
     }
   } catch (e) {
     console.error('Error cargando años lectivos:', e)

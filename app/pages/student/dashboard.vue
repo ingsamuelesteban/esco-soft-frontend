@@ -245,7 +245,115 @@
       </div>
     </div>
 
+    <!-- ══ RESULTADO PENDIENTE (admitido/no-admitido, fecha no publicada) ═══════ -->
+    <div v-else-if="dashboardData?.is_resultado_pendiente" class="flex flex-col items-center justify-center min-h-[55vh]">
+      <div class="glass-card max-w-lg w-full p-8 text-center space-y-5 rounded-2xl border border-amber-200 dark:border-amber-800">
+        <div class="inline-flex items-center justify-center p-4 bg-amber-100 dark:bg-amber-900/30 rounded-full">
+          <svg class="w-12 h-12 text-amber-500 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Resultados en Proceso</h2>
+        <p class="text-gray-600 dark:text-gray-400">
+          Hola <span class="font-semibold text-gray-900 dark:text-gray-100">{{ dashboardData.student.nombres }}</span>, tu proceso de admisión ha finalizado.<br class="hidden sm:block"/>
+          Los resultados serán publicados próximamente en esta plataforma.
+        </p>
+        <div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4">
+          <p class="text-sm text-amber-800 dark:text-amber-300 font-medium leading-relaxed">
+            Mantente atento a esta plataforma. Cuando se publiquen los resultados podrás ver aquí si fuiste admitido o no.
+          </p>
+        </div>
+        <p class="text-xs text-gray-400">Año Lectivo: {{ dashboardData.academic_year }}</p>
+      </div>
+    </div>
 
+    <!-- ══ ADMITIDO ══════════════════════════════════════════════════════════════ -->
+    <div v-else-if="dashboardData?.is_admitido" class="space-y-6">
+      <!-- Banner de felicitación -->
+      <div class="glass-card rounded-2xl overflow-hidden border-2 border-green-400 dark:border-green-600 shadow-lg">
+        <div class="bg-gradient-to-br from-green-500 to-emerald-600 px-8 py-10 text-white text-center space-y-3">
+          <div class="text-6xl">🎉</div>
+          <h2 class="text-3xl font-extrabold tracking-tight drop-shadow">¡Felicidades, {{ dashboardData.student.nombres }}!</h2>
+          <p class="text-lg text-green-100">Has sido <span class="font-black text-white underline decoration-dotted">ADMITIDO</span> para el Año Lectivo <span class="font-black">{{ dashboardData.academic_year }}</span></p>
+        </div>
+        <!-- Datos del resultado -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 divide-y sm:divide-y-0 sm:divide-x divide-gray-100 dark:divide-gray-700 bg-white dark:bg-gray-800">
+          <!-- Número de Orden -->
+          <div class="px-6 py-6 text-center">
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Número de Orden</p>
+            <p class="text-5xl font-black text-green-600 dark:text-green-400">
+              #{{ dashboardData.admision_resultado?.numero_orden ?? '—' }}
+            </p>
+          </div>
+          <!-- Aula Asignada -->
+          <div class="px-6 py-6 text-center">
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Aula Asignada</p>
+            <div v-if="dashboardData.admision_resultado?.aula">
+              <p class="text-3xl font-black text-gray-900 dark:text-gray-100">
+                {{ dashboardData.admision_resultado.aula.grado }}°{{ dashboardData.admision_resultado.aula.seccion ? ' ' + dashboardData.admision_resultado.aula.seccion : '' }}
+              </p>
+              <p v-if="dashboardData.admision_resultado.aula.titulo" class="text-sm text-gray-500 dark:text-gray-400 mt-1 font-medium">
+                {{ dashboardData.admision_resultado.aula.titulo }}
+              </p>
+            </div>
+            <p v-else class="text-gray-400 italic text-sm">Por asignar</p>
+          </div>
+          <!-- Área / Carrera -->
+          <div class="px-6 py-6 text-center">
+            <p class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-2">Área / Carrera</p>
+            <p class="text-lg font-bold text-indigo-700 dark:text-indigo-400 leading-snug">
+              {{ dashboardData.admision_resultado?.area ?? '—' }}
+            </p>
+          </div>
+        </div>
+      </div>
+      <!-- Próximos pasos -->
+      <div class="glass-card rounded-xl p-5 flex gap-4 items-start">
+        <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg flex-shrink-0">
+          <svg class="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+          </svg>
+        </div>
+        <div>
+          <p class="text-sm font-semibold text-gray-900 dark:text-gray-100">¿Qué sigue?</p>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mt-1 leading-relaxed">
+            La institución te indicará la fecha de presentación de documentos y los pasos a seguir para completar tu proceso de matrícula. ¡Bienvenido a nuestra familia!
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ NO ADMITIDO ════════════════════════════════════════════════════════════ -->
+    <div v-else-if="dashboardData?.is_no_admitido" class="space-y-6">
+      <div class="glass-card rounded-2xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md">
+        <div class="bg-gradient-to-br from-gray-600 to-gray-800 px-8 py-10 text-white text-center space-y-3">
+          <div class="text-5xl">💪</div>
+          <h2 class="text-2xl font-extrabold tracking-tight">Hola, {{ dashboardData.student.nombres }}</h2>
+          <p class="text-base text-gray-300">Resultados del proceso de admisión — Año Lectivo <span class="font-bold text-white">{{ dashboardData.academic_year }}</span></p>
+        </div>
+        <div class="bg-white dark:bg-gray-800 px-8 py-8 space-y-6 text-center">
+          <div class="inline-flex items-center justify-center p-4 bg-orange-100 dark:bg-orange-900/30 rounded-full">
+            <svg class="w-10 h-10 text-orange-500 dark:text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+            </svg>
+          </div>
+          <p class="text-base text-gray-700 dark:text-gray-300 font-medium">
+            En esta ocasión no fue posible tu admisión para el Año Lectivo <span class="font-bold">{{ dashboardData.academic_year }}</span>.
+          </p>
+          <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl p-5 text-left space-y-2 max-w-xl mx-auto">
+            <p class="text-sm font-bold text-blue-900 dark:text-blue-200">Un mensaje para ti:</p>
+            <p class="text-sm text-blue-800 dark:text-blue-300 leading-relaxed italic">
+              "No permitas que este resultado defina tu camino. Cada experiencia es un escalón hacia algo mejor.
+              Tu esfuerzo y dedicación son invaluables — sigue adelante con la frente en alto,
+              porque el éxito llega a quienes perseveran. ¡Tú puedes lograrlo!"
+            </p>
+          </div>
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            Para más información sobre el proceso, por favor acércate a la institución.
+          </p>
+        </div>
+      </div>
+    </div>
 
     <div v-else class="grid grid-cols-1 lg:grid-cols-5 gap-6">
 
