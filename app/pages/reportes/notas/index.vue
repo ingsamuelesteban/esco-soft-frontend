@@ -773,7 +773,7 @@
                                  class="border border-gray-400 p-1 text-center font-bold"
                                  :class="[idx % 2 === 1 ? 'bg-green-100/60 dark:bg-green-900/20' : 'bg-green-50 dark:bg-green-900/10',
                                           gradeClass(calcPC(finalPreview.bloques, subject.id, finalPreview.bloque_labels, p))]">
-                                 {{ calcPC(finalPreview.bloques, subject.id, finalPreview.bloque_labels, p) ?? '–' }}
+                                 {{ fmtPC(calcPC(finalPreview.bloques, subject.id, finalPreview.bloque_labels, p)) }}
                               </td>
                               <!-- Calificación Final -->
                               <td class="border border-gray-400 p-1 text-center font-bold"
@@ -1009,14 +1009,19 @@ const calcPC = (
    bloqueLabels: Record<string, string>,
    period: number
 ): number | null => {
+   // period = bloque index (1-4): PC1 = promedio de P1+P2+P3+P4 del bloque 1, etc.
    if (!bloques?.[subjectId]) return null
+   const bloque = bloques[subjectId]?.[period]
+   if (!bloque) return null
    const vals: number[] = []
-   for (const bn of Object.keys(bloqueLabels)) {
-      const v = bloques[subjectId]?.[bn]?.[period]
-      if (v != null) vals.push(v)
+   for (const p of [1, 2, 3, 4]) {
+      const v = bloque[p]
+      if (v != null) vals.push(Number(v))
    }
-   return vals.length > 0 ? Math.round(vals.reduce((a: number, b: number) => a + b, 0) / vals.length) : null
+   return vals.length > 0 ? vals.reduce((a: number, b: number) => a + b, 0) / vals.length : null
 }
+
+const fmtPC = (v: number | null | undefined): string => v != null ? Number(v).toFixed(1) : '–'
 
 const calcCF = (
    bloques: any,

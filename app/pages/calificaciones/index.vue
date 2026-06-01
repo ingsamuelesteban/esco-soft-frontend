@@ -283,7 +283,7 @@
                         <div class="flex justify-center space-x-4">
                           <div v-for="b in 4" :key="`pc${b}`" class="w-8 flex items-center justify-center font-medium"
                             :class="getPromedioClass(calcularPromedioPeriodo(estudiante.id, b))">
-                            {{ calcularPromedioPeriodo(estudiante.id, b) ?? '-' }}
+                            {{ calcularPromedioPeriodo(estudiante.id, b) != null ? Number(calcularPromedioPeriodo(estudiante.id, b)).toFixed(1) : '-' }}
                           </div>
                         </div>
                       </td>
@@ -1447,34 +1447,25 @@ const getAllCompetencias = () => {
   return todas
 }
 
-const calcularPromedioPeriodo = (estudianteId, periodoIndex) => {
-  const competencias = getAllCompetencias()
+const calcularPromedioPeriodo = (estudianteId, bloqueIndex) => {
+  // PC{bloqueIndex} = promedio de P1+P2+P3+P4 del bloque {bloqueIndex}, usando RP si existe
+  const competencias = getCompetenciasPorBloque(bloqueIndex)
   if (competencias.length === 0) return null
 
   let suma = 0
   let cantidad = 0
 
-  competencias.forEach(comp => {
-    // Necesitamos saber a qué bloque pertenece esta competencia para usar getNotaDefinitivaPeriodo
-    // Esto es un poco ineficiente pero seguro: buscar en qué bloque está
-    let bloque = null
-    for (let b = 1; b <= 4; b++) {
-      if (getCompetenciasPorBloque(b).includes(comp)) {
-        bloque = b
-        break
-      }
-    }
-
-    if (bloque) {
-      const nota = getNotaDefinitivaPeriodo(estudianteId, comp, bloque, periodoIndex)
+  for (const comp of competencias) {
+    for (let p = 1; p <= 4; p++) {
+      const nota = getNotaDefinitivaPeriodo(estudianteId, comp, bloqueIndex, p)
       if (nota !== null) {
         suma += nota
         cantidad++
       }
     }
-  })
+  }
 
-  return cantidad > 0 ? Math.round(suma / cantidad) : null
+  return cantidad > 0 ? suma / cantidad : null
 }
 
 const calcularCalificacionFinal = (estudianteId) => {

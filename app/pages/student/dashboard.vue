@@ -344,9 +344,9 @@
 
                       <!-- Period Averages PC1-PC4 -->
                       <td v-for="p in 4" :key="p" class="px-2 py-3 text-center">
-                        <div v-if="subject.promedios_periodo && subject.promedios_periodo[p]" class="text-sm font-bold"
+                        <div v-if="subject.promedios_periodo && subject.promedios_periodo[p] != null" class="text-sm font-bold"
                           :class="getGradeColor(subject.promedios_periodo[p])">
-                          {{ subject.promedios_periodo[p] }}
+                          {{ Number(subject.promedios_periodo[p]).toFixed(1) }}
                         </div>
                         <div v-else class="text-xs text-gray-300 dark:text-gray-600 dark:text-gray-400">-</div>
                       </td>
