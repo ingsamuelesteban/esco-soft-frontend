@@ -209,7 +209,14 @@
                                 Archivo
                             </label>
                             <DropZone v-model="form.file" label="Arrastra tu archivo aquí para entregar"
-                                :max-size="10 * 1024 * 1024" />
+                                :max-size="50 * 1024 * 1024" :error="fileError" @error="fileError = $event" />
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                                <svg class="h-3.5 w-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Tamaño máximo permitido: <strong>50 MB</strong>
+                            </p>
                             <p v-if="submission?.file_path && !form.file"
                                 class="text-sm text-gray-500 dark:text-gray-400 mt-2 p-2 bg-gray-50 dark:bg-gray-900/50 rounded border border-gray-200 dark:border-gray-700">
                                 Archivo enviado anteriormente: <strong>{{ submission.file_path.split('/').pop()
@@ -322,6 +329,7 @@ const loading = ref(true)
 const saving = ref(false)
 const homework = ref<Homework | null>(null)
 const submission = ref<Submission | null>(null)
+const fileError = ref('')
 
 const form = reactive({
     text_content: '',
@@ -451,6 +459,15 @@ async function handleSubmit() {
 }
 
 async function saveSubmission(submit: boolean) {
+    if (fileError.value) {
+        Swal.fire({
+            icon: 'error',
+            title: 'Archivo no permitido',
+            text: fileError.value
+        })
+        return
+    }
+
     try {
         saving.value = true
 
