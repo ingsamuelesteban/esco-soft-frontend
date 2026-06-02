@@ -29,15 +29,19 @@
           </select>
 
           <button
-            @click="triggerPrint"
-            :disabled="estudiantes.length === 0"
+            @click="printPdf"
+            :disabled="printLoading || estudiantes.length === 0"
             class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg v-if="printLoading" class="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+            </svg>
+            <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
             </svg>
-            Imprimir Reporte
+            Imprimir PDF
           </button>
         </div>
 
@@ -256,80 +260,7 @@
       </div>
     </div>
 
-    <!-- ── PRINT CONTAINER (HIDDEN ON SCREEN, VISIBLE ON PRINT) ── -->
-    <div id="printable-completivos" class="hidden-print-element print-layout font-sans text-black bg-white p-8">
-      <!-- Institutional Header -->
-      <table style="width: 100%; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; border-collapse: collapse; background: white;">
-        <tr>
-          <td style="vertical-align: middle; width: 70px; padding: 0;" v-if="tenantLogo">
-            <img :src="tenantLogo" style="height: 60px; width: 60px; object-fit: contain; display: block;" />
-          </td>
-          <td style="vertical-align: middle; text-align: left; padding: 0 0 0 10px;">
-            <h1 style="font-size: 18px; font-weight: bold; text-transform: uppercase; margin: 0; line-height: 1.2; color: black;">
-              {{ authStore.tenant?.name || 'Centro Educativo' }}
-            </h1>
-            <p style="font-size: 11px; color: #444; margin: 4px 0 0 0; line-height: 1.2;">
-              <span v-if="authStore.tenant?.departamento">Departamento: {{ authStore.tenant.departamento }}</span>
-              <span v-if="authStore.tenant?.distrito" style="margin-left: 15px;">Distrito: {{ authStore.tenant.distrito }}</span>
-            </p>
-            <p style="font-size: 11px; color: #444; margin: 4px 0 0 0; line-height: 1.2;" v-if="authStore.tenant?.address">
-              {{ authStore.tenant.address }}
-            </p>
-          </td>
-          <td style="vertical-align: bottom; text-align: right; font-size: 11px; color: #666; width: 180px; padding: 0;">
-            Generado: {{ formattedDatePrint }}
-          </td>
-        </tr>
-      </table>
 
-      <div class="text-center mb-6">
-        <h2 class="text-lg font-bold uppercase tracking-wider">Reporte de Estudiantes en Estado Completivo</h2>
-        <p class="text-sm font-semibold text-gray-700 mt-1">Año Lectivo: {{ currentYearName }}</p>
-      </div>
-
-      <!-- Content grouped by Classroom -->
-      <div class="space-y-8">
-        <div v-for="aulaGroup in groupedCompletivos" :key="'print-' + aulaGroup.aula.id" class="avoid-break-inside pb-4">
-          <!-- Aula header -->
-          <div class="border-b-2 border-gray-800 pb-1 mb-3">
-            <h3 class="text-md font-bold uppercase">
-              Aula: {{ aulaGroup.aula.grado_cardinal }}° {{ aulaGroup.aula.seccion }}
-              <span v-if="aulaGroup.aula.titulo" class="font-normal text-sm"> – {{ aulaGroup.aula.titulo }}</span>
-            </h3>
-          </div>
-
-          <!-- Materias -->
-          <div class="space-y-6 pl-4">
-            <div v-for="matGroup in aulaGroup.materias" :key="'print-mat-' + matGroup.assignment.id" class="avoid-break-inside">
-              <h4 class="text-xs font-bold border-b border-gray-300 pb-0.5 mb-1.5 uppercase">
-                {{ matGroup.assignment.materia ? matGroup.assignment.materia.nombre : 'Materia' }} 
-                <span class="text-xs font-normal text-gray-600 lowercase">— Profesor: {{ matGroup.assignment.profesor ? matGroup.assignment.profesor.nombres + ' ' + matGroup.assignment.profesor.apellidos : 'Sin asignar' }}</span>
-              </h4>
-
-              <!-- Table of students -->
-              <table class="w-full text-xs text-left border-collapse">
-                <thead>
-                  <tr class="border-b border-gray-400 text-gray-700">
-                    <th class="py-1 w-8 text-left">#</th>
-                    <th class="py-1 text-left">Nombre Completo</th>
-                    <th class="py-1 w-32 text-left">RNE</th>
-                    <th class="py-1 w-32 text-left">Cédula</th>
-                  </tr>
-                </thead>
-                <tbody class="divide-y divide-gray-200">
-                  <tr v-for="(est, estIdx) in matGroup.estudiantes" :key="'print-est-' + est.id" class="py-1">
-                    <td class="py-1 text-gray-500">{{ estIdx + 1 }}</td>
-                    <td class="py-1 font-medium text-black">{{ est.apellidos }}, {{ est.nombres }}</td>
-                    <td class="py-1 font-mono text-black">{{ est.rne || '—' }}</td>
-                    <td class="py-1 text-gray-700">{{ est.cedula || '—' }}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 </template>
 
@@ -337,6 +268,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useAuthStore } from '~/stores/auth'
 import { api } from '~/utils/api'
+import { usePrint } from '~/composables/usePrint'
 
 definePageMeta({
   middleware: ['auth']
@@ -350,6 +282,9 @@ const isProfesor = computed(() => userRole.value === 'profesor')
 // ── State ─────────────────────────────────────────────────────────────────────
 const loading = ref(false)
 const saving = ref(false)
+const printLoading = ref(false)
+
+const { printPdfBlob } = usePrint()
 
 const estudiantes = ref<any[]>([])
 const assignments = ref<any[]>([])
@@ -454,17 +389,6 @@ const currentYearName = computed(() => {
     }
   }
   return 'Activo'
-})
-
-const tenantLogo = computed(() => {
-  if (!process.client || !authStore.tenant?.logo_url) return null
-  if (authStore.tenant.logo_url.startsWith('http')) return authStore.tenant.logo_url
-
-  const config = useRuntimeConfig()
-  const apiBase = config.public.apiBase
-  const baseUrl = apiBase.endsWith('/') ? apiBase.slice(0, -1) : apiBase
-  const path = authStore.tenant.logo_url.startsWith('/') ? authStore.tenant.logo_url : `/${authStore.tenant.logo_url}`
-  return `${baseUrl}${path}`
 })
 
 // ── Lifecycle ─────────────────────────────────────────────────────────────────
@@ -590,8 +514,17 @@ async function saveChanges() {
 }
 
 // ── Admin: print ──────────────────────────────────────────────────────────────
-function triggerPrint() {
-  window.print()
+async function printPdf() {
+  printLoading.value = true
+  try {
+    const query = filterAulaId.value ? `?aula_id=${filterAulaId.value}` : ''
+    const blob = await api.getBlob(`/api/completivos/pdf${query}`)
+    printPdfBlob(blob, 'completivos.pdf', 'Preparando listado de completivos...')
+  } catch (e) {
+    showToast('error', 'No se pudo generar el PDF.')
+  } finally {
+    printLoading.value = false
+  }
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -627,66 +560,5 @@ function showToast(type: 'success' | 'error', message: string) {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-}
-</style>
-
-<style>
-@media print {
-  /* Hide default layout and navigation elements */
-  aside,
-  header,
-  footer,
-  nav,
-  button,
-  select,
-  input,
-  iframe,
-  .no-print {
-    display: none !important;
-  }
-
-  /* Reset layout structure so it doesn't restrict height or overflow */
-  html, body, #__nuxt, #__layout, .min-h-screen, .flex, .h-screen, .overflow-hidden, main, .overflow-y-auto, .container {
-    height: auto !important;
-    min-height: auto !important;
-    overflow: visible !important;
-    display: block !important;
-    background: white !important;
-    color: black !important;
-  }
-
-  main {
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-
-  .container, [class*="container"] {
-    max-width: none !important;
-    width: 100% !important;
-    padding: 0 !important;
-    margin: 0 !important;
-  }
-
-  /* Print layout elements visibility */
-  .hidden-print-element {
-    display: none !important;
-  }
-
-  .hidden-print-element.print-layout {
-    display: block !important;
-    visibility: visible !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-
-  @page {
-    size: letter portrait;
-    margin: 1.5cm;
-  }
-
-  .avoid-break-inside {
-    page-break-inside: avoid;
-  }
 }
 </style>
