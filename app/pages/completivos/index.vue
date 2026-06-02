@@ -182,7 +182,7 @@
                     class="w-4 h-4 text-amber-600 rounded border-gray-300 focus:ring-amber-500"
                   />
                 </td>
-                <td class="px-4 py-3 text-gray-500 dark:text-gray-400">{{ idx + 1 }}</td>
+                <td class="px-4 py-3 text-gray-500 dark:text-gray-400">{{ est.numero_orden }}</td>
                 <td class="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">{{ est.apellidos }}</td>
                 <td class="px-4 py-3 text-gray-700 dark:text-gray-300">{{ est.nombres }}</td>
                 <td class="px-4 py-3 text-gray-500 dark:text-gray-400 font-mono text-xs">{{ est.rne || '—' }}</td>
@@ -245,7 +245,7 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100 dark:divide-gray-700 text-gray-700 dark:text-gray-300">
                       <tr v-for="(est, estIdx) in matGroup.estudiantes" :key="est.id" class="hover:bg-gray-50/30">
-                        <td class="px-4 py-2 text-gray-400">{{ estIdx + 1 }}</td>
+                        <td class="px-4 py-2 text-gray-400">{{ est.numero_orden }}</td>
                         <td class="px-4 py-2 font-medium text-gray-900 dark:text-gray-100">{{ est.apellidos }}, {{ est.nombres }}</td>
                         <td class="px-4 py-2 font-mono text-gray-500">{{ est.rne || '—' }}</td>
                         <td class="px-4 py-2 text-gray-500">{{ est.cedula || '—' }}</td>
@@ -353,13 +353,8 @@ const groupedCompletivos = computed(() => {
     return {
       aula: aulaGroup.aula,
       materias: Object.values(aulaGroup.materias).map(matGroup => {
-        // Sort students alphabetically
-        matGroup.estudiantes.sort((a: any, b: any) => {
-          const apA = (a.apellidos || '').toLowerCase()
-          const apB = (b.apellidos || '').toLowerCase()
-          if (apA !== apB) return apA.localeCompare(apB)
-          return (a.nombres || '').toLowerCase().localeCompare((b.nombres || '').toLowerCase())
-        })
+        // Sort students by classroom order number
+        matGroup.estudiantes.sort((a: any, b: any) => (a.numero_orden || 99) - (b.numero_orden || 99))
         return matGroup
       })
     }
