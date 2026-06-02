@@ -986,6 +986,73 @@ const subjectPreview = ref<any | null>(null)
 const meritPreview = ref<any | null>(null)
 const finalPreview = ref<any | null>(null)
 
+// --- Inspiring Messages for Heavy Report Generation ---
+const loadingPhrases = [
+   "No te desesperes, lo estamos haciendo por ti...",
+   "¡Casi listo! Estamos ordenando las mejores calificaciones...",
+   "Procesando datos académicos con mucho cariño...",
+   "Calculando los promedios finales de cada estudiante...",
+   "¡No te preocupes! Estamos construyendo el reporte para ti...",
+   "Analizando registros académicos... un momento por favor.",
+   "El que persevera alcanza... ¡ya casi terminamos!",
+   "Organizando la información para darte el mejor reporte..."
+]
+
+let loadingInterval: any = null
+
+const startLoadingModal = (title = 'Generando Reporte') => {
+   let messageIndex = 0
+   
+   Swal.fire({
+      title: title,
+      html: `
+         <div class="flex flex-col items-center justify-center p-4">
+            <div class="relative w-16 h-16 mb-4">
+               <div class="absolute inset-0 rounded-full border-4 border-blue-100 dark:border-blue-900/30"></div>
+               <div class="absolute inset-0 rounded-full border-4 border-blue-600 border-t-transparent animate-spin"></div>
+            </div>
+            <p id="swal-loading-msg" class="text-sm text-gray-600 dark:text-gray-300 font-medium text-center transition-opacity duration-300" style="min-height: 40px; opacity: 1;">
+               ${loadingPhrases[0]}
+            </p>
+         </div>
+      `,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      showConfirmButton: false,
+      customClass: {
+         popup: 'bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700',
+         title: 'text-gray-900 dark:text-gray-100 font-bold font-outfit text-lg border-b border-gray-100 dark:border-gray-700 pb-3'
+      },
+      didOpen: () => {
+         loadingInterval = setInterval(() => {
+            messageIndex = (messageIndex + 1) % loadingPhrases.length
+            const msgEl = document.getElementById('swal-loading-msg')
+            if (msgEl) {
+               msgEl.style.opacity = '0'
+               setTimeout(() => {
+                  msgEl.innerText = loadingPhrases[messageIndex]
+                  msgEl.style.opacity = '1'
+               }, 300)
+            }
+         }, 3500)
+      },
+      willClose: () => {
+         if (loadingInterval) {
+            clearInterval(loadingInterval)
+            loadingInterval = null
+         }
+      }
+   })
+}
+
+const stopLoadingModal = () => {
+   if (loadingInterval) {
+      clearInterval(loadingInterval)
+      loadingInterval = null
+   }
+   Swal.close()
+}
+
 // ── Helpers for final report preview ──────────────────────────────────────────
 const gradeClass = (grade: number | null | undefined): string => {
    if (grade == null) return 'text-gray-300 dark:text-gray-600'
@@ -1132,20 +1199,24 @@ watch(currentTab, () => {
 const generateStudentReport = async () => {
    if (!selectedStudent.value) return
    loadingGenerate.value = true
+   startLoadingModal('Generando Boletín de Calificaciones')
    try {
       let url = `/api/reports/grades/student?estudiante_id=${selectedStudent.value.id}&period=${selectedPeriod.value}`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const blob = await api.get(url, { responseType: 'blob' }) as Blob
+      stopLoadingModal()
 
       const filename = `boletin_${selectedStudent.value.apellidos}_${selectedStudent.value.nombres}.pdf`
       printPdfBlob(blob, filename, 'Generando boletín...')
 
    } catch (e) {
+      stopLoadingModal()
       console.error(e)
       Swal.fire({ icon: 'error', title: 'Error', text: 'Error generando reporte' })
    } finally {
       loadingGenerate.value = false
+      stopLoadingModal()
    }
 }
 
@@ -1153,59 +1224,71 @@ const previewStudentReport = async () => {
    if (!selectedStudent.value) return
    loadingPreview.value = true
    reportPreview.value = null
+   startLoadingModal('Cargando Vista Previa del Boletín')
    try {
       let url = `/api/reports/grades/student?estudiante_id=${selectedStudent.value.id}&period=${selectedPeriod.value}&format=json`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const res = await api.get(url)
+      stopLoadingModal()
       reportPreview.value = res as unknown as ReportPreview
    } catch (e) {
+      stopLoadingModal()
       console.error(e)
       Swal.fire({ icon: 'error', title: 'Error', text: 'Error cargando vista previa' })
    } finally {
       loadingPreview.value = false
+      stopLoadingModal()
    }
 }
 
 const generateClassroomReport = async () => {
    if (!selectedAula.value) return
    loadingGenerate.value = true
+   startLoadingModal('Generando Sábana de Calificaciones')
    try {
       let url = `/api/reports/grades/classroom?aula_id=${selectedAula.value}`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const blob = await api.get(url, { responseType: 'blob' }) as Blob
+      stopLoadingModal()
 
       const selectedAulaObj = aulas.value.find(a => a.id === selectedAula.value)
       const filename = `sabana_${selectedAulaObj?.grado_cardinal || ''}${selectedAulaObj?.seccion || ''}.pdf`
       printPdfBlob(blob, filename, 'Generando sábana...')
 
    } catch (e) {
+      stopLoadingModal()
       console.error(e)
       Swal.fire({ icon: 'error', title: 'Error', text: 'Error generando sábana' })
    } finally {
       loadingGenerate.value = false
+      stopLoadingModal()
    }
 }
 
 const generateSubjectReport = async () => {
    if (!selectedAula.value || !selectedMateria.value) return
    loadingGenerate.value = true
+   startLoadingModal('Generando Planilla de Calificaciones')
    try {
       let url = `/api/reports/grades/subject?aula_id=${selectedAula.value}&materia_id=${selectedMateria.value}&period=${selectedPeriod.value}`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const blob = await api.get(url, { responseType: 'blob' }) as Blob
+      stopLoadingModal()
 
       const selectedSubject = subjects.value.find(s => s.materia_id === selectedMateria.value)
       const filename = `planilla_${selectedSubject?.nombre || 'materia'}.pdf`
       printPdfBlob(blob, filename, 'Generando planilla...')
 
    } catch (e) {
+      stopLoadingModal()
       console.error(e)
       Swal.fire({ icon: 'error', title: 'Error', text: 'Error generando planilla' })
    } finally {
       loadingGenerate.value = false
+      stopLoadingModal()
    }
 }
 
@@ -1213,17 +1296,21 @@ const previewClassroomReport = async () => {
    if (!selectedAula.value) return
    loadingPreview.value = true
    classroomPreview.value = null
+   startLoadingModal('Cargando Vista Previa de Sábana')
    try {
       let url = `/api/reports/grades/classroom?aula_id=${selectedAula.value}&format=json`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const response = await api.get(url)
+      stopLoadingModal()
       classroomPreview.value = response
    } catch (e) {
+      stopLoadingModal()
       console.error(e)
       Swal.fire({ icon: 'error', title: 'Error', text: 'Error cargando vista previa de sábana' })
    } finally {
       loadingPreview.value = false
+      stopLoadingModal()
    }
 }
 
@@ -1231,28 +1318,34 @@ const previewSubjectReport = async () => {
    if (!selectedAula.value || !selectedMateria.value) return
    loadingPreview.value = true
    subjectPreview.value = null
+   startLoadingModal('Cargando Vista Previa de Planilla')
    try {
       let url = `/api/reports/grades/subject?aula_id=${selectedAula.value}&materia_id=${selectedMateria.value}&period=${selectedPeriod.value}&format=json`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const res = await api.get(url)
+      stopLoadingModal()
       subjectPreview.value = res
    } catch (e) {
+      stopLoadingModal()
       console.error(e)
       Swal.fire({ icon: 'error', title: 'Error', text: 'Error cargando vista previa de planilla' })
    } finally {
       loadingPreview.value = false
+      stopLoadingModal()
    }
 }
 
 const generateMeritReport = async () => {
    if (!selectedAula.value) return
    loadingGenerate.value = true
+   startLoadingModal('Generando Listado de Meritorios')
    try {
       let url = `/api/reports/grades/merit?aula_id=${selectedAula.value}`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const blob = await api.get(url, { responseType: 'blob' }) as Blob
+      stopLoadingModal()
 
       let filename = 'meritorios.pdf';
 
@@ -1266,10 +1359,12 @@ const generateMeritReport = async () => {
       printPdfBlob(blob, filename, 'Generando listado de meritorios...')
 
    } catch (e) {
+      stopLoadingModal()
       console.error(e)
       Swal.fire({ icon: 'error', title: 'Error', text: 'Error generando listado de meritorios' })
    } finally {
       loadingGenerate.value = false
+      stopLoadingModal()
    }
 }
 
@@ -1278,17 +1373,21 @@ const previewMeritReport = async () => {
 
    loadingPreview.value = true
    meritPreview.value = null
+   startLoadingModal('Cargando Vista Previa de Meritorios')
    try {
       let url = `/api/reports/grades/merit?aula_id=${selectedAula.value}&format=json`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const response = await api.get(url)
+      stopLoadingModal()
       meritPreview.value = response
    } catch (e) {
+      stopLoadingModal()
       console.error(e)
       Swal.fire({ icon: 'error', title: 'Error', text: 'Error cargando vista previa de meritorios' })
    } finally {
       loadingPreview.value = false
+      stopLoadingModal()
    }
 }
 // --- Boletín Final — descarga por aula (ZIP o PDF unificado) ---
@@ -1332,11 +1431,13 @@ const chooseAulaDownloadFormat = async () => {
 
 const downloadAulaFinalUnified = async () => {
    loadingAulaZip.value = true
+   startLoadingModal('Generando PDF Unificado de Boletines')
    try {
       let url = `/api/reports/grades/final-aula-unified?aula_id=${selectedAulaFinal.value}`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const blob = await api.getBlob(url)
+      stopLoadingModal()
       const aula = aulas.value.find(a => a.id === selectedAulaFinal.value)
       const aulaLabel = aula ? `${aula.grado_cardinal}${aula.seccion}` : selectedAulaFinal.value
       const filename = `boletines_finales_${aulaLabel}.pdf`
@@ -1348,6 +1449,7 @@ const downloadAulaFinalUnified = async () => {
       link.click()
       URL.revokeObjectURL(objectUrl)
    } catch (e: any) {
+      stopLoadingModal()
       console.error(e)
       const msg = e?.response?.status === 404
          ? 'No hay estudiantes activos en esta aula.'
@@ -1355,16 +1457,19 @@ const downloadAulaFinalUnified = async () => {
       Swal.fire({ icon: 'error', title: 'Error', text: msg })
    } finally {
       loadingAulaZip.value = false
+      stopLoadingModal()
    }
 }
 
 const downloadAulaFinalZip = async () => {
    loadingAulaZip.value = true
+   startLoadingModal('Generando ZIP de Boletines del Aula')
    try {
       let url = `/api/reports/grades/final-aula?aula_id=${selectedAulaFinal.value}`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const blob = await api.getBlob(url)
+      stopLoadingModal()
       const aula = aulas.value.find(a => a.id === selectedAulaFinal.value)
       const aulaLabel = aula ? `${aula.grado_cardinal}${aula.seccion}` : selectedAulaFinal.value
       const filename = `boletines_finales_${aulaLabel}.zip`
@@ -1376,6 +1481,7 @@ const downloadAulaFinalZip = async () => {
       link.click()
       URL.revokeObjectURL(objectUrl)
    } catch (e: any) {
+      stopLoadingModal()
       console.error(e)
       const msg = e?.response?.status === 404
          ? 'No hay estudiantes activos en esta aula.'
@@ -1383,6 +1489,7 @@ const downloadAulaFinalZip = async () => {
       Swal.fire({ icon: 'error', title: 'Error', text: msg })
    } finally {
       loadingAulaZip.value = false
+      stopLoadingModal()
    }
 }
 
@@ -1418,18 +1525,22 @@ const selectFinalStudent = (s: any) => {
 const generateFinalReport = async () => {
    if (!selectedFinalStudent.value) return
    loadingGenerate.value = true
+   startLoadingModal('Generando Boletín Final')
    try {
       let url = `/api/reports/grades/final?estudiante_id=${selectedFinalStudent.value.id}`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const blob = await api.get(url, { responseType: 'blob' }) as Blob
+      stopLoadingModal()
       const filename = `boletin_final_${selectedFinalStudent.value.apellidos}_${selectedFinalStudent.value.nombres}.pdf`
       printPdfBlob(blob, filename, 'Generando boletín final...')
    } catch (e) {
+      stopLoadingModal()
       console.error(e)
       Swal.fire({ icon: 'error', title: 'Error', text: 'Error generando boletín final' })
    } finally {
       loadingGenerate.value = false
+      stopLoadingModal()
    }
 }
 
@@ -1437,17 +1548,21 @@ const previewFinalReport = async () => {
    if (!selectedFinalStudent.value) return
    loadingPreview.value = true
    finalPreview.value = null
+   startLoadingModal('Cargando Vista Previa del Boletín Final')
    try {
       let url = `/api/reports/grades/final?estudiante_id=${selectedFinalStudent.value.id}&format=json`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const response = await api.get(url)
+      stopLoadingModal()
       finalPreview.value = response
    } catch (e) {
+      stopLoadingModal()
       console.error(e)
       Swal.fire({ icon: 'error', title: 'Error', text: 'Error cargando vista previa del boletín final' })
    } finally {
       loadingPreview.value = false
+      stopLoadingModal()
    }
 }
 
