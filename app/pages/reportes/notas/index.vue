@@ -205,6 +205,7 @@
                            <thead>
                               <tr class="bg-gray-100 dark:bg-gray-700">
                                  <th class="border border-gray-400 p-1 text-left pl-2" style="min-width:160px;">Módulo Técnico</th>
+                                 <th class="border border-gray-400 p-1 text-left pl-2">Resultados de Aprendizaje (RAs)</th>
                                  <th class="border border-gray-400 p-1 text-center bg-red-900 text-white" style="min-width:40px;">C.F.</th>
                               </tr>
                            </thead>
@@ -212,10 +213,18 @@
                               <tr v-for="(module, idx) in reportPreview.technical_modules" :key="module.nombre"
                                  :class="idx % 2 === 1 ? 'bg-blue-50/40 dark:bg-blue-900/10' : 'bg-white dark:bg-gray-800'">
                                  <td class="border border-gray-400 p-1 text-left pl-2 font-medium">{{ module.nombre }}</td>
+                                 <td class="border border-gray-400 p-1 text-left pl-2">
+                                    <div class="flex flex-wrap gap-1">
+                                       <span v-for="(raNota, raNum) in module.ras" :key="raNum"
+                                          class="border border-gray-300 dark:border-gray-600 rounded px-1 text-[10px]">
+                                          RA{{ raNum }}: <b>{{ fmtPC(raNota) }}</b>
+                                       </span>
+                                    </div>
+                                 </td>
                                  <td class="border border-gray-400 p-1 text-center font-bold"
                                     :class="[idx % 2 === 1 ? 'bg-red-100/60 dark:bg-red-900/20' : 'bg-red-50 dark:bg-red-900/10',
                                              techGradeClass(module.final, module.is_fct)]">
-                                    {{ module.final ?? '–' }}
+                                    {{ fmtPC(module.final) }}
                                  </td>
                               </tr>
                            </tbody>

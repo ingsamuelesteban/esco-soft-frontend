@@ -538,20 +538,20 @@
               </p>
             </div>
 
-            <!-- FECHAS RA (NUEVO) -->
-            <div class="mt-4 grid grid-cols-2 gap-3">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha Inicio</label>
-                <input v-model="fechaInicioRA" type="date" :disabled="guardandoValorRA"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 disabled:dark:bg-gray-800 disabled:cursor-not-allowed">
+            <!-- PUBLICAR EN (NUEVO) -->
+            <div class="mt-4">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                ¿Publicar en? <span class="text-red-500">*</span>
+              </label>
+              <div class="flex items-center space-x-4">
+                <label v-for="p in [1, 2, 3, 4]" :key="p" class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
+                  <input type="radio" v-model="periodoRA" :value="p" :disabled="guardandoValorRA"
+                    class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 mr-2" />
+                  P{{ p }}
+                </label>
               </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Fecha Fin</label>
-                <input v-model="fechaFinRA" type="date" :disabled="guardandoValorRA"
-                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 disabled:dark:bg-gray-800 disabled:cursor-not-allowed">
-              </div>
+              <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Definir el periodo de publicación para este RA.</p>
             </div>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Definir el periodo de evaluación para este RA.</p>
           </div>
 
           <div class="flex justify-end space-x-3">
@@ -560,7 +560,7 @@
               Cancelar
             </button>
             <button @click="guardarValorRA(valorRAActual)"
-              :disabled="guardandoValorRA || !valorRAActual || valorRAActual <= 0 || parseFloat(valorRAActual) > porcentajeDisponible"
+              :disabled="guardandoValorRA || !valorRAActual || valorRAActual <= 0 || parseFloat(valorRAActual) > porcentajeDisponible || !periodoRA"
               class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center">
               <svg v-if="guardandoValorRA" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -633,8 +633,7 @@ const moduloData = ref(null)
 const mostrarModalValorRA = ref(false)
 const raParaConfigurar = ref(null)
 const valorRAActual = ref('')
-const fechaInicioRA = ref('')
-const fechaFinRA = ref('')
+const periodoRA = ref(null)
 const guardandoValorRA = ref(false)
 
 // Modal Calificar Oportunidad (RA)
@@ -812,8 +811,7 @@ const cerrarModalValorRA = () => {
   mostrarModalValorRA.value = false
   raParaConfigurar.value = null
   valorRAActual.value = ''
-  fechaInicioRA.value = ''
-  fechaFinRA.value = ''
+  periodoRA.value = null
   guardandoValorRA.value = false
 }
 
@@ -823,25 +821,21 @@ const cargarValorRAActual = async (raNumero) => {
     // Filtrar el valor específico si es necesario, aunque el endpoint devuelve todo
     valorRAActual.value = response.valores_ra?.[`ra_${raNumero}`] || ''
 
-    // Cargar fechas si existen
-    const fechas = response.fechas_ra?.[`ra_${raNumero}`] || {}
-    fechaInicioRA.value = fechas.start ? fechas.start.substring(0, 10) : ''
-    fechaFinRA.value = fechas.end ? fechas.end.substring(0, 10) : ''
+    // Cargar periodo si existe
+    periodoRA.value = response.periodos_ra?.[`ra_${raNumero}`] || null
   } catch (error) {
     console.error('Error al cargar valor del RA:', error)
     valorRAActual.value = ''
+    periodoRA.value = null
   }
 }
 
 const guardarValorRA = async (valor) => {
   const raNumero = raParaConfigurar.value
 
-  // Validar fechas frontend
-  if (fechaInicioRA.value && fechaFinRA.value) {
-    if (new Date(fechaInicioRA.value) > new Date(fechaFinRA.value)) {
-      mostrarMensajeError('La fecha de fin no puede ser anterior a la fecha de inicio')
-      return
-    }
+  if (!periodoRA.value) {
+    mostrarMensajeError('Debe seleccionar un periodo de publicación')
+    return
   }
 
   guardandoValorRA.value = true
@@ -849,8 +843,7 @@ const guardarValorRA = async (valor) => {
     await api.post(`/api/class-assignments/${moduloSeleccionado.value}/ra-values`, {
       ra_numero: raNumero,
       valor: valor,
-      start_date: fechaInicioRA.value || null,
-      end_date: fechaFinRA.value || null
+      periodo: periodoRA.value
     })
 
     // Actualizar los datos del módulo con el nuevo valor
@@ -859,6 +852,11 @@ const guardarValorRA = async (valor) => {
         moduloData.value.valores_ra = {}
       }
       moduloData.value.valores_ra[`ra_${raNumero}`] = valor
+
+      if (!moduloData.value.periodos_ra) {
+        moduloData.value.periodos_ra = {}
+      }
+      moduloData.value.periodos_ra[`ra_${raNumero}`] = periodoRA.value
     }
 
     // Actualizar también en modulosDisponibles para mantener consistencia
@@ -868,6 +866,11 @@ const guardarValorRA = async (valor) => {
         modulo.valores_ra = {}
       }
       modulo.valores_ra[`ra_${raNumero}`] = valor
+
+      if (!modulo.periodos_ra) {
+        modulo.periodos_ra = {}
+      }
+      modulo.periodos_ra[`ra_${raNumero}`] = periodoRA.value
     }
 
     cerrarModalValorRA()
