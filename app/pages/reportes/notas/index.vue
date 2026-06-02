@@ -405,7 +405,7 @@
                            <template v-if="row.is_fct">
                               <td class="border border-gray-400 p-1 text-center font-bold dark:text-gray-100">{{ row.promedio }}</td>
                               <td class="border border-gray-400 p-1 text-center font-bold"
-                                 :class="row.promedio >= 6 ? 'text-green-700' : 'text-red-700'">
+                                 :class="row.promedio >= 6 ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'">
                                  {{ row.situacion }}
                               </td>
                            </template>
@@ -509,7 +509,7 @@
                      class="mb-12 border-b-2 border-dashed border-gray-400 pb-8">
                      <div class="text-center border-b border-gray-300 dark:border-gray-600 pb-4 mb-4">
                         <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ meritPreview.tenant?.nombre }}</h2>
-                        <h3 class="font-bold mt-2 text-green-700">EXCELENCIA DEL CENTRO EDUCATIVO</h3>
+                        <h3 class="font-bold mt-2 text-green-700 dark:text-green-400">EXCELENCIA DEL CENTRO EDUCATIVO</h3>
                         <p class="text-xs italic text-gray-600 dark:text-gray-400">Estudiantes con promedio > 98.0 puntos</p>
                      </div>
 
@@ -549,8 +549,8 @@
                      <div class="text-center border-b border-gray-300 dark:border-gray-600 pb-4 mb-4">
                         <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ report.tenant?.nombre ||
                            meritPreview.tenant?.nombre }}</h2>
-                        <h3 class="font-bold mt-2 text-yellow-700">LISTADO DE HONOR - MERITORIOS</h3>
-                        <p class="text-sm font-medium">{{ report.aula?.grado_cardinal }}° {{
+                        <h3 class="font-bold mt-2 text-yellow-700 dark:text-yellow-400">LISTADO DE HONOR - MERITORIOS</h3>
+                        <p class="text-sm font-medium dark:text-gray-300">{{ report.aula?.grado_cardinal }}° {{
                            report.aula?.seccion }}</p>
                      </div>
 
@@ -989,8 +989,8 @@ const finalPreview = ref<any | null>(null)
 // ── Helpers for final report preview ──────────────────────────────────────────
 const gradeClass = (grade: number | null | undefined): string => {
    if (grade == null) return 'text-gray-300 dark:text-gray-600'
-   if (grade < 70) return 'text-red-600'
-   if (grade >= 90) return 'text-green-700'
+   if (grade < 70) return 'text-red-600 dark:text-red-400'
+   if (grade >= 90) return 'text-green-700 dark:text-green-400'
    return ''
 }
 
@@ -998,8 +998,8 @@ const techGradeClass = (grade: number | null | undefined, isFct: boolean): strin
    if (grade == null) return 'text-gray-300 dark:text-gray-600'
    const low  = isFct ? 6  : 70
    const high = isFct ? 9  : 90
-   if (grade < low)  return 'text-red-600'
-   if (grade >= high) return 'text-green-700'
+   if (grade < low)  return 'text-red-600 dark:text-red-400'
+   if (grade >= high) return 'text-green-700 dark:text-green-400'
    return ''
 }
 
@@ -1021,7 +1021,7 @@ const calcPC = (
    return vals.length > 0 ? vals.reduce((a: number, b: number) => a + b, 0) / vals.length : null
 }
 
-const fmtPC = (v: number | null | undefined): string => v != null ? Number(v).toFixed(1) : '–'
+const fmtPC = (v: number | null | undefined): string => v != null ? Number(v).toFixed(2) : '–'
 
 const calcCF = (
    bloques: any,
@@ -1452,3 +1452,63 @@ const previewFinalReport = async () => {
 }
 
 </script>
+
+<style scoped>
+/* Dark Mode overrides for reports preview tables */
+.dark table,
+.dark th,
+.dark td {
+   border-color: #4b5563 !important; /* gray-600 */
+}
+
+.dark thead,
+.dark thead tr,
+.dark thead th {
+   background-color: #374151 !important; /* gray-700 */
+   color: #f3f4f6 !important; /* gray-100 */
+}
+
+/* Custom backgrounds overrides */
+.dark .bg-green-50 {
+   background-color: rgba(6, 78, 59, 0.3) !important; /* emerald-900 / 30% */
+   color: #a7f3d0 !important; /* emerald-200 */
+}
+
+.dark .bg-green-100 {
+   background-color: rgba(6, 78, 59, 0.55) !important; /* emerald-900 / 55% */
+   color: #a7f3d0 !important; /* emerald-200 */
+}
+
+.dark .bg-yellow-50 {
+   background-color: rgba(120, 53, 4, 0.25) !important; /* amber-900 / 25% */
+   color: #fde68a !important; /* amber-200 */
+}
+
+.dark .bg-yellow-100 {
+   background-color: rgba(120, 53, 4, 0.45) !important; /* amber-900 / 45% */
+   color: #fde68a !important; /* amber-200 */
+}
+
+.dark .bg-blue-50\/40 {
+   background-color: rgba(30, 58, 138, 0.15) !important; /* blue-900 / 15% */
+}
+
+.dark .bg-gray-200 {
+   background-color: #374151 !important; /* gray-700 */
+   color: #f3f4f6 !important;
+}
+
+/* Sticky columns in dark mode to prevent transparent overlap */
+.dark th.sticky,
+.dark td.sticky {
+   background-color: #1f2937 !important; /* gray-800 */
+   color: #f3f4f6 !important;
+}
+
+/* Status badges inside merit list */
+.dark .bg-blue-100 {
+   background-color: rgba(30, 58, 138, 0.3) !important;
+   color: #93c5fd !important;
+   border-color: #1e3a8a !important;
+}
+</style>
