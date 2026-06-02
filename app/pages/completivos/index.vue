@@ -259,22 +259,28 @@
     <!-- ── PRINT CONTAINER (HIDDEN ON SCREEN, VISIBLE ON PRINT) ── -->
     <div id="printable-completivos" class="hidden-print-element print-layout font-sans text-black bg-white p-8">
       <!-- Institutional Header -->
-      <div class="flex justify-between items-center border-b-2 border-gray-900 pb-4 mb-6">
-        <div class="flex items-center gap-4">
-          <img v-if="authStore.tenant?.logo_url" :src="authStore.tenant.logo_url" class="w-16 h-16 object-contain" style="max-height: 64px; max-width: 64px;" />
-          <div>
-            <h1 class="text-xl font-bold uppercase">{{ authStore.tenant?.name || 'Centro Educativo' }}</h1>
-            <p class="text-xs text-gray-600">
+      <table style="width: 100%; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px; border-collapse: collapse; background: white;">
+        <tr>
+          <td style="vertical-align: middle; width: 70px; padding: 0;" v-if="tenantLogo">
+            <img :src="tenantLogo" style="height: 60px; width: 60px; object-fit: contain; display: block;" />
+          </td>
+          <td style="vertical-align: middle; text-align: left; padding: 0 0 0 10px;">
+            <h1 style="font-size: 18px; font-weight: bold; text-transform: uppercase; margin: 0; line-height: 1.2; color: black;">
+              {{ authStore.tenant?.name || 'Centro Educativo' }}
+            </h1>
+            <p style="font-size: 11px; color: #444; margin: 4px 0 0 0; line-height: 1.2;">
               <span v-if="authStore.tenant?.departamento">Departamento: {{ authStore.tenant.departamento }}</span>
-              <span v-if="authStore.tenant?.distrito" class="ml-4">Distrito: {{ authStore.tenant.distrito }}</span>
+              <span v-if="authStore.tenant?.distrito" style="margin-left: 15px;">Distrito: {{ authStore.tenant.distrito }}</span>
             </p>
-            <p class="text-xs text-gray-600" v-if="authStore.tenant?.address">{{ authStore.tenant.address }}</p>
-          </div>
-        </div>
-        <div class="text-right text-xs text-gray-500">
-          Generado: {{ formattedDatePrint }}
-        </div>
-      </div>
+            <p style="font-size: 11px; color: #444; margin: 4px 0 0 0; line-height: 1.2;" v-if="authStore.tenant?.address">
+              {{ authStore.tenant.address }}
+            </p>
+          </td>
+          <td style="vertical-align: bottom; text-align: right; font-size: 11px; color: #666; width: 180px; padding: 0;">
+            Generado: {{ formattedDatePrint }}
+          </td>
+        </tr>
+      </table>
 
       <div class="text-center mb-6">
         <h2 class="text-lg font-bold uppercase tracking-wider">Reporte de Estudiantes en Estado Completivo</h2>
@@ -450,6 +456,17 @@ const currentYearName = computed(() => {
   return 'Activo'
 })
 
+const tenantLogo = computed(() => {
+  if (!process.client || !authStore.tenant?.logo_url) return null
+  if (authStore.tenant.logo_url.startsWith('http')) return authStore.tenant.logo_url
+
+  const config = useRuntimeConfig()
+  const apiBase = config.public.apiBase
+  const baseUrl = apiBase.endsWith('/') ? apiBase.slice(0, -1) : apiBase
+  const path = authStore.tenant.logo_url.startsWith('/') ? authStore.tenant.logo_url : `/${authStore.tenant.logo_url}`
+  return `${baseUrl}${path}`
+})
+
 // ── Lifecycle ─────────────────────────────────────────────────────────────────
 onMounted(async () => {
   if (['secre', 'secretaria'].includes(userRole.value)) {
@@ -611,33 +628,58 @@ function showToast(type: 'success' | 'error', message: string) {
 .fade-leave-to {
   opacity: 0;
 }
+</style>
 
-/* Base print element display control */
-.hidden-print-element {
-  display: none;
-}
-
+<style>
 @media print {
-  /* Hide all regular screen elements */
-  .no-print,
+  /* Hide default layout and navigation elements */
+  aside,
   header,
   footer,
-  aside,
   nav,
   button,
   select,
-  div.p-6.no-print,
-  .no-print * {
+  input,
+  iframe,
+  .no-print {
     display: none !important;
   }
 
-  /* Show only the print layout and its children */
+  /* Reset layout structure so it doesn't restrict height or overflow */
+  html, body, #__nuxt, #__layout, .min-h-screen, .flex, .h-screen, .overflow-hidden, main, .overflow-y-auto, .container {
+    height: auto !important;
+    min-height: auto !important;
+    overflow: visible !important;
+    display: block !important;
+    background: white !important;
+    color: black !important;
+  }
+
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .container, [class*="container"] {
+    max-width: none !important;
+    width: 100% !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  /* Print layout elements visibility */
+  .hidden-print-element {
+    display: none !important;
+  }
+
   .hidden-print-element.print-layout {
     display: block !important;
     visibility: visible !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
-  /* Configure print margins and page size */
   @page {
     size: letter portrait;
     margin: 1.5cm;
@@ -645,11 +687,6 @@ function showToast(type: 'success' | 'error', message: string) {
 
   .avoid-break-inside {
     page-break-inside: avoid;
-  }
-
-  body {
-    background-color: white !important;
-    color: black !important;
   }
 }
 </style>
