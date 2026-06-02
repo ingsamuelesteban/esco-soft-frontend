@@ -461,10 +461,10 @@
                            <th class="border border-gray-400 p-1 text-left sticky left-0 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10">No.</th>
                            <th class="border border-gray-400 p-1 text-left sticky left-12 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10">Estudiante
                            </th>
-                           <th class="border border-gray-400 p-1 text-center dark:text-gray-100">P1</th>
-                           <th class="border border-gray-400 p-1 text-center dark:text-gray-100">P2</th>
-                           <th class="border border-gray-400 p-1 text-center dark:text-gray-100">P3</th>
-                           <th class="border border-gray-400 p-1 text-center dark:text-gray-100">P4</th>
+                           <th class="border border-gray-400 p-1 text-center dark:text-gray-100">PC1</th>
+                           <th class="border border-gray-400 p-1 text-center dark:text-gray-100">PC2</th>
+                           <th class="border border-gray-400 p-1 text-center dark:text-gray-100">PC3</th>
+                           <th class="border border-gray-400 p-1 text-center dark:text-gray-100">PC4</th>
                            <th class="border border-gray-400 p-1 text-center bg-yellow-100 dark:bg-yellow-900/30 dark:text-yellow-200 font-bold">Final</th>
                         </tr>
                      </thead>
@@ -476,15 +476,15 @@
                            <td class="border border-gray-400 p-1 sticky left-12 bg-white dark:bg-gray-800 z-10">{{
                               row.estudiante.apellidos }} {{
                                  row.estudiante.nombres }}</td>
-                           <td class="border border-gray-400 p-1 text-center font-bold dark:text-gray-100">{{ row.periodos?.[1] ?? '-' }}
+                           <td class="border border-gray-400 p-1 text-center font-bold dark:text-gray-100">{{ fmtPC(row.periodos?.[1]) }}
                            </td>
-                           <td class="border border-gray-400 p-1 text-center font-bold dark:text-gray-100">{{ row.periodos?.[2] ?? '-' }}
+                           <td class="border border-gray-400 p-1 text-center font-bold dark:text-gray-100">{{ fmtPC(row.periodos?.[2]) }}
                            </td>
-                           <td class="border border-gray-400 p-1 text-center font-bold dark:text-gray-100">{{ row.periodos?.[3] ?? '-' }}
+                           <td class="border border-gray-400 p-1 text-center font-bold dark:text-gray-100">{{ fmtPC(row.periodos?.[3]) }}
                            </td>
-                           <td class="border border-gray-400 p-1 text-center font-bold dark:text-gray-100">{{ row.periodos?.[4] ?? '-' }}
+                           <td class="border border-gray-400 p-1 text-center font-bold dark:text-gray-100">{{ fmtPC(row.periodos?.[4]) }}
                            </td>
-                           <td class="border border-gray-400 p-1 text-center font-bold bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-200">{{ row.final }}
+                           <td class="border border-gray-400 p-1 text-center font-bold bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-200">{{ fmtPC(row.final) }}
                            </td>
                         </tr>
                      </tbody>
