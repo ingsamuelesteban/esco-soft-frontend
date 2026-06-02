@@ -424,39 +424,46 @@
             <!-- ... existing grades content ... -->
             <!-- TABLA DE CALIFICACIONES ACADÉMICAS -->
             <div v-if="academicSubjects.length > 0" class="glass-card p-0 overflow-hidden">
-              <!-- ... content ... -->
-              <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50/50 dark:bg-gray-800/50">
-                <h3 class="text-sm font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">Calificaciones
-                  Académicas</h3>
+              <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50">
+                <h3 class="text-sm font-bold text-gray-900 dark:text-gray-100 uppercase tracking-wide">Calificaciones Académicas</h3>
               </div>
               <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                  <thead class="bg-gray-50 dark:bg-gray-900/50 dark:bg-gray-800">
+                  <thead class="bg-gray-50 dark:bg-gray-900/50 dark:bg-gray-800 text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                     <tr>
-                      <th scope="col"
-                        class="px-4 py-3 text-left text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider min-w-[200px]">
+                      <th scope="col" rowspan="2" class="px-4 py-3 text-left min-w-[220px] align-middle">
                         Asignatura
                       </th>
-                      <th scope="col"
-                        class="px-2 py-3 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        P1
+                      <th scope="col" colspan="4" class="px-2 py-2 text-center border-l border-gray-200 dark:border-gray-700 bg-gray-100/50 dark:bg-gray-800/30">
+                        Bloque 1
                       </th>
-                      <th scope="col"
-                        class="px-2 py-3 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        P2
+                      <th scope="col" colspan="4" class="px-2 py-2 text-center border-l border-gray-200 dark:border-gray-700 bg-gray-100/50 dark:bg-gray-800/30">
+                        Bloque 2
                       </th>
-                      <th scope="col"
-                        class="px-2 py-3 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        P3
+                      <th scope="col" colspan="4" class="px-2 py-2 text-center border-l border-gray-200 dark:border-gray-700 bg-gray-100/50 dark:bg-gray-800/30">
+                        Bloque 3
                       </th>
-                      <th scope="col"
-                        class="px-2 py-3 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        P4
+                      <th scope="col" colspan="4" class="px-2 py-2 text-center border-l border-gray-200 dark:border-gray-700 bg-gray-100/50 dark:bg-gray-800/30">
+                        Bloque 4
                       </th>
-                      <th scope="col"
-                        class="px-2 py-3 text-center text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider border-l border-gray-200 dark:border-gray-700">
+                      <th scope="col" colspan="4" class="px-2 py-2 text-center border-l-2 border-gray-300 dark:border-gray-600 bg-blue-50/30 dark:bg-blue-900/10">
+                        Promedios
+                      </th>
+                      <th scope="col" rowspan="2" class="px-4 py-3 text-center border-l border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/50 align-middle">
                         Nota Final
                       </th>
+                    </tr>
+                    <tr class="border-t border-gray-200 dark:border-gray-700">
+                      <!-- Bloque 1 P1-P4 -->
+                      <th v-for="p in 4" :key="`b1-p${p}`" class="px-1.5 py-1.5 text-center text-[10px] border-l border-gray-200 dark:border-gray-700">P{{ p }}</th>
+                      <!-- Bloque 2 P1-P4 -->
+                      <th v-for="p in 4" :key="`b2-p${p}`" class="px-1.5 py-1.5 text-center text-[10px] border-l border-gray-200 dark:border-gray-700">P{{ p }}</th>
+                      <!-- Bloque 3 P1-P4 -->
+                      <th v-for="p in 4" :key="`b3-p${p}`" class="px-1.5 py-1.5 text-center text-[10px] border-l border-gray-200 dark:border-gray-700">P{{ p }}</th>
+                      <!-- Bloque 4 P1-P4 -->
+                      <th v-for="p in 4" :key="`b4-p${p}`" class="px-1.5 py-1.5 text-center text-[10px] border-l border-gray-200 dark:border-gray-700">P{{ p }}</th>
+                      <!-- Promedios PC1-PC4 -->
+                      <th v-for="b in 4" :key="`pc${b}`" class="px-1.5 py-1.5 text-center text-[10px] border-l border-gray-300 dark:border-gray-600 bg-blue-50/10 dark:bg-blue-900/5">PC{{ b }}</th>
                     </tr>
                   </thead>
                   <tbody class="bg-white dark:bg-gray-800 dark:bg-gray-900 divide-y divide-gray-200 dark:divide-gray-700">
@@ -467,17 +474,53 @@
                         <div class="text-sm font-medium text-gray-900 dark:text-gray-100 dark:text-white">{{ subject.materia }}</div>
                       </td>
 
-                      <!-- Period Averages PC1-PC4 -->
-                      <td v-for="p in 4" :key="p" class="px-2 py-3 text-center">
-                        <div v-if="subject.promedios_periodo && subject.promedios_periodo[p] != null" class="text-sm font-bold"
-                          :class="getGradeColor(subject.promedios_periodo[p])">
-                          {{ Number(subject.promedios_periodo[p]).toFixed(1) }}
+                      <!-- Bloque 1 P1-P4 -->
+                      <td v-for="p in 4" :key="`val-b1-p${p}`" class="px-1.5 py-3 text-center border-l border-gray-100 dark:border-gray-700">
+                        <div v-if="subject.bloque_periodos && subject.bloque_periodos[1] && subject.bloque_periodos[1][p] != null"
+                             class="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                          {{ Math.round(subject.bloque_periodos[1][p]) }}
+                        </div>
+                        <div v-else class="text-xs text-gray-300 dark:text-gray-600 dark:text-gray-400">-</div>
+                      </td>
+
+                      <!-- Bloque 2 P1-P4 -->
+                      <td v-for="p in 4" :key="`val-b2-p${p}`" class="px-1.5 py-3 text-center border-l border-gray-100 dark:border-gray-700">
+                        <div v-if="subject.bloque_periodos && subject.bloque_periodos[2] && subject.bloque_periodos[2][p] != null"
+                             class="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                          {{ Math.round(subject.bloque_periodos[2][p]) }}
+                        </div>
+                        <div v-else class="text-xs text-gray-300 dark:text-gray-600 dark:text-gray-400">-</div>
+                      </td>
+
+                      <!-- Bloque 3 P1-P4 -->
+                      <td v-for="p in 4" :key="`val-b3-p${p}`" class="px-1.5 py-3 text-center border-l border-gray-100 dark:border-gray-700">
+                        <div v-if="subject.bloque_periodos && subject.bloque_periodos[3] && subject.bloque_periodos[3][p] != null"
+                             class="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                          {{ Math.round(subject.bloque_periodos[3][p]) }}
+                        </div>
+                        <div v-else class="text-xs text-gray-300 dark:text-gray-600 dark:text-gray-400">-</div>
+                      </td>
+
+                      <!-- Bloque 4 P1-P4 -->
+                      <td v-for="p in 4" :key="`val-b4-p${p}`" class="px-1.5 py-3 text-center border-l border-gray-100 dark:border-gray-700">
+                        <div v-if="subject.bloque_periodos && subject.bloque_periodos[4] && subject.bloque_periodos[4][p] != null"
+                             class="text-xs font-semibold text-gray-700 dark:text-gray-300">
+                          {{ Math.round(subject.bloque_periodos[4][p]) }}
+                        </div>
+                        <div v-else class="text-xs text-gray-300 dark:text-gray-600 dark:text-gray-400">-</div>
+                      </td>
+
+                      <!-- Promedios PC1-PC4 -->
+                      <td v-for="b in 4" :key="`val-pc${b}`" class="px-1.5 py-3 text-center border-l border-gray-200 dark:border-gray-700 bg-blue-50/5 dark:bg-blue-900/5">
+                        <div v-if="subject.promedios_periodo && subject.promedios_periodo[b] != null" class="text-xs font-bold"
+                          :class="getGradeColor(subject.promedios_periodo[b])">
+                          {{ Number(subject.promedios_periodo[b]).toFixed(2) }}
                         </div>
                         <div v-else class="text-xs text-gray-300 dark:text-gray-600 dark:text-gray-400">-</div>
                       </td>
 
                       <!-- Final Average -->
-                      <td class="px-2 py-3 text-center border-l border-gray-200 dark:border-gray-700">
+                      <td class="px-2 py-3 text-center border-l border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-900/50 font-bold text-sm">
                         <div v-if="subject.promedio_academico" class="text-sm font-bold"
                           :class="getScoreColor(subject.promedio_academico)">
                           {{ subject.promedio_academico }}
@@ -617,16 +660,16 @@ const currentSchedule = computed(() => {
   return dashboardData.value.schedule[selectedDay.value] || []
 })
 
-// Computed filter for Academic Subjects (Have Competencies)
+// Computed filter for Academic Subjects
 const academicSubjects = computed(() => {
   if (!dashboardData.value?.grades) return []
-  return dashboardData.value.grades.filter((s: any) => s.notas_competencia && s.notas_competencia.length > 0)
+  return dashboardData.value.grades.filter((s: any) => s.tipo_materia === 'Academico')
 })
 
-// Computed filter for Technical Subjects (Have RAs)
+// Computed filter for Technical Subjects
 const technicalSubjects = computed(() => {
   if (!dashboardData.value?.grades) return []
-  return dashboardData.value.grades.filter((s: any) => s.notas_ra && s.notas_ra.length > 0)
+  return dashboardData.value.grades.filter((s: any) => s.tipo_materia === 'Tecnico')
 })
 
 
