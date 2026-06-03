@@ -224,10 +224,10 @@
               <!-- Área -->
               <td class="px-4 py-3">
                 <span
-                  v-if="est.admision?.titulo?.nombre"
+                  v-if="est.aula?.titulo?.nombre || est.admision?.titulo?.nombre"
                   class="text-xs font-semibold text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/30 px-2.5 py-1 rounded-full border border-blue-200 dark:border-blue-800"
                 >
-                  {{ est.admision.titulo.nombre }}
+                  {{ est.aula?.titulo?.nombre || est.admision?.titulo?.nombre }}
                 </span>
                 <span v-else class="text-xs text-gray-400 italic">—</span>
               </td>
