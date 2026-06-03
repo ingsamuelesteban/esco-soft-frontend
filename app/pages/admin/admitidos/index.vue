@@ -58,7 +58,7 @@
         <label class="block text-xs font-semibold text-gray-500 uppercase mb-1">Año Lectivo</label>
         <select
           v-model="anioLectivoId"
-          @change="cargar(1)"
+          @change="onAnioChange"
           class="input-field w-full text-sm rounded-lg px-3 py-2 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
         >
           <option v-for="a in aniosLectivos" :key="a.id" :value="a.id">{{ a.nombre }}</option>
@@ -311,16 +311,20 @@ const aulaLabel = (aula) => {
 
 const loadAulas = async () => {
   try {
-    const res = await api.get('/api/aulas')
+    let url = '/api/aulas'
+    if (anioLectivoId.value) {
+      url += `?anio_lectivo_id=${anioLectivoId.value}`
+    }
+    const res = await api.get(url)
     aulas.value = res.data ?? res ?? []
   } catch (e) {
     console.error('Error cargando aulas:', e)
   }
 }
 
-const onAnioChange = () => {
-  cargar(1)
-  loadFechaPublicacion()
+const onAnioChange = async () => {
+  await loadAulas()
+  await Promise.all([cargar(1), loadFechaPublicacion()])
 }
 
 const cambiarModo = (nuevoModo) => {
@@ -445,7 +449,6 @@ const printPdf = async () => {
 }
 
 onMounted(async () => {
-  await loadAulas()
   try {
     const resAnios = await api.get('/api/anios-lectivos')
     const data = resAnios.data ?? resAnios ?? []
@@ -454,7 +457,9 @@ onMounted(async () => {
       const activeAnio = data.find((a) => a.activo)
       const nextAnio   = data.find((a) => !a.activo && (!activeAnio || a.nombre > activeAnio.nombre))
       anioLectivoId.value = nextAnio?.id ?? activeAnio?.id ?? data[0].id
-      await Promise.all([cargar(1), loadFechaPublicacion()])
+      await Promise.all([loadAulas(), cargar(1), loadFechaPublicacion()])
+    } else {
+      await loadAulas()
     }
   } catch (e) {
     console.error('Error cargando años lectivos:', e)
