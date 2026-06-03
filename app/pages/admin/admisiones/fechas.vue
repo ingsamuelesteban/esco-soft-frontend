@@ -67,6 +67,19 @@
                                 </div>
                             </div>
                         </template>
+
+                        <!-- Adjunto si existe -->
+                        <div v-if="actividad.attachment_path" class="mt-4 pt-3 border-t border-dashed border-gray-100 dark:border-gray-700">
+                            <div class="flex items-center justify-between bg-gray-50 dark:bg-gray-900/30 p-2 rounded-lg text-xs">
+                                <span class="text-gray-500 dark:text-gray-400 truncate max-w-[150px] flex items-center gap-1">
+                                    <PaperClipIcon class="h-3.5 w-3.5 shrink-0 text-gray-400" />
+                                    {{ actividad.attachment_path.split('/').pop() }}
+                                </span>
+                                <a :href="normalizeUrl(actividad.attachment_path)" target="_blank" class="text-primary-600 dark:text-primary-400 font-bold hover:underline">
+                                    Ver archivo
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -128,6 +141,29 @@
                                                     <option value="preadmitido">Preadmitidos (por rango de folder)</option>
                                                     <option value="admitido">Admitidos (todos los admitidos)</option>
                                                 </select>
+                                            </div>
+
+                                            <!-- Archivo adjunto -->
+                                            <div class="mb-6">
+                                                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                                    Archivo Adjunto (Opcional)
+                                                </label>
+                                                <DropZone v-model="form.attachment" label="Arrastra tu archivo aquí o haz clic para seleccionar"
+                                                    :max-size="25 * 1024 * 1024" />
+                                                <p class="mt-1 text-xs text-gray-500 dark:text-gray-400 flex items-center gap-1">
+                                                    <svg class="h-3.5 w-3.5 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                            d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                    Tamaño máximo permitido: <strong>25 MB</strong>
+                                                </p>
+                                                <div v-if="form.attachment_path && !form.attachment"
+                                                    class="text-sm text-gray-500 dark:text-gray-400 mt-2 p-2 bg-gray-50 dark:bg-gray-900/50 rounded border border-gray-200 dark:border-gray-700 flex items-center justify-between">
+                                                    <span class="truncate pr-2">Archivo actual: <strong>{{ form.attachment_path.split('/').pop() }}</strong></span>
+                                                    <a :href="normalizeUrl(form.attachment_path)" target="_blank" class="text-primary-600 dark:text-primary-400 font-bold hover:underline text-xs shrink-0">
+                                                        Ver Archivo
+                                                    </a>
+                                                </div>
                                             </div>
 
                                             <div v-if="form.tipo === 'preadmitido'" class="space-y-4">
@@ -196,9 +232,11 @@
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { api } from '~/utils/api'
+import { normalizeUrl } from '~/utils/url'
 import Swal from 'sweetalert2'
-import { PlusIcon, CalendarIcon, PencilSquareIcon, TrashIcon } from '@heroicons/vue/24/outline'
+import { PlusIcon, CalendarIcon, PencilSquareIcon, TrashIcon, PaperClipIcon } from '@heroicons/vue/24/outline'
 import { Dialog, DialogPanel, DialogTitle, TransitionChild, TransitionRoot } from '@headlessui/vue'
+import DropZone from '~/components/ui/DropZone.vue'
 
 const actividades = ref([])
 const aniosLectivos = ref([])
@@ -212,6 +250,8 @@ const form = reactive({
     fecha: '',
     anio_lectivo_id: '',
     tipo: 'preadmitido',
+    attachment: null,
+    attachment_path: null,
     grupos: [
         { folder_desde: '', folder_hasta: '', hora: '' }
     ]
@@ -262,6 +302,8 @@ const openModal = (actividad = null) => {
         form.fecha = actividad.fecha.split('T')[0]
         form.anio_lectivo_id = actividad.anio_lectivo_id
         form.tipo = actividad.tipo || 'preadmitido'
+        form.attachment = null
+        form.attachment_path = actividad.attachment_path
         form.grupos = actividad.grupos?.length ? JSON.parse(JSON.stringify(actividad.grupos)) : [{ folder_desde: '', folder_hasta: '', hora: '' }]
     } else {
         form.id = null
@@ -269,6 +311,8 @@ const openModal = (actividad = null) => {
         form.fecha = ''
         form.anio_lectivo_id = selectedAnioLectivoId.value
         form.tipo = 'preadmitido'
+        form.attachment = null
+        form.attachment_path = null
         form.grupos = [{ folder_desde: '', folder_hasta: '', hora: '' }]
     }
     modalOpen.value = true
@@ -285,18 +329,34 @@ const removeGrupo = (index) => {
 const saveActividad = async () => {
     loading.value = true
     try {
-        const payload = {
-            actividad: form.actividad,
-            fecha: form.fecha,
-            anio_lectivo_id: form.anio_lectivo_id,
-            tipo: form.tipo,
-            ...(form.tipo === 'preadmitido' ? { grupos: form.grupos } : {})
+        const formData = new FormData()
+        formData.append('actividad', form.actividad)
+        formData.append('fecha', form.fecha)
+        formData.append('anio_lectivo_id', form.anio_lectivo_id)
+        formData.append('tipo', form.tipo)
+        
+        if (form.attachment) {
+            formData.append('attachment', form.attachment)
         }
+
+        if (form.tipo === 'preadmitido') {
+            form.grupos.forEach((grupo, idx) => {
+                if (grupo.id) {
+                    formData.append(`grupos[${idx}][id]`, String(grupo.id))
+                }
+                formData.append(`grupos[${idx}][folder_desde]`, String(grupo.folder_desde))
+                formData.append(`grupos[${idx}][folder_hasta]`, String(grupo.folder_hasta))
+                formData.append(`grupos[${idx}][hora]`, grupo.hora)
+            })
+        }
+
         if (form.id) {
-            await api.put(`/api/admision-actividades/${form.id}`, payload)
+            formData.append('_method', 'PUT')
+            await api.post(`/api/admision-actividades/${form.id}`, formData)
         } else {
-            await api.post('/api/admision-actividades', payload)
+            await api.post('/api/admision-actividades', formData)
         }
+        
         modalOpen.value = false
         Swal.fire('Éxito', 'Actividad guardada correctamente', 'success')
         fetchActividades()

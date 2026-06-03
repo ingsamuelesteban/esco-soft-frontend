@@ -61,6 +61,14 @@
                       {{ act.hora }}
                     </span>
                   </div>
+                  <!-- Download Link for Preadmitted Student -->
+                  <div v-if="act.attachment_path" class="mt-3 flex items-center">
+                    <a :href="normalizeUrl(act.attachment_path)" target="_blank" download
+                      class="inline-flex items-center gap-1.5 text-xs font-semibold text-amber-700 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20 px-2.5 py-1.5 rounded-lg border border-amber-200 dark:border-amber-800/50 hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors">
+                      <ArrowDownTrayIcon class="h-3.5 w-3.5" />
+                      Descargar archivo adjunto
+                    </a>
+                  </div>
                 </div>
                 <div class="bg-amber-50 dark:bg-amber-900/20 p-2 rounded-lg">
                   <CalendarIcon class="w-6 h-6 text-amber-600" />
@@ -328,9 +336,17 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
               </svg>
             </div>
-            <div>
+            <div class="flex-1">
               <p class="text-sm font-semibold text-gray-900 dark:text-gray-100 leading-snug">{{ act.actividad }}</p>
               <p class="text-xs text-blue-700 dark:text-blue-300 mt-0.5">{{ formatDate(act.fecha) }}</p>
+              <!-- Download Link for Admitted Student -->
+              <div v-if="act.attachment_path" class="mt-2">
+                <a :href="normalizeUrl(act.attachment_path)" target="_blank" download
+                  class="inline-flex items-center gap-1 text-xs font-semibold text-blue-700 dark:text-blue-300 hover:underline">
+                  <ArrowDownTrayIcon class="h-3.5 w-3.5" />
+                  Descargar material adjunto
+                </a>
+              </div>
             </div>
           </div>
         </div>
@@ -631,6 +647,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { api } from '../../utils/api'
+import { normalizeUrl } from '~/utils/url'
 import AnnouncementsBanner from '~/components/anuncios/AnnouncementsBanner.vue'
 import Swal from 'sweetalert2'
 import {
@@ -641,6 +658,7 @@ import {
   XCircleIcon,
   CheckCircleIcon,
   ArrowUpTrayIcon,
+  ArrowDownTrayIcon,
 } from '@heroicons/vue/24/outline'
 
 definePageMeta({
