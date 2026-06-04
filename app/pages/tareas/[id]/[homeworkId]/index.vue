@@ -1,5 +1,5 @@
 <template>
-    <div class="min-h-screen bg-gray-50 dark:bg-gray-900/50 dark:bg-gray-900">
+    <div class="min-h-screen bg-gray-50 dark:bg-gray-900">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <!-- Back Button -->
             <NuxtLink :to="`/tareas/${classId}`"
@@ -15,7 +15,7 @@
             <div v-else>
                 <!-- Header -->
                 <div class="mb-8">
-                    <h1 class="text-3xl font-bold text-gray-900 dark:text-gray-100 dark:text-white">
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white">
                         {{ homework?.title || 'Cargando...' }}
                     </h1>
                     <p class="mt-2 text-gray-600 dark:text-gray-400">
@@ -27,18 +27,18 @@
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 mb-8 border-l-4 border-blue-500">
                     <div class="flex justify-between items-start">
                         <div>
-                            <h2 class="text-xl font-semibold text-gray-900 dark:text-gray-100 dark:text-white mb-2">Detalles de la Tarea</h2>
+                            <h2 class="text-xl font-semibold text-gray-900 dark:text-white mb-2">Detalles de la Tarea</h2>
                             <p v-if="homework?.description" class="text-gray-700 dark:text-gray-300 mb-4">
                                 {{ homework.description }}
                             </p>
-                            <div v-if="homework?.instructions" class="prose dark:prose-invert max-w-none mb-4 text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900/50 dark:bg-gray-900 p-4 rounded-lg">
+                            <div v-if="homework?.instructions" class="prose dark:prose-invert max-w-none mb-4 text-sm text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-900 p-4 rounded-lg">
                                 <h3 class="text-sm font-bold uppercase tracking-wider mb-2 text-gray-500 dark:text-gray-400">Instrucciones:</h3>
                                 <div class="whitespace-pre-wrap">{{ homework.instructions }}</div>
                             </div>
                         </div>
                         <div v-if="homework?.attachment_path" class="ml-4">
                             <button @click="downloadAttachment" 
-                               class="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium">
+                               class="flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-sm font-medium">
                                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                                 </svg>
@@ -93,32 +93,32 @@
                 </div>
 
                 <!-- Submissions Table -->
-                <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
+                <div class="bg-white dark:bg-gray-800 rounded-lg shadow overflow-auto max-h-[550px] relative">
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                        <thead class="bg-gray-50 dark:bg-gray-900/50 dark:bg-gray-900">
+                        <thead class="bg-gray-50 dark:bg-gray-900 sticky top-0 z-10 shadow-sm">
                             <tr>
                                 <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-900">
                                     Estudiante
                                 </th>
                                 <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-900">
                                     Estado
                                 </th>
                                 <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-900">
                                     Fecha de entrega
                                 </th>
                                 <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-900">
                                     Prórroga
                                 </th>
                                 <th
-                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-900">
                                     Calificación
                                 </th>
                                 <th
-                                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                    class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-900">
                                     Acciones
                                 </th>
                             </tr>
@@ -150,15 +150,15 @@
                                 <td class="px-6 py-4 whitespace-nowrap text-sm">
                                     <div v-if="submission.extension_status && submission.extension_status !== 'none'">
                                         <span :class="{
-                                            'bg-yellow-100 text-yellow-800': submission.extension_status === 'pending',
-                                            'bg-green-100 text-green-800': submission.extension_status === 'approved',
-                                            'bg-red-100 text-red-800': submission.extension_status === 'rejected'
+                                            'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300': submission.extension_status === 'pending',
+                                            'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300': submission.extension_status === 'approved',
+                                            'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300': submission.extension_status === 'rejected'
                                         }" class="px-2 py-1 text-xs font-medium rounded-full">
                                             {{ getExtensionLabel(submission.extension_status || 'none') }}
                                         </span>
                                         <button v-if="submission.extension_status === 'pending' && !isReadOnly"
                                             @click="reviewExtension(submission)"
-                                            class="ml-2 text-blue-600 hover:text-blue-800 text-xs font-medium underline">
+                                            class="ml-2 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 text-xs font-medium underline">
                                             Revisar
                                         </button>
                                     </div>

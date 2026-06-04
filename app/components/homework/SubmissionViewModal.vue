@@ -4,7 +4,7 @@
             <div class="p-6">
                 <!-- Header -->
                 <div class="flex items-center justify-between mb-6">
-                    <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white">
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white">
                         <span v-if="gradingMode && isRegrade">Editar Calificación</span>
                         <span v-else-if="gradingMode">Calificar Entrega</span>
                         <span v-else>Ver Entrega</span>
@@ -19,7 +19,7 @@
 
                 <!-- Student Info -->
                 <div class="mb-6 pb-6 border-b border-gray-200 dark:border-gray-700">
-                    <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100 dark:text-white mb-2">
+                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
                         {{ submission.student?.user?.name || 'Sin nombre' }}
                     </h3>
                     <div class="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400">
@@ -37,7 +37,7 @@
                     <div v-if="submission.text_content">
                         <h4 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Respuesta de texto:</h4>
                         <p
-                            class="text-gray-900 dark:text-gray-100 dark:text-white whitespace-pre-wrap bg-gray-50 dark:bg-gray-900/50 dark:bg-gray-700 p-4 rounded">
+                            class="text-gray-900 dark:text-gray-100 whitespace-pre-wrap bg-gray-50 dark:bg-gray-900 p-4 rounded border border-gray-100 dark:border-gray-800">
                             {{ submission.text_content }}
                         </p>
                     </div>
@@ -93,7 +93,7 @@
                             Retroalimentación
                         </label>
                         <textarea v-model="form.teacher_feedback" rows="4"
-                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white"
+                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400"
                             placeholder="Comentarios para el estudiante..."></textarea>
                     </div>
 
@@ -130,7 +130,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { api } from '~/utils/api'
 import dayjs from 'dayjs'
 
