@@ -1263,7 +1263,7 @@ const generateStudentReport = async () => {
    } catch (e) {
       stopLoadingModal()
       console.error(e)
-      Swal.fire({ icon: 'error', title: 'Error', text: 'Error generando reporte' })
+      Swal.fire({ icon: 'error', title: 'Error', text: ((e as any).data?.message || (e as any).message || 'Error generando reporte') })
    } finally {
       loadingGenerate.value = false
       stopLoadingModal()
@@ -1285,7 +1285,7 @@ const previewStudentReport = async () => {
    } catch (e) {
       stopLoadingModal()
       console.error(e)
-      Swal.fire({ icon: 'error', title: 'Error', text: 'Error cargando vista previa' })
+      Swal.fire({ icon: 'error', title: 'Error', text: ((e as any).data?.message || (e as any).message || 'Error cargando vista previa') })
    } finally {
       loadingPreview.value = false
       stopLoadingModal()
@@ -1310,7 +1310,7 @@ const generateClassroomReport = async () => {
    } catch (e) {
       stopLoadingModal()
       console.error(e)
-      Swal.fire({ icon: 'error', title: 'Error', text: 'Error generando sábana' })
+      Swal.fire({ icon: 'error', title: 'Error', text: ((e as any).data?.message || (e as any).message || 'Error generando sábana') })
    } finally {
       loadingGenerate.value = false
       stopLoadingModal()
@@ -1335,7 +1335,7 @@ const generateSubjectReport = async () => {
    } catch (e) {
       stopLoadingModal()
       console.error(e)
-      Swal.fire({ icon: 'error', title: 'Error', text: 'Error generando planilla' })
+      Swal.fire({ icon: 'error', title: 'Error', text: ((e as any).data?.message || (e as any).message || 'Error generando planilla') })
    } finally {
       loadingGenerate.value = false
       stopLoadingModal()
@@ -1357,7 +1357,7 @@ const previewClassroomReport = async () => {
    } catch (e) {
       stopLoadingModal()
       console.error(e)
-      Swal.fire({ icon: 'error', title: 'Error', text: 'Error cargando vista previa de sábana' })
+      Swal.fire({ icon: 'error', title: 'Error', text: ((e as any).data?.message || (e as any).message || 'Error cargando vista previa de sábana') })
    } finally {
       loadingPreview.value = false
       stopLoadingModal()
@@ -1379,7 +1379,7 @@ const previewSubjectReport = async () => {
    } catch (e) {
       stopLoadingModal()
       console.error(e)
-      Swal.fire({ icon: 'error', title: 'Error', text: 'Error cargando vista previa de planilla' })
+      Swal.fire({ icon: 'error', title: 'Error', text: ((e as any).data?.message || (e as any).message || 'Error cargando vista previa de planilla') })
    } finally {
       loadingPreview.value = false
       stopLoadingModal()
@@ -1411,7 +1411,7 @@ const generateMeritReport = async () => {
    } catch (e) {
       stopLoadingModal()
       console.error(e)
-      Swal.fire({ icon: 'error', title: 'Error', text: 'Error generando listado de meritorios' })
+      Swal.fire({ icon: 'error', title: 'Error', text: ((e as any).data?.message || (e as any).message || 'Error generando listado de meritorios') })
    } finally {
       loadingGenerate.value = false
       stopLoadingModal()
@@ -1434,7 +1434,7 @@ const previewMeritReport = async () => {
    } catch (e) {
       stopLoadingModal()
       console.error(e)
-      Swal.fire({ icon: 'error', title: 'Error', text: 'Error cargando vista previa de meritorios' })
+      Swal.fire({ icon: 'error', title: 'Error', text: ((e as any).data?.message || (e as any).message || 'Error cargando vista previa de meritorios') })
    } finally {
       loadingPreview.value = false
       stopLoadingModal()
@@ -1503,7 +1503,7 @@ const downloadAulaFinalUnified = async () => {
       console.error(e)
       const msg = e?.response?.status === 404
          ? 'No hay estudiantes activos en esta aula.'
-         : 'Error generando el PDF unificado.'
+         : ((e as any).data?.message || (e as any).message || 'Error generando el PDF unificado.')
       Swal.fire({ icon: 'error', title: 'Error', text: msg })
    } finally {
       loadingAulaZip.value = false
@@ -1535,7 +1535,7 @@ const downloadAulaFinalZip = async () => {
       console.error(e)
       const msg = e?.response?.status === 404
          ? 'No hay estudiantes activos en esta aula.'
-         : 'Error generando el ZIP de boletines.'
+         : ((e as any).data?.message || (e as any).message || 'Error generando el ZIP de boletines.')
       Swal.fire({ icon: 'error', title: 'Error', text: msg })
    } finally {
       loadingAulaZip.value = false
@@ -1587,7 +1587,7 @@ const generateFinalReport = async () => {
    } catch (e) {
       stopLoadingModal()
       console.error(e)
-      Swal.fire({ icon: 'error', title: 'Error', text: 'Error generando boletín final' })
+      Swal.fire({ icon: 'error', title: 'Error', text: ((e as any).data?.message || (e as any).message || 'Error generando boletín final') })
    } finally {
       loadingGenerate.value = false
       stopLoadingModal()
@@ -1609,7 +1609,7 @@ const previewFinalReport = async () => {
    } catch (e) {
       stopLoadingModal()
       console.error(e)
-      Swal.fire({ icon: 'error', title: 'Error', text: 'Error cargando vista previa del boletín final' })
+      Swal.fire({ icon: 'error', title: 'Error', text: ((e as any).data?.message || (e as any).message || 'Error cargando vista previa del boletín final') })
    } finally {
       loadingPreview.value = false
       stopLoadingModal()

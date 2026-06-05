@@ -108,7 +108,7 @@ export async function apiCall<T = any>(url: string, options: Parameters<typeof $
         throw error
       }
     },
-    onResponseError({ response }) {
+    async onResponseError({ response }) {
       // Manejo global de 401: Redirigir al login si la sesión expiró
       if (response.status === 401) {
         if (process.client) {
@@ -130,6 +130,19 @@ export async function apiCall<T = any>(url: string, options: Parameters<typeof $
       }
 
       if (options.responseType === 'blob') {
+        if (response._data instanceof Blob) {
+            try {
+                const text = await response._data.text();
+                const json = JSON.parse(text);
+                if (json.message) {
+                    const error = new Error(json.message);
+                    Object.assign(error, { data: json, statusCode: response.status, status: response.status });
+                    throw error;
+                }
+            } catch (e) {
+                // Si no se puede parsear a JSON, continuar con el error generico
+            }
+        }
         throw new Error(`Error ${response.status}: ${response.statusText}`)
       }
       // Asegurar que el error se lance con la data correcta
