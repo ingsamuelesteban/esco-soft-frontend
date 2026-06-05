@@ -959,6 +959,9 @@ const tabs = computed(() => {
    if (auth.isProfesor) {
       return allTabs.filter(t => t.id === 'subject')
    }
+   if (auth.isSecre) {
+      return allTabs.filter(t => t.id === 'final')
+   }
    return allTabs
 })
 const aniosStore = useAniosLectivosStore()
@@ -1001,6 +1004,8 @@ onMounted(async () => {
    try {
       if (auth.isProfesor) {
          currentTab.value = 'subject'
+      } else if (auth.isSecre) {
+         currentTab.value = 'final'
       }
 
       await Promise.all([
