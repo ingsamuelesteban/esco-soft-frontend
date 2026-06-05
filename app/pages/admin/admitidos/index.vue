@@ -231,18 +231,29 @@
                 </span>
                 <span v-else class="text-xs text-gray-400 italic">—</span>
               </td>
-              <!-- Acciones -->
               <td class="px-4 py-3 text-center">
-                <NuxtLink
-                  :to="`/admin/admitidos/${est.id}`"
-                  class="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-800/50 text-indigo-700 dark:text-indigo-300 text-xs font-semibold rounded-lg border border-indigo-200 dark:border-indigo-700 transition-colors"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                  </svg>
-                  Ver perfil
-                </NuxtLink>
+                <div class="flex items-center justify-center gap-2">
+                  <NuxtLink
+                    :to="`/admin/admitidos/${est.id}`"
+                    class="inline-flex items-center gap-1 px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 dark:bg-indigo-900/30 dark:hover:bg-indigo-800/50 text-indigo-700 dark:text-indigo-300 text-xs font-semibold rounded-lg border border-indigo-200 dark:border-indigo-700 transition-colors"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    Ver perfil
+                  </NuxtLink>
+                  <button
+                    v-if="modo === 'no-admitidos'"
+                    @click="openAdmitirModal(est)"
+                    class="inline-flex items-center gap-1 px-3 py-1.5 bg-green-50 hover:bg-green-100 dark:bg-green-900/30 dark:hover:bg-green-800/50 text-green-700 dark:text-green-300 text-xs font-semibold rounded-lg border border-green-200 dark:border-green-700 transition-colors"
+                  >
+                    <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                    Admitir a Aula
+                  </button>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -268,6 +279,40 @@
             class="px-3 py-1.5 text-sm rounded-lg border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 transition-colors"
           >
             Siguiente
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Admitir Estudiante -->
+    <div v-if="isAdmitirModalOpen" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md overflow-hidden flex flex-col">
+        <div class="p-6 border-b border-gray-100 dark:border-gray-700">
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white">Admitir Estudiante</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Selecciona el aula para asignar a <span class="font-bold">{{ selectedStudentToAdmit?.nombres }} {{ selectedStudentToAdmit?.apellidos }}</span>.</p>
+        </div>
+        <div class="p-6 flex-1 overflow-y-auto">
+          <div class="space-y-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Aula de destino</label>
+              <select v-model="selectedAulaToAdmit" class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
+                <option value="" disabled>Seleccione un aula</option>
+                <option v-for="a in aulas" :key="a.id" :value="a.id">{{ aulaLabel(a) }}</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="p-4 border-t border-gray-100 dark:border-gray-700 flex justify-end gap-3 bg-gray-50 dark:bg-gray-800/50">
+          <button @click="isAdmitirModalOpen = false" :disabled="loadingAdmitir" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">Cancelar</button>
+          <button @click="confirmAdmitir" :disabled="loadingAdmitir || !selectedAulaToAdmit" class="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 border border-transparent rounded-lg transition-colors flex items-center justify-center disabled:opacity-50">
+            <svg v-if="loadingAdmitir" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <svg v-else class="h-4 w-4 mr-1.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+            </svg>
+            Admitir y Asignar
           </button>
         </div>
       </div>
@@ -298,6 +343,45 @@ const modo               = ref('admitidos') // 'admitidos' | 'no-admitidos'
 const fechaPublicacion   = ref('')
 const savingFecha        = ref(false)
 const publicado          = ref(false)
+
+const isAdmitirModalOpen = ref(false)
+const selectedStudentToAdmit = ref(null)
+const selectedAulaToAdmit = ref('')
+const loadingAdmitir = ref(false)
+
+const openAdmitirModal = (est) => {
+  selectedStudentToAdmit.value = est
+  selectedAulaToAdmit.value = ''
+  isAdmitirModalOpen.value = true
+}
+
+const confirmAdmitir = async () => {
+  if (!selectedAulaToAdmit.value) {
+    Swal.fire('Error', 'Debe seleccionar un aula.', 'warning')
+    return
+  }
+
+  try {
+    loadingAdmitir.value = true
+    await api.post('/api/admisiones/asignacion/confirmar', {
+      anio_lectivo_id: anioLectivoId.value,
+      assignments: [
+        {
+          student_id: selectedStudentToAdmit.value.id,
+          aula_id: selectedAulaToAdmit.value
+        }
+      ]
+    })
+    Swal.fire({ icon: 'success', title: 'Estudiante admitido', text: 'El estudiante ha sido admitido y asignado al aula.', toast: true, position: 'top-end', timer: 3000, showConfirmButton: false })
+    isAdmitirModalOpen.value = false
+    cargar(currentPage.value)
+  } catch (e) {
+    console.error(e)
+    Swal.fire('Error', e.response?.data?.message || e.message || 'Error al admitir estudiante', 'error')
+  } finally {
+    loadingAdmitir.value = false
+  }
+}
 
 const { printPdfBlob } = usePrint()
 
