@@ -221,7 +221,9 @@ async function fetchClassAssignments(teacherId?: number) {
              // So we don't strictly need to send it for logged-in teacher.
         }
 
-        const params: any = {}
+        const params: any = {
+            only_active: 1
+        }
         if (canSelectTeacher.value && teacherId) {
             params.profesor_id = teacherId
         } else if (!canSelectTeacher.value && authStore.user?.role === 'profesor') {
