@@ -297,7 +297,7 @@
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Aula de destino</label>
               <select v-model="selectedAulaToAdmit" class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-2 text-sm text-gray-900 dark:text-gray-100 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500">
                 <option value="" disabled>Seleccione un aula</option>
-                <option v-for="a in aulas" :key="a.id" :value="a.id">{{ aulaLabel(a) }}</option>
+                <option v-for="a in aulasAdmitir" :key="a.id" :value="a.id">{{ aulaLabel(a) }}</option>
               </select>
             </div>
           </div>
@@ -321,7 +321,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { api } from '~/utils/api'
 import { usePrint } from '~/composables/usePrint'
 import Swal from 'sweetalert2'
@@ -349,6 +349,16 @@ const selectedStudentToAdmit = ref(null)
 const selectedAulaToAdmit = ref('')
 const loadingAdmitir = ref(false)
 
+const aulasAdmitir = computed(() => {
+  if (aulas.value.length === 0) return []
+  const grades = aulas.value
+    .map((a) => Number(a.grado_cardinal))
+    .filter((g) => !isNaN(g) && g > 0)
+  if (grades.length === 0) return aulas.value
+  const lowestGrade = Math.min(...grades)
+  return aulas.value.filter((a) => Number(a.grado_cardinal) === lowestGrade)
+})
+
 const openAdmitirModal = (est) => {
   selectedStudentToAdmit.value = est
   selectedAulaToAdmit.value = ''
@@ -363,7 +373,7 @@ const confirmAdmitir = async () => {
 
   try {
     loadingAdmitir.value = true
-    await api.post('/api/admisiones/asignacion/confirmar', {
+    await api.post('/api/admisiones/asignaciones/confirmar', {
       anio_lectivo_id: anioLectivoId.value,
       assignments: [
         {
