@@ -302,7 +302,7 @@
                   <table class="min-w-full text-xs border-collapse border border-gray-400">
                      <thead class="bg-gray-200">
                         <tr>
-                           <th class="border border-gray-400 p-1 text-left sticky left-0 bg-gray-200 z-10">No.</th>
+                           <th class="border border-gray-400 p-1 text-left sticky left-0 bg-gray-200 z-10 w-12 min-w-[48px] max-w-[48px]">No.</th>
                            <th class="border border-gray-400 p-1 text-left sticky left-12 bg-gray-200 z-10">Estudiante
                            </th>
                            <th v-for="subject in classroomPreview.subjects" :key="subject.id"
@@ -314,7 +314,7 @@
                      </thead>
                      <tbody>
                         <tr v-for="row in classroomPreview.data" :key="row.numero" class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50">
-                           <td class="border border-gray-400 p-1 text-center sticky left-0 bg-white dark:bg-gray-800 z-10">{{ row.numero
+                           <td class="border border-gray-400 p-1 text-center sticky left-0 bg-white dark:bg-gray-800 z-10 w-12 min-w-[48px] max-w-[48px]">{{ row.numero
                               }}</td>
                            <td class="border border-gray-400 p-1 sticky left-12 bg-white dark:bg-gray-800 z-10">{{ row.nombre }}</td>
                            <td v-for="subject in classroomPreview.subjects" :key="subject.id"
@@ -417,7 +417,7 @@
                      class="min-w-full text-xs border-collapse border border-gray-400">
                      <thead class="bg-gray-200 dark:bg-gray-700">
                         <tr>
-                           <th class="border border-gray-400 p-1 text-left sticky left-0 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10">No.</th>
+                           <th class="border border-gray-400 p-1 text-left sticky left-0 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10 w-12 min-w-[48px] max-w-[48px]">No.</th>
                            <th class="border border-gray-400 p-1 text-left sticky left-12 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10">Estudiante
                            </th>
                            <th v-for="i in subjectPreview.assignment?.cantidad_ra" :key="i"
@@ -434,7 +434,7 @@
                      <tbody>
                         <tr v-for="row in subjectPreview.data" :key="row.estudiante.id"
                            class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50">
-                           <td class="border border-gray-400 p-1 text-center sticky left-0 bg-white dark:bg-gray-800 z-10">{{
+                           <td class="border border-gray-400 p-1 text-center sticky left-0 bg-white dark:bg-gray-800 z-10 w-12 min-w-[48px] max-w-[48px]">{{
                               row.estudiante.numero_orden }}</td>
                            <td class="border border-gray-400 p-1 sticky left-12 bg-white dark:bg-gray-800 z-10">{{
                               row.estudiante.apellidos }} {{
@@ -460,7 +460,7 @@
                   <table v-else class="min-w-full text-xs border-collapse border border-gray-400">
                      <thead class="bg-gray-200 dark:bg-gray-700">
                         <tr>
-                           <th rowspan="2" class="border border-gray-400 p-1 text-left sticky left-0 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10">No.</th>
+                           <th rowspan="2" class="border border-gray-400 p-1 text-left sticky left-0 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10 w-12 min-w-[48px] max-w-[48px]">No.</th>
                            <th rowspan="2" class="border border-gray-400 p-1 text-left sticky left-12 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10" style="min-width: 140px;">Estudiante</th>
                            <th v-for="(bloqueLabel, bloqueNum) in subjectPreview.bloque_labels" :key="'sbh-' + bloqueNum"
                               colspan="4" class="border border-gray-400 p-1 text-center bg-blue-100 dark:bg-blue-900/50 text-blue-900 dark:text-blue-200">
@@ -481,7 +481,7 @@
                      <tbody>
                         <tr v-for="row in subjectPreview.data" :key="row.estudiante.id"
                            class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50">
-                           <td class="border border-gray-400 p-1 text-center sticky left-0 bg-white dark:bg-gray-800 z-10">{{
+                           <td class="border border-gray-400 p-1 text-center sticky left-0 bg-white dark:bg-gray-800 z-10 w-12 min-w-[48px] max-w-[48px]">{{
                               row.estudiante.numero_orden }}</td>
                            <td class="border border-gray-400 p-1 sticky left-12 bg-white dark:bg-gray-800 z-10">{{
                               row.estudiante.apellidos }} {{
