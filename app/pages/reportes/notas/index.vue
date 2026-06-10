@@ -153,7 +153,9 @@
                               <th rowspan="2" class="border border-gray-400 p-1 text-left bg-gray-100 dark:bg-gray-700" style="min-width:120px;">Asignatura</th>
                               <th v-for="(bloqueLabel, bloqueNum) in reportPreview.bloque_labels" :key="'bh-' + bloqueNum"
                                  colspan="4" class="border border-gray-400 p-1 text-center bg-blue-100 dark:bg-blue-900/50 text-blue-900 dark:text-blue-200 text-[9px]">
-                                 {{ bloqueLabel }}
+                                 <div class="text-[9px] max-w-[100px] mx-auto whitespace-normal break-words leading-tight">
+                                    {{ bloqueLabel }}
+                                 </div>
                               </th>
                               <th colspan="4" class="border border-gray-400 p-1 text-center bg-blue-900 text-white text-[9px]">Promedio C.E.</th>
                               <th rowspan="2" class="border border-gray-400 p-1 text-center bg-red-900 text-white text-[9px]" style="min-width:28px;">Calif.<br>Final</th>
@@ -461,8 +463,10 @@
                            <th rowspan="2" class="border border-gray-400 p-1 text-left sticky left-0 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10">No.</th>
                            <th rowspan="2" class="border border-gray-400 p-1 text-left sticky left-12 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10" style="min-width: 140px;">Estudiante</th>
                            <th v-for="(bloqueLabel, bloqueNum) in subjectPreview.bloque_labels" :key="'sbh-' + bloqueNum"
-                              colspan="4" class="border border-gray-400 p-1 text-center bg-blue-100 dark:bg-blue-900/50 text-blue-900 dark:text-blue-200 text-[9px]">
-                              {{ bloqueLabel }}
+                              colspan="4" class="border border-gray-400 p-1 text-center bg-blue-100 dark:bg-blue-900/50 text-blue-900 dark:text-blue-200">
+                              <div class="text-[9px] max-w-[100px] mx-auto whitespace-normal break-words leading-tight">
+                                 {{ bloqueLabel }}
+                              </div>
                            </th>
                            <th colspan="4" class="border border-gray-400 p-1 text-center bg-blue-900 text-white text-[9px]">Promedio C.E.</th>
                            <th rowspan="2" class="border border-gray-400 p-1 text-center bg-red-900 text-white text-[9px]" style="min-width:28px;">Calif.<br>Final</th>
