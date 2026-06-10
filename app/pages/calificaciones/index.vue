@@ -746,6 +746,7 @@ const cargarModulosYEstudiantes = async () => {
       cantidad_ra: assignment.cantidad_ra, // Configuración del Assignment
       valores_ra: assignment.valores_ra, // Configuración del Assignment
       fechas_ra: assignment.fechas_ra, // Fechas guardadas
+      periodos_ra: assignment.periodos_ra, // Períodos guardados
       calculation_mode: assignment.materia?.calculation_mode || 'standard'
     }))
 
