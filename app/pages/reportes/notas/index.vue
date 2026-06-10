@@ -458,14 +458,20 @@
                   <table v-else class="min-w-full text-xs border-collapse border border-gray-400">
                      <thead class="bg-gray-200 dark:bg-gray-700">
                         <tr>
-                           <th class="border border-gray-400 p-1 text-left sticky left-0 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10">No.</th>
-                           <th class="border border-gray-400 p-1 text-left sticky left-12 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10">Estudiante
+                           <th rowspan="2" class="border border-gray-400 p-1 text-left sticky left-0 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10">No.</th>
+                           <th rowspan="2" class="border border-gray-400 p-1 text-left sticky left-12 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10" style="min-width: 140px;">Estudiante</th>
+                           <th v-for="(bloqueLabel, bloqueNum) in subjectPreview.bloque_labels" :key="'sbh-' + bloqueNum"
+                              colspan="4" class="border border-gray-400 p-1 text-center bg-blue-100 dark:bg-blue-900/50 text-blue-900 dark:text-blue-200 text-[9px]">
+                              {{ bloqueLabel }}
                            </th>
-                           <th class="border border-gray-400 p-1 text-center dark:text-gray-100">PC1</th>
-                           <th class="border border-gray-400 p-1 text-center dark:text-gray-100">PC2</th>
-                           <th class="border border-gray-400 p-1 text-center dark:text-gray-100">PC3</th>
-                           <th class="border border-gray-400 p-1 text-center dark:text-gray-100">PC4</th>
-                           <th class="border border-gray-400 p-1 text-center bg-yellow-100 dark:bg-yellow-900/30 dark:text-yellow-200 font-bold">Final</th>
+                           <th colspan="4" class="border border-gray-400 p-1 text-center bg-blue-900 text-white text-[9px]">Promedio C.E.</th>
+                           <th rowspan="2" class="border border-gray-400 p-1 text-center bg-red-900 text-white text-[9px]" style="min-width:28px;">Calif.<br>Final</th>
+                        </tr>
+                        <tr class="bg-gray-100 dark:bg-gray-700">
+                           <template v-for="(_, bloqueNum) in subjectPreview.bloque_labels" :key="'spp-' + bloqueNum">
+                              <th v-for="p in [1,2,3,4]" :key="p" class="border border-gray-400 p-1 text-center text-[9px]" style="min-width:24px;">P{{ p }}</th>
+                           </template>
+                           <th v-for="p in [1,2,3,4]" :key="'spc' + p" class="border border-gray-400 p-1 text-center bg-blue-800 text-white text-[9px]" style="min-width:24px;">PC{{ p }}</th>
                         </tr>
                      </thead>
                      <tbody>
@@ -476,15 +482,26 @@
                            <td class="border border-gray-400 p-1 sticky left-12 bg-white dark:bg-gray-800 z-10">{{
                               row.estudiante.apellidos }} {{
                                  row.estudiante.nombres }}</td>
-                           <td class="border border-gray-400 p-1 text-center font-bold dark:text-gray-100">{{ fmtPC(row.periodos?.[1]) }}
+                           
+                           <!-- P1-P4 per block -->
+                           <template v-for="(_, bloqueNum) in subjectPreview.bloque_labels" :key="'sbg-' + bloqueNum">
+                              <td v-for="p in [1,2,3,4]" :key="p" class="border border-gray-400 p-1 text-center font-bold"
+                                 :class="gradeClass(row.bloques?.[bloqueNum]?.[p])">
+                                 {{ row.bloques?.[bloqueNum]?.[p] ?? '–' }}
+                              </td>
+                           </template>
+
+                           <!-- PC1-PC4 -->
+                           <td v-for="p in [1,2,3,4]" :key="'spc-' + p"
+                              class="border border-gray-400 p-1 text-center font-bold"
+                              :class="gradeClass(row.periodos?.[p])">
+                              {{ fmtPC(row.periodos?.[p]) }}
                            </td>
-                           <td class="border border-gray-400 p-1 text-center font-bold dark:text-gray-100">{{ fmtPC(row.periodos?.[2]) }}
-                           </td>
-                           <td class="border border-gray-400 p-1 text-center font-bold dark:text-gray-100">{{ fmtPC(row.periodos?.[3]) }}
-                           </td>
-                           <td class="border border-gray-400 p-1 text-center font-bold dark:text-gray-100">{{ fmtPC(row.periodos?.[4]) }}
-                           </td>
-                           <td class="border border-gray-400 p-1 text-center font-bold bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-200">{{ fmtPC(row.final) }}
+
+                           <!-- Calificación Final -->
+                           <td class="border border-gray-400 p-1 text-center font-bold bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-200"
+                              :class="gradeClass(row.final)">
+                              {{ row.final ?? '–' }}
                            </td>
                         </tr>
                      </tbody>
