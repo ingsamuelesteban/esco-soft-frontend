@@ -767,9 +767,11 @@
 
                   <!-- Status badge -->
                   <div class="flex justify-end mb-4">
-                     <span :class="finalReportStatus(finalPreview).aplazado ? 'bg-red-600' : 'bg-green-700'"
+                     <span :class="
+                        finalReportStatus(finalPreview).status === 'POR DEFINIR' ? 'bg-amber-600' : 
+                        (finalReportStatus(finalPreview).status === 'APLAZADO' ? 'bg-red-600' : 'bg-green-700')"
                         class="text-white text-xs font-bold px-4 py-1 rounded tracking-widest uppercase">
-                        {{ finalReportStatus(finalPreview).aplazado ? 'APLAZADO' : 'PROMOVIDO' }}
+                        {{ finalReportStatus(finalPreview).status }}
                      </span>
                   </div>
 
@@ -1153,7 +1155,54 @@ const calcCF = (
    return pcVals.length > 0 ? Math.round(pcVals.reduce((a: number, b: number) => a + b, 0) / 4) : null
 }
 
-const finalReportStatus = (preview: any): { aplazado: boolean } => {
+const finalReportStatus = (preview: any): { status: 'POR DEFINIR' | 'APLAZADO' | 'PROMOVIDO' } => {
+   let porDefinir = false
+
+   // 1. Check academic subjects for missing grades
+   if (preview?.academic_subjects && preview?.bloques && preview?.bloque_labels) {
+      for (const subject of preview.academic_subjects) {
+         for (const bloqueNum of Object.keys(preview.bloque_labels)) {
+            for (const p of [1, 2, 3, 4]) {
+               const val = preview.bloques?.[subject.id]?.[bloqueNum]?.[p]
+               if (val === null || val === undefined) {
+                  porDefinir = true
+                  break
+               }
+            }
+            if (porDefinir) break
+         }
+         if (porDefinir) break
+      }
+   }
+
+   // 2. Check technical modules for missing grades
+   if (!porDefinir && preview?.technical_modules) {
+      for (const module of preview.technical_modules) {
+         const expected = module.cantidad_ra ?? 0
+         const rasCount = module.ras ? Object.keys(module.ras).length : 0
+         if (expected > 0 && rasCount < expected) {
+            porDefinir = true
+            break
+         }
+         if (module.ras) {
+            for (const key of Object.keys(module.ras)) {
+               if (module.ras[key] === null || module.ras[key] === undefined) {
+                  porDefinir = true
+                  break
+               }
+            }
+         }
+         if (module.final === null || module.final === undefined) {
+            porDefinir = true
+            break
+         }
+      }
+   }
+
+   if (porDefinir) {
+      return { status: 'POR DEFINIR' }
+   }
+
    let aplazado = false
    if (preview?.academic_subjects && preview?.bloques && preview?.bloque_labels) {
       for (const subject of preview.academic_subjects) {
@@ -1167,7 +1216,7 @@ const finalReportStatus = (preview: any): { aplazado: boolean } => {
          if (module.final != null && module.final < threshold) { aplazado = true; break }
       }
    }
-   return { aplazado }
+   return { status: aplazado ? 'APLAZADO' : 'PROMOVIDO' }
 }
 // ──────────────────────────────────────────────────────────────────────────────
 
