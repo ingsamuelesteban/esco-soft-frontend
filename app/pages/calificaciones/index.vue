@@ -680,7 +680,8 @@ const porcentajeDisponible = computed(() => {
     }
   }
 
-  return Math.max(0, 100 - totalUsado)
+  // Redondear a 2 decimales para evitar problemas de precisión flotante de JavaScript
+  return Math.max(0, parseFloat((100 - totalUsado).toFixed(2)))
 })
 
 // Computed para calcular el total de porcentajes asignados
@@ -697,7 +698,7 @@ const calcularTotalRA = (moduloData) => {
     }
   }
 
-  return total
+  return parseFloat(total.toFixed(2))
 }
 
 // Métodos
