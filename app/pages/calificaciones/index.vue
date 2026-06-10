@@ -1470,7 +1470,7 @@ const calcularPromedioPeriodo = (estudianteId, bloqueIndex) => {
     }
   }
 
-  return cantidad > 0 ? suma / cantidad : null
+  return cantidad > 0 ? suma / 4 : null
 }
 
 const calcularCalificacionFinal = (estudianteId) => {
@@ -1485,7 +1485,7 @@ const calcularCalificacionFinal = (estudianteId) => {
     }
   }
 
-  return cantidad > 0 ? Math.round(suma / cantidad) : null
+  return cantidad > 0 ? Math.round(suma / 4) : null
 }
 
 const getPromedioClass = (nota) => {

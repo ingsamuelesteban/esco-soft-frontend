@@ -1131,7 +1131,7 @@ const calcPC = (
       const v = bloque[p]
       if (v != null) vals.push(Number(v))
    }
-   return vals.length > 0 ? vals.reduce((a: number, b: number) => a + b, 0) / vals.length : null
+   return vals.length > 0 ? vals.reduce((a: number, b: number) => a + b, 0) / 4 : null
 }
 
 const fmtPC = (v: number | null | undefined): string => {
@@ -1150,7 +1150,7 @@ const calcCF = (
       const pc = calcPC(bloques, subjectId, bloqueLabels, p)
       if (pc != null) pcVals.push(pc)
    }
-   return pcVals.length > 0 ? Math.round(pcVals.reduce((a: number, b: number) => a + b, 0) / pcVals.length) : null
+   return pcVals.length > 0 ? Math.round(pcVals.reduce((a: number, b: number) => a + b, 0) / 4) : null
 }
 
 const finalReportStatus = (preview: any): { aplazado: boolean } => {
@@ -1257,7 +1257,9 @@ const generateStudentReport = async () => {
       const blob = await api.get(url, { responseType: 'blob' }) as Blob
       stopLoadingModal()
 
-      const filename = `boletin_${selectedStudent.value.apellidos}_${selectedStudent.value.nombres}.pdf`
+      const studentAula = selectedStudent.value.aula
+      const aulaLabel = studentAula ? `${studentAula.grado_cardinal}${studentAula.seccion}` : 'Sin_Aula'
+      const filename = `boletin_${selectedStudent.value.apellidos}_${selectedStudent.value.nombres}_${aulaLabel}.pdf`
       printPdfBlob(blob, filename, 'Generando boletín...')
 
    } catch (e) {
@@ -1582,7 +1584,9 @@ const generateFinalReport = async () => {
 
       const blob = await api.get(url, { responseType: 'blob' }) as Blob
       stopLoadingModal()
-      const filename = `boletin_final_${selectedFinalStudent.value.apellidos}_${selectedFinalStudent.value.nombres}.pdf`
+      const studentAula = selectedFinalStudent.value.aula
+      const aulaLabel = studentAula ? `${studentAula.grado_cardinal}${studentAula.seccion}` : 'Sin_Aula'
+      const filename = `boletin_final_${selectedFinalStudent.value.apellidos}_${selectedFinalStudent.value.nombres}_${aulaLabel}.pdf`
       printPdfBlob(blob, filename, 'Generando boletín final...')
    } catch (e) {
       stopLoadingModal()
