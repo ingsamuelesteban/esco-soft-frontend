@@ -710,7 +710,8 @@ const formatDate = (date: string) => {
   if (!date) return ''
   return new Date(date).toLocaleDateString('es-ES', {
     day: 'numeric',
-    month: 'long'
+    month: 'long',
+    timeZone: 'UTC'
   })
 }
 
