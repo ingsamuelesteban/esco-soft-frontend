@@ -562,15 +562,23 @@
 
                     </div>
                     <div class="text-right">
-                      <div class="text-2xl font-bold" :class="getScoreColor(subject.promedio)">
-                        {{ subject.promedio ? subject.promedio.toFixed(0) : '-' }}
-                      </div>
-                      <div class="text-xs text-gray-500 dark:text-gray-400">Total</div>
+                      <template v-if="subject.is_fct">
+                        <div class="text-2xl font-bold" :class="subject.promedio >= 6 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+                          {{ subject.promedio !== null && subject.promedio !== undefined ? (subject.promedio >= 6 ? 'APTO' : 'NO APTO') : '-' }}
+                        </div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Estado</div>
+                      </template>
+                      <template v-else>
+                        <div class="text-2xl font-bold" :class="getScoreColor(subject.promedio)">
+                          {{ subject.promedio ? subject.promedio.toFixed(0) : '-' }}
+                        </div>
+                        <div class="text-xs text-gray-500 dark:text-gray-400">Total</div>
+                      </template>
                     </div>
                   </div>
 
                   <!-- Detalle de notas (RAs) -->
-                  <div v-if="subject.notas_ra && subject.notas_ra.length > 0">
+                  <div v-if="!subject.is_fct && subject.notas_ra && subject.notas_ra.length > 0">
                     <h5 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Resultados de
                       Aprendizaje</h5>
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
