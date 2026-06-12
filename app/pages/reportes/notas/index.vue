@@ -216,18 +216,26 @@
                                  :class="idx % 2 === 1 ? 'bg-blue-50/40 dark:bg-blue-900/10' : 'bg-white dark:bg-gray-800'">
                                  <td class="border border-gray-400 p-1 text-left pl-2 font-medium">{{ module.nombre }}</td>
                                  <td class="border border-gray-400 p-1 text-left pl-2">
-                                    <div class="flex flex-wrap gap-1">
-                                       <span v-for="(raNota, raNum) in module.ras" :key="raNum"
-                                          class="border border-gray-300 dark:border-gray-600 rounded px-1 text-[10px]">
-                                          RA{{ raNum }}: <b>{{ fmtPC(raNota) }}</b>
-                                       </span>
-                                    </div>
-                                 </td>
-                                 <td class="border border-gray-400 p-1 text-center font-bold"
-                                    :class="[idx % 2 === 1 ? 'bg-red-100/60 dark:bg-red-900/20' : 'bg-red-50 dark:bg-red-900/10',
-                                             techGradeClass(module.final, module.is_fct)]">
-                                    {{ fmtPC(module.final) }}
-                                 </td>
+                                     <div v-if="!module.is_fct" class="flex flex-wrap gap-1">
+                                        <span v-for="(raNota, raNum) in module.ras" :key="raNum"
+                                           class="border border-gray-300 dark:border-gray-600 rounded px-1 text-[10px]">
+                                           RA{{ raNum }}: <b>{{ fmtPC(raNota) }}</b>
+                                        </span>
+                                     </div>
+                                     <div v-else>
+                                        <span class="text-gray-400 italic">N/A</span>
+                                     </div>
+                                  </td>
+                                  <td class="border border-gray-400 p-1 text-center font-bold"
+                                     :class="[idx % 2 === 1 ? 'bg-red-100/60 dark:bg-red-900/20' : 'bg-red-50 dark:bg-red-900/10',
+                                              techGradeClass(module.final, module.is_fct)]">
+                                     <span v-if="module.is_fct">
+                                        {{ module.final !== null && module.final !== undefined ? (module.final >= 6 ? 'APTO' : 'NO APTO') : '–' }}
+                                     </span>
+                                     <span v-else>
+                                        {{ fmtPC(module.final) }}
+                                     </span>
+                                  </td>
                               </tr>
                            </tbody>
                         </table>
@@ -870,7 +878,12 @@
                                  <td class="border border-gray-400 p-1 text-center font-bold"
                                     :class="[idx % 2 === 1 ? 'bg-red-100/60 dark:bg-red-900/20' : 'bg-red-50 dark:bg-red-900/10',
                                              techGradeClass(module.final, module.is_fct)]">
-                                    {{ module.final ?? '–' }}
+                                    <span v-if="module.is_fct">
+                                       {{ module.final !== null && module.final !== undefined ? (module.final >= 6 ? 'APTO' : 'NO APTO') : '–' }}
+                                    </span>
+                                    <span v-else>
+                                       {{ module.final ?? '–' }}
+                                    </span>
                                  </td>
                               </tr>
                            </tbody>
@@ -1133,7 +1146,7 @@ const gradeClass = (grade: number | null | undefined): string => {
 const techGradeClass = (grade: number | null | undefined, isFct: boolean): string => {
    if (grade == null) return 'text-gray-300 dark:text-gray-600'
    const low  = isFct ? 6  : 70
-   const high = isFct ? 9  : 90
+   const high = isFct ? 6  : 90
    if (grade < low)  return 'text-red-600 dark:text-red-400'
    if (grade >= high) return 'text-green-700 dark:text-green-400'
    return ''
