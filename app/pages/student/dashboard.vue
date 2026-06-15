@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="space-y-6">
     <!-- Bienvenida -->
     <div class="glass-card p-6 rounded-xl flex justify-between items-center">
@@ -563,8 +563,8 @@
                     </div>
                     <div class="text-right">
                       <template v-if="subject.is_fct">
-                        <div class="text-2xl font-bold" :class="subject.promedio >= 6 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
-                          {{ subject.promedio !== null && subject.promedio !== undefined ? (subject.promedio >= 6 ? 'APTO' : 'NO APTO') : '-' }}
+                        <div class="text-2xl font-bold" :class="subject.promedio >= 70 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+                          {{ subject.promedio !== null && subject.promedio !== undefined ? (subject.promedio >= 70 ? 'APTO' : 'NO APTO') : '-' }}
                         </div>
                         <div class="text-xs text-gray-500 dark:text-gray-400">Estado</div>
                       </template>
@@ -773,3 +773,4 @@ onMounted(async () => {
   @apply bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm transition-all duration-300;
 }
 </style>
+

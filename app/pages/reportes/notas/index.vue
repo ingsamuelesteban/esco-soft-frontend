@@ -1,4 +1,4 @@
-<template>
+﻿<template>
    <div>
       <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
          <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 px-6 py-4">
@@ -230,7 +230,7 @@
                                      :class="[idx % 2 === 1 ? 'bg-red-100/60 dark:bg-red-900/20' : 'bg-red-50 dark:bg-red-900/10',
                                               techGradeClass(module.final, module.is_fct)]">
                                      <span v-if="module.is_fct">
-                                        {{ module.final !== null && module.final !== undefined ? (module.final >= 6 ? 'APTO' : 'NO APTO') : '–' }}
+                                        {{ module.final !== null && module.final !== undefined ? (module.final >= 70 ? 'APTO' : 'NO APTO') : '–' }}
                                      </span>
                                      <span v-else>
                                         {{ fmtPC(module.final) }}
@@ -456,7 +456,7 @@
                            <template v-if="row.is_fct">
                               <td class="border border-gray-400 p-1 text-center font-bold dark:text-gray-100">{{ row.promedio }}</td>
                               <td class="border border-gray-400 p-1 text-center font-bold"
-                                 :class="row.promedio >= 6 ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'">
+                                 :class="row.promedio >= 70 ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'">
                                  {{ row.situacion }}
                               </td>
                            </template>
@@ -879,7 +879,7 @@
                                     :class="[idx % 2 === 1 ? 'bg-red-100/60 dark:bg-red-900/20' : 'bg-red-50 dark:bg-red-900/10',
                                              techGradeClass(module.final, module.is_fct)]">
                                     <span v-if="module.is_fct">
-                                       {{ module.final !== null && module.final !== undefined ? (module.final >= 6 ? 'APTO' : 'NO APTO') : '–' }}
+                                       {{ module.final !== null && module.final !== undefined ? (module.final >= 70 ? 'APTO' : 'NO APTO') : '–' }}
                                     </span>
                                     <span v-else>
                                        {{ module.final ?? '–' }}
@@ -1145,8 +1145,8 @@ const gradeClass = (grade: number | null | undefined): string => {
 
 const techGradeClass = (grade: number | null | undefined, isFct: boolean): string => {
    if (grade == null) return 'text-gray-300 dark:text-gray-600'
-   const low  = isFct ? 6  : 70
-   const high = isFct ? 6  : 90
+   const low  = 70
+   const high = 90
    if (grade < low)  return 'text-red-600 dark:text-red-400'
    if (grade >= high) return 'text-green-700 dark:text-green-400'
    return ''
@@ -1252,7 +1252,7 @@ const finalReportStatus = (preview: any): { status: 'POR DEFINIR' | 'APLAZADO' |
    }
    if (!aplazado && preview?.technical_modules) {
       for (const module of preview.technical_modules) {
-         const threshold = module.is_fct ? 6 : 70
+         const threshold = 70
          if (module.final != null && module.final < threshold) { aplazado = true; break }
       }
    }
@@ -1770,3 +1770,5 @@ const previewFinalReport = async () => {
    border-color: #1e3a8a !important;
 }
 </style>
+
+
