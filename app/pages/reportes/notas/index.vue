@@ -745,7 +745,7 @@
                         <tbody>
                            <tr v-for="(row, idx) in report.data" :key="row.estudiante.id"
                               class="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50">
-                              <td class="border border-gray-400 p-2 text-center font-bold">{{ idx + 1 }}</td>
+                              <td class="border border-gray-400 p-2 text-center font-bold">{{ row.estudiante.numero_orden ?? (idx + 1) }}</td>
                               <td class="border border-gray-400 p-2 font-bold">{{ row.estudiante.apellidos }}, {{
                                  row.estudiante.nombres }}</td>
                               <td class="border border-gray-400 p-2">
@@ -1615,13 +1615,19 @@ const generateAplazadosReport = async () => {
       let url = `/api/reports/grades/aplazados?aula_id=${selectedAula.value}`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
-      const blob = await api.get(url, { responseType: 'blob' }) as Blob
+      const blob = await api.getBlob(url)
       stopLoadingModal()
 
       const filename = selectedAula.value === 'all' 
           ? 'aplazados_todas_las_aulas.pdf' 
           : `aplazados_aula_${selectedAula.value}.pdf`
-      printPdfBlob(blob, filename, 'Generando reporte de aplazados...')
+
+      const objectUrl = URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }))
+      const link = document.createElement('a')
+      link.href = objectUrl
+      link.download = filename
+      link.click()
+      URL.revokeObjectURL(objectUrl)
    } catch (e) {
       stopLoadingModal()
       console.error(e)
