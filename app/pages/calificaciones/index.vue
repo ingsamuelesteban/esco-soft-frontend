@@ -447,8 +447,8 @@
                          <span class="font-bold text-gray-900 dark:text-gray-100">{{ calcularPuntosObtenidos(estudiante.id) }}</span>
                       </td>
                       <td v-if="moduloData?.calculation_mode === 'fct'" class="px-6 py-4 text-center sticky right-0 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700">
-                         <span class="font-bold" :class="calcularPromedioFCT(estudiante.id) >= 6 ? 'text-green-700' : 'text-red-700'">
-                           {{ calcularPromedioFCT(estudiante.id) }}
+                         <span class="font-bold" :class="calcularPromedioFCT(estudiante.id) >= 70 ? 'text-green-700' : 'text-red-700'">
+                           {{ calcularPromedioFCT(estudiante.id) }}%
                          </span>
                       </td>
                       <td v-if="moduloData?.calculation_mode === 'fct'" class="px-6 py-4 text-center sticky right-0 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700">
@@ -1499,19 +1499,20 @@ const calcularPromedioFCT = (estudianteId) => {
   if (!moduloData.value?.cantidad_ra) return 0
   
   const totalPuntos = calcularPuntosObtenidos(estudianteId)
-  // Average = Total / Count. Round to 1 decimal.
-  const promedio = totalPuntos / moduloData.value.cantidad_ra
-  return parseFloat(promedio.toFixed(1))
+  // Percentage = (sum of RAs / (cantidad_ra * 10)) * 100, same formula as backend
+  const maxPosible = moduloData.value.cantidad_ra * 10
+  const porcentaje = maxPosible > 0 ? (totalPuntos / maxPosible) * 100 : 0
+  return Math.round(porcentaje)
 }
 
 const getSituacionFCT = (estudianteId) => {
-  const promedio = calcularPromedioFCT(estudianteId)
-  return promedio >= 6 ? 'APTO' : 'NO APTO'
+  const porcentaje = calcularPromedioFCT(estudianteId)
+  return porcentaje >= 70 ? 'APTO' : 'NO APTO'
 }
 
 const getSituacionFCTClass = (estudianteId) => {
-  const promedio = calcularPromedioFCT(estudianteId)
-  return promedio >= 6 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+  const porcentaje = calcularPromedioFCT(estudianteId)
+  return porcentaje >= 70 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
 }
 
 // Métodos para Modal de Competencias
