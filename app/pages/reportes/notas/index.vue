@@ -1190,51 +1190,57 @@ const calcCF = (
 }
 
 const finalReportStatus = (preview: any): { status: 'POR DEFINIR' | 'APLAZADO' | 'PROMOVIDO' } => {
-   let porDefinir = false
+   if (preview && typeof preview.por_definir === 'boolean') {
+      if (preview.por_definir) {
+         return { status: 'POR DEFINIR' }
+      }
+   } else {
+      let porDefinir = false
 
-   // 1. Check academic subjects for missing grades
-   if (preview?.academic_subjects && preview?.bloques && preview?.bloque_labels) {
-      for (const subject of preview.academic_subjects) {
-         for (const bloqueNum of Object.keys(preview.bloque_labels)) {
-            for (const p of [1, 2, 3, 4]) {
-               const val = preview.bloques?.[subject.id]?.[bloqueNum]?.[p]
-               if (val === null || val === undefined) {
-                  porDefinir = true
-                  break
+      // 1. Check academic subjects for missing grades
+      if (preview?.academic_subjects && preview?.bloques && preview?.bloque_labels) {
+         for (const subject of preview.academic_subjects) {
+            for (const bloqueNum of Object.keys(preview.bloque_labels)) {
+               for (const p of [1, 2, 3, 4]) {
+                  const val = preview.bloques?.[subject.id]?.[bloqueNum]?.[p]
+                  if (val === null || val === undefined) {
+                     porDefinir = true
+                     break
+                  }
                }
+               if (porDefinir) break
             }
             if (porDefinir) break
          }
-         if (porDefinir) break
       }
-   }
 
-   // 2. Check technical modules for missing grades
-   if (!porDefinir && preview?.technical_modules) {
-      for (const module of preview.technical_modules) {
-         const expected = module.cantidad_ra ?? 0
-         const rasCount = module.ras ? Object.keys(module.ras).length : 0
-         if (expected > 0 && rasCount < expected) {
-            porDefinir = true
-            break
-         }
-         if (module.ras) {
-            for (const key of Object.keys(module.ras)) {
-               if (module.ras[key] === null || module.ras[key] === undefined) {
-                  porDefinir = true
-                  break
+      // 2. Check technical modules for missing grades
+      if (!porDefinir && preview?.technical_modules) {
+         for (const module of preview.technical_modules) {
+            const expected = module.cantidad_ra ?? 0
+            const rasCount = module.ras ? Object.keys(module.ras).length : 0
+            if (expected > 0 && rasCount < expected) {
+               porDefinir = true
+               break
+            }
+            if (module.ras) {
+               for (const key of Object.keys(module.ras)) {
+                  if (module.ras[key] === null || module.ras[key] === undefined) {
+                     porDefinir = true
+                     break
+                  }
                }
             }
-         }
-         if (module.final === null || module.final === undefined) {
-            porDefinir = true
-            break
+            if (module.final === null || module.final === undefined) {
+               porDefinir = true
+               break
+            }
          }
       }
-   }
 
-   if (porDefinir) {
-      return { status: 'POR DEFINIR' }
+      if (porDefinir) {
+         return { status: 'POR DEFINIR' }
+      }
    }
 
    let aplazado = false
