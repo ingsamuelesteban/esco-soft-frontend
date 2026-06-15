@@ -1,17 +1,17 @@
-<template>
+﻿<template>
    <div>
       <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
          <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 px-6 py-4">
             <div>
                <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 font-outfit">Reportes de Calificaciones</h1>
-               <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">Generación de boletines, sábanas y actas</p>
+               <p class="text-gray-500 dark:text-gray-400 text-sm mt-1">GeneraciÃƒÂ³n de boletines, sÃƒÂ¡banas y actas</p>
             </div>
 
             <div class="w-full md:w-64">
-               <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Año Lectivo</label>
+               <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">AÃƒÂ±o Lectivo</label>
                <select v-model="selectedAnioId" v-if="aniosStore.items.length > 0"
                   class="block w-full pl-3 pr-10 py-2 text-base border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-lg shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
-                  <option :value="null">Año Activo (Por defecto)</option>
+                  <option :value="null">AÃƒÂ±o Activo (Por defecto)</option>
                   <option v-for="anio in aniosStore.items" :key="anio.id" :value="anio.id">
                      {{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}
                   </option>
@@ -40,7 +40,7 @@
          <!-- Tab Content -->
          <div class="bg-white dark:bg-gray-800 shadow rounded-lg p-6">
 
-            <!-- Tab 1: Boletín (Por Estudiante) -->
+            <!-- Tab 1: BoletÃƒÂ­n (Por Estudiante) -->
             <div v-if="currentTab === 'student'" class="space-y-6">
                <div class="max-w-xl">
                   <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Buscar Estudiante</label>
@@ -48,13 +48,13 @@
                      <input v-model="studentSearch" @input="searchStudents" type="text"
                         class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
                         placeholder="Escribe nombre, apellido o RNE..." />
-                     <!-- Resultados de búsqueda -->
+                     <!-- Resultados de bÃƒÂºsqueda -->
                      <div v-if="studentJsonResults.length > 0"
                         class="absolute z-10 w-full bg-white dark:bg-gray-800 shadow-lg rounded-md mt-1 border border-gray-200 dark:border-gray-700 max-h-60 overflow-auto">
                         <div v-for="s in studentJsonResults" :key="s.id" @click="selectStudent(s)"
                            class="px-4 py-2 hover:bg-gray-100 dark:bg-gray-800 cursor-pointer text-sm">
                            <div class="font-medium text-gray-900 dark:text-gray-100">{{ s.apellidos }}, {{ s.nombres }}</div>
-                           <div class="text-xs text-gray-500 dark:text-gray-400">{{ s.aula ? `${s.aula.grado_cardinal}° ${s.aula.seccion}`
+                           <div class="text-xs text-gray-500 dark:text-gray-400">{{ s.aula ? `${s.aula.grado_cardinal}Ã‚Â° ${s.aula.seccion}`
                               : 'Sin Aula' }} | {{ s.rne }}</div>
                         </div>
                      </div>
@@ -67,7 +67,7 @@
                      <h3 class="text-sm font-bold text-blue-900">{{ selectedStudent.apellidos }}, {{
                         selectedStudent.nombres }}</h3>
                      <p class="text-xs text-blue-700 mt-1">
-                        {{ selectedStudent.aula ? `${selectedStudent.aula.grado_cardinal}°
+                        {{ selectedStudent.aula ? `${selectedStudent.aula.grado_cardinal}Ã‚Â°
                         ${selectedStudent.aula.seccion}` : 'Sin Aula' }}
                      </p>
                   </div>
@@ -121,29 +121,29 @@
 
                   <!-- Institutional header -->
                   <div class="text-center border-b border-gray-300 dark:border-gray-600 pb-4 mb-4">
-                     <p class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase">Ministerio de Educación (MINERD)</p>
+                     <p class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase">Ministerio de EducaciÃƒÂ³n (MINERD)</p>
                      <h2 class="text-base font-bold text-gray-900 dark:text-gray-100 mt-1">{{ reportPreview.tenant?.name }}</h2>
-                     <h3 class="font-bold mt-2 text-sm">BOLETÍN DE CALIFICACIONES</h3>
-                     <p class="text-xs text-gray-500 dark:text-gray-400">Año Lectivo: {{ reportPreview.year }}</p>
+                     <h3 class="font-bold mt-2 text-sm">BOLETÃƒÂN DE CALIFICACIONES</h3>
+                     <p class="text-xs text-gray-500 dark:text-gray-400">AÃƒÂ±o Lectivo: {{ reportPreview.year }}</p>
                   </div>
 
                   <!-- Student info bar -->
                   <div class="grid grid-cols-2 gap-2 text-xs mb-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded p-3">
                      <div>
                         <span class="font-bold">Estudiante:</span> {{ reportPreview.estudiante?.apellidos }}, {{ reportPreview.estudiante?.nombres }}<br>
-                        <span class="font-bold">Código (RNE):</span> {{ reportPreview.estudiante?.rne }}
+                        <span class="font-bold">CÃƒÂ³digo (RNE):</span> {{ reportPreview.estudiante?.rne }}
                      </div>
                      <div>
                         <span class="font-bold">Grado/Aula:</span>
-                        {{ reportPreview.aula?.grado_cardinal }}° {{ reportPreview.aula?.seccion }}
-                        <span v-if="reportPreview.aula?.titulo"> — {{ reportPreview.aula.titulo.nombre }}</span><br>
+                        {{ reportPreview.aula?.grado_cardinal }}Ã‚Â° {{ reportPreview.aula?.seccion }}
+                        <span v-if="reportPreview.aula?.titulo"> Ã¢â‚¬â€ {{ reportPreview.aula.titulo.nombre }}</span><br>
                         <span class="font-bold">No. Orden:</span> {{ reportPreview.estudiante?.numero_orden }}
                      </div>
                   </div>
 
-                  <!-- Section: Promedio de Competencias Específicas -->
+                  <!-- Section: Promedio de Competencias EspecÃƒÂ­ficas -->
                   <div class="text-xs font-bold text-white bg-blue-800 dark:bg-blue-900 px-3 py-1.5 rounded-t mb-0 uppercase tracking-wide">
-                     Promedio de Competencias Específicas
+                     Promedio de Competencias EspecÃƒÂ­ficas
                   </div>
                   <div class="overflow-x-auto mb-4">
                      <table class="min-w-full text-[10px] border-collapse border border-gray-400">
@@ -176,7 +176,7 @@
                               <template v-for="(_, bloqueNum) in reportPreview.bloque_labels" :key="'bg-' + bloqueNum">
                                  <td v-for="p in [1,2,3,4]" :key="p" class="border border-gray-400 p-1 text-center font-bold"
                                     :class="gradeClass(reportPreview.bloques?.[subject.id]?.[bloqueNum]?.[p])">
-                                    {{ reportPreview.bloques?.[subject.id]?.[bloqueNum]?.[p] ?? '–' }}
+                                    {{ reportPreview.bloques?.[subject.id]?.[bloqueNum]?.[p] ?? 'Ã¢â‚¬â€œ' }}
                                  </td>
                               </template>
                               <!-- PC1-PC4 -->
@@ -186,18 +186,18 @@
                                           gradeClass(calcPC(reportPreview.bloques, subject.id, reportPreview.bloque_labels, p))]">
                                  {{ fmtPC(calcPC(reportPreview.bloques, subject.id, reportPreview.bloque_labels, p)) }}
                               </td>
-                              <!-- Calificación Final -->
+                              <!-- CalificaciÃƒÂ³n Final -->
                               <td class="border border-gray-400 p-1 text-center font-bold"
                                  :class="[idx % 2 === 1 ? 'bg-red-100/60 dark:bg-red-900/20' : 'bg-red-50 dark:bg-red-900/10',
                                           gradeClass(calcCF(reportPreview.bloques, subject.id, reportPreview.bloque_labels))]">
-                                 {{ calcCF(reportPreview.bloques, subject.id, reportPreview.bloque_labels) ?? '–' }}
+                                 {{ calcCF(reportPreview.bloques, subject.id, reportPreview.bloque_labels) ?? 'Ã¢â‚¬â€œ' }}
                               </td>
                            </tr>
                         </tbody>
                      </table>
                   </div>
 
-                  <!-- Section: Resultado de Aprendizaje (módulos técnicos) -->
+                  <!-- Section: Resultado de Aprendizaje (mÃƒÂ³dulos tÃƒÂ©cnicos) -->
                   <template v-if="reportPreview.technical_modules?.length > 0">
                      <div class="text-xs font-bold text-white bg-blue-800 dark:bg-blue-900 px-3 py-1.5 rounded-t mb-0 mt-3 uppercase tracking-wide">
                         Resultado de Aprendizaje
@@ -206,7 +206,7 @@
                         <table class="min-w-full text-[10px] border-collapse border border-gray-400">
                            <thead>
                               <tr class="bg-gray-100 dark:bg-gray-700">
-                                 <th class="border border-gray-400 p-1 text-left pl-2" style="min-width:160px;">Módulo Técnico</th>
+                                 <th class="border border-gray-400 p-1 text-left pl-2" style="min-width:160px;">MÃƒÂ³dulo TÃƒÂ©cnico</th>
                                  <th class="border border-gray-400 p-1 text-left pl-2">Resultados de Aprendizaje (RAs)</th>
                                  <th class="border border-gray-400 p-1 text-center bg-red-900 text-white" style="min-width:40px;">C.F.</th>
                               </tr>
@@ -230,7 +230,7 @@
                                      :class="[idx % 2 === 1 ? 'bg-red-100/60 dark:bg-red-900/20' : 'bg-red-50 dark:bg-red-900/10',
                                               techGradeClass(module.final, module.is_fct)]">
                                      <span v-if="module.is_fct">
-                                        {{ module.final !== null && module.final !== undefined ? (module.final >= 70 ? 'APTO' : 'NO APTO') : '–' }}
+                                        {{ module.final !== null && module.final !== undefined ? (module.final >= 70 ? 'APTO' : 'NO APTO') : 'Ã¢â‚¬â€œ' }}
                                      </span>
                                      <span v-else>
                                         {{ fmtPC(module.final) }}
@@ -249,7 +249,7 @@
             </div>
 
 
-            <!-- Tab 2: Sábana (Por Aula) -->
+            <!-- Tab 2: SÃƒÂ¡bana (Por Aula) -->
             <div v-if="currentTab === 'classroom'" class="space-y-6">
                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
@@ -258,7 +258,7 @@
                         class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                         <option value="">Seleccionar Aula...</option>
                         <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
-                           {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo ? aula.titulo.nombre : '' }}
+                           {{ aula.grado_cardinal }}Ã‚Â° {{ aula.seccion }} - {{ aula.titulo ? aula.titulo.nombre : '' }}
                         </option>
                      </select>
                   </div>
@@ -277,7 +277,7 @@
                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                         </path>
                      </svg>
-                     Generar Sábana PDF
+                     Generar SÃƒÂ¡bana PDF
                   </button>
 
                   <button @click="previewClassroomReport" :disabled="!selectedAula || loadingPreview"
@@ -299,10 +299,10 @@
                   class="border border-gray-300 dark:border-gray-600 rounded-lg p-6 bg-gray-50 dark:bg-gray-900/50 mt-6 overflow-x-auto">
                   <div class="text-center border-b border-gray-300 dark:border-gray-600 pb-4 mb-4">
                      <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ classroomPreview.tenant?.nombre }}</h2>
-                     <h3 class="font-bold mt-2">SÁBANA DE CALIFICACIONES - {{ classroomPreview.aula?.grado_cardinal }}°
+                     <h3 class="font-bold mt-2">SÃƒÂBANA DE CALIFICACIONES - {{ classroomPreview.aula?.grado_cardinal }}Ã‚Â°
                         {{
                            classroomPreview.aula?.seccion }}</h3>
-                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Año {{ classroomPreview.year }} - Período: {{
+                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">AÃƒÂ±o {{ classroomPreview.year }} - PerÃƒÂ­odo: {{
                         classroomPreview.period }}
                      </p>
                   </div>
@@ -348,7 +348,7 @@
                         class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                         <option value="">Seleccionar Aula...</option>
                         <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
-                           {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo ? aula.titulo.nombre : '' }}
+                           {{ aula.grado_cardinal }}Ã‚Â° {{ aula.seccion }} - {{ aula.titulo ? aula.titulo.nombre : '' }}
                         </option>
                      </select>
                   </div>
@@ -415,7 +415,7 @@
                      <h3 class="font-bold mt-2 dark:text-gray-100">PLANILLA DE CALIFICACIONES</h3>
                      <p class="text-sm font-bold mt-1 dark:text-gray-200">{{ subjectPreview.materia?.nombre }} ({{
                         subjectPreview.materia?.tipo }})</p>
-                     <p class="text-xs text-gray-500 dark:text-gray-400">{{ subjectPreview.assignment?.aula?.grado_cardinal }}° {{
+                     <p class="text-xs text-gray-500 dark:text-gray-400">{{ subjectPreview.assignment?.aula?.grado_cardinal }}Ã‚Â° {{
                         subjectPreview.assignment?.aula?.seccion }} - Profesor: {{
                            subjectPreview.assignment?.profesor?.nombre_completo }}</p>
                   </div>
@@ -435,7 +435,7 @@
                            <th class="border border-gray-400 p-1 text-center bg-yellow-100 dark:bg-yellow-900/30 dark:text-yellow-200 font-bold">Total</th>
                            <template v-if="subjectPreview.data?.[0]?.is_fct">
                               <th class="border border-gray-400 p-1 text-center bg-gray-200 dark:bg-gray-700 dark:text-gray-100 font-bold">Promedio</th>
-                              <th class="border border-gray-400 p-1 text-center bg-gray-200 dark:bg-gray-700 dark:text-gray-100 font-bold">Situación</th>
+                              <th class="border border-gray-400 p-1 text-center bg-gray-200 dark:bg-gray-700 dark:text-gray-100 font-bold">SituaciÃƒÂ³n</th>
                            </template>
                         </tr>
                      </thead>
@@ -499,7 +499,7 @@
                            <template v-for="(_, bloqueNum) in subjectPreview.bloque_labels" :key="'sbg-' + bloqueNum">
                               <td v-for="p in [1,2,3,4]" :key="p" class="border border-gray-400 p-1 text-center font-bold"
                                  :class="gradeClass(row.bloques?.[bloqueNum]?.[p])">
-                                 {{ row.bloques?.[bloqueNum]?.[p] ?? '–' }}
+                                 {{ row.bloques?.[bloqueNum]?.[p] ?? 'Ã¢â‚¬â€œ' }}
                               </td>
                            </template>
 
@@ -510,10 +510,10 @@
                               {{ fmtPC(row.periodos?.[p]) }}
                            </td>
 
-                           <!-- Calificación Final -->
+                           <!-- CalificaciÃƒÂ³n Final -->
                            <td class="border border-gray-400 p-1 text-center font-bold bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-200"
                               :class="gradeClass(row.final)">
-                              {{ row.final ?? '–' }}
+                              {{ row.final ?? 'Ã¢â‚¬â€œ' }}
                            </td>
                         </tr>
                      </tbody>
@@ -535,11 +535,11 @@
                         <option value="">Seleccionar Aula...</option>
                         <option value="all">Todas las Aulas</option>
                         <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
-                           {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo ? aula.titulo.nombre : '' }}
+                           {{ aula.grado_cardinal }}Ã‚Â° {{ aula.seccion }} - {{ aula.titulo ? aula.titulo.nombre : '' }}
                         </option>
                      </select>
                      <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
-                        Se generará un listado de estudiantes con promedio académico general >= 97.0
+                        Se generarÃƒÂ¡ un listado de estudiantes con promedio acadÃƒÂ©mico general >= 97.0
                      </p>
                   </div>
                </div>
@@ -620,7 +620,7 @@
                         <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ report.tenant?.nombre ||
                            meritPreview.tenant?.nombre }}</h2>
                         <h3 class="font-bold mt-2 text-yellow-700 dark:text-yellow-400">LISTADO DE HONOR - MERITORIOS</h3>
-                        <p class="text-sm font-medium dark:text-gray-300">{{ report.aula?.grado_cardinal }}° {{
+                        <p class="text-sm font-medium dark:text-gray-300">{{ report.aula?.grado_cardinal }}Ã‚Â° {{
                            report.aula?.seccion }}</p>
                      </div>
 
@@ -651,7 +651,7 @@
                                  {{ row.average }}
                               </td>
                               <td class="border border-gray-400 p-2 text-center">
-                                 <span v-if="row.status === 'Excelencia Académica'"
+                                 <span v-if="row.status === 'Excelencia AcadÃƒÂ©mica'"
                                     class="px-2 py-1 rounded bg-green-100 text-green-800 border border-green-200 text-[10px] font-bold">Excelencia</span>
                                  <span v-else
                                     class="px-2 py-1 rounded bg-blue-100 text-blue-800 border border-blue-200 text-[10px] font-bold">Meritorio</span>
@@ -674,7 +674,7 @@
                </div>
             </div>
 
-            <!-- Tab 5: Boletín Final (Por Estudiante) -->
+            <!-- Tab 5: BoletÃƒÂ­n Final (Por Estudiante) -->
             <div v-if="currentTab === 'final'" class="space-y-6">
 
                <!-- Descarga por Aula (ZIP) -->
@@ -692,8 +692,8 @@
                            class="block w-full pl-3 pr-10 py-2 text-sm border-gray-300 dark:border-gray-600 rounded-lg shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 focus:border-indigo-500">
                            <option :value="null">-- Elige un aula --</option>
                            <option v-for="a in aulas" :key="a.id" :value="a.id">
-                              {{ a.grado_cardinal }}° {{ a.seccion }}
-                              <template v-if="a.titulo"> — {{ a.titulo.nombre }}</template>
+                              {{ a.grado_cardinal }}Ã‚Â° {{ a.seccion }}
+                              <template v-if="a.titulo"> Ã¢â‚¬â€ {{ a.titulo.nombre }}</template>
                            </option>
                         </select>
                      </div>
@@ -712,7 +712,7 @@
                </div>
 
                <div class="border-t border-gray-200 dark:border-gray-600 pt-4">
-                  <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-4">Boletín individual por estudiante</p>
+                  <p class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-4">BoletÃƒÂ­n individual por estudiante</p>
                </div>
 
                <!-- Student search -->
@@ -728,7 +728,7 @@
                            class="px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer text-sm">
                            <div class="font-medium text-gray-900 dark:text-gray-100">{{ s.apellidos }}, {{ s.nombres }}</div>
                            <div class="text-xs text-gray-500 dark:text-gray-400">
-                              {{ s.aula ? `${s.aula.grado_cardinal}° ${s.aula.seccion}` : 'Sin Aula' }} | {{ s.rne }}
+                              {{ s.aula ? `${s.aula.grado_cardinal}Ã‚Â° ${s.aula.seccion}` : 'Sin Aula' }} | {{ s.rne }}
                            </div>
                         </div>
                      </div>
@@ -741,7 +741,7 @@
                   <div>
                      <h3 class="text-sm font-bold text-indigo-900">{{ selectedFinalStudent.apellidos }}, {{ selectedFinalStudent.nombres }}</h3>
                      <p class="text-xs text-indigo-700 mt-1">
-                        {{ selectedFinalStudent.aula ? `${selectedFinalStudent.aula.grado_cardinal}° ${selectedFinalStudent.aula.seccion}` : 'Sin Aula' }}
+                        {{ selectedFinalStudent.aula ? `${selectedFinalStudent.aula.grado_cardinal}Ã‚Â° ${selectedFinalStudent.aula.seccion}` : 'Sin Aula' }}
                         &nbsp;|&nbsp; RNE: {{ selectedFinalStudent.rne }}
                      </p>
                   </div>
@@ -756,7 +756,7 @@
                         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
                         <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                      </svg>
-                     Generar Boletín Final PDF
+                     Generar BoletÃƒÂ­n Final PDF
                   </button>
 
                   <button @click="previewFinalReport" :disabled="!selectedFinalStudent || loadingPreview"
@@ -774,22 +774,22 @@
 
                   <!-- Institutional header -->
                   <div class="text-center border-b border-gray-300 dark:border-gray-600 pb-4 mb-4">
-                     <p class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase">Ministerio de Educación (MINERD)</p>
+                     <p class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase">Ministerio de EducaciÃƒÂ³n (MINERD)</p>
                      <h2 class="text-base font-bold text-gray-900 dark:text-gray-100 mt-1">{{ finalPreview.tenant?.name }}</h2>
-                     <h3 class="font-bold mt-2 text-sm">BOLETÍN FINAL DE CALIFICACIONES</h3>
-                     <p class="text-xs text-gray-500 dark:text-gray-400">Año Lectivo: {{ finalPreview.year }}</p>
+                     <h3 class="font-bold mt-2 text-sm">BOLETÃƒÂN FINAL DE CALIFICACIONES</h3>
+                     <p class="text-xs text-gray-500 dark:text-gray-400">AÃƒÂ±o Lectivo: {{ finalPreview.year }}</p>
                   </div>
 
                   <!-- Student info bar -->
                   <div class="grid grid-cols-2 gap-2 text-xs mb-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded p-3">
                      <div>
                         <span class="font-bold">Estudiante:</span> {{ finalPreview.estudiante?.apellidos }}, {{ finalPreview.estudiante?.nombres }}<br>
-                        <span class="font-bold">Código (RNE):</span> {{ finalPreview.estudiante?.rne }}
+                        <span class="font-bold">CÃƒÂ³digo (RNE):</span> {{ finalPreview.estudiante?.rne }}
                      </div>
                      <div>
                         <span class="font-bold">Grado/Aula:</span>
-                        {{ finalPreview.aula?.grado_cardinal }}° {{ finalPreview.aula?.seccion }}
-                        <span v-if="finalPreview.aula?.titulo"> — {{ finalPreview.aula.titulo.nombre }}</span><br>
+                        {{ finalPreview.aula?.grado_cardinal }}Ã‚Â° {{ finalPreview.aula?.seccion }}
+                        <span v-if="finalPreview.aula?.titulo"> Ã¢â‚¬â€ {{ finalPreview.aula.titulo.nombre }}</span><br>
                         <span class="font-bold">No. Orden:</span> {{ finalPreview.estudiante?.numero_orden }}
                      </div>
                   </div>
@@ -804,9 +804,9 @@
                      </span>
                   </div>
 
-                  <!-- Section: Promedio de Competencias Específicas -->
+                  <!-- Section: Promedio de Competencias EspecÃƒÂ­ficas -->
                   <div class="text-xs font-bold text-white bg-blue-800 dark:bg-blue-900 px-3 py-1.5 rounded-t mb-0 uppercase tracking-wide">
-                     Promedio de Competencias Específicas
+                     Promedio de Competencias EspecÃƒÂ­ficas
                   </div>
                   <div class="overflow-x-auto mb-4">
                      <table class="min-w-full text-[10px] border-collapse border border-gray-400">
@@ -837,7 +837,7 @@
                               <template v-for="(_, bloqueNum) in finalPreview.bloque_labels" :key="'bg-' + bloqueNum">
                                  <td v-for="p in [1,2,3,4]" :key="p" class="border border-gray-400 p-1 text-center font-bold"
                                     :class="gradeClass(finalPreview.bloques?.[subject.id]?.[bloqueNum]?.[p])">
-                                    {{ finalPreview.bloques?.[subject.id]?.[bloqueNum]?.[p] ?? '–' }}
+                                    {{ finalPreview.bloques?.[subject.id]?.[bloqueNum]?.[p] ?? 'Ã¢â‚¬â€œ' }}
                                  </td>
                               </template>
                               <!-- PC1-PC4 -->
@@ -847,18 +847,18 @@
                                           gradeClass(calcPC(finalPreview.bloques, subject.id, finalPreview.bloque_labels, p))]">
                                  {{ fmtPC(calcPC(finalPreview.bloques, subject.id, finalPreview.bloque_labels, p)) }}
                               </td>
-                              <!-- Calificación Final -->
+                              <!-- CalificaciÃƒÂ³n Final -->
                               <td class="border border-gray-400 p-1 text-center font-bold"
                                  :class="[idx % 2 === 1 ? 'bg-red-100/60 dark:bg-red-900/20' : 'bg-red-50 dark:bg-red-900/10',
                                           gradeClass(calcCF(finalPreview.bloques, subject.id, finalPreview.bloque_labels))]">
-                                 {{ calcCF(finalPreview.bloques, subject.id, finalPreview.bloque_labels) ?? '–' }}
+                                 {{ calcCF(finalPreview.bloques, subject.id, finalPreview.bloque_labels) ?? 'Ã¢â‚¬â€œ' }}
                               </td>
                            </tr>
                         </tbody>
                      </table>
                   </div>
 
-                  <!-- Section: Resultado de Aprendizaje (módulos técnicos) -->
+                  <!-- Section: Resultado de Aprendizaje (mÃƒÂ³dulos tÃƒÂ©cnicos) -->
                   <template v-if="finalPreview.technical_modules?.length > 0">
                      <div class="text-xs font-bold text-white bg-blue-800 dark:bg-blue-900 px-3 py-1.5 rounded-t mb-0 mt-3 uppercase tracking-wide">
                         Resultado de Aprendizaje
@@ -867,7 +867,7 @@
                         <table class="min-w-full text-[10px] border-collapse border border-gray-400">
                            <thead>
                               <tr class="bg-gray-100 dark:bg-gray-700">
-                                 <th class="border border-gray-400 p-1 text-left pl-2" style="min-width:160px;">Módulo Técnico</th>
+                                 <th class="border border-gray-400 p-1 text-left pl-2" style="min-width:160px;">MÃƒÂ³dulo TÃƒÂ©cnico</th>
                                  <th class="border border-gray-400 p-1 text-center bg-red-900 text-white" style="min-width:40px;">C.F.</th>
                               </tr>
                            </thead>
@@ -879,10 +879,10 @@
                                     :class="[idx % 2 === 1 ? 'bg-red-100/60 dark:bg-red-900/20' : 'bg-red-50 dark:bg-red-900/10',
                                              techGradeClass(module.final, module.is_fct)]">
                                     <span v-if="module.is_fct">
-                                       {{ module.final !== null && module.final !== undefined ? (module.final >= 70 ? 'APTO' : 'NO APTO') : '–' }}
+                                       {{ module.final !== null && module.final !== undefined ? (module.final >= 70 ? 'APTO' : 'NO APTO') : 'Ã¢â‚¬â€œ' }}
                                     </span>
                                     <span v-else>
-                                       {{ module.final ?? '–' }}
+                                       {{ module.final ?? 'Ã¢â‚¬â€œ' }}
                                     </span>
                                  </td>
                               </tr>
@@ -988,6 +988,7 @@ const allTabs = [
    { id: 'classroom', name: 'Sábana por Aula' },
    { id: 'subject', name: 'Planilla por Asignatura' },
    { id: 'merit', name: 'Meritorios' },
+   { id: 'aplazados', name: 'Aplazados' },
    { id: 'final', name: 'Boletín Final' },
 ]
 
@@ -1066,18 +1067,19 @@ const reportPreview = ref<ReportPreview | null>(null)
 const classroomPreview = ref<any | null>(null)
 const subjectPreview = ref<any | null>(null)
 const meritPreview = ref<any | null>(null)
+  const aplazadosPreview = ref<any | null>(null)
 const finalPreview = ref<any | null>(null)
 
 // --- Inspiring Messages for Heavy Report Generation ---
 const loadingPhrases = [
    "No te desesperes, lo estamos haciendo por ti...",
-   "¡Casi listo! Estamos ordenando las mejores calificaciones...",
-   "Procesando datos académicos con mucho cariño...",
+   "Ã‚Â¡Casi listo! Estamos ordenando las mejores calificaciones...",
+   "Procesando datos acadÃƒÂ©micos con mucho cariÃƒÂ±o...",
    "Calculando los promedios finales de cada estudiante...",
-   "¡No te preocupes! Estamos construyendo el reporte para ti...",
-   "Analizando registros académicos... un momento por favor.",
-   "El que persevera alcanza... ¡ya casi terminamos!",
-   "Organizando la información para darte el mejor reporte..."
+   "Ã‚Â¡No te preocupes! Estamos construyendo el reporte para ti...",
+   "Analizando registros acadÃƒÂ©micos... un momento por favor.",
+   "El que persevera alcanza... Ã‚Â¡ya casi terminamos!",
+   "Organizando la informaciÃƒÂ³n para darte el mejor reporte..."
 ]
 
 let loadingInterval: any = null
@@ -1135,7 +1137,7 @@ const stopLoadingModal = () => {
    Swal.close()
 }
 
-// ── Helpers for final report preview ──────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬ Helpers for final report preview Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 const gradeClass = (grade: number | null | undefined): string => {
    if (grade == null) return 'text-gray-300 dark:text-gray-600'
    if (grade < 70) return 'text-red-600 dark:text-red-400'
@@ -1171,7 +1173,7 @@ const calcPC = (
 }
 
 const fmtPC = (v: number | null | undefined): string => {
-   if (v == null) return '–'
+   if (v == null) return 'Ã¢â‚¬â€œ'
    const rounded = Math.round(Number(v) * 10) / 10
    return rounded % 1 === 0 ? rounded.toFixed(0) : rounded.toFixed(1)
 }
@@ -1242,7 +1244,7 @@ const finalReportStatus = (preview: any): { status: 'POR DEFINIR' | 'APLAZADO' |
 
    return { status: 'PROMOVIDO' }
 }
-// ──────────────────────────────────────────────────────────────────────────────
+// Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
 
 let searchTimeout: any = null
 
@@ -1255,6 +1257,7 @@ watch(selectedAnioId, () => {
    classroomPreview.value = null
    subjectPreview.value = null
    meritPreview.value = null
+     aplazadosPreview.value = null
    finalPreview.value = null
    selectedFinalStudent.value = null
    finalStudentSearch.value = ''
@@ -1315,6 +1318,7 @@ watch(currentTab, () => {
    classroomPreview.value = null
    subjectPreview.value = null
    meritPreview.value = null
+     aplazadosPreview.value = null
    finalPreview.value = null
 })
 
@@ -1322,7 +1326,7 @@ watch(currentTab, () => {
 const generateStudentReport = async () => {
    if (!selectedStudent.value) return
    loadingGenerate.value = true
-   startLoadingModal('Generando Boletín de Calificaciones')
+   startLoadingModal('Generando BoletÃƒÂ­n de Calificaciones')
    try {
       let url = `/api/reports/grades/student?estudiante_id=${selectedStudent.value.id}&period=${selectedPeriod.value}`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
@@ -1333,7 +1337,7 @@ const generateStudentReport = async () => {
       const studentAula = selectedStudent.value.aula
       const aulaLabel = studentAula ? `${studentAula.grado_cardinal}${studentAula.seccion}` : 'Sin_Aula'
       const filename = `boletin_${selectedStudent.value.apellidos}_${selectedStudent.value.nombres}_${aulaLabel}.pdf`
-      printPdfBlob(blob, filename, 'Generando boletín...')
+      printPdfBlob(blob, filename, 'Generando boletÃƒÂ­n...')
 
    } catch (e) {
       stopLoadingModal()
@@ -1349,7 +1353,7 @@ const previewStudentReport = async () => {
    if (!selectedStudent.value) return
    loadingPreview.value = true
    reportPreview.value = null
-   startLoadingModal('Cargando Vista Previa del Boletín')
+   startLoadingModal('Cargando Vista Previa del BoletÃƒÂ­n')
    try {
       let url = `/api/reports/grades/student?estudiante_id=${selectedStudent.value.id}&period=${selectedPeriod.value}&format=json`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
@@ -1370,7 +1374,7 @@ const previewStudentReport = async () => {
 const generateClassroomReport = async () => {
    if (!selectedAula.value) return
    loadingGenerate.value = true
-   startLoadingModal('Generando Sábana de Calificaciones')
+   startLoadingModal('Generando SÃƒÂ¡bana de Calificaciones')
    try {
       let url = `/api/reports/grades/classroom?aula_id=${selectedAula.value}`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
@@ -1380,12 +1384,12 @@ const generateClassroomReport = async () => {
 
       const selectedAulaObj = aulas.value.find(a => a.id === selectedAula.value)
       const filename = `sabana_${selectedAulaObj?.grado_cardinal || ''}${selectedAulaObj?.seccion || ''}.pdf`
-      printPdfBlob(blob, filename, 'Generando sábana...')
+      printPdfBlob(blob, filename, 'Generando sÃƒÂ¡bana...')
 
    } catch (e) {
       stopLoadingModal()
       console.error(e)
-      Swal.fire({ icon: 'error', title: 'Error', text: ((e as any).data?.message || (e as any).message || 'Error generando sábana') })
+      Swal.fire({ icon: 'error', title: 'Error', text: ((e as any).data?.message || (e as any).message || 'Error generando sÃƒÂ¡bana') })
    } finally {
       loadingGenerate.value = false
       stopLoadingModal()
@@ -1421,7 +1425,7 @@ const previewClassroomReport = async () => {
    if (!selectedAula.value) return
    loadingPreview.value = true
    classroomPreview.value = null
-   startLoadingModal('Cargando Vista Previa de Sábana')
+   startLoadingModal('Cargando Vista Previa de SÃƒÂ¡bana')
    try {
       let url = `/api/reports/grades/classroom?aula_id=${selectedAula.value}&format=json`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
@@ -1432,7 +1436,7 @@ const previewClassroomReport = async () => {
    } catch (e) {
       stopLoadingModal()
       console.error(e)
-      Swal.fire({ icon: 'error', title: 'Error', text: ((e as any).data?.message || (e as any).message || 'Error cargando vista previa de sábana') })
+      Swal.fire({ icon: 'error', title: 'Error', text: ((e as any).data?.message || (e as any).message || 'Error cargando vista previa de sÃƒÂ¡bana') })
    } finally {
       loadingPreview.value = false
       stopLoadingModal()
@@ -1498,6 +1502,7 @@ const previewMeritReport = async () => {
 
    loadingPreview.value = true
    meritPreview.value = null
+     aplazadosPreview.value = null
    startLoadingModal('Cargando Vista Previa de Meritorios')
    try {
       let url = `/api/reports/grades/merit?aula_id=${selectedAula.value}&format=json`
@@ -1515,7 +1520,7 @@ const previewMeritReport = async () => {
       stopLoadingModal()
    }
 }
-// --- Boletín Final — descarga por aula (ZIP o PDF unificado) ---
+// --- BoletÃƒÂ­n Final Ã¢â‚¬â€ descarga por aula (ZIP o PDF unificado) ---
 const selectedAulaFinal = ref<number | null>(null)
 const loadingAulaZip = ref(false)
 
@@ -1524,17 +1529,17 @@ const chooseAulaDownloadFormat = async () => {
 
    // 1. Ask whether the user wants the boletin signed
    const { isConfirmed: wantsSigned, isDismissed: canceledSign } = await Swal.fire({
-      title: '¿Incluir firma digital?',
+      title: 'Ã‚Â¿Incluir firma digital?',
       html: `
-         <p class="text-sm text-gray-600 mb-4">¿Deseas que los boletines incluyan la firma digital de los responsables?</p>
+         <p class="text-sm text-gray-600 mb-4">Ã‚Â¿Deseas que los boletines incluyan la firma digital de los responsables?</p>
          <div class="flex flex-col gap-3 text-left">
             <div class="p-3 border rounded-lg border-green-300 bg-green-50">
-               <strong>✅ Con firma digital</strong><br>
-               <span class="text-xs text-gray-500">El boletín mostrará la imagen de la firma digital registrada.</span>
+               <strong>Ã¢Å“â€¦ Con firma digital</strong><br>
+               <span class="text-xs text-gray-500">El boletÃƒÂ­n mostrarÃƒÂ¡ la imagen de la firma digital registrada.</span>
             </div>
             <div class="p-3 border rounded-lg border-gray-300 bg-gray-50">
-               <strong>📄 Sin firma digital</strong><br>
-               <span class="text-xs text-gray-500">Solo se mostrará el nombre y cargo, sin imagen de firma.</span>
+               <strong>Ã°Å¸â€œâ€ž Sin firma digital</strong><br>
+               <span class="text-xs text-gray-500">Solo se mostrarÃƒÂ¡ el nombre y cargo, sin imagen de firma.</span>
             </div>
          </div>
       `,
@@ -1555,14 +1560,14 @@ const chooseAulaDownloadFormat = async () => {
    const { isConfirmed, isDenied } = await Swal.fire({
       title: 'Formato de descarga',
       html: `
-         <p class="text-sm text-gray-600 mb-4">Selecciona cómo deseas descargar los boletines del aula.</p>
+         <p class="text-sm text-gray-600 mb-4">Selecciona cÃƒÂ³mo deseas descargar los boletines del aula.</p>
          <div class="flex flex-col gap-3 text-left">
             <div class="p-3 border rounded-lg border-indigo-300 bg-indigo-50">
                <strong>PDF Unificado</strong><br>
                <span class="text-xs text-gray-500">Un solo PDF con todos los boletines seguidos, ideal para imprimir de una vez.</span>
             </div>
             <div class="p-3 border rounded-lg border-blue-300 bg-blue-50">
-               <strong>Múltiples PDF (ZIP)</strong><br>
+               <strong>MÃƒÂºltiples PDF (ZIP)</strong><br>
                <span class="text-xs text-gray-500">Un archivo ZIP con un PDF por estudiante, nombrado con el apellido de cada uno.</span>
             </div>
          </div>
@@ -1571,7 +1576,7 @@ const chooseAulaDownloadFormat = async () => {
       showDenyButton: true,
       showCancelButton: true,
       confirmButtonText: 'PDF Unificado',
-      denyButtonText: 'Múltiples PDF (ZIP)',
+      denyButtonText: 'MÃƒÂºltiples PDF (ZIP)',
       cancelButtonText: 'Cancelar',
       confirmButtonColor: '#4f46e5',
       denyButtonColor: '#0369a1',
@@ -1648,7 +1653,7 @@ const downloadAulaFinalZip = async (withSignature: number = 1) => {
    }
 }
 
-// --- Boletín Final (per student) ---
+// --- BoletÃƒÂ­n Final (per student) ---
 const finalStudentSearch = ref('')
 const finalStudentResults = ref<any[]>([])
 const selectedFinalStudent = ref<any>(null)
@@ -1682,17 +1687,17 @@ const generateFinalReport = async () => {
 
    // Ask whether to include digital signature
    const { isConfirmed: wantsSigned, isDismissed: canceled } = await Swal.fire({
-      title: '¿Incluir firma digital?',
+      title: 'Ã‚Â¿Incluir firma digital?',
       html: `
-         <p class="text-sm text-gray-600 mb-4">¿Deseas que el boletín incluya la firma digital de los responsables?</p>
+         <p class="text-sm text-gray-600 mb-4">Ã‚Â¿Deseas que el boletÃƒÂ­n incluya la firma digital de los responsables?</p>
          <div class="flex flex-col gap-3 text-left">
             <div class="p-3 border rounded-lg border-green-300 bg-green-50">
-               <strong>✅ Con firma digital</strong><br>
-               <span class="text-xs text-gray-500">El boletín mostrará la imagen de la firma digital registrada.</span>
+               <strong>Ã¢Å“â€¦ Con firma digital</strong><br>
+               <span class="text-xs text-gray-500">El boletÃƒÂ­n mostrarÃƒÂ¡ la imagen de la firma digital registrada.</span>
             </div>
             <div class="p-3 border rounded-lg border-gray-300 bg-gray-50">
-               <strong>📄 Sin firma digital</strong><br>
-               <span class="text-xs text-gray-500">Solo se mostrará el nombre y cargo, sin imagen de firma.</span>
+               <strong>Ã°Å¸â€œâ€ž Sin firma digital</strong><br>
+               <span class="text-xs text-gray-500">Solo se mostrarÃƒÂ¡ el nombre y cargo, sin imagen de firma.</span>
             </div>
          </div>
       `,
@@ -1710,7 +1715,7 @@ const generateFinalReport = async () => {
    const withSignature = wantsSigned ? 1 : 0
 
    loadingGenerate.value = true
-   startLoadingModal('Generando Boletín Final')
+   startLoadingModal('Generando BoletÃƒÂ­n Final')
    try {
       let url = `/api/reports/grades/final?estudiante_id=${selectedFinalStudent.value.id}&with_signature=${withSignature}`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
@@ -1720,11 +1725,11 @@ const generateFinalReport = async () => {
       const studentAula = selectedFinalStudent.value.aula
       const aulaLabel = studentAula ? `${studentAula.grado_cardinal}${studentAula.seccion}` : 'Sin_Aula'
       const filename = `boletin_final_${selectedFinalStudent.value.apellidos}_${selectedFinalStudent.value.nombres}_${aulaLabel}.pdf`
-      printPdfBlob(blob, filename, 'Generando boletín final...')
+      printPdfBlob(blob, filename, 'Generando boletÃƒÂ­n final...')
    } catch (e) {
       stopLoadingModal()
       console.error(e)
-      Swal.fire({ icon: 'error', title: 'Error', text: ((e as any).data?.message || (e as any).message || 'Error generando boletín final') })
+      Swal.fire({ icon: 'error', title: 'Error', text: ((e as any).data?.message || (e as any).message || 'Error generando boletÃƒÂ­n final') })
    } finally {
       loadingGenerate.value = false
       stopLoadingModal()
@@ -1735,7 +1740,7 @@ const previewFinalReport = async () => {
    if (!selectedFinalStudent.value) return
    loadingPreview.value = true
    finalPreview.value = null
-   startLoadingModal('Cargando Vista Previa del Boletín Final')
+   startLoadingModal('Cargando Vista Previa del BoletÃƒÂ­n Final')
    try {
       let url = `/api/reports/grades/final?estudiante_id=${selectedFinalStudent.value.id}&format=json`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
@@ -1746,7 +1751,7 @@ const previewFinalReport = async () => {
    } catch (e) {
       stopLoadingModal()
       console.error(e)
-      Swal.fire({ icon: 'error', title: 'Error', text: ((e as any).data?.message || (e as any).message || 'Error cargando vista previa del boletín final') })
+      Swal.fire({ icon: 'error', title: 'Error', text: ((e as any).data?.message || (e as any).message || 'Error cargando vista previa del boletÃƒÂ­n final') })
    } finally {
       loadingPreview.value = false
       stopLoadingModal()
@@ -1814,5 +1819,7 @@ const previewFinalReport = async () => {
    border-color: #1e3a8a !important;
 }
 </style>
+
+
 
 
