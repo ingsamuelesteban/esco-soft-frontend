@@ -1,4 +1,4 @@
-﻿<template>
+<template>
    <div>
       <header class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
          <div class="mb-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4 px-6 py-4">
@@ -1538,6 +1538,36 @@ const loadingAulaZip = ref(false)
 const chooseAulaDownloadFormat = async () => {
    if (!selectedAulaFinal.value) return
 
+   // 1. Ask whether the user wants the boletin signed
+   const { isConfirmed: wantsSigned, isDismissed: canceledSign } = await Swal.fire({
+      title: '¿Incluir firma digital?',
+      html: `
+         <p class="text-sm text-gray-600 mb-4">¿Deseas que los boletines incluyan la firma digital de los responsables?</p>
+         <div class="flex flex-col gap-3 text-left">
+            <div class="p-3 border rounded-lg border-green-300 bg-green-50">
+               <strong>✅ Con firma digital</strong><br>
+               <span class="text-xs text-gray-500">El boletín mostrará la imagen de la firma digital registrada.</span>
+            </div>
+            <div class="p-3 border rounded-lg border-gray-300 bg-gray-50">
+               <strong>📄 Sin firma digital</strong><br>
+               <span class="text-xs text-gray-500">Solo se mostrará el nombre y cargo, sin imagen de firma.</span>
+            </div>
+         </div>
+      `,
+      icon: 'question',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Con firma digital',
+      denyButtonText: 'Sin firma digital',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#16a34a',
+      denyButtonColor: '#6b7280',
+   })
+
+   if (canceledSign) return
+   const withSignature = wantsSigned ? 1 : 0
+
+   // 2. Ask for the download format
    const { isConfirmed, isDenied } = await Swal.fire({
       title: 'Formato de descarga',
       html: `
@@ -1564,17 +1594,17 @@ const chooseAulaDownloadFormat = async () => {
    })
 
    if (isConfirmed) {
-      await downloadAulaFinalUnified()
+      await downloadAulaFinalUnified(withSignature)
    } else if (isDenied) {
-      await downloadAulaFinalZip()
+      await downloadAulaFinalZip(withSignature)
    }
 }
 
-const downloadAulaFinalUnified = async () => {
+const downloadAulaFinalUnified = async (withSignature: number = 1) => {
    loadingAulaZip.value = true
    startLoadingModal('Generando PDF Unificado de Boletines')
    try {
-      let url = `/api/reports/grades/final-aula-unified?aula_id=${selectedAulaFinal.value}`
+      let url = `/api/reports/grades/final-aula-unified?aula_id=${selectedAulaFinal.value}&with_signature=${withSignature}`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const blob = await api.getBlob(url)
@@ -1602,11 +1632,11 @@ const downloadAulaFinalUnified = async () => {
    }
 }
 
-const downloadAulaFinalZip = async () => {
+const downloadAulaFinalZip = async (withSignature: number = 1) => {
    loadingAulaZip.value = true
    startLoadingModal('Generando ZIP de Boletines del Aula')
    try {
-      let url = `/api/reports/grades/final-aula?aula_id=${selectedAulaFinal.value}`
+      let url = `/api/reports/grades/final-aula?aula_id=${selectedAulaFinal.value}&with_signature=${withSignature}`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const blob = await api.getBlob(url)
@@ -1665,10 +1695,40 @@ const selectFinalStudent = (s: any) => {
 
 const generateFinalReport = async () => {
    if (!selectedFinalStudent.value) return
+
+   // Ask whether to include digital signature
+   const { isConfirmed: wantsSigned, isDismissed: canceled } = await Swal.fire({
+      title: '¿Incluir firma digital?',
+      html: `
+         <p class="text-sm text-gray-600 mb-4">¿Deseas que el boletín incluya la firma digital de los responsables?</p>
+         <div class="flex flex-col gap-3 text-left">
+            <div class="p-3 border rounded-lg border-green-300 bg-green-50">
+               <strong>✅ Con firma digital</strong><br>
+               <span class="text-xs text-gray-500">El boletín mostrará la imagen de la firma digital registrada.</span>
+            </div>
+            <div class="p-3 border rounded-lg border-gray-300 bg-gray-50">
+               <strong>📄 Sin firma digital</strong><br>
+               <span class="text-xs text-gray-500">Solo se mostrará el nombre y cargo, sin imagen de firma.</span>
+            </div>
+         </div>
+      `,
+      icon: 'question',
+      showDenyButton: true,
+      showCancelButton: true,
+      confirmButtonText: 'Con firma digital',
+      denyButtonText: 'Sin firma digital',
+      cancelButtonText: 'Cancelar',
+      confirmButtonColor: '#16a34a',
+      denyButtonColor: '#6b7280',
+   })
+
+   if (canceled) return
+   const withSignature = wantsSigned ? 1 : 0
+
    loadingGenerate.value = true
    startLoadingModal('Generando Boletín Final')
    try {
-      let url = `/api/reports/grades/final?estudiante_id=${selectedFinalStudent.value.id}`
+      let url = `/api/reports/grades/final?estudiante_id=${selectedFinalStudent.value.id}&with_signature=${withSignature}`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const blob = await api.get(url, { responseType: 'blob' }) as Blob
