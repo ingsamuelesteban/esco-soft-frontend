@@ -442,9 +442,11 @@
                         </div>
                       </td>
 
-                      <!-- FCT Cells -->
+                      <!-- FCT Cells: Total (escala 0-10), Promedio (%), Situación -->
                       <td v-if="moduloData?.calculation_mode === 'fct'" class="px-6 py-4 text-center sticky right-0 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700">
-                         <span class="font-bold text-gray-900 dark:text-gray-100">{{ calcularPuntosObtenidos(estudiante.id) }}</span>
+                         <span class="font-bold text-gray-900 dark:text-gray-100">
+                           {{ moduloData?.cantidad_ra ? parseFloat((calcularPuntosObtenidos(estudiante.id) / moduloData.cantidad_ra).toFixed(1)) : '–' }}
+                         </span>
                       </td>
                       <td v-if="moduloData?.calculation_mode === 'fct'" class="px-6 py-4 text-center sticky right-0 bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700">
                          <span class="font-bold" :class="calcularPromedioFCT(estudiante.id) >= 70 ? 'text-green-700' : 'text-red-700'">

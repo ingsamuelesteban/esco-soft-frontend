@@ -1190,6 +1190,26 @@ const calcCF = (
 }
 
 const finalReportStatus = (preview: any): { status: 'POR DEFINIR' | 'APLAZADO' | 'PROMOVIDO' } => {
+   // 1. Calculate if there are any failed subjects/modules
+   let aplazado = false
+   if (preview?.academic_subjects && preview?.bloques && preview?.bloque_labels) {
+      for (const subject of preview.academic_subjects) {
+         const cf = calcCF(preview.bloques, subject.id, preview.bloque_labels)
+         if (cf != null && cf < 70) { aplazado = true; break }
+      }
+   }
+   if (!aplazado && preview?.technical_modules) {
+      for (const module of preview.technical_modules) {
+         const threshold = 70
+         if (module.final != null && module.final < threshold) { aplazado = true; break }
+      }
+   }
+
+   if (aplazado) {
+      return { status: 'APLAZADO' }
+   }
+
+   // 2. Check if it is por_definir (either calculated by backend or checked here as fallback)
    if (preview && typeof preview.por_definir === 'boolean') {
       if (preview.por_definir) {
          return { status: 'POR DEFINIR' }
@@ -1197,7 +1217,7 @@ const finalReportStatus = (preview: any): { status: 'POR DEFINIR' | 'APLAZADO' |
    } else {
       let porDefinir = false
 
-      // 1. Check academic subjects for missing grades
+      // Fallback academic missing check (only if backend did not send por_definir)
       if (preview?.academic_subjects && preview?.bloques && preview?.bloque_labels) {
          for (const subject of preview.academic_subjects) {
             for (const bloqueNum of Object.keys(preview.bloque_labels)) {
@@ -1213,50 +1233,14 @@ const finalReportStatus = (preview: any): { status: 'POR DEFINIR' | 'APLAZADO' |
             if (porDefinir) break
          }
       }
-
-      // 2. Check technical modules for missing grades
-      if (!porDefinir && preview?.technical_modules) {
-         for (const module of preview.technical_modules) {
-            const expected = module.cantidad_ra ?? 0
-            const rasCount = module.ras ? Object.keys(module.ras).length : 0
-            if (expected > 0 && rasCount < expected) {
-               porDefinir = true
-               break
-            }
-            if (module.ras) {
-               for (const key of Object.keys(module.ras)) {
-                  if (module.ras[key] === null || module.ras[key] === undefined) {
-                     porDefinir = true
-                     break
-                  }
-               }
-            }
-            if (module.final === null || module.final === undefined) {
-               porDefinir = true
-               break
-            }
-         }
-      }
+      // Note: incomplete tech modules do NOT trigger POR DEFINIR
 
       if (porDefinir) {
          return { status: 'POR DEFINIR' }
       }
    }
 
-   let aplazado = false
-   if (preview?.academic_subjects && preview?.bloques && preview?.bloque_labels) {
-      for (const subject of preview.academic_subjects) {
-         const cf = calcCF(preview.bloques, subject.id, preview.bloque_labels)
-         if (cf != null && cf < 70) { aplazado = true; break }
-      }
-   }
-   if (!aplazado && preview?.technical_modules) {
-      for (const module of preview.technical_modules) {
-         const threshold = 70
-         if (module.final != null && module.final < threshold) { aplazado = true; break }
-      }
-   }
-   return { status: aplazado ? 'APLAZADO' : 'PROMOVIDO' }
+   return { status: 'PROMOVIDO' }
 }
 // ──────────────────────────────────────────────────────────────────────────────
 
