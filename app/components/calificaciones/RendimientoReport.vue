@@ -325,8 +325,8 @@ const aulasCalculadas = computed(() => {
   return rawAulas.value.map(aula => {
     const totalEstudiantes = aula.estudiantes_count || 0
     const reportItem = reportDataMap.value[aula.id] || null
-    const aplazados = reportItem ? reportItem.data.length : 0
-    const aprobados = totalEstudiantes - aplazados
+    const aplazados = reportItem ? reportItem.data.filter(s => s.failed_subjects && s.failed_subjects.length > 0).length : 0
+    const aprobados = reportItem ? reportItem.data.filter(s => !s.failed_subjects || s.failed_subjects.length === 0).length : totalEstudiantes
     const aprobadosPorcentaje = totalEstudiantes > 0 ? Math.round((aprobados / totalEstudiantes) * 100) : 100
     const aplazadosPorcentaje = totalEstudiantes > 0 ? Math.round((aplazados / totalEstudiantes) * 100) : 0
 
@@ -337,7 +337,7 @@ const aulasCalculadas = computed(() => {
       aplazados,
       aprobadosPorcentaje,
       aplazadosPorcentaje,
-      aplazadosList: reportItem ? reportItem.data : []
+      aplazadosList: reportItem ? reportItem.data.filter(s => s.failed_subjects && s.failed_subjects.length > 0) : []
     }
   }).filter(aula => aula.total > 0) // Filtrar aulas vacías para el año lectivo
 })
