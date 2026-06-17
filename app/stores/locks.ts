@@ -46,6 +46,17 @@ export const useLocksStore = defineStore('locks', {
             }
         },
 
+        async bulkUnlock(studentIds: number[]) {
+            try {
+                await api.post('/api/psychology/locks/bulk-unlock', {
+                    student_ids: studentIds
+                })
+                this.locks = this.locks.filter(l => !studentIds.includes(l.student_id))
+            } catch (e: any) {
+                throw e
+            }
+        },
+
         async manualLock(studentId: number, reason: string) {
             try {
                 const response = await api.post('/api/psychology/locks', {

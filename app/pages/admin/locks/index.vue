@@ -5,10 +5,16 @@
                 <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Gestión de Bloqueos</h1>
                 <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Estudiantes bloqueados para ver boletines</p>
             </div>
-            <button @click="openCreateModal"
-                class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm font-medium">
-                Bloquear Estudiante
-            </button>
+            <div class="flex space-x-2">
+                <button v-if="selectedStudentIds.length > 0" @click="bulkUnlock"
+                    class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 text-sm font-medium transition duration-150 flex items-center">
+                    Desbloquear Seleccionados ({{ selectedStudentIds.length }})
+                </button>
+                <button @click="openCreateModal"
+                    class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 text-sm font-medium">
+                    Bloquear Estudiante
+                </button>
+            </div>
         </header>
 
         <div class="p-6">
@@ -52,6 +58,10 @@
                     <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                         <thead class="bg-gray-50 dark:bg-gray-900/50">
                             <tr>
+                                <th class="w-12 px-6 py-3 text-left">
+                                    <input type="checkbox" :checked="areAllSelected" @change="toggleSelectAll"
+                                        class="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 h-4 w-4">
+                                </th>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                     Estudiante</th>
@@ -67,7 +77,11 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            <tr v-for="lock in filteredLocks" :key="lock.id">
+                            <tr v-for="lock in filteredLocks" :key="lock.id" :class="{'bg-blue-50/50 dark:bg-blue-900/10': selectedStudentIds.includes(lock.student_id)}">
+                                <td class="px-6 py-4 whitespace-nowrap text-left">
+                                    <input type="checkbox" :value="lock.student_id" v-model="selectedStudentIds"
+                                        class="rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500 h-4 w-4">
+                                </td>
                                 <td class="px-6 py-4 whitespace-nowrap">
                                     <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
                                         {{ lock.student?.nombres }} {{ lock.student?.apellidos }}
@@ -99,25 +113,73 @@
                                 </td>
                             </tr>
                             <tr v-if="filteredLocks.length === 0">
-                                <td colspan="4" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
+                                <td colspan="5" class="px-6 py-12 text-center text-gray-500 dark:text-gray-400">
                                     {{ emptyStateMessage }}
                                 </td>
                             </tr>
                         </tbody>
                     </table>
                 </div>
-            </div>
-
-            <!-- Modal Manual Lock -->
+            </div>            <!-- Modal Manual Lock -->
             <div v-if="showModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
                 <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl w-full max-w-md p-6">
-                    <h3 class="text-lg font-bold mb-4">Bloquear Estudiante Manualmente</h3>
+                    <h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-gray-100">Bloquear Estudiante Manualmente</h3>
 
                     <div class="mb-4">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">ID Estudiante</label>
-                        <input v-model="form.student_id" type="number" class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-                            placeholder="ID del estudiante">
-                        <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Ingresa el ID del sistema del estudiante.</p>
+                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Estudiante</label>
+                        
+                        <!-- Selected Student Card -->
+                        <div v-if="selectedStudent" class="p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800 rounded-md flex justify-between items-center mb-1">
+                            <div>
+                                <div class="font-medium text-blue-900 dark:text-blue-200 text-sm">
+                                    {{ selectedStudent.nombres }} {{ selectedStudent.apellidos }}
+                                </div>
+                                <div class="text-xs text-blue-700 dark:text-blue-400" v-if="selectedStudent.aula">
+                                    {{ selectedStudent.aula.grado_cardinal }}° {{ selectedStudent.aula.seccion }} - RNE: {{ selectedStudent.rne || 'N/A' }}
+                                </div>
+                            </div>
+                            <button type="button" @click="clearStudentSelection" class="text-blue-500 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300" title="Quitar selección">
+                                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        <!-- Search Autocomplete Input -->
+                        <div v-else class="relative">
+                            <input 
+                                v-model="studentSearchQuery" 
+                                @focus="showStudentDropdown = true"
+                                @blur="onStudentSearchBlur"
+                                type="text" 
+                                class="w-full border border-gray-300 dark:border-gray-600 rounded-md px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 sm:text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                placeholder="Buscar por nombre, apellido o RNE...">
+                            
+                            <!-- Dropdown Results -->
+                            <div v-if="showStudentDropdown && filteredStudents.length > 0" 
+                                 class="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg max-h-48 overflow-y-auto">
+                                <button 
+                                    v-for="student in filteredStudents" 
+                                    :key="student.id"
+                                    type="button"
+                                    @click="selectStudent(student)"
+                                    class="w-full text-left px-3 py-2 hover:bg-blue-50 dark:hover:bg-gray-700 border-b border-gray-100 dark:border-gray-700 last:border-b-0 transition-colors">
+                                    <div class="font-medium text-gray-900 dark:text-gray-100 text-sm">{{ student.nombres }} {{ student.apellidos }}</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400" v-if="student.aula">
+                                        {{ student.aula.grado_cardinal }}° {{ student.aula.seccion }} - RNE: {{ student.rne || 'N/A' }}
+                                    </div>
+                                </button>
+                            </div>
+                            
+                            <div v-if="showStudentDropdown && studentSearchQuery && studentSearchQuery.length >= 2 && filteredStudents.length === 0" 
+                                 class="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg p-3 text-center text-gray-500 dark:text-gray-400 text-sm">
+                                No se encontraron estudiantes.
+                            </div>
+                            <div v-if="showStudentDropdown && (!studentSearchQuery || studentSearchQuery.length < 2)"
+                                 class="absolute z-50 w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-lg p-2 text-center text-gray-500 dark:text-gray-400 text-xs">
+                                Escribe al menos 2 caracteres para buscar...
+                            </div>
+                        </div>
                     </div>
 
                     <div class="mb-4">
@@ -128,8 +190,8 @@
                     <div class="flex justify-end gap-2">
                         <button @click="showModal = false"
                             class="px-4 py-2 border rounded text-gray-700 dark:text-gray-300">Cancelar</button>
-                        <button @click="performLock"
-                            class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Bloquear</button>
+                        <button @click="performLock" :disabled="!form.student_id"
+                            class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed">Bloquear</button>
                     </div>
                 </div>
             </div>
@@ -139,10 +201,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, computed, reactive } from 'vue'
+import { ref, onMounted, computed, reactive, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useLocksStore } from '~/stores/locks'
 import { useAulasStore } from '~/stores/aulas'
+import { useEstudiantesStore } from '~/stores/estudiantes'
 import { LockOpenIcon, EyeIcon } from '@heroicons/vue/24/outline'
 
 import Swal from 'sweetalert2'
@@ -173,6 +236,42 @@ const form = reactive({
     reason: 'Intervención Psicológica'
 })
 
+const estudiantesStore = useEstudiantesStore()
+const studentSearchQuery = ref('')
+const showStudentDropdown = ref(false)
+const selectedStudent = ref<any>(null)
+let blurTimeout: any = null
+
+const filteredStudents = computed(() => {
+    if (!studentSearchQuery.value || studentSearchQuery.value.length < 2) {
+        return []
+    }
+    const query = studentSearchQuery.value.toLowerCase()
+    return estudiantesStore.items.filter(student => {
+        const fullName = `${student.nombres} ${student.apellidos}`.toLowerCase()
+        return fullName.includes(query) || (student.rne && student.rne.toLowerCase().includes(query))
+    }).slice(0, 10)
+})
+
+function selectStudent(student: any) {
+    if (blurTimeout) clearTimeout(blurTimeout)
+    selectedStudent.value = student
+    form.student_id = student.id.toString()
+    showStudentDropdown.value = false
+}
+
+function clearStudentSelection() {
+    selectedStudent.value = null
+    form.student_id = ''
+    studentSearchQuery.value = ''
+}
+
+function onStudentSearchBlur() {
+    blurTimeout = setTimeout(() => {
+        showStudentDropdown.value = false
+    }, 200)
+}
+
 const filteredLocks = computed(() => {
     let result = locks.value
 
@@ -199,6 +298,24 @@ const emptyStateMessage = computed(() => {
         : 'No se encontraron resultados con los filtros actuales.'
 })
 
+const selectedStudentIds = ref<number[]>([])
+
+const areAllSelected = computed(() => {
+    return filteredLocks.value.length > 0 && selectedStudentIds.value.length === filteredLocks.value.length
+})
+
+function toggleSelectAll() {
+    if (areAllSelected.value) {
+        selectedStudentIds.value = []
+    } else {
+        selectedStudentIds.value = filteredLocks.value.map(lock => lock.student_id)
+    }
+}
+
+watch([searchQuery, selectedAulaId], () => {
+    selectedStudentIds.value = []
+})
+
 onMounted(() => {
     store.fetchAll()
     aulasStore.fetchAll()
@@ -207,7 +324,10 @@ onMounted(() => {
 function openCreateModal() {
     form.student_id = ''
     form.reason = 'Intervención Psicológica'
+    studentSearchQuery.value = ''
+    selectedStudent.value = null
     showModal.value = true
+    estudiantesStore.fetchAll('active')
 }
 
 async function performLock() {
@@ -249,6 +369,39 @@ async function unlock(lock: any) {
             Swal.fire(
                 '¡Desbloqueado!',
                 'El estudiante ha sido desbloqueado.',
+                'success'
+            )
+        } catch (e) {
+            Swal.fire(
+                'Error',
+                'Hubo un problema al desbloquear.',
+                'error'
+            )
+        }
+    }
+}
+
+async function bulkUnlock() {
+    if (selectedStudentIds.value.length === 0) return
+
+    const result = await Swal.fire({
+        title: '¿Desbloquear estudiantes seleccionados?',
+        text: `¿Estás seguro de desbloquear a los ${selectedStudentIds.value.length} estudiantes seleccionados?`,
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, desbloquear',
+        cancelButtonText: 'Cancelar'
+    })
+
+    if (result.isConfirmed) {
+        try {
+            await store.bulkUnlock(selectedStudentIds.value)
+            selectedStudentIds.value = []
+            Swal.fire(
+                '¡Desbloqueados!',
+                'Los estudiantes han sido desbloqueados.',
                 'success'
             )
         } catch (e) {
