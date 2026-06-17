@@ -13,8 +13,33 @@
       </div>
     </header>
 
-    <!-- Mensaje de feedback -->
-    <div v-if="mostrarMensaje" class="mx-6 mt-4">
+    <!-- Tabs Navigation -->
+    <div class="mx-6 mt-6 border-b border-gray-200 dark:border-gray-700">
+      <nav class="-mb-px flex space-x-6" aria-label="Tabs">
+        <button @click="pestanaActiva = 'calificaciones'"
+          :class="[
+            pestanaActiva === 'calificaciones'
+              ? 'border-blue-500 text-blue-600 dark:text-blue-400 font-semibold'
+              : 'border-transparent text-gray-550 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300',
+            'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-all duration-200 focus:outline-none'
+          ]">
+          Calificaciones por Curso
+        </button>
+        <button @click="pestanaActiva = 'rendimiento'"
+          :class="[
+            pestanaActiva === 'rendimiento'
+              ? 'border-blue-500 text-blue-600 dark:text-blue-400 font-semibold'
+              : 'border-transparent text-gray-550 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300',
+            'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-all duration-200 focus:outline-none'
+          ]">
+          Rendimiento (Aprobados vs Aplazados)
+        </button>
+      </nav>
+    </div>
+
+    <div v-if="pestanaActiva === 'calificaciones'">
+      <!-- Mensaje de feedback -->
+      <div v-if="mostrarMensaje" class="mx-6 mt-4">
       <div :class="[
         'p-4 rounded-md flex items-center justify-between',
         tipoMensaje === 'success' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
@@ -491,6 +516,12 @@
         </div>
       </div>
     </div>
+  </div>
+
+  <!-- Pestaña de Rendimiento -->
+    <div v-else-if="pestanaActiva === 'rendimiento'" class="p-6">
+      <RendimientoReport />
+    </div>
 
     <!-- Modal para configurar valor del RA -->
     <div v-if="mostrarModalValorRA" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
@@ -594,10 +625,13 @@
 import GradeImportModal from '~/components/calificaciones/GradeImportModal.vue'
 import CalificacionCompetenciaModal from '~/components/calificaciones/CalificacionCompetenciaModal.vue'
 import CalificacionOportunidadModal from '~/components/calificaciones/CalificacionOportunidadModal.vue'
+import RendimientoReport from '~/components/calificaciones/RendimientoReport.vue'
 import { ref, computed, onMounted } from 'vue'
 import { api } from '~/utils/api'
 import { useAuthStore } from '~/stores/auth'
 import { showConfirm, showToast } from '~/utils/sweetalert'
+
+const pestanaActiva = ref('calificaciones')
 
 const authStore = useAuthStore()
 
