@@ -28,11 +28,11 @@
                             class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow border border-gray-100 dark:border-gray-700 flex flex-col">
                             <div class="p-6 flex-1 flex flex-col">
                                 <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">{{ article.name }}</h3>
-                                <p class="text-2xl font-black text-primary-600 mb-4">${{
+                                <p class="text-2xl font-black text-primary-600 dark:text-primary-400 mb-4">${{
                                     parseFloat(article.price).toFixed(2) }}</p>
                                 <div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700">
                                     <button @click="addToCart(article)"
-                                        class="w-full flex items-center justify-center space-x-2 bg-primary-50 text-primary-700 hover:bg-primary-600 hover:text-white px-4 py-2 rounded-md font-medium transition-colors">
+                                        class="w-full flex items-center justify-center space-x-2 bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-300 hover:bg-primary-600 hover:text-white dark:hover:bg-primary-600 px-4 py-2 rounded-md font-medium transition-colors">
                                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                                 d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -81,12 +81,12 @@
                                     <div class="flex justify-between items-center mt-1">
                                         <div class="flex items-center border rounded-md border-gray-200 dark:border-gray-700 shadow-sm">
                                             <button @click="decreaseQty(index)"
-                                                class="px-2 py-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:bg-gray-800 transition-colors">-</button>
+                                                class="px-2 py-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">-</button>
                                             <span
                                                 class="px-3 py-1 font-medium text-sm w-8 text-center bg-gray-50 dark:bg-gray-900/50 border-x border-gray-200 dark:border-gray-700">{{
                                                     item.quantity }}</span>
                                             <button @click="increaseQty(index)"
-                                                class="px-2 py-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:bg-gray-800 transition-colors">+</button>
+                                                class="px-2 py-1 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">+</button>
                                         </div>
                                         <span class="font-semibold text-gray-900 dark:text-gray-100">${{ (item.article.price *
                                             item.quantity).toFixed(2) }}</span>
@@ -135,14 +135,19 @@
                                     </div>
                                     <div class="ml-2 flex-shrink-0 flex gap-2">
                                         <span :class="[
-                                            order.payment_status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800',
+                                            order.payment_status === 'paid' 
+                                                ? 'bg-green-100 dark:bg-green-950/40 text-green-800 dark:text-green-300' 
+                                                : 'bg-yellow-100 dark:bg-yellow-950/40 text-yellow-800 dark:text-yellow-300',
                                             'px-2 inline-flex text-xs leading-5 font-semibold rounded-full'
                                         ]">
                                             {{ order.payment_status === 'paid' ? 'Pagado' : 'Pago Pendiente' }}
                                         </span>
                                         <span :class="[
-                                            order.delivery_status === 'delivered' ? 'bg-green-100 text-green-800' :
-                                                order.delivery_status === 'partial' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800',
+                                            order.delivery_status === 'delivered' 
+                                                ? 'bg-green-100 dark:bg-green-950/40 text-green-800 dark:text-green-300' 
+                                                : order.delivery_status === 'partial' 
+                                                    ? 'bg-blue-100 dark:bg-blue-950/40 text-blue-800 dark:text-blue-300' 
+                                                    : 'bg-yellow-100 dark:bg-yellow-950/40 text-yellow-800 dark:text-yellow-300',
                                             'px-2 inline-flex text-xs leading-5 font-semibold rounded-full'
                                         ]">
                                             Entrega: {{ deliveryStatusText(order.delivery_status) }}
@@ -175,7 +180,7 @@
                                     </div>
                                     <div class="mt-2 text-right">
                                         <button @click="printInvoice(order.id)"
-                                            class="text-sm font-medium text-primary-600 hover:text-primary-900 inline-flex items-center">
+                                            class="text-sm font-medium text-primary-600 dark:text-primary-400 hover:text-primary-900 dark:hover:text-primary-300 inline-flex items-center">
                                             <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24"
                                                 stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

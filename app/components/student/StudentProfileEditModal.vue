@@ -24,7 +24,7 @@
           <nav class="flex -mb-px" aria-label="Tabs">
             <button @click="activeTab = 'photo'" :class="[
               activeTab === 'photo'
-                ? 'border-blue-500 text-blue-600'
+                ? 'border-blue-500 text-blue-600 dark:text-blue-400 dark:border-blue-400'
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600',
               'w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm transition-colors'
             ]">
@@ -32,7 +32,7 @@
             </button>
             <button @click="activeTab = 'password'" :class="[
               activeTab === 'password'
-                ? 'border-blue-500 text-blue-600'
+                ? 'border-blue-500 text-blue-600 dark:text-blue-400 dark:border-blue-400'
                 : 'border-transparent text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:text-gray-300 hover:border-gray-300 dark:border-gray-600',
               'w-1/2 py-4 px-1 text-center border-b-2 font-medium text-sm transition-colors'
             ]">
@@ -93,13 +93,13 @@
             </div>
 
             <!-- Error Message -->
-            <div v-if="photoError" class="rounded-md bg-red-50 p-3">
-              <p class="text-sm text-red-800">{{ photoError }}</p>
+            <div v-if="photoError" class="rounded-md bg-red-50 dark:bg-red-950/30 p-3">
+              <p class="text-sm text-red-800 dark:text-red-300">{{ photoError }}</p>
             </div>
 
             <!-- Success Message -->
-            <div v-if="photoSuccess" class="rounded-md bg-green-50 p-3">
-              <p class="text-sm text-green-800">{{ photoSuccess }}</p>
+            <div v-if="photoSuccess" class="rounded-md bg-green-50 dark:bg-green-950/30 p-3">
+              <p class="text-sm text-green-800 dark:text-green-300">{{ photoSuccess }}</p>
             </div>
 
             <!-- Actions -->
@@ -159,13 +159,13 @@
               </div>
 
               <!-- Error Message -->
-              <div v-if="passwordError" class="rounded-md bg-red-50 p-3">
-                <p class="text-sm text-red-800">{{ passwordError }}</p>
+              <div v-if="passwordError" class="rounded-md bg-red-50 dark:bg-red-950/30 p-3">
+                <p class="text-sm text-red-800 dark:text-red-300">{{ passwordError }}</p>
               </div>
 
               <!-- Success Message -->
-              <div v-if="passwordSuccess" class="rounded-md bg-green-50 p-3">
-                <p class="text-sm text-green-800">{{ passwordSuccess }}</p>
+              <div v-if="passwordSuccess" class="rounded-md bg-green-50 dark:bg-green-950/30 p-3">
+                <p class="text-sm text-green-800 dark:text-green-300">{{ passwordSuccess }}</p>
               </div>
 
               <!-- Actions -->
