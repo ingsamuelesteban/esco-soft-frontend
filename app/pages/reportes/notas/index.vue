@@ -984,9 +984,72 @@
                </div>
             </div>
 
+         <!-- Modal de Observaciones -->
+         <div v-if="showObservationModal" class="fixed inset-0 z-50 overflow-y-auto animate-fade-in" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+               <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showObservationModal = false"></div>
+
+               <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+               <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+                  <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                     <div class="sm:flex sm:items-start w-full">
+                        <div class="mt-3 text-center sm:mt-0 sm:text-left w-full">
+                           <h3 class="text-lg leading-6 font-bold text-gray-900 dark:text-gray-100 font-outfit border-b pb-3" id="modal-title">
+                              Observación Opcional para Boletines
+                           </h3>
+                           
+                           <div class="mt-4 space-y-4">
+                              <div>
+                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Escriba la observación (opcional):</label>
+                                 <textarea v-model="observationText" rows="3" 
+                                    class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2 border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none"
+                                    placeholder="Ej. Estudiante desplazado..."></textarea>
+                              </div>
+
+                              <div v-if="isBatchMode">
+                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Seleccione los estudiantes que llevarán esta observación en su boletín:</label>
+                                 
+                                 <div v-if="loadingStudentsList" class="flex justify-center py-4">
+                                    <svg class="animate-spin h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24">
+                                       <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                       <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                    </svg>
+                                 </div>
+                                 
+                                 <div v-else class="border border-gray-200 dark:border-gray-700 rounded-md max-h-60 overflow-y-auto divide-y divide-gray-200 dark:divide-gray-700">
+                                    <div v-for="student in modalStudents" :key="student.id" class="flex items-center justify-between p-3 hover:bg-gray-50 dark:hover:bg-gray-700">
+                                       <div class="flex items-center">
+                                          <input :id="'std-' + student.id" v-model="selectedStudentIdsForObservation" :value="student.id" type="checkbox"
+                                             class="h-4 w-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500">
+                                          <label :for="'std-' + student.id" class="ml-3 text-sm font-medium" :class="student.es_desplazado ? 'text-red-600 dark:text-red-400 font-bold' : 'text-gray-900 dark:text-gray-100'">
+                                             {{ student.numero_orden_historial || student.numero_orden }}. {{ student.apellidos }}, {{ student.nombres }}
+                                             <span v-if="student.es_desplazado" class="ml-1 text-xs font-normal text-red-500">(Desplazado)</span>
+                                          </label>
+                                       </div>
+                                    </div>
+                                 </div>
+                              </div>
+                           </div>
+                        </div>
+                     </div>
+                  </div>
+                  <div class="bg-gray-50 dark:bg-gray-900/50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
+                     <button type="button" @click="confirmObservationModal"
+                        class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-base font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm">
+                        Continuar
+                     </button>
+                     <button type="button" @click="showObservationModal = false"
+                        class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm">
+                        Cancelar
+                     </button>
+                  </div>
+               </div>
+            </div>
          </div>
       </div>
    </div>
+</div>
 </template>
 
 <script setup lang="ts">
@@ -1070,6 +1133,50 @@ interface ReportPreview {
 
 // --- State ---
 const currentTab = ref('student')
+
+// --- Observation Modal State ---
+const showObservationModal = ref(false)
+const isBatchMode = ref(false)
+const observationText = ref('')
+const modalStudents = ref<any[]>([])
+const selectedStudentIdsForObservation = ref<number[]>([])
+const loadingStudentsList = ref(false)
+const onModalConfirm = ref<(() => void) | null>(null)
+
+const openObservationModal = async (batch: boolean) => {
+   isBatchMode.value = batch
+   observationText.value = ''
+   selectedStudentIdsForObservation.value = []
+   showObservationModal.value = true
+   
+   if (batch && selectedAulaFinal.value) {
+      loadingStudentsList.value = true
+      try {
+         let url = `/api/aulas/${selectedAulaFinal.value}/estudiantes`
+         if (selectedAnioId.value) url += `?anio_lectivo_id=${selectedAnioId.value}`
+         const res = await api.get(url)
+         const studentsList = res.data?.data || res.data || []
+         modalStudents.value = studentsList
+         // Pre-select displaced students (es_desplazado is true)
+         selectedStudentIdsForObservation.value = studentsList.filter((s: any) => s.es_desplazado).map((s: any) => s.id)
+      } catch (e) {
+         console.error('Error fetching students list', e)
+         modalStudents.value = []
+      } finally {
+         loadingStudentsList.value = false
+      }
+   } else if (!batch && selectedFinalStudent.value) {
+      modalStudents.value = [selectedFinalStudent.value]
+      selectedStudentIdsForObservation.value = [selectedFinalStudent.value.id]
+   }
+}
+
+const confirmObservationModal = () => {
+   showObservationModal.value = false
+   if (onModalConfirm.value) {
+      onModalConfirm.value()
+   }
+}
 const allTabs = [
    { id: 'student', name: 'Boletín por Estudiante' },
    { id: 'classroom', name: 'Sábana por Aula' },
@@ -1696,45 +1803,56 @@ const chooseAulaDownloadFormat = async () => {
    if (canceledSign) return
    const withSignature = wantsSigned ? 1 : 0
 
-   // 2. Ask for the download format
-   const { isConfirmed, isDenied } = await Swal.fire({
-      title: 'Formato de descarga',
-      html: `
-         <p class="text-sm text-gray-600 mb-4">Selecciona cómo deseas descargar los boletines del aula.</p>
-         <div class="flex flex-col gap-3 text-left">
-            <div class="p-3 border rounded-lg border-indigo-300 bg-indigo-50">
-               <strong>PDF Unificado</strong><br>
-               <span class="text-xs text-gray-500">Un solo PDF con todos los boletines seguidos, ideal para imprimir de una vez.</span>
+   // 2. Open observation modal
+   onModalConfirm.value = async () => {
+      // 3. Ask for the download format
+      const { isConfirmed, isDenied } = await Swal.fire({
+         title: 'Formato de descarga',
+         html: `
+            <p class="text-sm text-gray-600 mb-4">Selecciona cómo deseas descargar los boletines del aula.</p>
+            <div class="flex flex-col gap-3 text-left">
+               <div class="p-3 border rounded-lg border-indigo-300 bg-indigo-50">
+                  <strong>PDF Unificado</strong><br>
+                  <span class="text-xs text-gray-500">Un solo PDF con todos los boletines seguidos, ideal para imprimir de una vez.</span>
+               </div>
+               <div class="p-3 border rounded-lg border-blue-300 bg-blue-50">
+                  <strong>Múltiples PDF (ZIP)</strong><br>
+                  <span class="text-xs text-gray-500">Un archivo ZIP con un PDF por estudiante, nombrado con el apellido de cada uno.</span>
+               </div>
             </div>
-            <div class="p-3 border rounded-lg border-blue-300 bg-blue-50">
-               <strong>Múltiples PDF (ZIP)</strong><br>
-               <span class="text-xs text-gray-500">Un archivo ZIP con un PDF por estudiante, nombrado con el apellido de cada uno.</span>
-            </div>
-         </div>
-      `,
-      icon: 'question',
-      showDenyButton: true,
-      showCancelButton: true,
-      confirmButtonText: 'PDF Unificado',
-      denyButtonText: 'Múltiples PDF (ZIP)',
-      cancelButtonText: 'Cancelar',
-      confirmButtonColor: '#4f46e5',
-      denyButtonColor: '#0369a1',
-   })
+         `,
+         icon: 'question',
+         showDenyButton: true,
+         showCancelButton: true,
+         confirmButtonText: 'PDF Unificado',
+         denyButtonText: 'Múltiples PDF (ZIP)',
+         cancelButtonText: 'Cancelar',
+         confirmButtonColor: '#4f46e5',
+         denyButtonColor: '#0369a1',
+      })
 
-   if (isConfirmed) {
-      await downloadAulaFinalUnified(withSignature)
-   } else if (isDenied) {
-      await downloadAulaFinalZip(withSignature)
+      if (isConfirmed) {
+         await downloadAulaFinalUnified(withSignature, observationText.value, selectedStudentIdsForObservation.value)
+      } else if (isDenied) {
+         await downloadAulaFinalZip(withSignature, observationText.value, selectedStudentIdsForObservation.value)
+      }
    }
+
+   await openObservationModal(true)
 }
 
-const downloadAulaFinalUnified = async (withSignature: number = 1) => {
+const downloadAulaFinalUnified = async (
+   withSignature: number = 1,
+   observacion: string = '',
+   selectedStudents: number[] = []
+) => {
    loadingAulaZip.value = true
    startLoadingModal('Generando PDF Unificado de Boletines')
    try {
       let url = `/api/reports/grades/final-aula-unified?aula_id=${selectedAulaFinal.value}&with_signature=${withSignature}`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
+      if (observacion) url += `&observacion=${encodeURIComponent(observacion)}`
+      if (selectedStudents.length > 0) url += `&selected_students=${selectedStudents.join(',')}`
 
       const blob = await api.getBlob(url)
       stopLoadingModal()
@@ -1761,12 +1879,18 @@ const downloadAulaFinalUnified = async (withSignature: number = 1) => {
    }
 }
 
-const downloadAulaFinalZip = async (withSignature: number = 1) => {
+const downloadAulaFinalZip = async (
+   withSignature: number = 1,
+   observacion: string = '',
+   selectedStudents: number[] = []
+) => {
    loadingAulaZip.value = true
    startLoadingModal('Generando ZIP de Boletines del Aula')
    try {
       let url = `/api/reports/grades/final-aula?aula_id=${selectedAulaFinal.value}&with_signature=${withSignature}`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
+      if (observacion) url += `&observacion=${encodeURIComponent(observacion)}`
+      if (selectedStudents.length > 0) url += `&selected_students=${selectedStudents.join(',')}`
 
       const blob = await api.getBlob(url)
       stopLoadingModal()
@@ -1854,26 +1978,32 @@ const generateFinalReport = async () => {
    if (canceled) return
    const withSignature = wantsSigned ? 1 : 0
 
-   loadingGenerate.value = true
-   startLoadingModal('Generando Boletín Final')
-   try {
-      let url = `/api/reports/grades/final?estudiante_id=${selectedFinalStudent.value.id}&with_signature=${withSignature}`
-      if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
+   // Open observation modal
+   onModalConfirm.value = async () => {
+      loadingGenerate.value = true
+      startLoadingModal('Generando Boletín Final')
+      try {
+         let url = `/api/reports/grades/final?estudiante_id=${selectedFinalStudent.value.id}&with_signature=${withSignature}`
+         if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
+         if (observationText.value) url += `&observacion=${encodeURIComponent(observationText.value)}`
 
-      const blob = await api.get(url, { responseType: 'blob' }) as Blob
-      stopLoadingModal()
-      const studentAula = selectedFinalStudent.value.aula
-      const aulaLabel = studentAula ? `${studentAula.grado_cardinal}${studentAula.seccion}` : 'Sin_Aula'
-      const filename = `boletin_final_${selectedFinalStudent.value.apellidos}_${selectedFinalStudent.value.nombres}_${aulaLabel}.pdf`
-      printPdfBlob(blob, filename, 'Generando boletín final...')
-   } catch (e) {
-      stopLoadingModal()
-      console.error(e)
-      Swal.fire({ icon: 'error', title: 'Error', text: ((e as any).data?.message || (e as any).message || 'Error generando boletín final') })
-   } finally {
-      loadingGenerate.value = false
-      stopLoadingModal()
+         const blob = await api.get(url, { responseType: 'blob' }) as Blob
+         stopLoadingModal()
+         const studentAula = selectedFinalStudent.value.aula
+         const aulaLabel = studentAula ? `${studentAula.grado_cardinal}${studentAula.seccion}` : 'Sin_Aula'
+         const filename = `boletin_final_${selectedFinalStudent.value.apellidos}_${selectedFinalStudent.value.nombres}_${aulaLabel}.pdf`
+         printPdfBlob(blob, filename, 'Generando boletín final...')
+      } catch (e) {
+         stopLoadingModal()
+         console.error(e)
+         Swal.fire({ icon: 'error', title: 'Error', text: ((e as any).data?.message || (e as any).message || 'Error generando boletín final') })
+      } finally {
+         loadingGenerate.value = false
+         stopLoadingModal()
+      }
    }
+
+   await openObservationModal(false)
 }
 
 const previewFinalReport = async () => {
