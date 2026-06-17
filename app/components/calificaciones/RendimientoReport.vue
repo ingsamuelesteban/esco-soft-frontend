@@ -28,12 +28,16 @@
           </div>
 
           <!-- Botón PDF General -->
-          <button @click="downloadGeneralPDF" :disabled="loadingData || !selectedYearId"
+          <button @click="downloadGeneralPDF" :disabled="loadingData || !selectedYearId || printingGeneral"
             class="flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 dark:disabled:bg-blue-800 dark:bg-blue-600 dark:hover:bg-blue-700 rounded-md shadow-sm transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg v-if="printingGeneral" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="m15.99 4.99c.96.38 1.87.89 2.68 1.5l-2.83 2.83-.01-.01c-.39-.39-.9-.67-1.49-.83l1.65-3.49z"></path>
+            </svg>
+            <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
-            PDF General
+            {{ printingGeneral ? 'Generando...' : 'PDF General' }}
           </button>
         </div>
       </div>
@@ -174,10 +178,14 @@
                     class="px-3 py-1.5 text-xs font-medium border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed text-gray-700 dark:text-gray-300">
                     Ver Aplazados
                   </button>
-                  <button @click="downloadClassroomPDF(aula.id, aula.grado_cardinal, aula.seccion)"
-                    class="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-md transition-colors duration-300"
+                  <button @click="downloadClassroomPDF(aula.id, aula.grado_cardinal, aula.seccion)" :disabled="printingClassroom[aula.id]"
+                    class="p-1.5 text-blue-600 dark:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-md transition-colors duration-300 disabled:opacity-50"
                     title="Descargar PDF de esta sección">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg v-if="printingClassroom[aula.id]" class="animate-spin h-5 w-5 text-blue-600 dark:text-blue-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                      <path class="opacity-75" fill="currentColor" d="m15.99 4.99c.96.38 1.87.89 2.68 1.5l-2.83 2.83-.01-.01c-.39-.39-.9-.67-1.49-.83l1.65-3.49z"></path>
+                    </svg>
+                    <svg v-else class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </button>
@@ -247,12 +255,16 @@
             <button @click="closeModal" class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md hover:bg-gray-100 dark:hover:bg-gray-600 transition-all duration-300 focus:outline-none">
               Cerrar
             </button>
-            <button @click="downloadClassroomPDF(selectedAula.id, selectedAula.grado_cardinal, selectedAula.seccion)"
-              class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-all duration-300 focus:outline-none">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <button @click="downloadClassroomPDF(selectedAula.id, selectedAula.grado_cardinal, selectedAula.seccion)" :disabled="printingClassroom[selectedAula.id]"
+              class="flex items-center gap-2 px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md transition-all duration-300 focus:outline-none disabled:bg-blue-400">
+              <svg v-if="printingClassroom[selectedAula.id]" class="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="m15.99 4.99c.96.38 1.87.89 2.68 1.5l-2.83 2.83-.01-.01c-.39-.39-.9-.67-1.49-.83l1.65-3.49z"></path>
+              </svg>
+              <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
-              Descargar PDF
+              {{ printingClassroom[selectedAula.id] ? 'Generando...' : 'Descargar PDF' }}
             </button>
           </div>
         </div>
@@ -264,10 +276,17 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { api } from '~/utils/api'
+import { usePrint } from '~/composables/usePrint'
+
+// Composable de impresión
+const { printPdfBlob } = usePrint()
 
 // Estado
 const loadingYears = ref(false)
 const loadingData = ref(false)
+const printingGeneral = ref(false)
+const printingClassroom = ref({}) // mapping: classroomId => boolean
+
 const years = ref([])
 const selectedYearId = ref('')
 
@@ -377,18 +396,34 @@ const fetchData = async () => {
 }
 
 // PDF Descarga
-const downloadGeneralPDF = () => {
+const downloadGeneralPDF = async () => {
   if (!selectedYearId.value) return
-  const token = localStorage.getItem('auth_token') || ''
-  const url = `${api.defaults?.baseURL || ''}/api/reports/grades/aplazados?aula_id=all&year_id=${selectedYearId.value}&token=${token}`
-  window.open(url, '_blank')
+  printingGeneral.value = true
+  try {
+    const url = `/api/reports/grades/aplazados?aula_id=all&year_id=${selectedYearId.value}`
+    const blob = await api.getBlob(url)
+    const filename = `aplazados_todas_las_aulas.pdf`
+    printPdfBlob(blob, filename, 'Generando reporte de aplazados...')
+  } catch (error) {
+    console.error('Error al generar PDF general:', error)
+  } finally {
+    printingGeneral.value = false
+  }
 }
 
-const downloadClassroomPDF = (aulaId, grado, seccion) => {
+const downloadClassroomPDF = async (aulaId, grado, seccion) => {
   if (!selectedYearId.value) return
-  const token = localStorage.getItem('auth_token') || ''
-  const url = `${api.defaults?.baseURL || ''}/api/reports/grades/aplazados?aula_id=${aulaId}&year_id=${selectedYearId.value}&token=${token}`
-  window.open(url, '_blank')
+  printingClassroom.value[aulaId] = true
+  try {
+    const url = `/api/reports/grades/aplazados?aula_id=${aulaId}&year_id=${selectedYearId.value}`
+    const blob = await api.getBlob(url)
+    const filename = `aplazados_${grado}${seccion}.pdf`
+    printPdfBlob(blob, filename, `Generando reporte de aplazados para ${grado}° ${seccion}...`)
+  } catch (error) {
+    console.error('Error al generar PDF de aula:', error)
+  } finally {
+    printingClassroom.value[aulaId] = false
+  }
 }
 
 // Detalle Modal
