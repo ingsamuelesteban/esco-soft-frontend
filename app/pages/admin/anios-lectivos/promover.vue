@@ -286,8 +286,8 @@ async function cargarEstudiantes() {
             anio_lectivo_id: anioOrigenId.value
         }
         if (aulaOrigenId.value) params.aula_id = aulaOrigenId.value
-        const data = await api.get<Estudiante[]>('/api/estudiantes', { params })
-        estudiantes.value = data
+        const res = await api.get<any>('/api/estudiantes', { params })
+        estudiantes.value = res.data || res || []
     } catch (e) {
         console.error(e)
     } finally {
