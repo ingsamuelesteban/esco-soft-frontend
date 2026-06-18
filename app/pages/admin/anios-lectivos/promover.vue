@@ -29,7 +29,7 @@
                         class="w-full border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 dark:disabled:bg-gray-800">
                         <option :value="null">Todas las aulas</option>
                         <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
-                            {{ aula.titulo }}
+                            {{ aula.grado_cardinal }}° {{ aula.seccion ? '(' + aula.seccion + ')' : '' }} - {{ aula.titulo?.nombre || 'General' }}
                         </option>
                     </select>
                 </div>
@@ -160,7 +160,7 @@
                             class="w-full border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 dark:disabled:bg-gray-800">
                             <option :value="null">Seleccionar aula destino...</option>
                             <option v-for="aula in aulasDestino" :key="aula.id" :value="aula.id">
-                                {{ aula.titulo }}
+                                {{ aula.grado_cardinal }}° {{ aula.seccion ? '(' + aula.seccion + ')' : '' }} - {{ aula.titulo?.nombre || 'General' }}
                             </option>
                         </select>
                         <div v-if="loadingAulasDestino" class="text-xs text-gray-400 mt-1">Cargando aulas...</div>
