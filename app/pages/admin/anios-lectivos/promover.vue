@@ -15,7 +15,7 @@
                 <div class="flex-1 min-w-[200px]">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Año Lectivo Origen</label>
                     <select v-model="anioOrigenId" @change="onAnioOrigenChange"
-                        class="w-full border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                        class="w-full border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                         <option :value="null">Seleccionar año...</option>
                         <option v-for="anio in aniosLectivos" :key="anio.id" :value="anio.id">
                             {{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}
@@ -26,7 +26,7 @@
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Aula</label>
                     <select v-model="aulaOrigenId" @change="cargarEstudiantes"
                         :disabled="!anioOrigenId"
-                        class="w-full border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 dark:bg-gray-800">
+                        class="w-full border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 dark:disabled:bg-gray-800">
                         <option :value="null">Todas las aulas</option>
                         <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
                             {{ aula.titulo }}
@@ -70,41 +70,43 @@
                 </div>
 
                 <!-- Lista -->
-                <table v-else class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                    <thead class="bg-gray-50 dark:bg-gray-900/50">
-                        <tr>
-                            <th class="w-10 px-4 py-3"></th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">#</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Estudiante</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Aula</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Estado</th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                        <tr v-for="est in estudiantes" :key="est.id"
-                            @click="toggleSeleccion(est.id)"
-                            class="cursor-pointer hover:bg-blue-50 transition-colors"
-                            :class="{ 'bg-blue-50': seleccionados.includes(est.id) }">
-                            <td class="px-4 py-3">
-                                <input type="checkbox" :checked="seleccionados.includes(est.id)"
-                                    @click.stop="toggleSeleccion(est.id)"
-                                    class="h-4 w-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded" />
-                            </td>
-                            <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{{ est.numero_orden }}</td>
-                            <td class="px-4 py-3">
-                                <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ est.apellidos }}, {{ est.nombres }}</div>
-                                <div class="text-xs text-gray-500 dark:text-gray-400">{{ est.cedula || est.rne || '-' }}</div>
-                            </td>
-                            <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{{ est.aula?.titulo || '-' }}</td>
-                            <td class="px-4 py-3">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
-                                    :class="est.estado === 'activo' ? 'bg-green-100 text-green-800' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'">
-                                    {{ est.estado || 'activo' }}
-                                </span>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
+                <div v-else class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                        <thead class="bg-gray-50 dark:bg-gray-900/50">
+                            <tr>
+                                <th class="w-10 px-4 py-3"></th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">#</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Estudiante</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Aula</th>
+                                <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                            <tr v-for="est in estudiantes" :key="est.id"
+                                @click="toggleSeleccion(est.id)"
+                                class="cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
+                                :class="{ 'bg-blue-50 dark:bg-blue-900/40': seleccionados.includes(est.id) }">
+                                <td class="px-4 py-3">
+                                    <input type="checkbox" :checked="seleccionados.includes(est.id)"
+                                        @click.stop="toggleSeleccion(est.id)"
+                                        class="h-4 w-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded" />
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{{ est.numero_orden }}</td>
+                                <td class="px-4 py-3">
+                                    <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ est.apellidos }}, {{ est.nombres }}</div>
+                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ est.cedula || est.rne || '-' }}</div>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{{ est.aula?.titulo || '-' }}</td>
+                                <td class="px-4 py-3">
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
+                                        :class="est.estado === 'activo' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'">
+                                        {{ est.estado || 'activo' }}
+                                    </span>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             <div v-else-if="anioOrigenId && !loadingEstudiantes" class="text-center py-12 text-gray-500 dark:text-gray-400">
@@ -114,8 +116,8 @@
 
         <!-- Modal de Promoción -->
         <div v-if="showModalPromocion" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg overflow-hidden">
-                <div class="px-6 py-4 border-b flex justify-between items-center">
+            <div class="bg-white dark:bg-gray-800 rounded-xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden">
+                <div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex justify-between items-center">
                     <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">
                         Promover {{ seleccionados.length }} estudiante(s)
                     </h3>
@@ -131,7 +133,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Estado en el año origen</label>
                         <select v-model="promocionForm.estado_origen"
-                            class="w-full border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            class="w-full border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                             <option value="promovido">Promovido ✅</option>
                             <option value="repitente">Repitente 🔁</option>
                             <option value="retirado">Retirado ❌</option>
@@ -142,7 +144,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Año Lectivo Destino</label>
                         <select v-model="promocionForm.anio_destino_id" @change="cargarAulasDestino"
-                            class="w-full border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                            class="w-full border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                             <option :value="null">Seleccionar año destino...</option>
                             <option v-for="anio in aniosLectivos.filter(a => a.id !== anioOrigenId)" :key="anio.id" :value="anio.id">
                                 {{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}
@@ -155,7 +157,7 @@
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Aula Destino</label>
                         <select v-model="promocionForm.aula_destino_id"
                             :disabled="!promocionForm.anio_destino_id || loadingAulasDestino"
-                            class="w-full border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 dark:bg-gray-800">
+                            class="w-full border border-gray-300 dark:border-gray-600 rounded-md py-2 px-3 text-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 dark:disabled:bg-gray-800">
                             <option :value="null">Seleccionar aula destino...</option>
                             <option v-for="aula in aulasDestino" :key="aula.id" :value="aula.id">
                                 {{ aula.titulo }}
@@ -168,7 +170,7 @@
                     </div>
 
                     <!-- Error -->
-                    <div v-if="promocionError" class="text-red-600 text-sm bg-red-50 rounded p-3">
+                    <div v-if="promocionError" class="text-red-600 dark:text-red-400 text-sm bg-red-50 dark:bg-red-900/20 rounded p-3">
                         {{ promocionError }}
                     </div>
                 </div>
@@ -260,7 +262,10 @@ async function cargarAniosLectivos() {
 }
 
 async function cargarAulas() {
-    const data = await api.get<Aula[]>('/api/aulas')
+    if (!anioOrigenId.value) return
+    const data = await api.get<Aula[]>('/api/aulas', {
+        params: { anio_lectivo_id: anioOrigenId.value }
+    })
     aulas.value = data
 }
 
@@ -268,6 +273,8 @@ async function onAnioOrigenChange() {
     aulaOrigenId.value = null
     estudiantes.value = []
     seleccionados.value = []
+    await cargarAulas()
+    await cargarEstudiantes()
 }
 
 async function cargarEstudiantes() {
@@ -275,7 +282,9 @@ async function cargarEstudiantes() {
     loadingEstudiantes.value = true
     seleccionados.value = []
     try {
-        const params: Record<string, any> = {}
+        const params: Record<string, any> = {
+            anio_lectivo_id: anioOrigenId.value
+        }
         if (aulaOrigenId.value) params.aula_id = aulaOrigenId.value
         const data = await api.get<Estudiante[]>('/api/estudiantes', { params })
         estudiantes.value = data
@@ -293,8 +302,9 @@ async function cargarAulasDestino() {
     }
     loadingAulasDestino.value = true
     try {
-        // Traer aulas del año destino via historial o simplemente todas las aulas
-        const data = await api.get<Aula[]>('/api/aulas')
+        const data = await api.get<Aula[]>('/api/aulas', {
+            params: { anio_lectivo_id: promocionForm.anio_destino_id }
+        })
         aulasDestino.value = data
     } finally {
         loadingAulasDestino.value = false

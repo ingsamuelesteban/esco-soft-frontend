@@ -48,11 +48,7 @@
                                 {{ hasPeriods(anio.id) ? 'Actualizar Periodos' : 'Configurar Periodos' }}
                             </button>
 
-                            <!-- Promover estudiantes -->
-                            <NuxtLink :to="`/admin/anios-lectivos/promover`"
-                                class="text-green-600 hover:text-green-900 text-sm font-medium">
-                                Promover
-                            </NuxtLink>
+
 
                             <!-- Clonar año -->
                             <button @click="openClonarModal(anio)"
