@@ -199,6 +199,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, reactive } from 'vue'
 import { api } from '../../../utils/api'
+import { showSuccess } from '../../../utils/sweetalert'
 
 // ── Tipos ──────────────────────────────────────────────────────────────────
 interface AnioLectivo { id: number; nombre: string; activo: boolean; fecha_inicio?: string }
@@ -330,10 +331,19 @@ function seleccionarTodos() {
 
 function abrirModalPromocion() {
     promocionError.value = null
-    promocionForm.anio_destino_id = null
     promocionForm.aula_destino_id = null
     promocionForm.estado_origen = 'promovido'
     aulasDestino.value = []
+    
+    // Default to the next school year after the active one
+    const activeIndex = aniosLectivos.value.findIndex(a => a.activo)
+    if (activeIndex > 0) {
+        promocionForm.anio_destino_id = aniosLectivos.value[activeIndex - 1].id
+        cargarAulasDestino()
+    } else {
+        promocionForm.anio_destino_id = null
+    }
+    
     showModalPromocion.value = true
 }
 
@@ -359,7 +369,7 @@ async function ejecutarPromocion() {
 
         showModalPromocion.value = false
         seleccionados.value = []
-        alert(res.message)
+        await showSuccess(res.message)
         await cargarEstudiantes()
     } catch (e: any) {
         promocionError.value = e.response?.data?.message || 'Error al promover estudiantes.'
