@@ -96,7 +96,9 @@
                                     <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ est.apellidos }}, {{ est.nombres }}</div>
                                     <div class="text-xs text-gray-500 dark:text-gray-400">{{ est.cedula || est.rne || '-' }}</div>
                                 </td>
-                                <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">{{ est.aula?.titulo || '-' }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                                    {{ est.aula ? `${est.aula.grado_cardinal}° ${est.aula.seccion ? '(' + est.aula.seccion + ')' : ''} - ${est.aula.titulo?.nombre || 'General'}` : (est.aula_grado_historial ? `${est.aula_grado_historial}° (${est.aula_seccion_historial || ''})` : '-') }}
+                                </td>
                                 <td class="px-4 py-3">
                                     <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
                                         :class="est.estado === 'activo' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'">
