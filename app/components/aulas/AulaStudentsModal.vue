@@ -6,11 +6,11 @@
 
       <!-- Modal -->
       <div
-        class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
+        class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all w-full sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full">
         <!-- Header -->
         <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center">
+          <div class="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div class="flex items-start sm:items-center">
               <div
                 class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
                 <svg class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -18,7 +18,7 @@
                     d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                 </svg>
               </div>
-              <div class="ml-4">
+              <div class="ml-4 text-left">
                 <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">
                   Estudiantes - {{ aulaLabel }}
                 </h3>
@@ -27,7 +27,7 @@
                 </p>
               </div>
             </div>
-            <div class="flex items-center gap-3">
+            <div class="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto">
               <button v-if="anioLectivoId && activeTab === 'assigned' && estudiantesAsignados.length > 0" 
                 @click="reordenarHistorial" :disabled="loadingReorder"
                 class="inline-flex items-center px-3 py-1.5 text-xs font-medium text-blue-600 hover:text-blue-700 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:hover:bg-blue-900/50 rounded-md transition-colors disabled:opacity-50">
@@ -40,7 +40,8 @@
                 </svg>
                 {{ loadingReorder ? 'Reordenando...' : 'Reordenar Alfabéticamente' }}
               </button>
-              <button @click="$emit('close')" class="text-gray-400 hover:text-gray-600 dark:text-gray-400">
+              <div v-else class="hidden sm:block"></div>
+              <button @click="$emit('close')" class="text-gray-400 hover:text-gray-600 dark:text-gray-400 ml-auto sm:ml-0">
                 <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -69,7 +70,7 @@
 
           <!-- Tabs -->
           <div class="border-b border-gray-200 dark:border-gray-700 mb-6">
-            <nav class="-mb-px flex space-x-8">
+            <nav class="-mb-px flex space-x-4 sm:space-x-8 overflow-x-auto">
               <button @click="activeTab = 'assigned'" :class="[
                 'py-2 px-1 border-b-2 font-medium text-sm',
                 activeTab === 'assigned'
@@ -97,7 +98,7 @@
             <div v-else-if="estudiantesAsignados.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400">
               No hay estudiantes asignados a esta aula
             </div>
-            <div v-else class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+            <div v-else class="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
               <table class="min-w-full divide-y divide-gray-300 dark:divide-gray-600">
                 <thead class="bg-gray-50 dark:bg-gray-900/50">
                   <tr>
@@ -145,7 +146,7 @@
             <div v-else>
               <!-- Barra de acciones múltiples -->
               <div v-if="estudiantesSinAula.length > 0"
-                class="flex items-center justify-between mb-4 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
+                class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
                 <div class="flex items-center space-x-3">
                   <label class="flex items-center">
                     <input type="checkbox" :checked="todosSeleccionados"
@@ -159,7 +160,7 @@
                 </div>
                 <button v-if="estudiantesSeleccionados.size > 0" @click="asignarSeleccionadosAAula"
                   :disabled="asignandoMultiple"
-                  class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50">
+                  class="inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 w-full sm:w-auto">
                   <svg v-if="asignandoMultiple" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none"
                     viewBox="0 0 24 24">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -171,7 +172,7 @@
                 </button>
               </div>
 
-              <div class="overflow-hidden shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+              <div class="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
                 <table class="min-w-full divide-y divide-gray-300 dark:divide-gray-600">
                   <thead class="bg-gray-50 dark:bg-gray-900/50">
                     <tr>

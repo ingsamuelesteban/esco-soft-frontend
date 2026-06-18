@@ -1,9 +1,9 @@
 <template>
-  <div class="flex items-center space-x-3">
+  <div class="flex items-center flex-wrap gap-2 sm:gap-3">
     <label class="text-sm font-medium text-gray-700 dark:text-gray-300">Estado:</label>
-    <div class="flex space-x-2">
+    <div class="flex flex-wrap gap-2">
       <button @click="updateFilter('active')" :class="[
-        'px-3 py-1 text-xs font-medium rounded-full transition-colors',
+        'inline-flex items-center px-3 py-1 text-xs font-medium rounded-full transition-colors',
         currentStatus === 'active'
           ? 'bg-green-100 text-green-800 border border-green-300'
           : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 border border-gray-300 dark:border-gray-600'
@@ -16,7 +16,7 @@
       </button>
 
       <button @click="updateFilter('inactive')" :class="[
-        'px-3 py-1 text-xs font-medium rounded-full transition-colors',
+        'inline-flex items-center px-3 py-1 text-xs font-medium rounded-full transition-colors',
         currentStatus === 'inactive'
           ? 'bg-red-100 text-red-800 border border-red-300'
           : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 border border-gray-300 dark:border-gray-600'
@@ -29,7 +29,7 @@
       </button>
 
       <button @click="updateFilter('retirado')" :class="[
-        'px-3 py-1 text-xs font-medium rounded-full transition-colors',
+        'inline-flex items-center px-3 py-1 text-xs font-medium rounded-full transition-colors',
         currentStatus === 'retirado'
           ? 'bg-orange-100 text-orange-800 border border-orange-300'
           : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 border border-gray-300 dark:border-gray-600'
@@ -42,7 +42,7 @@
       </button>
 
       <button @click="updateFilter('all')" :class="[
-        'px-3 py-1 text-xs font-medium rounded-full transition-colors',
+        'inline-flex items-center px-3 py-1 text-xs font-medium rounded-full transition-colors',
         currentStatus === 'all'
           ? 'bg-blue-100 text-blue-800 border border-blue-300'
           : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 border border-gray-300 dark:border-gray-600'
