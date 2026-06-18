@@ -18,7 +18,7 @@
         </div>
 
         <!-- Tabla -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow ring-1 ring-gray-200 dark:ring-gray-700 overflow-hidden flex-1 overflow-y-auto">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow ring-1 ring-gray-200 dark:ring-gray-700 overflow-x-auto flex-1 overflow-y-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-900/50 sticky top-0 z-10">
                     <tr>
@@ -29,6 +29,18 @@
                         <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                             Precio
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Existencia
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Reservado
+                        </th>
+                        <th scope="col"
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                            Disponible
                         </th>
                         <th scope="col"
                             class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
@@ -49,6 +61,17 @@
                             <div class="text-sm text-gray-900 dark:text-gray-100">${{ parseFloat(article.price).toFixed(2) }}</div>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-900 dark:text-gray-100">{{ article.stock ?? 0 }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm text-gray-500 dark:text-gray-400">{{ article.reserved_stock ?? 0 }}</div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div class="text-sm font-semibold" :class="((article.stock ?? 0) - (article.reserved_stock ?? 0)) > 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
+                                {{ (article.stock ?? 0) - (article.reserved_stock ?? 0) }}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
                             <span :class="[
                                 article.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800',
                                 'px-2 inline-flex text-xs leading-5 font-semibold rounded-full'
@@ -57,6 +80,14 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button @click="addStockPrompt(article)"
+                                title="Agregar existencia"
+                                class="text-green-600 hover:text-green-900 dark:text-green-400 dark:hover:text-green-300 mr-4 flex-inline items-center justify-center">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                        d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </button>
                             <button @click="openModal(article)"
                                 class="text-primary-600 hover:text-primary-900 mr-4 flex-inline items-center justify-center">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -117,7 +148,7 @@
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Nombre</label>
                                             <input type="text" v-model="form.name" required
-                                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                                class="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                                                 placeholder="Ej. Polo Shirt Talla M" />
                                         </div>
                                         <div>
@@ -128,9 +159,15 @@
                                                     <span class="text-gray-500 dark:text-gray-400 sm:text-sm">$</span>
                                                 </div>
                                                 <input type="number" v-model="form.price" required min="0" step="0.01"
-                                                    class="block w-full rounded-md border-0 py-1.5 pl-7 pr-12 text-gray-900 dark:text-gray-100 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
+                                                    class="block w-full rounded-md border-0 py-1.5 pl-7 pr-12 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6"
                                                     placeholder="0.00" />
                                             </div>
+                                        </div>
+                                        <div v-if="!form.id">
+                                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Existencia Inicial</label>
+                                            <input type="number" v-model.number="form.stock" required min="0" step="1"
+                                                class="w-full px-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                                placeholder="0" />
                                         </div>
                                         <div class="flex items-center mt-4">
                                             <input type="checkbox" v-model="form.is_active" id="is_active"
@@ -180,7 +217,8 @@ const form = ref({
     id: null,
     name: '',
     price: 0,
-    is_active: true
+    is_active: true,
+    stock: 0
 })
 
 const fetchArticles = async () => {
@@ -199,14 +237,58 @@ const openModal = (article = null) => {
     if (article) {
         form.value = { ...article }
     } else {
-        form.value = { id: null, name: '', price: 0, is_active: true }
+        form.value = { id: null, name: '', price: 0, is_active: true, stock: 0 }
     }
     isOpen.value = true
 }
 
 const closeModal = () => {
     isOpen.value = false
-    form.value = { id: null, name: '', price: 0, is_active: true }
+    form.value = { id: null, name: '', price: 0, is_active: true, stock: 0 }
+}
+
+const addStockPrompt = async (article) => {
+    const { value: quantity } = await Swal.fire({
+        title: 'Agregar Existencia',
+        text: `¿Cuántas unidades deseas añadir al stock físico de "${article.name}"?`,
+        input: 'number',
+        inputAttributes: {
+            min: 1,
+            step: 1
+        },
+        inputValue: 1,
+        showCancelButton: true,
+        confirmButtonText: 'Añadir',
+        cancelButtonText: 'Cancelar',
+        inputValidator: (value) => {
+            if (!value || parseInt(value) <= 0) {
+                return 'Debes ingresar un número entero mayor a cero.'
+            }
+        }
+    })
+
+    if (quantity) {
+        try {
+            await $api.post(`/api/admission-articles/${article.id}/add-stock`, {
+                quantity: parseInt(quantity)
+            })
+            await fetchArticles()
+            Swal.fire({
+                icon: 'success',
+                title: 'Éxito',
+                text: 'Existencia agregada correctamente',
+                timer: 1500,
+                showConfirmButton: false
+            })
+        } catch (e) {
+            console.error(e)
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: e.response?.data?.message || 'Error al agregar existencia'
+            })
+        }
+    }
 }
 
 const saveArticle = async () => {

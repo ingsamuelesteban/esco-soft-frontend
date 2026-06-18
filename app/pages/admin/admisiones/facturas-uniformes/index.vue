@@ -23,12 +23,12 @@
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Buscar Factura o Estudiante</label>
                 <input type="text" v-model="filters.search" @keyup.enter="fetchInvoices(1)"
                     placeholder="Nº Factura o Nombre..."
-                    class="w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                    class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
             </div>
             <div class="flex-1 min-w-[150px]">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Estado de Pago</label>
                 <select v-model="filters.payment_status" @change="fetchInvoices"
-                    class="w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                    class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
                     <option value="">Todos</option>
                     <option value="pending">Pendiente</option>
                     <option value="paid">Pagado</option>
@@ -37,7 +37,7 @@
             <div class="flex-1">
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Estado de Entrega</label>
                 <select v-model="filters.delivery_status" @change="fetchInvoices"
-                    class="w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                    class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
                     <option value="">Todos</option>
                     <option value="pending">Pendiente</option>
                     <option value="partial">Parcial</option>
@@ -53,7 +53,7 @@
         </div>
 
         <!-- Tabla -->
-        <div class="bg-white dark:bg-gray-800 rounded-lg shadow ring-1 ring-gray-200 dark:ring-gray-700 overflow-hidden flex-1 overflow-y-auto">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow ring-1 ring-gray-200 dark:ring-gray-700 overflow-x-auto flex-1 overflow-y-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                 <thead class="bg-gray-50 dark:bg-gray-900/50 sticky top-0 z-10">
                     <tr>
@@ -185,7 +185,7 @@
                                                             <input type="number" v-model="abonoAmount" min="1"
                                                                 :max="parseFloat(selectedInvoice.total_amount) - parseFloat(selectedInvoice.amount_paid || 0)"
                                                                 step="0.01"
-                                                                class="block w-full rounded-md border-gray-300 dark:border-gray-600 pl-7 focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                                                                class="block w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 pl-7 focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
                                                         </div>
                                                     </div>
                                                     <button @click.prevent="registerAbono" type="button"
@@ -201,42 +201,44 @@
                                         <div>
                                             <h4 class="text-sm font-medium text-gray-900 dark:text-gray-100 mb-4">Artículos a Entregar</h4>
 
-                                            <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-                                                <thead class="bg-gray-50 dark:bg-gray-900/50">
-                                                    <tr>
-                                                        <th
-                                                            class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
-                                                            Artículo</th>
-                                                        <th
-                                                            class="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
-                                                            Solicitado</th>
-                                                        <th
-                                                            class="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
-                                                            Pendiente</th>
-                                                        <th
-                                                            class="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
-                                                            Marcar Entrega</th>
-                                                    </tr>
-                                                </thead>
-                                                <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
-                                                    <tr v-for="(detail, index) in selectedInvoice.details"
-                                                        :key="detail.id">
-                                                        <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{
-                                                            detail.article?.name }}</td>
-                                                        <td class="px-4 py-3 text-sm text-center text-gray-900 dark:text-gray-100">{{
-                                                            detail.quantity }}</td>
-                                                        <td
-                                                            class="px-4 py-3 text-sm text-center text-red-600 font-medium">
-                                                            {{ detail.pending_quantity }}</td>
-                                                        <td class="px-4 py-3 text-sm text-center">
-                                                            <input type="number" v-model.number="deliveries[detail.id]"
-                                                                min="0" :max="detail.pending_quantity"
-                                                                :disabled="detail.pending_quantity === 0"
-                                                                class="w-20 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm text-center disabled:opacity-50">
-                                                        </td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
+                                            <div class="overflow-x-auto">
+                                                <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+                                                    <thead class="bg-gray-50 dark:bg-gray-900/50">
+                                                        <tr>
+                                                            <th
+                                                                class="px-4 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                                                                Artículo</th>
+                                                            <th
+                                                                class="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                                                                Solicitado</th>
+                                                            <th
+                                                                class="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                                                                Pendiente</th>
+                                                            <th
+                                                                class="px-4 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">
+                                                                Marcar Entrega</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="divide-y divide-gray-200 dark:divide-gray-700">
+                                                        <tr v-for="(detail, index) in selectedInvoice.details"
+                                                            :key="detail.id">
+                                                            <td class="px-4 py-3 text-sm text-gray-900 dark:text-gray-100">{{
+                                                                detail.article?.name }}</td>
+                                                            <td class="px-4 py-3 text-sm text-center text-gray-900 dark:text-gray-100">{{
+                                                                detail.quantity }}</td>
+                                                            <td
+                                                                class="px-4 py-3 text-sm text-center text-red-600 font-medium">
+                                                                {{ detail.pending_quantity }}</td>
+                                                            <td class="px-4 py-3 text-sm text-center">
+                                                                <input type="number" v-model.number="deliveries[detail.id]"
+                                                                    min="0" :max="detail.pending_quantity"
+                                                                    :disabled="detail.pending_quantity === 0"
+                                                                    class="w-20 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm text-center disabled:opacity-50">
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
                                         </div>
                                     </div>
                                     <div
@@ -311,7 +313,7 @@
                                                 <div class="flex gap-2">
                                                     <input type="text" v-model="searchQuery"
                                                         @keyup.enter="searchStudents"
-                                                        class="w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                                                        class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
                                                         placeholder="Ej. Juan Pérez">
                                                     <button type="button" @click="searchStudents"
                                                         class="inline-flex justify-center rounded-md border border-transparent bg-primary-600 px-3 py-2 text-sm font-medium text-white hover:bg-primary-700">Buscar</button>
@@ -358,7 +360,7 @@
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notas
                                                 (Opcional)</label>
                                             <textarea v-model="createNotes" rows="3"
-                                                class="w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                                                class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
                                                 placeholder="Observaciones de la factura..."></textarea>
                                         </div>
                                     </div>
@@ -379,8 +381,12 @@
                                                     <div>
                                                         <div class="font-medium text-sm text-gray-900 dark:text-gray-100">{{ article.name
                                                             }}</div>
-                                                        <div class="text-sm text-primary-600 font-semibold">${{
-                                                            parseFloat(article.price).toFixed(2) }}</div>
+                                                        <div class="flex items-center gap-2 mt-1">
+                                                            <span class="text-sm text-primary-600 font-semibold">${{ parseFloat(article.price).toFixed(2) }}</span>
+                                                            <span class="text-xs px-2 py-0.5 rounded-full font-medium" :class="((article.stock ?? 0) - (article.reserved_stock ?? 0)) > 0 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'">
+                                                                Disp: {{ (article.stock ?? 0) - (article.reserved_stock ?? 0) }}
+                                                            </span>
+                                                        </div>
                                                     </div>
                                                     <button type="button" @click="addToCart(article)"
                                                         class="inline-flex items-center p-1.5 border border-transparent rounded-full shadow-sm text-white bg-primary-600 hover:bg-primary-700">
@@ -682,15 +688,44 @@ const clearStudent = () => {
 }
 
 const addToCart = (article) => {
+    const available = (article.stock ?? 0) - (article.reserved_stock ?? 0)
     const existing = cart.value.find(i => i.article.id === article.id)
     if (existing) {
+        if (existing.quantity >= available) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Existencia límite alcanzada',
+                text: `No puedes facturar más unidades de las disponibles (${available}) para el artículo "${article.name}".`
+            })
+            return
+        }
         existing.quantity++
     } else {
+        if (available <= 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Sin existencia disponible',
+                text: `El artículo "${article.name}" no tiene existencias disponibles para facturar.`
+            })
+            return
+        }
         cart.value.push({ article, quantity: 1 })
     }
 }
 
-const increaseQty = (index) => cart.value[index].quantity++
+const increaseQty = (index) => {
+    const item = cart.value[index]
+    const available = (item.article.stock ?? 0) - (item.article.reserved_stock ?? 0)
+    if (item.quantity >= available) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Existencia límite alcanzada',
+            text: `No puedes facturar más unidades de las disponibles (${available}) para el artículo "${item.article.name}".`
+        })
+        return
+    }
+    item.quantity++
+}
 const decreaseQty = (index) => {
     if (cart.value[index].quantity > 1) {
         cart.value[index].quantity--
