@@ -1522,7 +1522,7 @@ const generateStudentReport = async () => {
    loadingGenerate.value = true
    startLoadingModal('Generando Boletín de Calificaciones')
    try {
-      let url = `/api/reports/grades/student?estudiante_id=${selectedStudent.value.id}&period=${selectedPeriod.value}`
+      let url = `/api/reports/grades/student?estudiante_id=${selectedStudent.value.id}&period=${selectedPeriod.value}&_t=${Date.now()}`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const blob = await api.get(url, { responseType: 'blob' }) as Blob
@@ -1549,7 +1549,7 @@ const previewStudentReport = async () => {
    reportPreview.value = null
    startLoadingModal('Cargando Vista Previa del Boletín')
    try {
-      let url = `/api/reports/grades/student?estudiante_id=${selectedStudent.value.id}&period=${selectedPeriod.value}&format=json`
+      let url = `/api/reports/grades/student?estudiante_id=${selectedStudent.value.id}&period=${selectedPeriod.value}&format=json&_t=${Date.now()}`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const res = await api.get(url)
@@ -1849,7 +1849,7 @@ const downloadAulaFinalUnified = async (
    loadingAulaZip.value = true
    startLoadingModal('Generando PDF Unificado de Boletines')
    try {
-      let url = `/api/reports/grades/final-aula-unified?aula_id=${selectedAulaFinal.value}&with_signature=${withSignature}`
+      let url = `/api/reports/grades/final-aula-unified?aula_id=${selectedAulaFinal.value}&with_signature=${withSignature}&_t=${Date.now()}`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
       if (observacion) url += `&observacion=${encodeURIComponent(observacion)}`
       if (selectedStudents.length > 0) url += `&selected_students=${selectedStudents.join(',')}`
@@ -1887,7 +1887,7 @@ const downloadAulaFinalZip = async (
    loadingAulaZip.value = true
    startLoadingModal('Generando ZIP de Boletines del Aula')
    try {
-      let url = `/api/reports/grades/final-aula?aula_id=${selectedAulaFinal.value}&with_signature=${withSignature}`
+      let url = `/api/reports/grades/final-aula?aula_id=${selectedAulaFinal.value}&with_signature=${withSignature}&_t=${Date.now()}`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
       if (observacion) url += `&observacion=${encodeURIComponent(observacion)}`
       if (selectedStudents.length > 0) url += `&selected_students=${selectedStudents.join(',')}`
@@ -1983,7 +1983,7 @@ const generateFinalReport = async () => {
       loadingGenerate.value = true
       startLoadingModal('Generando Boletín Final')
       try {
-         let url = `/api/reports/grades/final?estudiante_id=${selectedFinalStudent.value.id}&with_signature=${withSignature}`
+         let url = `/api/reports/grades/final?estudiante_id=${selectedFinalStudent.value.id}&with_signature=${withSignature}&_t=${Date.now()}`
          if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
          if (observationText.value) url += `&observacion=${encodeURIComponent(observationText.value)}`
 
@@ -2012,7 +2012,7 @@ const previewFinalReport = async () => {
    finalPreview.value = null
    startLoadingModal('Cargando Vista Previa del Boletín Final')
    try {
-      let url = `/api/reports/grades/final?estudiante_id=${selectedFinalStudent.value.id}&format=json`
+      let url = `/api/reports/grades/final?estudiante_id=${selectedFinalStudent.value.id}&format=json&_t=${Date.now()}`
       if (selectedAnioId.value) url += `&year_id=${selectedAnioId.value}`
 
       const response = await api.get(url)
