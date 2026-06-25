@@ -93,7 +93,7 @@
                 <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
                 <div
-                    class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                    class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl lg:max-w-4xl sm:w-full">
                     <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                         <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100" id="modal-title">
                             {{ isEditing ? 'Editar Institución' : 'Nueva Institución' }}
@@ -123,29 +123,29 @@
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</label>
                                     <input v-model="form.name" type="text"
-                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Abreviatura</label>
                                     <input v-model="form.abbreviation" type="text" maxlength="10" required
-                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Dominio (opcional)</label>
                                     <input v-model="form.domain" type="text"
-                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Dirección</label>
                                     <input v-model="form.address" type="text"
-                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                 </div>
 
-                                <div class="grid grid-cols-2 gap-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Provincia</label>
                                         <select v-model="form.provincia" @change="fetchMunicipiosConfig" required
-                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                             <option value="" disabled>Seleccione provincia</option>
                                             <option v-for="prov in provinciasList" :key="prov.id" :value="prov.nombre">
                                                 {{ prov.nombre }}
@@ -155,7 +155,7 @@
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Municipio</label>
                                         <select v-model="form.municipio" required :disabled="!form.provincia"
-                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                             <option value="" disabled>Seleccione municipio</option>
                                             <option v-for="mun in municipiosList" :key="mun.nombre" :value="mun.nombre">
                                                 {{ mun.nombre }}
@@ -163,22 +163,22 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="grid grid-cols-2 gap-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Teléfono</label>
                                         <input v-model="form.phone" type="text"
-                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
                                         <input v-model="form.email" type="email"
-                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                     </div>
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Sitio Web</label>
                                     <input v-model="form.website" type="url"
-                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                 </div>
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Logo</label>
@@ -201,15 +201,15 @@
 
                              <!-- Tab: Página Pública -->
                             <div v-if="activeTab === 'public'" class="space-y-6">
-                                <div class="bg-primary-50 p-4 rounded-lg border border-primary-100 mb-4">
+                                <div class="bg-primary-50 dark:bg-primary-900/30 p-4 rounded-lg border border-primary-100 dark:border-primary-800/30 mb-4">
                                     <div class="flex items-center">
                                         <input v-model="form.public_pages_enabled" type="checkbox" id="public_enabled"
                                             class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
-                                        <label for="public_enabled" class="ml-2 block text-sm font-medium text-primary-900">
+                                        <label for="public_enabled" class="ml-2 block text-sm font-medium text-primary-900 dark:text-primary-100">
                                             Habilitar página pública informativa
                                         </label>
                                     </div>
-                                    <p class="mt-1 text-xs text-primary-700 ml-6">
+                                    <p class="mt-1 text-xs text-primary-700 dark:text-primary-300 ml-6">
                                         Si está desactivado, el subdominio redirigirá directamente al login.
                                     </p>
                                 </div>
@@ -218,7 +218,7 @@
                                 <div>
                                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descripción Pública (Landing)</label>
                                     <textarea v-model="form.public_description" rows="3"
-                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                        class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                                         placeholder="Breve descripción que aparecerá en la página de inicio..."></textarea>
                                 </div>
 
@@ -230,7 +230,7 @@
                                                 class="h-20 w-32 object-cover rounded border border-gray-200 dark:border-gray-700">
                                         </div>
                                         <input type="file" @change="onHeroImageChange" accept="image/*" 
-                                            class="text-xs text-gray-500 dark:text-gray-400 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100" />
+                                            class="text-xs text-gray-500 dark:text-gray-400 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-primary-50 dark:file:bg-primary-900/30 file:text-primary-700 dark:file:text-primary-300 hover:file:bg-primary-100 dark:hover:file:bg-primary-800/50" />
                                     </div>
                                 </div>
 
@@ -240,17 +240,17 @@
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Misión</label>
                                         <textarea v-model="form.mission" rows="2"
-                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"></textarea>
+                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"></textarea>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Visión</label>
                                         <textarea v-model="form.vision" rows="2"
-                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"></textarea>
+                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"></textarea>
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Valores</label>
                                         <textarea v-model="form.values" rows="2"
-                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"></textarea>
+                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"></textarea>
                                     </div>
                                 </div>
 
@@ -261,12 +261,12 @@
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre del Director</label>
                                             <input v-model="form.director_name" type="text"
-                                                class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                                class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                         </div>
                                         <div>
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Biografía/Mensaje del Director</label>
                                             <textarea v-model="form.director_bio" rows="4"
-                                                class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
+                                                class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"
                                                 placeholder="Escriba aquí la biografía o un mensaje de bienvenida del director..."></textarea>
                                         </div>
                                         <div>
@@ -277,7 +277,7 @@
                                                         class="h-16 w-16 object-cover rounded-full border border-gray-200 dark:border-gray-700">
                                                 </div>
                                                 <input type="file" @change="onDirectorImageChange" accept="image/*"
-                                                    class="text-xs text-gray-500 dark:text-gray-400 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100" />
+                                                    class="text-xs text-gray-500 dark:text-gray-400 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-primary-50 dark:file:bg-primary-900/30 file:text-primary-700 dark:file:text-primary-300 hover:file:bg-primary-100 dark:hover:file:bg-primary-800/50" />
                                             </div>
                                         </div>
                                     </div>
@@ -286,26 +286,26 @@
                                 <!-- Social Media -->
                                 <div class="border-t border-gray-200 dark:border-gray-700 pt-4">
                                     <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">Redes Sociales</h4>
-                                    <div class="grid grid-cols-2 gap-4">
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div>
                                             <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 italic">Facebook</label>
                                             <input v-model="form.social_media.facebook" type="text" placeholder="https://..."
-                                                class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-xs">
+                                                class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-xs">
                                         </div>
                                         <div>
                                             <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 italic">Instagram</label>
                                             <input v-model="form.social_media.instagram" type="text" placeholder="https://..."
-                                                class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-xs">
+                                                class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-xs">
                                         </div>
                                         <div>
                                             <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 italic">Twitter / X</label>
                                             <input v-model="form.social_media.twitter" type="text" placeholder="https://..."
-                                                class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-xs">
+                                                class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-xs">
                                         </div>
                                         <div>
                                             <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 italic">YouTube</label>
                                             <input v-model="form.social_media.youtube" type="text" placeholder="https://..."
-                                                class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-xs">
+                                                class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-xs">
                                         </div>
                                     </div>
                                 </div>
@@ -313,21 +313,21 @@
 
                             <!-- Tab: Firmas / Reportes -->
                             <div v-if="activeTab === 'reports'" class="space-y-4">
-                                <div class="bg-blue-50 p-3 rounded-lg border border-blue-100 mb-2">
-                                    <p class="text-xs text-blue-800">
+                                <div class="bg-blue-50 dark:bg-blue-900/30 p-3 rounded-lg border border-blue-100 dark:border-blue-800/30 mb-2">
+                                    <p class="text-xs text-blue-800 dark:text-blue-300">
                                         Configure los datos del Ministerio o Distrito que aparecerán en los encabezados de los reportes y actas oficiales.
                                     </p>
                                 </div>
-                                <div class="grid grid-cols-2 gap-4">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Departamento </label>
                                         <input v-model="form.departamento" type="text" placeholder="Ejem: La Altagracia"
-                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                     </div>
                                     <div>
                                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Distrito Educativo</label>
                                         <input v-model="form.distrito" type="text" placeholder="Ejem: 12-01"
-                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                            class="mt-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
                                     </div>
                                 </div>
                                 
@@ -338,7 +338,18 @@
                                             <img :src="logoDepartamentoPreview || form.logo_departamento" class="h-16 w-16 object-contain border rounded p-1">
                                         </div>
                                         <input type="file" @change="onLogoDepartamentoChange" accept="image/*"
-                                            class="text-xs text-gray-500 dark:text-gray-400 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100" />
+                                            class="text-xs text-gray-500 dark:text-gray-400 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-primary-50 dark:file:bg-primary-900/30 file:text-primary-700 dark:file:text-primary-300 hover:file:bg-primary-100 dark:hover:file:bg-primary-800/50" />
+                                    </div>
+                                </div>
+
+                                <div class="border-t border-gray-100 dark:border-gray-700 pt-3">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Logo del MINERD</label>
+                                    <div class="mt-1 flex items-center">
+                                        <div v-if="logoMinerdPreview || form.logo_minerd" class="mr-4">
+                                            <img :src="logoMinerdPreview || form.logo_minerd" class="h-16 w-16 object-contain border rounded p-1">
+                                        </div>
+                                        <input type="file" @change="onLogoMinerdChange" accept="image/*"
+                                            class="text-xs text-gray-500 dark:text-gray-400 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-primary-50 dark:file:bg-primary-900/30 file:text-primary-700 dark:file:text-primary-300 hover:file:bg-primary-100 dark:hover:file:bg-primary-800/50" />
                                     </div>
                                 </div>
 
@@ -349,7 +360,7 @@
                                             <img :src="selloInstitucionalPreview || form.sello_institucional" class="h-20 w-20 object-contain border rounded p-1">
                                         </div>
                                         <input type="file" @change="onSelloInstitucionalChange" accept="image/*"
-                                            class="text-xs text-gray-500 dark:text-gray-400 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100" />
+                                            class="text-xs text-gray-500 dark:text-gray-400 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-primary-50 dark:file:bg-primary-900/30 file:text-primary-700 dark:file:text-primary-300 hover:file:bg-primary-100 dark:hover:file:bg-primary-800/50" />
                                     </div>
                                     <p class="mt-1 text-[10px] text-gray-400 italic">Este sello aparecerá como fondo en los certificados y documentos oficiales generados.</p>
                                 </div>
@@ -407,6 +418,7 @@ const form = reactive({
     departamento: '',
     distrito: '',
     logo_departamento: '',
+    logo_minerd: '',
     provincia: '',
     municipio: '',
     sello_institucional: '',
@@ -480,6 +492,7 @@ const openCreateModal = () => {
         departamento: '',
         distrito: '',
         logo_departamento: '',
+        logo_minerd: '',
         provincia: '',
         municipio: '',
         sello_institucional: '',
@@ -503,6 +516,8 @@ const openCreateModal = () => {
     logoPreview.value = null
     logoDepartamentoFile.value = null
     logoDepartamentoPreview.value = null
+    logoMinerdFile.value = null
+    logoMinerdPreview.value = null
     selloInstitucionalFile.value = null
     selloInstitucionalPreview.value = null
     heroImageFile.value = null
@@ -528,6 +543,7 @@ const editTenant = (tenant: Tenant) => {
         departamento: tenant.departamento || '',
         distrito: tenant.distrito || '',
         logo_departamento: tenant.logo_departamento || '',
+        logo_minerd: tenant.logo_minerd || '',
         provincia: tenant.provincia || '',
         municipio: tenant.municipio || '',
         sello_institucional: tenant.sello_institucional || '',
@@ -555,6 +571,8 @@ const editTenant = (tenant: Tenant) => {
     logoPreview.value = null
     logoDepartamentoFile.value = null
     logoDepartamentoPreview.value = null
+    logoMinerdFile.value = null
+    logoMinerdPreview.value = null
     selloInstitucionalFile.value = null
     selloInstitucionalPreview.value = null
     heroImageFile.value = null
@@ -573,6 +591,9 @@ const logoPreview = ref<string | null>(null)
 
 const logoDepartamentoFile = ref<File | null>(null)
 const logoDepartamentoPreview = ref<string | null>(null)
+
+const logoMinerdFile = ref<File | null>(null)
+const logoMinerdPreview = ref<string | null>(null)
 
 const selloInstitucionalFile = ref<File | null>(null)
 const selloInstitucionalPreview = ref<string | null>(null)
@@ -596,6 +617,14 @@ const onLogoDepartamentoChange = (event: Event) => {
     if (input.files && input.files[0]) {
         logoDepartamentoFile.value = input.files[0]
         logoDepartamentoPreview.value = URL.createObjectURL(input.files[0])
+    }
+}
+
+const onLogoMinerdChange = (event: Event) => {
+    const input = event.target as HTMLInputElement
+    if (input.files && input.files[0]) {
+        logoMinerdFile.value = input.files[0]
+        logoMinerdPreview.value = URL.createObjectURL(input.files[0])
     }
 }
 
@@ -666,6 +695,10 @@ const saveTenant = async () => {
 
         if (logoDepartamentoFile.value) {
             formData.append('logo_departamento', logoDepartamentoFile.value)
+        }
+
+        if (logoMinerdFile.value) {
+            formData.append('logo_minerd', logoMinerdFile.value)
         }
 
         if (selloInstitucionalFile.value) {

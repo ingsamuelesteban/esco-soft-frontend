@@ -44,7 +44,7 @@
                 <div v-if="authStore.isAdmin || authStore.isMaster" class="w-full sm:w-64">
                     <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Empleado</label>
                     <select v-model="filters.personal_id" @change="loadRequests"
-                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500">
+                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500">
                         <option :value="undefined">Todos</option>
                         <option v-for="p in personalList" :key="p.id" :value="p.id">
                             {{ p.nombre }} {{ p.apellido }}
@@ -55,7 +55,7 @@
                 <div class="w-full sm:w-48">
                     <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Tipo de Permiso</label>
                     <select v-model="filters.leave_type" @change="loadRequests"
-                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500">
+                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500">
                         <option :value="undefined">Todos</option>
                         <option value="vacaciones">Vacaciones</option>
                         <option value="personal">Personal</option>
@@ -166,7 +166,7 @@
                             Ver Detalles
                         </button>
                         <button v-if="authStore.isAdmin || authStore.isMaster" @click="deleteRequest(request)"
-                            class="px-3 py-1.5 text-sm text-red-700 bg-red-100 hover:bg-red-200 rounded-lg transition-colors">
+                            class="px-3 py-1.5 text-sm text-red-700 dark:text-red-300 bg-red-100 dark:bg-red-900/50 hover:bg-red-200 dark:hover:bg-red-800/50 rounded-lg transition-colors">
                             Eliminar
                         </button>
                     </div>
@@ -379,9 +379,9 @@ const getStatusLabel = (status: string) => {
 
 const getStatusClass = (status: string) => {
     const classes: Record<string, string> = {
-        pendiente: 'bg-yellow-100 text-yellow-800',
-        aprobado: 'bg-green-100 text-green-800',
-        rechazado: 'bg-red-100 text-red-800',
+        pendiente: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-300',
+        aprobado: 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300',
+        rechazado: 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300',
         cancelado: 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'
     }
     return classes[status] || 'bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200'

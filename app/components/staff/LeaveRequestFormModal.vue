@@ -21,7 +21,7 @@
                         Empleado <span class="text-red-500">*</span>
                     </label>
                     <select v-model="form.personal_id" required
-                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
+                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
                         :class="{ 'border-red-500': errors.personal_id }">
                         <option value="">Seleccione un empleado</option>
                         <option v-for="p in personalList" :key="p.id" :value="p.id">
@@ -32,9 +32,9 @@
                 </div>
 
                 <!-- Info Empleado (Para usuarios normales) -->
-                <div v-else class="bg-blue-50 p-4 rounded-lg flex items-center gap-4 border border-blue-100">
+                <div v-else class="bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg flex items-center gap-4 border border-blue-100 dark:border-blue-800/50">
                     <div
-                        class="h-12 w-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold text-lg">
+                        class="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-800 flex items-center justify-center text-blue-600 dark:text-blue-200 font-bold text-lg">
                         {{ user?.initials }}
                     </div>
                     <div>
@@ -49,7 +49,7 @@
                         Tipo de Permiso <span class="text-red-500">*</span>
                     </label>
                     <select v-model="form.leave_type" required
-                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
+                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
                         :class="{ 'border-red-500': errors.leave_type }">
                         <option value="">Seleccione un tipo</option>
                         <option value="express">Permiso Express (Horas)</option>
@@ -66,23 +66,23 @@
 
                 <!-- Horas para Permiso Express -->
                 <div v-if="form.leave_type === 'express'"
-                    class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+                    class="grid grid-cols-1 md:grid-cols-2 gap-4 bg-yellow-50 dark:bg-yellow-900/30 p-4 rounded-lg border border-yellow-200 dark:border-yellow-800/50">
                     <div>
                         <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
                             Hora Inicio <span class="text-red-500">*</span>
                         </label>
                         <div class="flex gap-2">
                             <select v-model="startTime12.hour" @change="updateStartTime"
-                                class="rounded-lg border-gray-300 dark:border-gray-600 w-full text-sm">
+                                class="rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 w-full text-sm">
                                 <option v-for="h in hours" :key="h" :value="h">{{ h }}</option>
                             </select>
                             <span class="self-center font-bold">:</span>
                             <select v-model="startTime12.minute" @change="updateStartTime"
-                                class="rounded-lg border-gray-300 dark:border-gray-600 w-full text-sm">
+                                class="rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 w-full text-sm">
                                 <option v-for="m in minutes" :key="m" :value="m">{{ m }}</option>
                             </select>
                             <select v-model="startTime12.ampm" @change="updateStartTime"
-                                class="rounded-lg border-gray-300 dark:border-gray-600 w-full text-sm font-semibold">
+                                class="rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 w-full text-sm font-semibold">
                                 <option v-for="p in periods" :key="p" :value="p">{{ p }}</option>
                             </select>
                         </div>
@@ -94,16 +94,16 @@
                         </label>
                         <div class="flex gap-2">
                             <select v-model="endTime12.hour" @change="updateEndTime"
-                                class="rounded-lg border-gray-300 dark:border-gray-600 w-full text-sm">
+                                class="rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 w-full text-sm">
                                 <option v-for="h in hours" :key="h" :value="h">{{ h }}</option>
                             </select>
                             <span class="self-center font-bold">:</span>
                             <select v-model="endTime12.minute" @change="updateEndTime"
-                                class="rounded-lg border-gray-300 dark:border-gray-600 w-full text-sm">
+                                class="rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 w-full text-sm">
                                 <option v-for="m in minutes" :key="m" :value="m">{{ m }}</option>
                             </select>
                             <select v-model="endTime12.ampm" @change="updateEndTime"
-                                class="rounded-lg border-gray-300 dark:border-gray-600 w-full text-sm font-semibold">
+                                class="rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 w-full text-sm font-semibold">
                                 <option v-for="p in periods" :key="p" :value="p">{{ p }}</option>
                             </select>
                         </div>
@@ -119,7 +119,7 @@
                             Fecha del Permiso <span class="text-red-500">*</span>
                         </label>
                         <input v-model="form.start_date" type="date" required
-                            class="w-full rounded-lg border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
+                            class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
                             :class="{ 'border-red-500': errors.start_date }" />
                         <p v-if="errors.start_date" class="mt-1 text-sm text-red-600">{{ errors.start_date }}</p>
                     </div>
@@ -131,7 +131,7 @@
                                 Fecha de Inicio <span class="text-red-500">*</span>
                             </label>
                             <input v-model="form.start_date" type="date" required
-                                class="w-full rounded-lg border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
+                                class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
                                 :class="{ 'border-red-500': errors.start_date }" />
                             <p v-if="errors.start_date" class="mt-1 text-sm text-red-600">{{ errors.start_date }}</p>
                         </div>
@@ -141,7 +141,7 @@
                                 Fecha de Fin <span class="text-red-500">*</span>
                             </label>
                             <input v-model="form.end_date" type="date" required :min="form.start_date"
-                                class="w-full rounded-lg border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
+                                class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
                                 :class="{ 'border-red-500': errors.end_date }" />
                             <p v-if="errors.end_date" class="mt-1 text-sm text-red-600">{{ errors.end_date }}</p>
                         </div>
@@ -150,8 +150,8 @@
 
                 <!-- Días calculados -->
                 <!-- Días calculados / Info Express -->
-                <div v-if="form.start_date && form.end_date" class="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                    <div v-if="calculatingDays" class="flex items-center gap-2 text-blue-800">
+                <div v-if="form.start_date && form.end_date" class="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800/50 rounded-lg p-3">
+                    <div v-if="calculatingDays" class="flex items-center gap-2 text-blue-800 dark:text-blue-300">
                         <svg class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
                             </circle>
@@ -165,7 +165,7 @@
                         <!-- Normal Leave -->
                         <div v-if="form.leave_type !== 'express'">
                             <div class="flex justify-between items-center mb-2">
-                                <p class="text-sm text-blue-800">
+                                <p class="text-sm text-blue-800 dark:text-blue-300">
                                     <span class="font-semibold">Días a descontar:</span> {{ calculatedDays }} días
                                 </p>
                             </div>
@@ -190,13 +190,13 @@
                         </div>
 
                         <!-- Express Leave Info -->
-                        <div v-else class="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                        <div v-else class="bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-200 dark:border-yellow-800/50 rounded-lg p-3">
                             <div class="flex justify-between items-center mb-2" v-if="expressDuration">
-                                <p class="text-sm text-yellow-800">
+                                <p class="text-sm text-yellow-800 dark:text-yellow-300">
                                     <span class="font-semibold">Tiempo solicitado:</span> {{ expressDuration }}
                                 </p>
                             </div>
-                            <p class="text-sm text-yellow-800">
+                            <p class="text-sm text-yellow-800 dark:text-yellow-300">
                                 <span class="font-semibold">Importante:</span> El horario permitido para permisos
                                 express es únicamente
                                 de <strong>8:00 AM a 4:00 PM</strong>.
@@ -212,7 +212,7 @@
                     </label>
                     <textarea v-model="form.reason" required rows="4" maxlength="1000"
                         placeholder="Describa el motivo de la solicitud..."
-                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"
+                        class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"
                         :class="{ 'border-red-500': errors.reason }"></textarea>
                     <div class="mt-1 flex justify-between items-center">
                         <p class="text-xs text-gray-500 dark:text-gray-400">Mínimo 10 caracteres</p>
@@ -239,8 +239,8 @@
                     <div v-if="usingStoredSignature"
                         class="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex items-center justify-between">
                         <div class="flex items-center gap-3">
-                            <div class="bg-green-100 p-2 rounded-full">
-                                <svg class="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24"
+                            <div class="bg-green-100 dark:bg-green-900/50 p-2 rounded-full">
+                                <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24"
                                     stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M5 13l4 4L19 7" />
@@ -252,8 +252,8 @@
                             </div>
                         </div>
                         <button type="button" @click="useManualSignature"
-                            class="text-sm text-blue-600 hover:text-blue-800 hover:underline">
-                            Firmarmanualmente
+                            class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline">
+                            Firmar manualmente
                         </button>
                     </div>
                     <div v-else>

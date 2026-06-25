@@ -17,7 +17,7 @@
                 <div class="bg-gray-50 dark:bg-gray-900/50 rounded-lg p-4 border border-gray-200 dark:border-gray-700">
                     <div class="flex items-center gap-3 mb-3">
                         <div
-                            class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-bold">
+                            class="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/50 flex items-center justify-center text-blue-600 dark:text-blue-300 font-bold">
                             {{ request.personal?.nombre[0] }}{{ request.personal?.apellido[0] }}
                         </div>
                         <div>
@@ -26,7 +26,7 @@
                             <p class="text-xs text-gray-500 dark:text-gray-400">{{ request.personal?.cedula }}</p>
                         </div>
                     </div>
-                    <div class="grid grid-cols-2 gap-4 text-sm">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                         <div>
                             <span class="text-gray-500 dark:text-gray-400 block">Tipo:</span>
                             <span class="font-medium text-gray-900 dark:text-gray-100">{{ request.leave_type }}</span>
@@ -53,7 +53,7 @@
                                 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1 block">Evidencia
                                 del Empleado</span>
                             <button @click="printFile('/api/staff/leave-requests/' + request.id + '/download?type=request')"
-                                class="inline-flex items-center gap-2 px-3 py-2 bg-blue-50 text-blue-700 rounded-lg text-sm hover:bg-blue-100 transition-colors w-fit">
+                                class="inline-flex items-center gap-2 px-3 py-2 bg-blue-50 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300 rounded-lg text-sm hover:bg-blue-100 dark:hover:bg-blue-800/50 transition-colors w-fit">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13" />
@@ -67,7 +67,7 @@
                                 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1 block">Adjunto
                                 de Aprobación</span>
                             <button @click="printFile('/api/staff/leave-requests/' + request.id + '/download?type=approval')"
-                                class="inline-flex items-center gap-2 px-3 py-2 bg-green-50 text-green-700 rounded-lg text-sm hover:bg-green-100 transition-colors w-fit">
+                                class="inline-flex items-center gap-2 px-3 py-2 bg-green-50 dark:bg-green-900/50 text-green-700 dark:text-green-300 rounded-lg text-sm hover:bg-green-100 dark:hover:bg-green-800/50 transition-colors w-fit">
                                 <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                         d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -86,7 +86,7 @@
                         </label>
                         <textarea v-model="form.review_notes" rows="3"
                             placeholder="Comentarios sobre la aprobación o rechazo..."
-                            class="w-full rounded-lg border-gray-300 dark:border-gray-600 focus:border-blue-500 focus:ring-blue-500"></textarea>
+                            class="w-full rounded-lg border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 focus:border-blue-500 focus:ring-blue-500"></textarea>
                     </div>
 
                     <div>
@@ -101,8 +101,8 @@
                         </label>
                         <div v-if="usingStoredSignature" class="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex items-center justify-between">
                             <div class="flex items-center gap-3">
-                                <div class="bg-green-100 p-2 rounded-full">
-                                    <svg class="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <div class="bg-green-100 dark:bg-green-900/50 p-2 rounded-full">
+                                    <svg class="w-6 h-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
                                     </svg>
                                 </div>
@@ -111,7 +111,7 @@
                                     <p class="text-xs text-gray-500 dark:text-gray-400">Se utilizará su firma registrada en el perfil</p>
                                 </div>
                             </div>
-                            <button type="button" @click="useManualSignature" class="text-sm text-blue-600 hover:text-blue-800 hover:underline">
+                            <button type="button" @click="useManualSignature" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline">
                                 Firmar manualmente
                             </button>
                         </div>
@@ -119,7 +119,7 @@
                             <SignaturePad ref="signaturePadRef" @update="handleSignatureUpdate"
                                 @change="handleSignatureChange" />
                             <div v-if="authStore.user?.digital_signature_path" class="mt-2 text-right">
-                                <button type="button" @click="loadStoredSignature" class="text-sm text-blue-600 hover:text-blue-800 hover:underline">
+                                <button type="button" @click="loadStoredSignature" class="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 hover:underline">
                                     Usar firma guardada
                                 </button>
                             </div>
