@@ -234,7 +234,7 @@
                 <!-- Firma Digital -->
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                        Firma del Empleado <span class="text-red-500">*</span>
+                        Firma del Empleado (Opcional)
                     </label>
                     <div v-if="usingStoredSignature"
                         class="bg-gray-50 dark:bg-gray-900/50 border border-gray-200 dark:border-gray-700 rounded-lg p-4 flex items-center justify-between">
@@ -278,7 +278,7 @@
                         class="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 rounded-lg transition-colors">
                         Cancelar
                     </button>
-                    <button type="submit" :disabled="submitting || signatureEmpty"
+                    <button type="submit" :disabled="submitting"
                         class="px-4 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed flex items-center gap-2">
                         <svg v-if="submitting" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
                             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4">
@@ -571,11 +571,6 @@ const handleSubmit = async () => {
         errors.value.reason = 'El motivo debe tener al menos 10 caracteres'
         return
     }
-    if (signatureEmpty.value) {
-        errors.value.employee_signature = 'La firma es obligatoria'
-        return
-    }
-
     submitting.value = true
 
     try {
