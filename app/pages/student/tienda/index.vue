@@ -28,8 +28,11 @@
                             class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow border border-gray-100 dark:border-gray-700 flex flex-col">
                             <div class="p-6 flex-1 flex flex-col">
                                 <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 mb-2">{{ article.name }}</h3>
-                                <p class="text-2xl font-black text-primary-600 dark:text-primary-400 mb-4">${{
+                                <p class="text-2xl font-black text-primary-600 dark:text-primary-400 mb-2">${{
                                     parseFloat(article.price).toFixed(2) }}</p>
+                                <p class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-4">
+                                    Stock disponible: {{ (article.stock || 0) - (article.reserved_stock || 0) }}
+                                </p>
                                 <div class="mt-auto pt-4 border-t border-gray-100 dark:border-gray-700">
                                     <button @click="addToCart(article)"
                                         class="w-full flex items-center justify-center space-x-2 bg-primary-50 dark:bg-primary-950/40 text-primary-700 dark:text-primary-300 hover:bg-primary-600 hover:text-white dark:hover:bg-primary-600 px-4 py-2 rounded-md font-medium transition-colors">

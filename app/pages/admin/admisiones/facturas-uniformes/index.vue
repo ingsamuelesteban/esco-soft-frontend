@@ -688,42 +688,16 @@ const clearStudent = () => {
 }
 
 const addToCart = (article) => {
-    const available = (article.stock ?? 0) - (article.reserved_stock ?? 0)
     const existing = cart.value.find(i => i.article.id === article.id)
     if (existing) {
-        if (existing.quantity >= available) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Existencia límite alcanzada',
-                text: `No puedes facturar más unidades de las disponibles (${available}) para el artículo "${article.name}".`
-            })
-            return
-        }
         existing.quantity++
     } else {
-        if (available <= 0) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'Sin existencia disponible',
-                text: `El artículo "${article.name}" no tiene existencias disponibles para facturar.`
-            })
-            return
-        }
         cart.value.push({ article, quantity: 1 })
     }
 }
 
 const increaseQty = (index) => {
     const item = cart.value[index]
-    const available = (item.article.stock ?? 0) - (item.article.reserved_stock ?? 0)
-    if (item.quantity >= available) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Existencia límite alcanzada',
-            text: `No puedes facturar más unidades de las disponibles (${available}) para el artículo "${item.article.name}".`
-        })
-        return
-    }
     item.quantity++
 }
 const decreaseQty = (index) => {
