@@ -2,7 +2,7 @@
   <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
     <div class="p-4">
       <div class="flex items-center justify-between gap-3">
-        <input v-model="query" type="text" class="w-full md:w-64 rounded-md border-gray-300 dark:border-gray-600 text-sm"
+        <input v-model="query" type="text" class="w-full md:w-64 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 text-sm"
           placeholder="Buscar módulos formativos..." />
         <div class="ml-2 text-sm text-gray-500 dark:text-gray-400" v-if="!loading">Total: {{ filtered.length }}</div>
       </div>
@@ -25,12 +25,12 @@
             <td class="px-4 py-3 whitespace-nowrap font-medium text-gray-900 dark:text-gray-100">{{ m.nombre }}</td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">
               <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
-                :class="m.tipo === 'Tecnico' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'">
+                :class="m.tipo === 'Tecnico' ? 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300' : 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300'">
                 {{ m.tipo }}
               </span>
             </td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">
-              <span v-if="!m.deleted_at" :class="m.activo ? 'text-green-600' : 'text-red-600'">{{ m.activo ? 'Activa' :
+              <span v-if="!m.deleted_at" :class="m.activo ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">{{ m.activo ? 'Activa' :
                 'Inactiva' }}</span>
               <span v-else class="text-gray-500 dark:text-gray-400">Eliminada</span>
             </td>
@@ -45,7 +45,7 @@
                   </svg>
                 </button>
                 <button @click="$emit('delete', m)"
-                  class="inline-flex items-center justify-center p-1.5 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors"
+                  class="inline-flex items-center justify-center p-1.5 text-red-600 dark:text-red-400 hover:text-red-800 hover:bg-red-50 rounded-md transition-colors"
                   title="Eliminar">
                   <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -55,7 +55,7 @@
               </template>
               <template v-else>
                 <button @click="$emit('restore', m)"
-                  class="inline-flex items-center justify-center p-1.5 text-green-600 hover:text-green-800 hover:bg-green-50 rounded-md transition-colors"
+                  class="inline-flex items-center justify-center p-1.5 text-green-600 dark:text-green-400 hover:text-green-800 hover:bg-green-50 rounded-md transition-colors"
                   title="Restaurar">
                   <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"

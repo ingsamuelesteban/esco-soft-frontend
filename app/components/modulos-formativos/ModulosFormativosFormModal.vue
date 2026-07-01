@@ -13,17 +13,17 @@
               <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre *</label>
                 <input ref="initialInput" v-model.trim="form.nombre" type="text" required
-                  class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                  class="mt-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Código</label>
                 <input v-model.trim="form.codigo" type="text" maxlength="50"
-                  class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                  class="mt-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo *</label>
                 <select v-model="form.tipo" required
-                  class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                  class="mt-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
                   <option value="Academico">Académico</option>
                   <option value="Tecnico">Técnico</option>
                 </select>
@@ -32,12 +32,12 @@
               <div>
                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Descripción</label>
                 <textarea v-model.trim="form.descripcion" rows="3"
-                  class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"></textarea>
+                  class="mt-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"></textarea>
               </div>
               <div>
                 <label class="flex items-center">
                   <input v-model="form.activo" type="checkbox"
-                    class="rounded border-gray-300 dark:border-gray-600 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-offset-0 focus:ring-primary-200 focus:ring-opacity-50" />
+                    class="rounded bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-primary-600 shadow-sm focus:border-primary-300 focus:ring focus:ring-offset-0 focus:ring-primary-200 focus:ring-opacity-50" />
                   <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Activa</span>
                 </label>
               </div>
