@@ -18,7 +18,7 @@
           <div class="flex-1">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Buscar profesor</label>
             <input v-model="filtros.search" type="text" placeholder="Buscar por nombre, apellido o cédula..."
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+              class="w-full px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
           </div>
           <div class="flex items-end">
             <button @click="cargarProfesores" :disabled="loading"
@@ -69,8 +69,8 @@
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="flex items-center">
                     <div class="flex-shrink-0 h-10 w-10">
-                      <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
-                        <span class="text-sm font-medium text-blue-700">
+                      <div class="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                        <span class="text-sm font-medium text-blue-700 dark:text-blue-300">
                           {{ getInitials(profesor.nombre_completo) }}
                         </span>
                       </div>
@@ -117,7 +117,7 @@
                   <div class="flex items-center justify-center space-x-2">
                     <!-- Ver asignaciones (siempre visible para todos los profesores) -->
                     <button @click="verModulosFormativos(profesor)"
-                      class="inline-flex items-center p-2 border border-transparent rounded-md text-purple-600 hover:text-purple-700 hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors"
+                      class="inline-flex items-center p-2 border border-transparent rounded-md text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 hover:bg-purple-50 dark:hover:bg-purple-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition-colors"
                       title="Ver asignaciones">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -129,7 +129,7 @@
                     <div v-if="!profesor.user">
                       <!-- Crear acceso -->
                       <button @click="crearAcceso(profesor)" :disabled="procesando === profesor.id"
-                        class="inline-flex items-center p-2 border border-transparent rounded-md text-blue-600 hover:text-blue-700 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                        class="inline-flex items-center p-2 border border-transparent rounded-md text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
                         title="Crear acceso al sistema">
                         <svg v-if="procesando === profesor.id" class="animate-spin h-4 w-4"
                           xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -152,8 +152,8 @@
                       <button @click="toggleEstado(profesor)" :disabled="procesando === profesor.id" :class="[
                         'inline-flex items-center p-2 border border-transparent rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2',
                         profesor.user.active
-                          ? 'text-red-600 hover:text-red-700 hover:bg-red-50 focus:ring-red-500'
-                          : 'text-green-600 hover:text-green-700 hover:bg-green-50 focus:ring-green-500',
+                          ? 'text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/30 focus:ring-red-500'
+                          : 'text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/30 focus:ring-green-500',
                         procesando === profesor.id ? 'opacity-50 cursor-not-allowed' : ''
                       ]" :title="profesor.user.active ? 'Desactivar acceso' : 'Activar acceso'">
                         <svg v-if="procesando === profesor.id" class="animate-spin h-4 w-4"
@@ -206,7 +206,7 @@
                             </button>
                             <button @click="eliminarAcceso(profesor); toggleMenuProfesor(null)"
                               :disabled="procesando === profesor.id"
-                              class="group flex items-center px-4 py-2 text-sm text-red-700 hover:bg-red-50 hover:text-red-900 w-full text-left disabled:opacity-50 disabled:cursor-not-allowed"
+                              class="group flex items-center px-4 py-2 text-sm text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-900 dark:hover:text-red-300 w-full text-left disabled:opacity-50 disabled:cursor-not-allowed"
                               role="menuitem">
                               <svg class="mr-3 h-4 w-4 text-red-600" fill="none" stroke="currentColor"
                                 viewBox="0 0 24 24">
@@ -240,28 +240,28 @@
           </div>
           <div class="mt-4 text-center">
             <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-gray-100">Acceso Creado Exitosamente</h3>
-            <div class="mt-4 p-4 bg-yellow-50 rounded-lg">
+            <div class="mt-4 p-4 bg-yellow-50 dark:bg-yellow-900/30 border border-yellow-100 dark:border-yellow-800/50 rounded-lg">
               <p class="text-sm text-gray-700 dark:text-gray-300 mb-2">
                 <strong>Credenciales temporales para {{ credencialesTemporales.profesor }}:</strong>
               </p>
               <div class="space-y-2 text-sm text-left">
                 <div v-if="credencialesTemporales.username">
                   <span class="font-medium block text-gray-600 dark:text-gray-400">Usuario:</span>
-                  <span class="font-mono bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2 py-1 rounded block w-full">{{
+                  <span class="font-mono bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 px-2 py-1 rounded block w-full">{{
                     credencialesTemporales.username }}</span>
                 </div>
                 <div>
                   <span class="font-medium block text-gray-600 dark:text-gray-400">Email:</span>
-                  <span class="font-mono bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2 py-1 rounded block w-full">{{
+                  <span class="font-mono bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 px-2 py-1 rounded block w-full">{{
                     credencialesTemporales.email }}</span>
                 </div>
                 <div>
                   <span class="font-medium block text-gray-600 dark:text-gray-400">Contraseña:</span>
-                  <span class="font-mono bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 px-2 py-1 rounded block w-full break-all">{{
+                  <span class="font-mono bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-200 dark:border-gray-700 px-2 py-1 rounded block w-full break-all">{{
                     credencialesTemporales.password }}</span>
                 </div>
               </div>
-              <p class="text-xs text-yellow-700 mt-3 text-center">
+              <p class="text-xs text-yellow-700 dark:text-yellow-400 mt-3 text-center">
                 ⚠️ Guarda estas credenciales. El profesor debe cambiar la contraseña en su primer acceso.
               </p>
             </div>

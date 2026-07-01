@@ -9,8 +9,8 @@
                 <div class="bg-white dark:bg-gray-800 px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
                     <div class="flex items-center mb-4">
                         <div
-                            class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 sm:mx-0 sm:h-10 sm:w-10">
-                            <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-900/30 sm:mx-0 sm:h-10 sm:w-10">
+                            <svg class="h-6 w-6 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                             </svg>
@@ -22,21 +22,21 @@
                             <p class="text-sm text-gray-500 dark:text-gray-400">
                                 {{ estudiante?.nombres }} {{ estudiante?.apellidos }}
                             </p>
-                            <p class="text-xs text-blue-600 mt-1">
+                            <p class="text-xs text-blue-600 dark:text-blue-400 mt-1">
                                 RNE: {{ estudiante?.rne }}
                             </p>
                         </div>
                     </div>
 
-                    <div class="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md">
+                    <div class="mb-3 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800/50 rounded-md">
                         <div class="text-sm">
                             <div class="flex justify-between items-center mb-1">
-                                <span class="text-blue-700 font-medium">Valor del RA:</span>
-                                <span class="font-bold text-blue-900">{{ valorRa }} puntos</span>
+                                <span class="text-blue-700 dark:text-blue-400 font-medium">Valor del RA:</span>
+                                <span class="font-bold text-blue-900 dark:text-blue-100">{{ valorRa }} puntos</span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-blue-700 font-medium">Nota mínima {{ valorRa === 10 ? '(6.0)' : '(70%)' }}:</span>
-                                <span class="font-bold text-blue-900">{{ valorRa === 10 ? '6.0' : (valorRa * 0.7).toFixed(1) }}</span>
+                                <span class="text-blue-700 dark:text-blue-400 font-medium">Nota mínima {{ valorRa === 10 ? '(6.0)' : '(70%)' }}:</span>
+                                <span class="font-bold text-blue-900 dark:text-blue-100">{{ valorRa === 10 ? '6.0' : (valorRa * 0.7).toFixed(1) }}</span>
                             </div>
                         </div>
                     </div>

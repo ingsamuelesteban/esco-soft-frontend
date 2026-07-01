@@ -47,7 +47,7 @@
       </div>
 
       <!-- Error state -->
-      <div v-else-if="error" class="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
+      <div v-else-if="error" class="bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800/50 rounded-lg p-4 mb-6">
         <div class="flex">
           <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
             <path fill-rule="evenodd"
@@ -55,8 +55,8 @@
               clip-rule="evenodd" />
           </svg>
           <div class="ml-3">
-            <h3 class="text-sm font-medium text-red-800">Error al cargar las asignaciones</h3>
-            <p class="text-sm text-red-700 mt-1">{{ error }}</p>
+            <h3 class="text-sm font-medium text-red-800 dark:text-red-300">Error al cargar las asignaciones</h3>
+            <p class="text-sm text-red-700 dark:text-red-400 mt-1">{{ error }}</p>
           </div>
         </div>
       </div>
@@ -176,7 +176,7 @@
                     <td class="px-6 py-4 whitespace-nowrap">
                       <div class="flex items-center">
                         <div class="flex-shrink-0 h-10 w-10">
-                          <div class="h-10 w-10 rounded-full bg-blue-100 flex items-center justify-center">
+                          <div class="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                             <svg class="h-5 w-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -209,11 +209,11 @@
                     </td>
                     <td class="px-6 py-4 whitespace-nowrap text-center">
                       <span v-if="asignacion.activo"
-                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
                         Activa
                       </span>
                       <span v-else
-                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-red-100 text-red-800 dark:text-red-300 dark:bg-red-900/30 dark:text-red-300">
                         Inactiva
                       </span>
                     </td>
@@ -221,7 +221,7 @@
                       <div class="flex items-center justify-center space-x-2">
                         <!-- Editar asignación -->
                         <button @click="editarAsignacion(asignacion)"
-                          class="inline-flex items-center p-1.5 border border-transparent rounded-md text-green-600 hover:text-green-700 hover:bg-green-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
+                          class="inline-flex items-center p-1.5 border border-transparent rounded-md text-green-600 dark:text-green-400 hover:text-green-700 dark:hover:text-green-300 hover:bg-green-50 dark:hover:bg-green-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
                           title="Editar asignación">
                           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -231,7 +231,7 @@
 
                         <!-- Duplicar asignación -->
                         <button @click="duplicarAsignacion(asignacion)"
-                          class="inline-flex items-center p-1.5 border border-transparent rounded-md text-blue-600 hover:text-blue-700 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
+                          class="inline-flex items-center p-1.5 border border-transparent rounded-md text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 hover:bg-blue-50 dark:hover:bg-blue-900/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition-colors"
                           title="Duplicar a otras aulas">
                           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -271,7 +271,7 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Módulo Formativo</label>
               <select ref="nuevaAsignacionInput" v-model="nuevaAsignacion.materia_id" required
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                class="w-full px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Seleccionar módulo...</option>
                 <option v-for="modulo in modulosFormativos" :key="modulo.id" :value="modulo.id">
                   {{ modulo.nombre }} ({{ modulo.codigo }})
@@ -283,7 +283,7 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Aula</label>
               <select v-model="nuevaAsignacion.aula_id" required
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                class="w-full px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Seleccionar aula...</option>
                 <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
                   {{ aula.grado_cardinal }}° - {{ aula.seccion }} ({{ aula.estudiantes_count || 0 }} inscritos)
@@ -295,7 +295,7 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Año Lectivo</label>
               <select v-model.number="nuevaAsignacion.anio_lectivo_id" required
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                class="w-full px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option :value="undefined">Seleccionar...</option>
                 <option v-for="a in anios" :key="a.id" :value="a.id">{{ a.nombre }}</option>
               </select>
@@ -305,14 +305,14 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Horas Semanales</label>
               <input v-model.number="nuevaAsignacion.horas_semanales" type="number" min="1" max="40"
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                class="w-full px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
 
             <!-- Cantidad RAs (Solo Técnicos) -->
             <div v-if="isTecnicoNueva">
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cantidad de RAs</label>
               <input v-model.number="nuevaAsignacion.cantidad_ra" type="number" min="1" max="20"
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Ej. 4" />
             </div>
 
@@ -347,7 +347,7 @@
               <div class="max-h-40 overflow-y-auto border border-gray-300 dark:border-gray-600 rounded-md p-2">
                 <div v-for="aula in aulasDisponiblesParaDuplicacion" :key="aula.id" class="flex items-center mb-2">
                   <input :id="`aula-${aula.id}`" v-model="opcionesDuplicacion.aulas_ids" :value="aula.id"
-                    type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded" />
+                    type="checkbox" class="h-4 w-4 text-blue-600 focus:ring-blue-500 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded" />
                   <label :for="`aula-${aula.id}`" class="ml-2 text-sm text-gray-700 dark:text-gray-300">
                     {{ aula.grado_cardinal }}° - {{ aula.seccion }} ({{ aula.estudiantes_count || 0 }} inscritos)
                   </label>
@@ -359,7 +359,7 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Año Lectivo</label>
               <select ref="duplicarInput" v-model.number="opcionesDuplicacion.anio_lectivo_id" required
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                class="w-full px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option :value="undefined">Seleccionar...</option>
                 <option v-for="a in anios" :key="a.id" :value="a.id">{{ a.nombre }}</option>
               </select>
@@ -369,7 +369,7 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Horas Semanales</label>
               <input v-model.number="opcionesDuplicacion.horas_semanales" type="number" min="1" max="40"
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                class="w-full px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
 
             <!-- Botones -->
@@ -402,7 +402,7 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Módulo Formativo</label>
               <select ref="editarAsignacionInput" v-model="datosEdicion.materia_id" required
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                class="w-full px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Seleccionar módulo...</option>
                 <option v-for="modulo in modulosFormativos" :key="modulo.id" :value="modulo.id">
                   {{ modulo.nombre }} ({{ modulo.codigo }})
@@ -414,7 +414,7 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Aula</label>
               <select v-model="datosEdicion.aula_id" required
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                class="w-full px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option value="">Seleccionar aula...</option>
                 <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
                   {{ aula.grado_cardinal }}° - {{ aula.seccion }} ({{ aula.estudiantes_count || 0 }} inscritos)
@@ -426,7 +426,7 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Año Lectivo</label>
               <select v-model.number="datosEdicion.anio_lectivo_id" required
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
+                class="w-full px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option :value="undefined">Seleccionar...</option>
                 <option v-for="a in anios" :key="a.id" :value="a.id">{{ a.nombre }}</option>
               </select>
@@ -436,14 +436,14 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Horas Semanales</label>
               <input v-model.number="datosEdicion.horas_semanales" type="number" min="1" max="40"
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                class="w-full px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
 
             <!-- Cantidad RAs (Solo Técnicos) -->
             <div v-if="isTecnicoEdicion">
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Cantidad de RAs</label>
               <input v-model.number="datosEdicion.cantidad_ra" type="number" min="1" max="20"
-                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                class="w-full px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 placeholder="Ej. 4" />
             </div>
 
@@ -451,7 +451,7 @@
             <div>
               <label class="flex items-center">
                 <input v-model="datosEdicion.activo" type="checkbox"
-                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded" />
+                  class="h-4 w-4 text-blue-600 focus:ring-blue-500 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded" />
                 <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">Asignación activa</span>
               </label>
             </div>

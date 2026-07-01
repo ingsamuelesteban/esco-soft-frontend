@@ -19,7 +19,7 @@
         <button @click="pestanaActiva = 'calificaciones'"
           :class="[
             pestanaActiva === 'calificaciones'
-              ? 'border-blue-500 text-blue-600 dark:text-blue-400 font-semibold'
+              ? 'border-blue-500 text-blue-600 dark:text-blue-300 dark:text-blue-400 font-semibold'
               : 'border-transparent text-gray-550 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300',
             'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-all duration-200 focus:outline-none'
           ]">
@@ -28,7 +28,7 @@
         <button @click="pestanaActiva = 'rendimiento'"
           :class="[
             pestanaActiva === 'rendimiento'
-              ? 'border-blue-500 text-blue-600 dark:text-blue-400 font-semibold'
+              ? 'border-blue-500 text-blue-600 dark:text-blue-300 dark:text-blue-400 font-semibold'
               : 'border-transparent text-gray-550 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300',
             'whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm transition-all duration-200 focus:outline-none'
           ]">
@@ -42,7 +42,7 @@
       <div v-if="mostrarMensaje" class="mx-6 mt-4">
       <div :class="[
         'p-4 rounded-md flex items-center justify-between',
-        tipoMensaje === 'success' ? 'bg-green-50 border border-green-200' : 'bg-red-50 border border-red-200'
+        tipoMensaje === 'success' ? 'bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800/50' : 'bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800/50'
       ]">
         <div class="flex items-center">
           <svg v-if="tipoMensaje === 'success'" class="w-5 h-5 text-green-600 mr-3" fill="none" stroke="currentColor"
@@ -52,12 +52,12 @@
           <svg v-else class="w-5 h-5 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
-          <span :class="tipoMensaje === 'success' ? 'text-green-800' : 'text-red-800'" class="text-sm font-medium">
+          <span :class="tipoMensaje === 'success' ? 'text-green-800 dark:text-green-400' : 'text-red-800 dark:text-red-400'" class="text-sm font-medium">
             {{ mensaje }}
           </span>
         </div>
         <button @click="cerrarMensaje"
-          :class="tipoMensaje === 'success' ? 'text-green-600 hover:text-green-800' : 'text-red-600 hover:text-red-800'">
+          :class="tipoMensaje === 'success' ? 'text-green-600 hover:text-green-800 dark:text-green-400' : 'text-red-600 hover:text-red-800 dark:text-red-400'">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
           </svg>
@@ -118,11 +118,11 @@
           </div>
 
           <div v-if="moduloSeleccionado && moduloData?.tipo === 'Tecnico'" class="flex items-end">
-            <div class="bg-blue-50 border border-blue-200 rounded-md p-3">
-              <div class="text-sm font-medium text-blue-900">
+            <div class="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800/50 rounded-md p-3">
+              <div class="text-sm font-medium text-blue-900 dark:text-blue-100">
                 RAs en este módulo: {{ moduloData.cantidad_ra }}
               </div>
-              <div class="text-xs text-blue-600">
+              <div class="text-xs text-blue-600 dark:text-blue-300">
                 Cada RA tiene hasta 4 oportunidades
               </div>
             </div>
@@ -152,7 +152,7 @@
               Estudiantes - {{ moduloData?.nombre }}
               <span v-if="moduloData?.tipo === 'Academico'"
                 class="text-sm text-green-600 font-normal">(Académico)</span>
-              <span v-if="moduloData?.tipo === 'Tecnico'" class="text-sm text-blue-600 font-normal">(Técnico - {{
+              <span v-if="moduloData?.tipo === 'Tecnico'" class="text-sm text-blue-600 dark:text-blue-300 font-normal">(Técnico - {{
                 moduloData.cantidad_ra
               }} RAs)</span>
 
@@ -223,8 +223,8 @@
                       <td class="px-6 py-4 whitespace-nowrap sticky left-0 bg-white dark:bg-gray-800 z-10">
                         <div class="flex items-center space-x-3">
                           <div class="flex-shrink-0">
-                            <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                              <span class="text-xs font-bold text-blue-800">
+                            <div class="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                              <span class="text-xs font-bold text-blue-800 dark:text-blue-300">
                                 {{ estudiante.numero_orden || '?' }}
                               </span>
                             </div>
@@ -233,7 +233,7 @@
                             <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
                               {{ estudiante.nombres }} {{ estudiante.apellidos }}
                               <span v-if="estudiante.estado === 'retirado'"
-                                class="ml-2 px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 border border-red-200">
+                                class="ml-2 px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 dark:text-red-400 border border-red-200">
                                 Retirado
                               </span>
                             </div>
@@ -254,7 +254,7 @@
                                     <!-- Botón Importar -->
                                     <button
                                       @click.stop="openImportModal('academic', { competencia: getCompetenciasPorBloque(bloque)[0], bloque, tipo: `P${p}` })"
-                                      class="text-blue-500 hover:text-blue-700 rounded hover:bg-blue-100 p-0.5 transition-colors"
+                                      class="text-blue-500 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 rounded hover:bg-blue-100 dark:hover:bg-blue-900/30 p-0.5 transition-colors"
                                       title="Importar notas">
                                       <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -263,11 +263,11 @@
                                       </svg>
                                     </button>
                                     <!-- Separador visual -->
-                                    <div class="h-3 w-px bg-gray-300"></div>
+                                    <div class="h-3 w-px bg-gray-300 dark:bg-gray-600"></div>
                                     <!-- Botón Eliminar -->
                                     <button
                                       @click.stop="eliminarCalificacionesPorLote('academic', { competencia: getCompetenciasPorBloque(bloque)[0], bloque, tipo: `P${p}` })"
-                                      class="text-red-500 hover:text-red-700 rounded hover:bg-red-100 p-0.5 transition-colors"
+                                      class="text-red-500 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 rounded hover:bg-red-100 dark:hover:bg-red-900/30 p-0.5 transition-colors"
                                       title="Eliminar todas las calificaciones">
                                       <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -398,8 +398,8 @@
                       <td class="px-6 py-4 whitespace-nowrap sticky left-0 bg-white dark:bg-gray-800">
                         <div class="flex items-center space-x-3">
                           <div class="flex-shrink-0">
-                            <div class="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center">
-                              <span class="text-xs font-bold text-blue-800">
+                            <div class="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                              <span class="text-xs font-bold text-blue-800 dark:text-blue-300">
                                 {{ estudiante.numero_orden || '?' }}
                               </span>
                             </div>
@@ -408,7 +408,7 @@
                             <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
                               {{ estudiante.nombres }} {{ estudiante.apellidos }}
                               <span v-if="estudiante.estado === 'retirado'"
-                                class="ml-2 px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 border border-red-200">
+                                class="ml-2 px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 dark:text-red-400 border border-red-200">
                                 Retirado
                               </span>
                             </div>
@@ -429,7 +429,7 @@
                               <!-- Botón Importar -->
                               <button
                                 @click.stop="openImportModal('technical', { ra, oportunidad: op })"
-                                class="text-blue-400 hover:text-blue-600 rounded hover:bg-blue-50 p-0.5 transition-colors"
+                                class="text-blue-400 hover:text-blue-600 dark:text-blue-300 rounded hover:bg-blue-50 p-0.5 transition-colors"
                                 title="Importar notas">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -438,11 +438,11 @@
                                 </svg>
                               </button>
                               <!-- Separador visual -->
-                              <div class="h-3 w-px bg-gray-300"></div>
+                              <div class="h-3 w-px bg-gray-300 dark:bg-gray-600"></div>
                               <!-- Botón Eliminar -->
                               <button
                                 @click.stop="eliminarCalificacionesPorLote('technical', { ra, oportunidad: op })"
-                                class="text-red-400 hover:text-red-600 rounded hover:bg-red-50 p-0.5 transition-colors"
+                                class="text-red-400 hover:text-red-600 dark:hover:text-red-300 rounded hover:bg-red-50 dark:hover:bg-red-900/30 p-0.5 transition-colors"
                                 title="Eliminar todas las calificaciones">
                                 <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -504,7 +504,7 @@
       <div v-if="!aulaSeleccionada || !moduloSeleccionado" class="text-center py-16">
         <div class="mx-auto max-w-md">
           <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-            <svg class="h-6 w-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="h-6 w-6 text-blue-600 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
             </svg>
@@ -545,12 +545,12 @@
             </label>
 
             <!-- Información del porcentaje disponible -->
-            <div class="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-md">
+            <div class="mb-3 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-800/50 rounded-md">
               <div class="flex justify-between text-sm">
                 <span class="text-blue-700 font-medium">Porcentaje disponible:</span>
-                <span class="text-blue-900 font-bold">{{ porcentajeDisponible }}%</span>
+                <span class="text-blue-900 dark:text-blue-100 font-bold">{{ porcentajeDisponible }}%</span>
               </div>
-              <div v-if="porcentajeDisponible < 100" class="text-xs text-blue-600 mt-1">
+              <div v-if="porcentajeDisponible < 100" class="text-xs text-blue-600 dark:text-blue-300 mt-1">
                 Ya se ha asignado {{ 100 - porcentajeDisponible }}% a otros RA
               </div>
             </div>
@@ -565,7 +565,7 @@
 
             <!-- Advertencia si se excede el límite -->
             <div v-if="valorRAActual && parseFloat(valorRAActual) > porcentajeDisponible"
-              class="mt-2 p-2 bg-red-50 border border-red-200 rounded-md">
+              class="mt-2 p-2 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800/50 rounded-md">
               <p class="text-xs text-red-600">
                 ⚠️ El valor ingresado excede el porcentaje disponible ({{ porcentajeDisponible }}%)
               </p>
@@ -579,7 +579,7 @@
               <div class="flex items-center space-x-4">
                 <label v-for="p in [1, 2, 3, 4]" :key="p" class="flex items-center text-sm font-medium text-gray-700 dark:text-gray-300 cursor-pointer">
                   <input type="radio" v-model="periodoRA" :value="p" :disabled="guardandoValorRA"
-                    class="h-4 w-4 text-blue-600 border-gray-300 focus:ring-blue-500 mr-2" />
+                    class="h-4 w-4 text-blue-600 dark:text-blue-300 border-gray-300 focus:ring-blue-500 mr-2" />
                   P{{ p }}
                 </label>
               </div>
@@ -1256,9 +1256,9 @@ const getEstadoGeneralClass = (estudianteId) => {
   const puntosMaximos = calcularPuntosMaximos()
   const porcentaje = puntosMaximos > 0 ? (puntosObtenidos / puntosMaximos) * 100 : 0
 
-  if (porcentaje >= 70) return 'bg-green-100 text-green-800'
+  if (porcentaje >= 70) return 'bg-green-100 text-green-800 dark:text-green-400'
   if (porcentaje >= 40) return 'bg-yellow-100 text-yellow-800'
-  return 'bg-red-100 text-red-800'
+  return 'bg-red-100 text-red-800 dark:text-red-400'
 }
 
 // Función para calcular puntos obtenidos por el estudiante (suma de la última calificación de cada RA)
@@ -1300,8 +1300,8 @@ const calcularPuntosMaximos = () => {
 
 // Helpers para estilos de casillas
 const getTotalRAClass = (total) => {
-  if (total === 100) return 'bg-green-100 text-green-800'
-  if (total > 100) return 'bg-red-100 text-red-800'
+  if (total === 100) return 'bg-green-100 text-green-800 dark:text-green-400'
+  if (total > 100) return 'bg-red-100 text-red-800 dark:text-red-400'
   return 'bg-yellow-100 text-yellow-800'
 }
 
@@ -1311,12 +1311,12 @@ const getCasillaOportunidadClass = (estudianteId, raNumero, oportunidad) => {
     const notaMinima = getNotaMinima(raNumero)
 
     if (nota >= notaMinima) {
-      return 'bg-green-100 text-green-800 border-green-300 hover:bg-green-200'
+      return 'bg-green-100 text-green-800 dark:text-green-400 border-green-300 hover:bg-green-200 dark:bg-green-900/30 dark:text-green-300 dark:border-green-800/50 dark:hover:bg-green-800/50'
     } else {
-      return 'bg-red-100 text-red-800 border-red-300 hover:bg-red-200'
+      return 'bg-red-100 text-red-800 dark:text-red-400 border-red-300 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800/50 dark:hover:bg-red-800/50'
     }
   } else {
-    return 'bg-gray-50 dark:bg-gray-900/50 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-blue-50 hover:border-blue-300'
+    return 'bg-gray-50 dark:bg-gray-900/50 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-blue-50 hover:border-blue-300 dark:hover:bg-blue-900/30 dark:hover:border-blue-700/50'
   }
 }
 
@@ -1429,9 +1429,9 @@ const getCompetenciaButtonClass = (estudianteId, competencia, bloque, tipo) => {
 
   const notaNum = parseFloat(nota)
   if (notaNum >= 70) {
-    return 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100'
+    return 'bg-green-50 border-green-200 text-green-700 hover:bg-green-100 dark:bg-green-900/30 dark:border-green-800/50 dark:text-green-400 dark:hover:bg-green-800/50'
   } else {
-    return 'bg-red-50 border-red-200 text-red-700 hover:bg-red-100'
+    return 'bg-red-50 border-red-200 text-red-700 hover:bg-red-100 dark:bg-red-900/30 dark:border-red-800/50 dark:text-red-400 dark:hover:bg-red-800/50'
   }
 }
 
@@ -1548,7 +1548,7 @@ const getSituacionFCT = (estudianteId) => {
 
 const getSituacionFCTClass = (estudianteId) => {
   const porcentaje = calcularPromedioFCT(estudianteId)
-  return porcentaje >= 70 ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+  return porcentaje >= 70 ? 'bg-green-100 text-green-800 dark:text-green-400' : 'bg-red-100 text-red-800 dark:text-red-400'
 }
 
 // Métodos para Modal de Competencias
