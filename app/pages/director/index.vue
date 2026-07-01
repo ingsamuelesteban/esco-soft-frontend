@@ -50,7 +50,7 @@
             <div class="space-y-4">
               <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Descripción Pública</label>
               <textarea v-model="form.public_description" rows="5"
-                class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                class="block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
                 placeholder="Breve reseña sobre la institución para la web..."></textarea>
             </div>
 
@@ -67,7 +67,7 @@
                       </svg>
                     </div>
                   </div>
-                  <input type="file" @change="handleFileUpload($event, 'hero_image')" class="text-xs text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100" />
+                  <input type="file" @change="handleFileUpload($event, 'hero_image')" class="text-xs text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary-50 dark:file:bg-primary-900/30 file:text-primary-700 dark:file:text-primary-300 hover:file:bg-primary-100 dark:hover:file:bg-primary-800/50" />
                 </div>
               </div>
 
@@ -77,7 +77,7 @@
                    <div class="h-16 w-16 rounded-lg bg-gray-100 dark:bg-gray-800 overflow-hidden border border-gray-200 dark:border-gray-700">
                     <img v-if="previews.logo" :src="previews.logo" class="h-full w-full object-contain" />
                   </div>
-                  <input type="file" @change="handleFileUpload($event, 'logo')" class="text-xs text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100" />
+                  <input type="file" @change="handleFileUpload($event, 'logo')" class="text-xs text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-primary-50 dark:file:bg-primary-900/30 file:text-primary-700 dark:file:text-primary-300 hover:file:bg-primary-100 dark:hover:file:bg-primary-800/50" />
                 </div>
               </div>
             </div>
@@ -90,22 +90,22 @@
               <div>
                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Dirección</label>
                 <input type="text" v-model="form.address" 
-                  class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                  class="mt-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
               </div>
               <div>
                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Teléfono</label>
                 <input type="text" v-model="form.phone" 
-                  class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                  class="mt-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
               </div>
               <div>
                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Correo Electrónico</label>
                 <input type="email" v-model="form.email" 
-                  class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                  class="mt-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
               </div>
               <div>
                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Sitio Web</label>
                 <input type="url" v-model="form.website" 
-                  class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                  class="mt-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
               </div>
             </div>
 
@@ -114,22 +114,22 @@
               <div>
                 <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Facebook</label>
                 <input type="text" v-model="form.social_media.facebook" placeholder="URL de Facebook"
-                  class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                  class="block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
               </div>
               <div>
                 <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Instagram</label>
                 <input type="text" v-model="form.social_media.instagram" placeholder="URL de Instagram"
-                  class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                  class="block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
               </div>
               <div>
                 <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Twitter</label>
                 <input type="text" v-model="form.social_media.twitter" placeholder="URL de Twitter"
-                  class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                  class="block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
               </div>
               <div>
                 <label class="block text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">YouTube</label>
                 <input type="text" v-model="form.social_media.youtube" placeholder="URL de YouTube"
-                  class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                  class="block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
               </div>
             </div>
           </div>
@@ -143,19 +143,19 @@
               <div class="space-y-2">
                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight">Nuestra Misión</label>
                 <textarea v-model="form.mission" rows="4"
-                  class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                  class="block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
                   placeholder="Defina el propósito fundamental de la institución..."></textarea>
               </div>
               <div class="space-y-2">
                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight">Nuestra Visión</label>
                 <textarea v-model="form.vision" rows="4"
-                  class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                  class="block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
                   placeholder="¿Hacia dónde se proyecta la institución en el futuro?..."></textarea>
               </div>
               <div class="space-y-2">
                 <label class="block text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-tight">Nuestros Valores</label>
                 <textarea v-model="form.values" rows="4"
-                  class="block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                  class="block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
                   placeholder="Mencione los principios que rigen la conducta institucional..."></textarea>
               </div>
             </div>
@@ -183,12 +183,12 @@
                 <div>
                   <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Nombre del Director</label>
                   <input type="text" v-model="form.director_name" 
-                    class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                    class="mt-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
                 </div>
                 <div>
                   <label class="block text-sm font-bold text-gray-700 dark:text-gray-300">Biografía/Mensaje del Director</label>
                   <textarea v-model="form.director_bio" rows="4"
-                    class="mt-1 block w-full rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"></textarea>
+                    class="mt-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"></textarea>
                 </div>
               </div>
             </div>
