@@ -1,0 +1,22 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 
+ * Soporte de Dark Mode para SweetAlert2 
+ * Utilizamos variables de CSS para inyectar los colores de Tailwind
+ */
+html.dark {
+  --swal2-background: #1f2937; /* bg-gray-800 */
+  --swal2-title-color: #f3f4f6; /* text-gray-100 */
+  --swal2-html-container-color: #d1d5db; /* text-gray-300 */
+  --swal2-content-color: #d1d5db; /* text-gray-300 */
+  --swal2-input-background: #111827; /* bg-gray-900 */
+  --swal2-input-color: #f3f4f6; /* text-gray-100 */
+  --swal2-input-border: 1px solid #374151; /* border-gray-700 */
+  --swal2-close-button-color: #9ca3af; /* text-gray-400 */
+  --swal2-close-button-hover-color: #f3f4f6; /* hover:text-gray-100 */
+  --swal2-validation-message-background: #374151; /* bg-gray-700 */
+  --swal2-validation-message-color: #f87171; /* text-red-400 */
+  --swal2-border: 1px solid #374151; /* border-gray-700 */
+}
