@@ -18,7 +18,7 @@
         </div>
 
         <!-- Lista de Tenants -->
-        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
+        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-x-auto">
             <div v-if="loading" class="p-12 text-center">
                 <svg class="animate-spin h-8 w-8 text-primary-600 mx-auto" xmlns="http://www.w3.org/2000/svg"
                     fill="none" viewBox="0 0 24 24">
@@ -192,7 +192,7 @@
                                               file:mr-4 file:py-2 file:px-4
                                               file:rounded-full file:border-0
                                               file:text-sm file:font-semibold
-                                              file:bg-primary-50 file:text-primary-700
+                                              file:bg-primary-50 dark:file:bg-primary-900/30 file:text-primary-700 dark:file:text-primary-300
                                               hover:file:bg-primary-100
                                             " />
                                     </div>
@@ -204,7 +204,7 @@
                                     <div class="space-y-3 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-md border border-gray-100 dark:border-gray-700">
                                         <div class="flex items-start">
                                             <div class="flex items-center h-5">
-                                                <input id="feature_academic" type="checkbox" v-model="form.features" value="academic" class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
+                                                <input id="feature_academic" type="checkbox" v-model="form.features" value="academic" class="h-4 w-4 text-primary-600 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-primary-500">
                                             </div>
                                             <div class="ml-3 text-sm">
                                                 <label for="feature_academic" class="font-medium text-gray-700 dark:text-gray-300">Gestión Académica Base</label>
@@ -212,7 +212,7 @@
                                         </div>
                                         <div class="flex items-start">
                                             <div class="flex items-center h-5">
-                                                <input id="feature_tech" type="checkbox" v-model="form.features" value="technical_modules" class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
+                                                <input id="feature_tech" type="checkbox" v-model="form.features" value="technical_modules" class="h-4 w-4 text-primary-600 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-primary-500">
                                             </div>
                                             <div class="ml-3 text-sm">
                                                 <label for="feature_tech" class="font-medium text-gray-700 dark:text-gray-300">Modalidad Técnico-Profesional / RA</label>
@@ -220,7 +220,7 @@
                                         </div>
                                         <div class="flex items-start">
                                             <div class="flex items-center h-5">
-                                                <input id="feature_billing" type="checkbox" v-model="form.features" value="billing" class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
+                                                <input id="feature_billing" type="checkbox" v-model="form.features" value="billing" class="h-4 w-4 text-primary-600 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-primary-500">
                                             </div>
                                             <div class="ml-3 text-sm">
                                                 <label for="feature_billing" class="font-medium text-gray-700 dark:text-gray-300">Facturación y Pagos</label>
@@ -228,7 +228,7 @@
                                         </div>
                                         <div class="flex items-start">
                                             <div class="flex items-center h-5">
-                                                <input id="feature_psych" type="checkbox" v-model="form.features" value="psychology" class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
+                                                <input id="feature_psych" type="checkbox" v-model="form.features" value="psychology" class="h-4 w-4 text-primary-600 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-primary-500">
                                             </div>
                                             <div class="ml-3 text-sm">
                                                 <label for="feature_psych" class="font-medium text-gray-700 dark:text-gray-300">Orientación y Psicología</label>
@@ -243,7 +243,7 @@
                                 <div class="bg-primary-50 dark:bg-primary-900/30 p-4 rounded-lg border border-primary-100 dark:border-primary-800/30 mb-4">
                                     <div class="flex items-center">
                                         <input v-model="form.public_pages_enabled" type="checkbox" id="public_enabled"
-                                            class="h-4 w-4 text-primary-600 focus:ring-primary-500 border-gray-300 dark:border-gray-600 rounded">
+                                            class="h-4 w-4 text-primary-600 bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 rounded focus:ring-primary-500">
                                         <label for="public_enabled" class="ml-2 block text-sm font-medium text-primary-900 dark:text-primary-100">
                                             Habilitar página pública informativa
                                         </label>

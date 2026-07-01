@@ -29,12 +29,12 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</label>
               <input type="text" v-model="profile.name"
-                class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
+                class="mt-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
               <input type="email" v-model="profile.email"
-                class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
+                class="mt-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
             </div>
           </div>
           <div class="flex justify-end">
@@ -52,17 +52,17 @@
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Contraseña Actual</label>
               <input type="password" v-model="passwordForm.current"
-                class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
+                class="mt-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nueva Contraseña</label>
               <input type="password" v-model="passwordForm.new"
-                class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
+                class="mt-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
             </div>
             <div>
               <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Confirmar Nueva Contraseña</label>
               <input type="password" v-model="passwordForm.confirm"
-                class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
+                class="mt-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
             </div>
           </div>
           <div class="flex justify-end">

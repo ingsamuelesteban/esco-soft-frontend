@@ -9,7 +9,7 @@
             </div>
             <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none flex items-center gap-2">
                 <select v-model="selectedAnioLectivoId"
-                    class="block rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                    class="block rounded-md bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                     <option v-for="anio in aniosLectivos" :key="anio.id" :value="anio.id">{{ anio.nombre }}</option>
                 </select>
                 <button @click="openModal()" type="button"
@@ -110,17 +110,17 @@
                                             <div>
                                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Nombre</label>
                                                 <input v-model="form.name" type="text"
-                                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                    class="mt-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                             </div>
                                             <div>
                                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Fecha</label>
                                                 <input v-model="form.date" type="date"
-                                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                    class="mt-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                             </div>
                                             <div>
                                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Tipo</label>
                                                 <select v-model="form.type"
-                                                    class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                                    class="mt-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                                     <option value="nacional">Nacional</option>
                                                     <option value="local">Local</option>
                                                     <option value="contingencia">Contingencia (Lluvias, etc)</option>
