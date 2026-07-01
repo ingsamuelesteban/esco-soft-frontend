@@ -140,9 +140,13 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useMenu } from '~/composables/useMenu'
+import { useAuthStore } from '~/stores/auth'
+import { useMenuFilter } from '~/composables/useMenuFilter'
 
 const route = useRoute()
 const { menuItems, isMenuLoaded, loadMenu } = useMenu()
+const authStore = useAuthStore()
+const { filterMenu } = useMenuFilter()
 
 // Definir el emit para cerrar el sidebar
 const emit = defineEmits(['close-sidebar'])
@@ -223,7 +227,11 @@ const isActive = (path) => {
 
 // Obtener menú ordenado
 const sortedMenuItems = computed(() => {
-  return [...menuItems.value].sort((a, b) => a.order - b.order)
+  const activeFeatures = authStore.tenantFeatures || []
+  const userRole = authStore.user?.role || ''
+  
+  const sorted = [...menuItems.value].sort((a, b) => (a.order || 0) - (b.order || 0))
+  return filterMenu(sorted, activeFeatures, userRole)
 })
 
 // Persistir estado en localStorage

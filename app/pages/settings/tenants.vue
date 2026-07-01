@@ -197,6 +197,45 @@
                                             " />
                                     </div>
                                 </div>
+                                
+                                <!-- Sección de Features -->
+                                <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-6">
+                                    <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">Módulos Contratados (Features)</h4>
+                                    <div class="space-y-3 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-md border border-gray-100 dark:border-gray-700">
+                                        <div class="flex items-start">
+                                            <div class="flex items-center h-5">
+                                                <input id="feature_academic" type="checkbox" v-model="form.features" value="academic" class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <label for="feature_academic" class="font-medium text-gray-700 dark:text-gray-300">Gestión Académica Base</label>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start">
+                                            <div class="flex items-center h-5">
+                                                <input id="feature_tech" type="checkbox" v-model="form.features" value="technical_modules" class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <label for="feature_tech" class="font-medium text-gray-700 dark:text-gray-300">Modalidad Técnico-Profesional / RA</label>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start">
+                                            <div class="flex items-center h-5">
+                                                <input id="feature_billing" type="checkbox" v-model="form.features" value="billing" class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <label for="feature_billing" class="font-medium text-gray-700 dark:text-gray-300">Facturación y Pagos</label>
+                                            </div>
+                                        </div>
+                                        <div class="flex items-start">
+                                            <div class="flex items-center h-5">
+                                                <input id="feature_psych" type="checkbox" v-model="form.features" value="psychology" class="h-4 w-4 text-primary-600 border-gray-300 rounded focus:ring-primary-500">
+                                            </div>
+                                            <div class="ml-3 text-sm">
+                                                <label for="feature_psych" class="font-medium text-gray-700 dark:text-gray-300">Orientación y Psicología</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                              <!-- Tab: Página Pública -->
@@ -436,7 +475,8 @@ const form = reactive({
         instagram: '',
         twitter: '',
         youtube: ''
-    }
+    },
+    features: [] as string[]
 })
 
 const provinciasList = ref<any[]>([])
@@ -510,7 +550,8 @@ const openCreateModal = () => {
             instagram: '',
             twitter: '',
             youtube: ''
-        }
+        },
+        features: []
     })
     logoFile.value = null
     logoPreview.value = null
@@ -561,7 +602,8 @@ const editTenant = (tenant: Tenant) => {
             instagram: '',
             twitter: '',
             youtube: ''
-        }
+        },
+        features: tenant.features || []
     })
 
     if (form.provincia) {
@@ -688,6 +730,7 @@ const saveTenant = async () => {
         if (form.values) formData.append('values', form.values)
         
         formData.append('social_media', JSON.stringify(form.social_media))
+        formData.append('features', JSON.stringify(form.features))
 
         if (logoFile.value) {
             formData.append('logo', logoFile.value)

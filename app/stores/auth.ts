@@ -51,12 +51,14 @@ export interface Tenant {
     twitter?: string
     youtube?: string
   }
+  features?: string[]
 }
 
 export interface LoginResponse {
   user: User
   token: string
   tenant?: Tenant
+  tenant_features?: string[]
   requires_tenant_selection?: boolean
   tenants?: Tenant[]
   director?: Director
@@ -73,6 +75,7 @@ export const useAuthStore = defineStore('auth', {
     user: null as User | null,
     token: null as string | null,
     tenant: null as Tenant | null,
+    tenantFeatures: [] as string[],
     director: null as Director | null,
     availableTenants: [] as Tenant[],
     isAuthenticated: false as boolean,
@@ -143,6 +146,7 @@ export const useAuthStore = defineStore('auth', {
 
           console.log('Login successful, tenant:', data.data.tenant)
           this.tenant = data.data.tenant || null
+          this.tenantFeatures = data.data.tenant_features || []
           this.isAuthenticated = true
 
           if (process.client) {
@@ -242,6 +246,7 @@ export const useAuthStore = defineStore('auth', {
       this.user = null
       this.token = null
       this.tenant = null
+      this.tenantFeatures = []
       this.director = null
       this.isAuthenticated = false
 
@@ -329,6 +334,7 @@ export const useAuthStore = defineStore('auth', {
               console.log('Auth initialized, tenant:', data.data.tenant)
               this.user = data.data.user
               this.tenant = data.data.tenant || null
+              this.tenantFeatures = data.data.tenant_features || []
               this.director = data.data.director || null
 
               // Fix: Asegurar que se restaure el tenant ID en localStorage

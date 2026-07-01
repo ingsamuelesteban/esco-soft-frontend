@@ -81,21 +81,21 @@
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Título *</label>
             <input v-model="form.title" type="text" required maxlength="255"
               placeholder="Ej: Reunión de docentes el viernes"
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+              class="w-full px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
           </div>
 
           <!-- Body -->
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Descripción *</label>
             <textarea v-model="form.body" rows="5" required placeholder="Escribe el contenido del anuncio..."
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"></textarea>
+              class="w-full px-3 py-2 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-none"></textarea>
           </div>
 
           <!-- Attachment -->
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Adjunto (opcional)</label>
             <input type="file" @change="handleFile" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg"
-              class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" />
+              class="w-full text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded file:border-0 file:text-sm file:font-medium file:bg-blue-50 dark:file:bg-blue-900/30 file:text-blue-700 dark:file:text-blue-400 hover:file:bg-blue-100 dark:hover:file:bg-blue-900/50" />
             <p class="mt-1 text-xs text-gray-400">PDF, Word, Excel o imagen. Máx 20 MB.</p>
           </div>
 
@@ -103,7 +103,7 @@
           <label
             class="flex items-center gap-3 cursor-pointer select-none bg-gray-50 dark:bg-gray-900/50 rounded-lg p-3 border border-gray-200 dark:border-gray-700">
             <input v-model="form.visible_para_estudiantes" type="checkbox"
-              class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500" />
+              class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-blue-600 focus:ring-blue-500" />
             <div>
               <span class="text-sm font-medium text-gray-800 dark:text-gray-200">Visible para estudiantes</span>
               <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Aparecerá en el portal de alumnos</p>
@@ -112,12 +112,12 @@
 
           <!-- Visible en la web pública -->
           <label
-            class="flex items-center gap-3 cursor-pointer select-none bg-blue-50/50 rounded-lg p-3 border border-blue-100">
+            class="flex items-center gap-3 cursor-pointer select-none bg-blue-50/50 dark:bg-blue-900/20 rounded-lg p-3 border border-blue-100 dark:border-blue-900/30">
             <input v-model="form.visible_en_web" type="checkbox"
-              class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-blue-600 focus:ring-blue-500" />
+              class="w-4 h-4 rounded border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 text-blue-600 focus:ring-blue-500" />
             <div>
-              <span class="text-sm font-medium text-blue-900">Mostrar en la web pública</span>
-              <p class="text-xs text-blue-600/70 mt-0.5">Aparecerá en la página principal (Landing Page)</p>
+              <span class="text-sm font-medium text-blue-900 dark:text-blue-200">Mostrar en la web pública</span>
+              <p class="text-xs text-blue-600/70 dark:text-blue-400/80 mt-0.5">Aparecerá en la página principal (Landing Page)</p>
             </div>
           </label>
 
