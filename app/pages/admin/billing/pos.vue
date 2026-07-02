@@ -344,7 +344,10 @@ definePageMeta({
 
 const authStore = useAuthStore()
 const tenantFeatures = authStore.tenantFeatures || []
-const fiscalMonths = authStore.tenant?.fiscal_months || []
+
+// Convert fiscal_months to an array in case it arrives as an object
+const rawFiscalMonths = authStore.tenant?.fiscal_months || []
+const fiscalMonths = Array.isArray(rawFiscalMonths) ? rawFiscalMonths : Object.values(rawFiscalMonths)
 
 const searchQuery = ref('')
 const searchResults = ref([])
