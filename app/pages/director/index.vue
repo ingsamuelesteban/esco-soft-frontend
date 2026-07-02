@@ -163,6 +163,30 @@
 
           <hr class="border-gray-100 dark:border-gray-700" />
 
+          <!-- Sección: Meses Fiscales -->
+          <div class="space-y-6">
+            <div class="flex justify-between items-center mb-4">
+              <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 border-l-4 border-primary-600 pl-4">Meses Fiscales (Cobros Mensualidad)</h3>
+              <button type="button" @click="(form.fiscal_months = form.fiscal_months || []).push({month_name: '', amount: 0})" class="text-sm bg-primary-100 text-primary-700 px-3 py-1.5 rounded-md hover:bg-primary-200 dark:bg-primary-900/30 dark:text-primary-300 font-medium">
+                + Agregar Mes
+              </button>
+            </div>
+            <div class="space-y-3 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-xl border border-gray-100 dark:border-gray-700">
+              <div v-for="(fm, index) in form.fiscal_months" :key="index" class="flex gap-4 items-center">
+                <input v-model="fm.month_name" type="text" placeholder="Ej: Septiembre" class="flex-1 block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                <input v-model.number="fm.amount" type="number" placeholder="Monto" class="w-40 block bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-lg border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                <button type="button" @click="form.fiscal_months.splice(index, 1)" class="text-red-500 hover:text-red-700 bg-red-50 dark:bg-red-900/20 p-2 rounded-lg">
+                  <UIcon name="i-heroicons-trash" class="w-5 h-5 block" />
+                </button>
+              </div>
+              <div v-if="!form.fiscal_months?.length" class="text-sm text-gray-500 dark:text-gray-400 text-center py-4">
+                No hay meses fiscales configurados.
+              </div>
+            </div>
+          </div>
+
+          <hr class="border-gray-100 dark:border-gray-700" />
+
           <!-- Sección: Datos del Director -->
           <div class="space-y-6">
             <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 border-l-4 border-primary-600 pl-4">Información del Director</h3>
@@ -287,6 +311,9 @@ async function saveSettings() {
     formData.append('mission', form.value.mission || '')
     formData.append('vision', form.value.vision || '')
     formData.append('values', form.value.values || '')
+
+    // Meses Fiscales
+    formData.append('fiscal_months', JSON.stringify(form.value.fiscal_months || []))
 
     // Archivos
     if (files.value.logo) formData.append('logo', files.value.logo)
