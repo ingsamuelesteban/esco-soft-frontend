@@ -236,6 +236,28 @@
                                         </div>
                                     </div>
                                 </div>
+
+                                <!-- Sección de Meses Fiscales -->
+                                <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-6">
+                                    <div class="flex justify-between items-center mb-3">
+                                        <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100">Meses Fiscales (Cobros Mensualidad)</h4>
+                                        <button type="button" @click="form.fiscal_months.push({month_name: '', amount: 0})" class="text-xs bg-primary-100 text-primary-700 px-2 py-1 rounded hover:bg-primary-200 dark:bg-primary-900/30 dark:text-primary-300">
+                                            + Agregar Mes
+                                        </button>
+                                    </div>
+                                    <div class="space-y-3 bg-gray-50 dark:bg-gray-800/50 p-4 rounded-md border border-gray-100 dark:border-gray-700">
+                                        <div v-for="(fm, index) in form.fiscal_months" :key="index" class="flex gap-2 items-center">
+                                            <input v-model="fm.month_name" type="text" placeholder="Ej: Septiembre" class="flex-1 block w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                            <input v-model.number="fm.amount" type="number" placeholder="Monto" class="w-32 block border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                            <button type="button" @click="form.fiscal_months.splice(index, 1)" class="text-red-500 hover:text-red-700">
+                                                <UIcon name="i-heroicons-trash" class="w-5 h-5" />
+                                            </button>
+                                        </div>
+                                        <div v-if="form.fiscal_months.length === 0" class="text-sm text-gray-500 dark:text-gray-400 text-center py-2">
+                                            No hay meses fiscales configurados.
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
 
                              <!-- Tab: Página Pública -->
@@ -476,7 +498,8 @@ const form = reactive({
         twitter: '',
         youtube: ''
     },
-    features: [] as string[]
+    features: [] as string[],
+    fiscal_months: [] as {month_name: string, amount: number}[]
 })
 
 const provinciasList = ref<any[]>([])
@@ -551,7 +574,8 @@ const openCreateModal = () => {
             twitter: '',
             youtube: ''
         },
-        features: []
+        features: [],
+        fiscal_months: []
     })
     logoFile.value = null
     logoPreview.value = null
@@ -603,7 +627,8 @@ const editTenant = (tenant: Tenant) => {
             twitter: '',
             youtube: ''
         },
-        features: tenant.features || []
+        features: tenant.features || [],
+        fiscal_months: tenant.fiscal_months || []
     })
 
     if (form.provincia) {
@@ -731,6 +756,7 @@ const saveTenant = async () => {
         
         formData.append('social_media', JSON.stringify(form.social_media))
         formData.append('features', JSON.stringify(form.features))
+        formData.append('fiscal_months', JSON.stringify(form.fiscal_months))
 
         if (logoFile.value) {
             formData.append('logo', logoFile.value)
