@@ -84,7 +84,7 @@
             >
               <option v-for="c in conceptOptions" :key="c.value" :value="c.value">{{ c.label }}</option>
             </select>
-            <button v-if="fiscalMonths.length > 0 && invoices.academic.length === 0" @click="generateInvoices" class="whitespace-nowrap inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+            <button v-if="fiscalMonths.length > 0 && sortedAcademicInvoices.length === 0" @click="generateInvoices" class="whitespace-nowrap inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
               <DocumentPlusIcon class="w-4 h-4" />
               Generar Cuotas
             </button>
@@ -96,7 +96,7 @@
           <p>Cargando facturas...</p>
         </div>
 
-        <div v-else-if="invoices.academic.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div v-else-if="sortedAcademicInvoices.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           <div v-for="(invoice, index) in sortedAcademicInvoices" :key="invoice.id" 
                class="relative overflow-hidden border rounded-2xl p-5 flex flex-col justify-between transition-all duration-300 hover:shadow-md group"
                :class="[
