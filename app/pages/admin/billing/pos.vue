@@ -84,7 +84,7 @@
             >
               <option v-for="c in conceptOptions" :key="c.value" :value="c.value">{{ c.label }}</option>
             </select>
-            <button v-if="fiscalMonths.length > 0 && sortedAcademicInvoices.length === 0" @click="generateInvoices" class="whitespace-nowrap inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
+            <button v-if="(currentConcept?.is_recurring ? fiscalMonths.length > 0 : true) && sortedAcademicInvoices.length === 0" @click="generateInvoices" class="whitespace-nowrap inline-flex items-center justify-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium">
               <DocumentPlusIcon class="w-4 h-4" />
               Generar Cuotas
             </button>
@@ -141,7 +141,7 @@
           </div>
         </div>
         
-        <div v-else-if="fiscalMonths.length > 0" class="text-center py-16 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl bg-gray-50/50 dark:bg-gray-800/30">
+        <div v-else-if="currentConcept?.is_recurring ? fiscalMonths.length > 0 : true" class="text-center py-16 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl bg-gray-50/50 dark:bg-gray-800/30">
           <div class="bg-gray-100 dark:bg-gray-700 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <FolderOpenIcon class="w-8 h-8 text-gray-400" />
           </div>
