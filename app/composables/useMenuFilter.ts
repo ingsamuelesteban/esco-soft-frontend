@@ -5,7 +5,7 @@ export const useMenuFilter = () => {
     return menu
       .filter(item => {
         // 1. Capa Superior: Evaluación del Tenant
-        if (item.requiredFeature && !activeFeatures.includes(item.requiredFeature)) {
+        if (userRole !== 'master' && item.requiredFeature && !activeFeatures.includes(item.requiredFeature)) {
           return false;
         }
         
