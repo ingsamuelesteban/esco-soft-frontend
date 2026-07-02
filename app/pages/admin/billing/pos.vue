@@ -345,8 +345,16 @@ definePageMeta({
 const authStore = useAuthStore()
 const tenantFeatures = authStore.tenantFeatures || []
 
-// Convert fiscal_months to an array in case it arrives as an object
-const rawFiscalMonths = authStore.tenant?.fiscal_months || []
+// Convert fiscal_months to an array in case it arrives as an object or string
+let rawFiscalMonths = authStore.tenant?.fiscal_months || []
+if (typeof rawFiscalMonths === 'string') {
+  try {
+    rawFiscalMonths = JSON.parse(rawFiscalMonths)
+  } catch (e) {
+    console.error('Error parsing fiscal_months', e)
+    rawFiscalMonths = []
+  }
+}
 const fiscalMonths = Array.isArray(rawFiscalMonths) ? rawFiscalMonths : Object.values(rawFiscalMonths)
 
 const searchQuery = ref('')
