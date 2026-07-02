@@ -1,167 +1,203 @@
 <template>
-  <div class="space-y-6">
-    <div class="flex justify-between items-center no-print">
-      <h1 class="text-2xl font-bold text-gray-800 dark:text-white">Punto de Venta (POS)</h1>
+  <div class="space-y-6 max-w-7xl mx-auto p-4 sm:p-6">
+    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 no-print">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 dark:text-white">Punto de Venta (POS)</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Busca un estudiante y gestiona sus cobros.</p>
+      </div>
     </div>
 
     <!-- Buscador -->
-    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 no-print">
-      <h2 class="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Buscar Estudiante</h2>
+    <UCard class="no-print shadow-sm" :ui="{ body: { padding: 'p-4 sm:p-6' } }">
+      <h2 class="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Buscar Estudiante</h2>
       <div class="relative">
-        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-          <Icon name="lucide:search" class="w-5 h-5 text-gray-400" />
-        </div>
-        <input 
+        <UInput 
           v-model="searchQuery"
-          @input="searchStudents"
-          type="search" 
-          class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+          @input="onSearchInput"
+          icon="i-heroicons-magnifying-glass-20-solid"
           placeholder="Buscar por matrícula, nombre o apellido..." 
+          size="lg"
+          :ui="{ icon: { trailing: { pointer: '' } } }"
+          class="w-full"
         >
-      </div>
+          <template #trailing v-if="isSearching">
+            <UIcon name="i-heroicons-arrow-path-20-solid" class="w-5 h-5 animate-spin text-gray-400" />
+          </template>
+        </UInput>
       
-      <!-- Resultados -->
-      <div v-if="searchResults.length > 0 && !selectedStudent" class="mt-2 bg-white dark:bg-gray-700 rounded-lg border dark:border-gray-600 shadow max-h-60 overflow-y-auto">
-        <ul class="divide-y divide-gray-200 dark:divide-gray-600">
-          <li v-for="student in searchResults" :key="student.id" 
-              @click="selectStudent(student)"
-              class="p-3 hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer flex justify-between items-center">
-            <div>
-              <p class="text-sm font-medium text-gray-900 dark:text-white">{{ student.nombres }} {{ student.apellidos }}</p>
-              <p class="text-xs text-gray-500 dark:text-gray-400">Matrícula: {{ student.matricula || 'N/A' }} | Aula: {{ student.aula?.nombre || 'N/A' }}</p>
-            </div>
-          </li>
-        </ul>
+        <!-- Resultados -->
+        <div v-if="searchResults.length > 0 && !selectedStudent" class="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 shadow-xl max-h-72 overflow-y-auto z-50">
+          <ul class="divide-y divide-gray-100 dark:divide-gray-700">
+            <li v-for="student in searchResults" :key="student.id" 
+                @click="selectStudent(student)"
+                class="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer flex justify-between items-center transition-colors">
+              <div>
+                <p class="text-sm font-semibold text-gray-900 dark:text-white">{{ student.nombres }} {{ student.apellidos }}</p>
+                <div class="flex items-center gap-3 mt-1 text-xs text-gray-500 dark:text-gray-400">
+                  <span class="flex items-center gap-1"><UIcon name="i-heroicons-identification" class="w-4 h-4"/> {{ student.matricula || 'N/A' }}</span>
+                  <span class="flex items-center gap-1"><UIcon name="i-heroicons-building-office-2" class="w-4 h-4"/> {{ student.aula?.nombre || 'N/A' }}</span>
+                </div>
+              </div>
+              <UIcon name="i-heroicons-chevron-right" class="w-5 h-5 text-gray-400" />
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
+    </UCard>
 
     <!-- Estudiante Seleccionado & Tarjeta de Cobros -->
-    <div v-if="selectedStudent" class="space-y-6">
-      <div class="flex justify-between items-center bg-blue-50 dark:bg-blue-900/30 p-4 rounded-lg border border-blue-100 dark:border-blue-800 no-print">
-        <div class="flex items-center gap-4">
-          <div class="h-12 w-12 rounded-full bg-blue-100 dark:bg-blue-800 flex items-center justify-center text-blue-600 dark:text-blue-200 font-bold text-xl">
+    <div v-if="selectedStudent" class="space-y-6 relative z-0">
+      <div class="flex justify-between items-center bg-gradient-to-r from-primary-50 to-white dark:from-primary-950/30 dark:to-gray-800 p-6 rounded-xl border border-primary-100 dark:border-primary-900/50 shadow-sm no-print">
+        <div class="flex items-center gap-5">
+          <div class="h-14 w-14 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center text-primary-600 dark:text-primary-400 font-bold text-xl shadow-inner">
             {{ selectedStudent.nombres.charAt(0) }}{{ selectedStudent.apellidos.charAt(0) }}
           </div>
           <div>
             <h2 class="text-xl font-bold text-gray-900 dark:text-white">{{ selectedStudent.nombres }} {{ selectedStudent.apellidos }}</h2>
-            <p class="text-sm text-gray-500 dark:text-gray-300">Matrícula: {{ selectedStudent.matricula }} | Aula: {{ selectedStudent.aula?.nombre || 'N/A' }}</p>
+            <div class="flex items-center gap-3 mt-1 text-sm text-gray-600 dark:text-gray-300">
+              <span class="bg-white/50 dark:bg-gray-800/50 px-2 py-1 rounded border border-gray-200 dark:border-gray-700">Matrícula: <span class="font-semibold">{{ selectedStudent.matricula }}</span></span>
+              <span class="bg-white/50 dark:bg-gray-800/50 px-2 py-1 rounded border border-gray-200 dark:border-gray-700">Aula: <span class="font-semibold">{{ selectedStudent.aula?.nombre || 'N/A' }}</span></span>
+            </div>
           </div>
         </div>
-        <button @click="clearSelection" class="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200">
-          <Icon name="lucide:x" class="w-6 h-6" />
-        </button>
+        <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" @click="clearSelection" size="lg" title="Cerrar selección" />
       </div>
 
       <!-- Grid de Meses (Tarjeta Académica) -->
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 no-print">
-        <div class="flex justify-between items-center mb-6">
-          <h3 class="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2">
-            <Icon name="lucide:calendar-days" class="w-5 h-5 text-blue-500" />
+      <UCard class="no-print shadow-sm" :ui="{ body: { padding: 'p-6' } }">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg text-blue-600 dark:text-blue-400">
+              <UIcon name="i-heroicons-calendar-days" class="w-5 h-5" />
+            </div>
             Tarjeta de Pagos ({{ currentConcept?.name || 'Mensualidad' }})
           </h3>
-          <div class="flex items-center gap-4">
-            <select v-model="selectedConceptId" @change="loadInvoices" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 p-2 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white">
-              <option v-for="c in concepts" :key="c.id" :value="c.id">{{ c.name }} - ${{ Number(c.amount).toFixed(2) }}</option>
-            </select>
-            <button v-if="fiscalMonths.length > 0 && invoices.academic.length === 0" @click="generateInvoices" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium transition-colors">
+          <div class="flex items-center gap-3 w-full md:w-auto">
+            <USelect 
+              v-model="selectedConceptId" 
+              :options="conceptOptions"
+              @change="loadInvoices" 
+              class="w-full md:w-64"
+            />
+            <UButton v-if="fiscalMonths.length > 0 && invoices.academic.length === 0" color="primary" @click="generateInvoices" icon="i-heroicons-document-plus">
               Generar Cuotas
-            </button>
+            </UButton>
           </div>
         </div>
 
-        <div v-if="invoices.academic.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
+        <div v-if="isLoadingInvoices" class="py-12 flex flex-col items-center justify-center text-gray-500">
+          <UIcon name="i-heroicons-arrow-path" class="w-8 h-8 animate-spin mb-4 text-primary-500" />
+          <p>Cargando facturas...</p>
+        </div>
+
+        <div v-else-if="invoices.academic.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
           <div v-for="(invoice, index) in sortedAcademicInvoices" :key="invoice.id" 
-               class="border rounded-xl p-4 flex flex-col justify-between transition-all"
+               class="relative overflow-hidden border rounded-2xl p-5 flex flex-col justify-between transition-all duration-300 hover:shadow-md group"
                :class="[
                  invoice.payment_status === 'paid' 
-                  ? 'bg-green-50 border-green-200 dark:bg-green-900/20 dark:border-green-800' 
-                  : 'bg-red-50 border-red-200 dark:bg-red-900/20 dark:border-red-800 shadow-sm'
+                  ? 'bg-gradient-to-br from-green-50 to-emerald-50 border-green-200 dark:from-green-900/20 dark:to-emerald-900/10 dark:border-green-800/50' 
+                  : 'bg-white border-gray-200 dark:bg-gray-800/50 dark:border-gray-700 shadow-sm hover:border-primary-300 dark:hover:border-primary-700'
                ]">
-            <div>
-              <div class="flex justify-between items-start mb-2">
-                <span class="font-bold text-lg uppercase" :class="invoice.payment_status === 'paid' ? 'text-green-700 dark:text-green-400' : 'text-red-700 dark:text-red-400'">
+            <div v-if="invoice.payment_status === 'paid'" class="absolute -right-6 -top-6 w-24 h-24 bg-green-500/10 dark:bg-green-500/5 rounded-full blur-2xl pointer-events-none"></div>
+            <div class="relative z-10">
+              <div class="flex justify-between items-start mb-3">
+                <span class="font-bold text-sm tracking-wider uppercase text-gray-500 dark:text-gray-400">
                   {{ invoice.month_name }}
                 </span>
-                <span v-if="invoice.payment_status === 'paid'" class="inline-flex items-center bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-green-900 dark:text-green-300">
+                <span v-if="invoice.payment_status === 'paid'" class="inline-flex items-center gap-1 bg-green-100 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-full dark:bg-green-900/50 dark:text-green-400 border border-green-200 dark:border-green-800/50 shadow-sm">
+                  <UIcon name="i-heroicons-check-circle" class="w-3.5 h-3.5" />
                   PAGADO
                 </span>
-                <span v-else class="inline-flex items-center bg-red-100 text-red-800 text-xs font-medium px-2.5 py-0.5 rounded-full dark:bg-red-900 dark:text-red-300">
+                <span v-else class="inline-flex items-center gap-1 bg-red-50 text-red-700 text-xs font-semibold px-2.5 py-1 rounded-full dark:bg-red-900/30 dark:text-red-400 border border-red-100 dark:border-red-900/30">
                   PENDIENTE
                 </span>
               </div>
-              <p class="text-2xl font-bold text-gray-900 dark:text-white">${{ Number(invoice.total_amount).toFixed(2) }}</p>
+              <p class="text-3xl font-black text-gray-900 dark:text-white tracking-tight">${{ Number(invoice.total_amount).toFixed(2) }}</p>
               
-              <div v-if="invoice.payment_status === 'paid'" class="mt-4 space-y-1 text-sm text-green-800 dark:text-green-400">
-                <p class="flex items-center gap-1"><Icon name="lucide:check-circle" class="w-4 h-4"/> Rbo: {{ invoice.payments[0]?.receipt_number }}</p>
-                <p class="flex items-center gap-1"><Icon name="lucide:calendar" class="w-4 h-4"/> {{ formatDate(invoice.payments[0]?.paid_at) }}</p>
+              <div v-if="invoice.payment_status === 'paid'" class="mt-4 p-3 bg-white/60 dark:bg-gray-900/40 rounded-xl border border-green-100 dark:border-green-800/30 space-y-1.5 text-xs text-gray-600 dark:text-gray-300">
+                <p class="flex items-center justify-between"><span class="flex items-center gap-1.5"><UIcon name="i-heroicons-receipt-refund" class="w-4 h-4 text-green-600 dark:text-green-500"/> Recibo:</span> <span class="font-mono font-medium">{{ invoice.payments[0]?.receipt_number }}</span></p>
+                <p class="flex items-center justify-between"><span class="flex items-center gap-1.5"><UIcon name="i-heroicons-calendar" class="w-4 h-4 text-green-600 dark:text-green-500"/> Fecha:</span> <span>{{ formatDate(invoice.payments[0]?.paid_at) }}</span></p>
               </div>
             </div>
 
-            <div v-if="invoice.payment_status !== 'paid'" class="mt-4">
-              <button @click="openPaymentModal(invoice)" class="w-full py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium shadow flex items-center justify-center gap-2 transition-colors">
-                <Icon name="lucide:credit-card" class="w-5 h-5"/>
-                Cobrar
-              </button>
+            <div v-if="invoice.payment_status !== 'paid'" class="mt-5 relative z-10">
+              <UButton @click="openPaymentModal(invoice)" color="primary" block size="lg" class="shadow-sm font-semibold group-hover:shadow transition-shadow">
+                <template #leading>
+                  <UIcon name="i-heroicons-credit-card" class="w-5 h-5"/>
+                </template>
+                Cobrar Cuota
+              </UButton>
             </div>
-            <div v-else class="mt-4">
-              <button @click="fetchAndPrintTicket(invoice.payments[0]?.id)" class="w-full py-2 bg-white dark:bg-gray-800 border border-green-300 text-green-700 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-900/40 rounded-lg font-medium flex items-center justify-center gap-2 transition-colors">
-                <Icon name="lucide:printer" class="w-4 h-4"/>
-                Reimprimir
-              </button>
+            <div v-else class="mt-5 relative z-10">
+              <UButton @click="fetchAndPrintTicket(invoice.payments[0]?.id)" color="gray" variant="soft" block size="md">
+                <template #leading>
+                  <UIcon name="i-heroicons-printer" class="w-4 h-4"/>
+                </template>
+                Reimprimir Ticket
+              </UButton>
             </div>
           </div>
         </div>
         
-        <div v-else-if="fiscalMonths.length > 0" class="text-center py-10">
-          <Icon name="lucide:folder-open" class="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <p class="text-gray-500">Este estudiante no tiene cargos académicos generados para el concepto seleccionado.</p>
+        <div v-else-if="fiscalMonths.length > 0" class="text-center py-16 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-2xl bg-gray-50/50 dark:bg-gray-800/30">
+          <div class="bg-gray-100 dark:bg-gray-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <UIcon name="i-heroicons-folder-open" class="w-8 h-8 text-gray-400" />
+          </div>
+          <h4 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Sin cargos académicos</h4>
+          <p class="text-gray-500 dark:text-gray-400 max-w-sm mx-auto">Este estudiante no tiene cuotas generadas para el concepto seleccionado.</p>
+          <UButton @click="generateInvoices" color="primary" class="mt-6" icon="i-heroicons-document-plus">
+            Generar Cuotas Ahora
+          </UButton>
         </div>
-        <div v-else class="text-center py-10">
-          <p class="text-red-500">La institución no tiene los meses fiscales (fiscal_months) configurados.</p>
+        <div v-else class="text-center py-10 bg-red-50 dark:bg-red-900/10 rounded-2xl border border-red-100 dark:border-red-900/30">
+          <UIcon name="i-heroicons-exclamation-triangle" class="w-10 h-10 text-red-500 mx-auto mb-3" />
+          <p class="text-red-700 dark:text-red-400 font-medium">La institución no tiene los meses fiscales (fiscal_months) configurados.</p>
         </div>
-      </div>
+      </UCard>
 
       <!-- Tienda / Otros Cargos -->
-      <div v-if="invoices.uniforms.length > 0" class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 no-print">
-        <h3 class="text-lg font-bold text-gray-800 dark:text-white flex items-center gap-2 mb-4">
-          <Icon name="lucide:shopping-bag" class="w-5 h-5 text-purple-500" />
+      <UCard v-if="invoices.uniforms.length > 0" class="no-print shadow-sm">
+        <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2 mb-4">
+          <div class="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg text-purple-600 dark:text-purple-400">
+            <UIcon name="i-heroicons-shopping-bag" class="w-5 h-5" />
+          </div>
           Cargos por Tienda / Uniformes
         </h3>
         <div class="overflow-x-auto">
-          <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
+          <table class="w-full text-sm text-left">
+            <thead class="text-xs text-gray-500 uppercase bg-gray-50 dark:bg-gray-800 dark:text-gray-400 rounded-lg">
               <tr>
-                <th scope="col" class="px-6 py-3">Factura</th>
-                <th scope="col" class="px-6 py-3">Fecha</th>
-                <th scope="col" class="px-6 py-3">Monto Total</th>
-                <th scope="col" class="px-6 py-3">Pagado</th>
-                <th scope="col" class="px-6 py-3">Estado</th>
-                <th scope="col" class="px-6 py-3 text-right">Acciones</th>
+                <th scope="col" class="px-6 py-4 font-semibold rounded-tl-lg">Factura</th>
+                <th scope="col" class="px-6 py-4 font-semibold">Fecha</th>
+                <th scope="col" class="px-6 py-4 font-semibold">Total</th>
+                <th scope="col" class="px-6 py-4 font-semibold">Pagado</th>
+                <th scope="col" class="px-6 py-4 font-semibold">Estado</th>
+                <th scope="col" class="px-6 py-4 font-semibold text-right rounded-tr-lg">Acciones</th>
               </tr>
             </thead>
-            <tbody>
-              <tr v-for="inv in invoices.uniforms" :key="inv.id" class="bg-white border-b dark:bg-gray-800 dark:border-gray-700">
-                <td class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white">
+            <tbody class="divide-y divide-gray-100 dark:divide-gray-800">
+              <tr v-for="inv in invoices.uniforms" :key="inv.id" class="bg-white hover:bg-gray-50 dark:bg-transparent dark:hover:bg-gray-800/50 transition-colors">
+                <td class="px-6 py-4 font-mono font-medium text-gray-900 dark:text-white">
                   {{ inv.invoice_number }}
                 </td>
-                <td class="px-6 py-4">{{ formatDate(inv.created_at) }}</td>
-                <td class="px-6 py-4 font-bold">${{ Number(inv.total_amount).toFixed(2) }}</td>
-                <td class="px-6 py-4">${{ Number(inv.amount_paid).toFixed(2) }}</td>
+                <td class="px-6 py-4 text-gray-500">{{ formatDate(inv.created_at) }}</td>
+                <td class="px-6 py-4 font-bold text-gray-900 dark:text-white">${{ Number(inv.total_amount).toFixed(2) }}</td>
+                <td class="px-6 py-4 text-gray-600 dark:text-gray-300">${{ Number(inv.amount_paid).toFixed(2) }}</td>
                 <td class="px-6 py-4">
-                  <span class="px-2 py-1 rounded text-xs" :class="{
-                    'bg-green-100 text-green-800': inv.payment_status === 'paid',
-                    'bg-yellow-100 text-yellow-800': inv.payment_status === 'partial',
-                    'bg-red-100 text-red-800': inv.payment_status === 'pending'
-                  }">{{ inv.payment_status }}</span>
+                  <UBadge :color="inv.payment_status === 'paid' ? 'green' : (inv.payment_status === 'partial' ? 'yellow' : 'red')" variant="subtle" size="sm">
+                    {{ inv.payment_status }}
+                  </UBadge>
                 </td>
                 <td class="px-6 py-4 text-right">
-                  <button @click="navigateTo(`/admin/admisiones/facturas-uniformes?search=${inv.invoice_number}`)" class="text-blue-600 hover:underline">Ver en Tienda</button>
+                  <UButton @click="navigateTo(`/admin/admisiones/facturas-uniformes?search=${inv.invoice_number}`)" variant="link" color="primary" size="sm">
+                    Ver Detalles
+                  </UButton>
                 </td>
               </tr>
             </tbody>
           </table>
         </div>
-      </div>
+      </UCard>
     </div>
 
     <!-- Ticket de Impresión (Solo visible al imprimir) -->
@@ -198,39 +234,52 @@
     </div>
 
     <!-- Modal de Cobro -->
-    <div v-if="showPaymentModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 no-print">
-      <div class="bg-white dark:bg-gray-800 rounded-lg shadow-xl p-6 w-full max-w-md mx-4">
-        <h3 class="text-lg font-bold mb-4 text-gray-900 dark:text-white">Procesar Cobro</h3>
+    <UModal v-model="showPaymentModal" prevent-close>
+      <UCard :ui="{ divide: 'divide-y divide-gray-100 dark:divide-gray-800' }">
+        <template #header>
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
+              <UIcon name="i-heroicons-banknotes" class="w-6 h-6 text-primary-500" />
+              Procesar Cobro
+            </h3>
+            <UButton color="gray" variant="ghost" icon="i-heroicons-x-mark-20-solid" class="-my-1" @click="showPaymentModal = false" :disabled="isProcessing" />
+          </div>
+        </template>
         
-        <div class="bg-gray-50 dark:bg-gray-700 p-4 rounded-lg mb-4">
-          <p class="text-sm text-gray-500 dark:text-gray-400">Concepto</p>
-          <p class="font-bold text-gray-900 dark:text-white">{{ invoiceToPay?.concept_name }} - {{ invoiceToPay?.month_name }}</p>
+        <div class="bg-gray-50 dark:bg-gray-800/50 p-5 rounded-xl mb-5 border border-gray-100 dark:border-gray-700">
+          <p class="text-sm text-gray-500 dark:text-gray-400 mb-1 font-medium">Concepto a Pagar</p>
+          <p class="font-bold text-lg text-gray-900 dark:text-white">{{ invoiceToPay?.concept_name }} - <span class="text-primary-600 dark:text-primary-400">{{ invoiceToPay?.month_name }}</span></p>
         </div>
 
-        <div class="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-lg mb-6 border border-blue-100 dark:border-blue-800 text-center">
-          <p class="text-sm text-blue-600 dark:text-blue-400 font-medium">Monto a Cobrar</p>
-          <p class="text-4xl font-bold text-blue-700 dark:text-blue-300">${{ Number(invoiceToPay?.total_amount).toFixed(2) }}</p>
+        <div class="bg-primary-50 dark:bg-primary-900/20 p-6 rounded-xl mb-6 border border-primary-100 dark:border-primary-800/50 text-center shadow-inner">
+          <p class="text-sm text-primary-600 dark:text-primary-400 font-bold uppercase tracking-wider mb-2">Monto Total a Cobrar</p>
+          <p class="text-5xl font-black text-primary-700 dark:text-primary-300">${{ Number(invoiceToPay?.total_amount).toFixed(2) }}</p>
         </div>
 
-        <div class="mb-6">
-          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Método de Pago</label>
-          <select v-model="paymentMethod" class="w-full p-2 border rounded-lg focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:text-white">
-            <option value="cash">Efectivo</option>
-            <option value="card">Tarjeta / POS</option>
-            <option value="transfer">Transferencia</option>
-          </select>
+        <div class="mb-2">
+          <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Método de Pago</label>
+          <USelect 
+            v-model="paymentMethod" 
+            :options="paymentOptions"
+            size="lg"
+            class="w-full"
+            icon="i-heroicons-wallet"
+          />
         </div>
 
-        <div class="flex justify-end gap-3">
-          <button @click="showPaymentModal = false" class="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg">Cancelar</button>
-          <button @click="processPayment" :disabled="isProcessing" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium flex items-center gap-2">
-            <Icon v-if="isProcessing" name="lucide:loader" class="w-5 h-5 animate-spin" />
-            <Icon v-else name="lucide:check-circle" class="w-5 h-5" />
-            {{ isProcessing ? 'Procesando...' : 'Confirmar Cobro' }}
-          </button>
-        </div>
-      </div>
-    </div>
+        <template #footer>
+          <div class="flex justify-end gap-3">
+            <UButton color="gray" variant="soft" @click="showPaymentModal = false" :disabled="isProcessing" size="lg">Cancelar</UButton>
+            <UButton color="primary" @click="processPayment" :loading="isProcessing" size="lg" class="px-6 font-bold">
+              <template #leading v-if="!isProcessing">
+                <UIcon name="i-heroicons-check-circle" class="w-5 h-5" />
+              </template>
+              Confirmar Cobro
+            </UButton>
+          </div>
+        </template>
+      </UCard>
+    </UModal>
   </div>
 </template>
 
@@ -238,6 +287,11 @@
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { api } from '~/utils/api'
 import { useAuthStore } from '~/stores/auth'
+import { showSuccess, showError, showConfirm, showToast, showLoading, closeLoading } from '~/utils/sweetalert'
+
+definePageMeta({
+  middleware: 'auth'
+})
 
 const authStore = useAuthStore()
 const tenantFeatures = authStore.tenantFeatures || []
@@ -246,14 +300,24 @@ const fiscalMonths = authStore.tenant?.fiscal_months || []
 const searchQuery = ref('')
 const searchResults = ref([])
 const selectedStudent = ref(null)
+const isSearching = ref(false)
+let searchTimeout = null
 
 const concepts = ref([])
 const selectedConceptId = ref('')
+
+const conceptOptions = computed(() => {
+  return concepts.value.map(c => ({
+    label: `${c.name} - $${Number(c.amount).toFixed(2)}`,
+    value: c.id
+  }))
+})
 
 const invoices = ref({
   academic: [],
   uniforms: []
 })
+const isLoadingInvoices = ref(false)
 
 const currentConcept = computed(() => concepts.value.find(c => c.id === selectedConceptId.value))
 
@@ -261,6 +325,12 @@ const showPaymentModal = ref(false)
 const invoiceToPay = ref(null)
 const paymentMethod = ref('cash')
 const isProcessing = ref(false)
+
+const paymentOptions = [
+  { label: 'Efectivo', value: 'cash' },
+  { label: 'Tarjeta / POS', value: 'card' },
+  { label: 'Transferencia', value: 'transfer' }
+]
 
 const ticketData = ref(null)
 
@@ -271,26 +341,38 @@ onMounted(async () => {
 const loadConcepts = async () => {
   try {
     const res = await api.get('/api/billing/concepts')
-    concepts.value = res.data || res || []
+    concepts.value = res.data?.data || res.data || res || []
     if (concepts.value.length > 0) {
       selectedConceptId.value = concepts.value[0].id
     }
   } catch (error) {
     console.error(error)
+    showToast('Error cargando conceptos', 'error')
   }
 }
 
-const searchStudents = async () => {
+const onSearchInput = () => {
+  clearTimeout(searchTimeout)
   if (searchQuery.value.length < 3) {
     searchResults.value = []
+    isSearching.value = false
     return
   }
+  isSearching.value = true
+  searchTimeout = setTimeout(() => {
+    searchStudents()
+  }, 500)
+}
+
+const searchStudents = async () => {
   try {
     const response = await api.get('/api/estudiantes', { params: { search: searchQuery.value } })
-    // Dependiendo de si es axios o $fetch, extraeremos el array:
     searchResults.value = response.data?.data || response.data || response || []
   } catch (error) {
     console.error('Error buscando estudiantes', error)
+    showToast('Error buscando estudiantes', 'error')
+  } finally {
+    isSearching.value = false
   }
 }
 
@@ -308,28 +390,43 @@ const clearSelection = () => {
 
 const loadInvoices = async () => {
   if (!selectedStudent.value) return
+  isLoadingInvoices.value = true
   try {
     const res = await api.get(`/api/billing/students/${selectedStudent.value.id}/invoices`)
     invoices.value = res.data || res
   } catch (error) {
     console.error('Error cargando facturas', error)
+    showToast('Error cargando facturas', 'error')
+  } finally {
+    isLoadingInvoices.value = false
   }
 }
 
 const generateInvoices = async () => {
   if (!selectedStudent.value || !selectedConceptId.value) return
-  if (!confirm('¿Deseas generar la cuadrícula de cuotas para este estudiante?')) return
   
+  const result = await showConfirm(
+    'Se generarán las cuotas para este estudiante. Esta acción es segura y omitirá los meses que ya tengan factura.',
+    '¿Generar Cuadrícula de Cuotas?',
+    'question',
+    'Sí, generar cuotas'
+  )
+  
+  if (!result.isConfirmed) return
+  
+  showLoading('Generando cuotas...')
   try {
     await api.post('/api/billing/generate-invoices', {
       estudiante_id: selectedStudent.value.id,
       concept_id: selectedConceptId.value
     })
-    alert('Cuotas generadas con éxito')
+    closeLoading()
+    showSuccess('Las cuotas se han generado exitosamente', '¡Completado!')
     loadInvoices()
   } catch (error) {
     console.error('Error', error)
-    alert('Error al generar cuotas')
+    closeLoading()
+    showError(error.response?.data?.message || 'Ocurrió un error al intentar generar las cuotas.')
   }
 }
 
@@ -342,6 +439,7 @@ const openPaymentModal = (invoice) => {
 const processPayment = async () => {
   if (!invoiceToPay.value) return
   isProcessing.value = true
+  
   try {
     const res = await api.post('/api/billing/collect-payment', {
       invoice_id: invoiceToPay.value.id,
@@ -349,37 +447,46 @@ const processPayment = async () => {
     })
     
     showPaymentModal.value = false
+    showToast('Cobro procesado correctamente', 'success')
     
     // Obtener ticket de inmediato
     const paymentId = res.payment?.id || res.data?.payment?.id
-    await fetchAndPrintTicket(paymentId)
+    if (paymentId) {
+      await fetchAndPrintTicket(paymentId)
+    }
     
     // Recargar data
     await loadInvoices()
   } catch (error) {
     console.error(error)
-    alert(error.response?.data?.message || 'Error procesando cobro')
+    showError(error.response?.data?.message || 'Error procesando cobro. Por favor, inténtelo de nuevo.')
   } finally {
     isProcessing.value = false
   }
 }
 
 const fetchAndPrintTicket = async (paymentId) => {
+  if (!paymentId) return
+  
+  showToast('Preparando ticket para impresión...', 'info')
   try {
     const res = await api.get(`/api/billing/payments/${paymentId}/ticket`)
     ticketData.value = res.data || res
     
     await nextTick()
+    // Give more time for the DOM to render the printArea completely
     setTimeout(() => {
       window.print()
-    }, 300)
+    }, 800)
   } catch (error) {
     console.error('Error al generar ticket', error)
+    showError('No se pudo generar el ticket de impresión.')
   }
 }
 
 // Ordenar las facturas académicas según el orden de los fiscal_months
 const sortedAcademicInvoices = computed(() => {
+  if (!invoices.value.academic) return []
   const acad = [...invoices.value.academic].filter(inv => inv.concept_name === currentConcept.value?.name)
   
   const monthOrder = {}
@@ -416,6 +523,8 @@ const formatDate = (dateStr: string) => {
     left: 0;
     top: 0;
     width: 80mm;
+    margin: 0;
+    padding: 0;
   }
 }
 </style>
