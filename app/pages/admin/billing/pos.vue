@@ -241,7 +241,7 @@ import { useAuthStore } from '~/stores/auth'
 
 const authStore = useAuthStore()
 const tenantFeatures = authStore.tenantFeatures || []
-const fiscalMonths = authStore.user?.tenant?.fiscal_months || []
+const fiscalMonths = authStore.tenant?.fiscal_months || []
 
 const searchQuery = ref('')
 const searchResults = ref([])
@@ -384,7 +384,7 @@ const sortedAcademicInvoices = computed(() => {
   
   const monthOrder = {}
   fiscalMonths.forEach((m, index) => {
-    monthOrder[m.name || m] = index
+    monthOrder[m.month_name || m.name || m] = index
   })
   
   return acad.sort((a, b) => {

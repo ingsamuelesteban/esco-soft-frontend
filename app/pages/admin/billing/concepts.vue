@@ -111,7 +111,6 @@ import { api } from '~/utils/api'
 import { showSuccess, showError } from '~/utils/sweetalert'
 
 definePageMeta({
-  layout: 'admin',
   middleware: 'auth'
 })
 
