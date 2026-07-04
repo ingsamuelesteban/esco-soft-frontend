@@ -9,7 +9,7 @@
       @blur="handleBlur"
       placeholder="Buscar o escribir centro de procedencia..."
       :class="[
-        'block w-full rounded-md border-0 py-1.5 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600',
+        'block w-full rounded-md border-0 py-1.5 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 shadow-sm ring-1 ring-inset ring-gray-300 dark:ring-gray-600',
         'focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6',
         errorMessage ? 'ring-red-500 focus:ring-red-500' : ''
       ]"
@@ -84,7 +84,7 @@
               v-model="newCentroName"
               type="text"
               required
-              class="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:border-primary-600 focus:outline-none focus:ring-primary-600"
+              class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:border-primary-600 focus:outline-none focus:ring-primary-600"
               placeholder="Nombre del centro"
             />
           </div>
@@ -94,7 +94,7 @@
             <textarea
               v-model="newCentroDescripcion"
               rows="3"
-              class="w-full rounded-md border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:border-primary-600 focus:outline-none focus:ring-primary-600"
+              class="w-full rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-900 px-3 py-2 text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:border-primary-600 focus:outline-none focus:ring-primary-600"
               placeholder="Descripción del centro..."
             />
           </div>
