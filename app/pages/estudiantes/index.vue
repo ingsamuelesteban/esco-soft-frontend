@@ -80,6 +80,8 @@ onMounted(async () => {
   const activo = aniosStore.activos[0]
   if (activo) {
     selectedAnioLectivo.value = activo.id
+  } else {
+    await store.fetchAll({ status: statusFilter.value })
   }
 })
 

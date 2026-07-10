@@ -231,9 +231,6 @@ const filterSexo = ref<'Masculino' | 'Femenino' | undefined>(undefined)
 const filterAula = ref<number | undefined>(undefined)
 
 onMounted(() => {
-  if (store.items.length === 0) {
-    store.fetchAll()
-  }
   if (aulasStore.items.length === 0) {
     aulasStore.fetchAll()
   }
@@ -290,7 +287,7 @@ const filtered = computed<Estudiante[]>(() => {
 
     const matchesSexo = filterSexo.value === undefined || e.sexo === filterSexo.value
     const matchesAula = filterAula.value === undefined || 
-      (e.aula_id_historial ? e.aula_id_historial === filterAula.value : e.aula_id === filterAula.value)
+      (e.aula_id_historial ? e.aula_id_historial == filterAula.value : e.aula_id == filterAula.value)
 
     return matchesQuery && matchesSexo && matchesAula
   })
