@@ -82,30 +82,36 @@
                             </tr>
                         </thead>
                         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                            <tr v-for="est in estudiantes" :key="est.id"
-                                @click="toggleSeleccion(est.id)"
-                                class="cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
-                                :class="{ 'bg-blue-50 dark:bg-blue-900/40': seleccionados.includes(est.id) }">
-                                <td class="px-4 py-3">
-                                    <input type="checkbox" :checked="seleccionados.includes(est.id)"
-                                        @click.stop="toggleSeleccion(est.id)"
-                                        class="h-4 w-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded" />
-                                </td>
-                                <td class="px-4 py-3 text-sm text-gray-500 dark:text-gray-400">{{ est.numero_orden }}</td>
-                                <td class="px-4 py-3">
-                                    <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ est.apellidos }}, {{ est.nombres }}</div>
-                                    <div class="text-xs text-gray-500 dark:text-gray-400">{{ est.cedula || est.rne || '-' }}</div>
-                                </td>
-                                <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
-                                    {{ est.aula ? `${est.aula.grado_cardinal}° ${est.aula.seccion ? '(' + est.aula.seccion + ')' : ''} - ${est.aula.titulo?.nombre || 'General'}` : (est.aula_grado_historial ? `${est.aula_grado_historial}° (${est.aula_seccion_historial || ''})` : '-') }}
-                                </td>
-                                <td class="px-4 py-3">
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
-                                        :class="est.estado === 'activo' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'">
-                                        {{ est.estado || 'activo' }}
-                                    </span>
-                                </td>
-                            </tr>
+                            <template v-for="est in estudiantes" :key="est.id">
+                                <tr v-if="est._is_first_in_aula && !aulaOrigenId" class="bg-gray-100 dark:bg-gray-700/50">
+                                    <td colspan="5" class="px-4 py-2 text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">
+                                        {{ est.aula ? `${est.aula.grado_cardinal}° ${est.aula.seccion ? '(' + est.aula.seccion + ')' : ''} - ${est.aula.titulo?.nombre || 'General'}` : (est.aula_grado_historial ? `Aula: ${est.aula_grado_historial}° (${est.aula_seccion_historial || ''})` : 'Sin Aula Asignada') }}
+                                    </td>
+                                </tr>
+                                <tr @click="toggleSeleccion(est.id)"
+                                    class="cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-colors"
+                                    :class="{ 'bg-blue-50 dark:bg-blue-900/40': seleccionados.includes(est.id) }">
+                                    <td class="px-4 py-3">
+                                        <input type="checkbox" :checked="seleccionados.includes(est.id)"
+                                            @click.stop="toggleSeleccion(est.id)"
+                                            class="h-4 w-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded" />
+                                    </td>
+                                    <td class="px-4 py-3 text-sm font-semibold text-gray-700 dark:text-gray-300">{{ est._indice_visual }}</td>
+                                    <td class="px-4 py-3">
+                                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ est.apellidos }}, {{ est.nombres }}</div>
+                                        <div class="text-xs text-gray-500 dark:text-gray-400">{{ est.cedula || est.rne || '-' }}</div>
+                                    </td>
+                                    <td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                                        {{ est.aula ? `${est.aula.grado_cardinal}° ${est.aula.seccion ? '(' + est.aula.seccion + ')' : ''} - ${est.aula.titulo?.nombre || 'General'}` : (est.aula_grado_historial ? `${est.aula_grado_historial}° (${est.aula_seccion_historial || ''})` : '-') }}
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium"
+                                            :class="est.estado === 'activo' ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400'">
+                                            {{ est.estado || 'activo' }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            </template>
                         </tbody>
                     </table>
                 </div>
@@ -211,8 +217,14 @@ interface Estudiante {
     cedula?: string
     rne?: string
     numero_orden?: number
+    numero_orden_historial?: number
     estado?: string
     aula?: Aula
+    aula_id_historial?: number
+    aula_grado_historial?: number
+    aula_seccion_historial?: string
+    _indice_visual?: number
+    _is_first_in_aula?: boolean
 }
 
 // ── Estado ─────────────────────────────────────────────────────────────────
@@ -290,7 +302,64 @@ async function cargarEstudiantes() {
         }
         if (aulaOrigenId.value) params.aula_id = aulaOrigenId.value
         const res = await api.get<any>('/api/estudiantes', { params })
-        estudiantes.value = res.data || res || []
+        let data = res.data || res || []
+        
+        // Agrupar, ordenar y asignar número de orden visual
+        const agrupados = new Map<string, any[]>()
+        const sinAula: any[] = []
+
+        data.forEach((est: any) => {
+            const aulaId = est.aula?.id || est.aula_id_historial
+            if (aulaId) {
+                const key = String(aulaId)
+                if (!agrupados.has(key)) agrupados.set(key, [])
+                agrupados.get(key)!.push(est)
+            } else {
+                sinAula.push(est)
+            }
+        })
+
+        const dataProcesada: any[] = []
+
+        // Convertir Map a Array para ordenar aulas por nombre
+        const aulasKeys = Array.from(agrupados.keys()).sort((a, b) => {
+            const estA = agrupados.get(a)![0]
+            const estB = agrupados.get(b)![0]
+            
+            const nombreA = estA.aula ? `${estA.aula.grado_cardinal} ${estA.aula.seccion || ''}` : `${estA.aula_grado_historial} ${estA.aula_seccion_historial || ''}`
+            const nombreB = estB.aula ? `${estB.aula.grado_cardinal} ${estB.aula.seccion || ''}` : `${estB.aula_grado_historial} ${estB.aula_seccion_historial || ''}`
+            
+            return nombreA.localeCompare(nombreB)
+        })
+
+        aulasKeys.forEach(key => {
+            const ests = agrupados.get(key)!
+            // Ordenar estudiantes dentro del aula
+            ests.sort((a, b) => {
+                const numA = a.numero_orden_historial ?? a.numero_orden
+                const numB = b.numero_orden_historial ?? b.numero_orden
+                if (numA != null && numB != null) return numA - numB
+                if (numA != null) return -1
+                if (numB != null) return 1
+                return (a.apellidos || '').localeCompare(b.apellidos || '')
+            })
+
+            ests.forEach((est, idx) => {
+                est._indice_visual = (est.numero_orden_historial ?? est.numero_orden) || (idx + 1)
+                est._is_first_in_aula = idx === 0
+                dataProcesada.push(est)
+            })
+        })
+
+        // Manejar los que no tienen aula
+        sinAula.sort((a, b) => (a.apellidos || '').localeCompare(b.apellidos || ''))
+        sinAula.forEach((est, idx) => {
+            est._indice_visual = idx + 1
+            est._is_first_in_aula = idx === 0
+            dataProcesada.push(est)
+        })
+
+        estudiantes.value = dataProcesada
     } catch (e) {
         console.error(e)
     } finally {
