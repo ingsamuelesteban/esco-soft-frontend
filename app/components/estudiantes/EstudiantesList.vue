@@ -289,7 +289,8 @@ const filtered = computed<Estudiante[]>(() => {
       (e.rne && e.rne.toLowerCase().includes(q))
 
     const matchesSexo = filterSexo.value === undefined || e.sexo === filterSexo.value
-    const matchesAula = filterAula.value === undefined || e.aula_id === filterAula.value
+    const matchesAula = filterAula.value === undefined || 
+      (e.aula_id_historial ? e.aula_id_historial === filterAula.value : e.aula_id === filterAula.value)
 
     return matchesQuery && matchesSexo && matchesAula
   })

@@ -6,6 +6,7 @@ export interface Estudiante {
   id: number
   numero_orden: number | null
   numero_orden_historial?: number | null
+  aula_id_historial?: number | null
   aula_grado_historial?: number | null
   aula_seccion_historial?: string | null
   orden_manual?: boolean
