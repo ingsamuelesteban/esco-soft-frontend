@@ -33,7 +33,7 @@
     </div>
 
     <div class="mt-6">
-      <EstudiantesList :status-filter="statusFilter" @edit="openEditModal" @delete="handleDelete"
+      <EstudiantesList :status-filter="statusFilter" :anio-lectivo-id="selectedAnioLectivo" @edit="openEditModal" @delete="handleDelete"
         @restore="handleRestore" @generate-user="handleGenerateUser" @generate-batch="handleGenerateBatch"
         @reset-password="handleResetPassword" @saved="onSaved" />
     </div>

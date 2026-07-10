@@ -218,6 +218,7 @@ defineEmits<{
 
 interface Props {
   statusFilter?: 'active' | 'inactive' | 'retirado' | 'all'
+  anioLectivoId?: number
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -255,7 +256,10 @@ const reordenarNumeros = async () => {
     })
 
     if (result.isConfirmed) {
-      await store.reordenarNumeros()
+      await store.reordenarNumeros({
+        aula_id: filterAula.value,
+        anio_lectivo_id: props.anioLectivoId
+      })
 
       await Swal.fire({
         title: '¡Reordenado!',

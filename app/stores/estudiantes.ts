@@ -166,13 +166,18 @@ export const useEstudiantesStore = defineStore('estudiantes', {
       }
     },
 
-    async reordenarNumeros() {
+    async reordenarNumeros(options?: { aula_id?: number, anio_lectivo_id?: number }) {
       startLoading()
       try {
-        const response = await api.post<{ success: boolean; data: Estudiante[] }>('/api/estudiantes/reordenar', {})
-        // Actualizar la lista con los números reordenados
-        this.items = response.data
-        return response.data
+        const payload = options ? { aula_id: options.aula_id, anio_lectivo_id: options.anio_lectivo_id } : {}
+        const response = await api.post<{ success: boolean; message: string }>('/api/estudiantes/reordenar', payload)
+        // Volver a cargar la lista para obtener los datos correctos del historial
+        if (options && options.aula_id && options.anio_lectivo_id) {
+            await this.fetchAll({ status: this.statusFilter, aula_id: options.aula_id, anio_lectivo_id: options.anio_lectivo_id })
+        } else {
+            await this.fetchAll(this.statusFilter)
+        }
+        return response
       } catch (e: any) {
         console.error(e)
         throw e
