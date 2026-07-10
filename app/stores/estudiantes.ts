@@ -60,18 +60,24 @@ export const useEstudiantesStore = defineStore('estudiantes', {
     ordenados: (state) => {
       // Ordenados por aula, luego número de orden, luego apellidos y nombres
       return [...state.items].sort((a, b) => {
+        const aulaA = a.aula_id_historial || a.aula_id || 0
+        const aulaB = b.aula_id_historial || b.aula_id || 0
+
         // 1. Por Aula
-        if ((a.aula_id || 0) !== (b.aula_id || 0)) {
-          return (a.aula_id || 0) - (b.aula_id || 0)
+        if (aulaA !== aulaB) {
+          return aulaA - aulaB
         }
 
+        const numA = a.numero_orden_historial ?? a.numero_orden
+        const numB = b.numero_orden_historial ?? b.numero_orden
+
         // 2. Por Número de Orden (si existe)
-        if (a.numero_orden && b.numero_orden) {
-          return a.numero_orden - b.numero_orden
+        if (numA && numB) {
+          return numA - numB
         }
         // Si uno tiene numero y otro no, el que tiene numero va primero (opcional, o al revés)
-        if (a.numero_orden && !b.numero_orden) return -1
-        if (!a.numero_orden && b.numero_orden) return 1
+        if (numA && !numB) return -1
+        if (!numA && numB) return 1
 
         // 3. Alfabético (fallback)
         const apellidosA = a.apellidos.toLowerCase()
