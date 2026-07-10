@@ -20,6 +20,7 @@ export interface Estudiante {
   aula_id?: number | null
   estado?: string
   fecha_retiro?: string | null
+  con_pendientes?: boolean
   aula?: {
     id: number
     grado_cardinal: number

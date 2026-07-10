@@ -70,6 +70,11 @@
                 class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-orange-100 text-orange-800 border border-orange-200">
                 Retirado
               </span>
+              <span v-if="e.con_pendientes"
+                title="Este estudiante fue promovido con asignaturas pendientes"
+                class="ml-1 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+                ⚠️ Asig. Pendientes
+              </span>
             </td>
             <td class="px-4 py-3 whitespace-nowrap text-sm font-medium">{{ e.apellidos }}</td>
             <td class="px-4 py-3 whitespace-nowrap text-sm">{{ e.cedula || '—' }}</td>

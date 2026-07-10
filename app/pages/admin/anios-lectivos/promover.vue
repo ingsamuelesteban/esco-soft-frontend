@@ -177,6 +177,18 @@
                         Los estudiantes retirados no se asignarán a ningún aula.
                     </div>
 
+                    <!-- Asignaturas Pendientes -->
+                    <div v-if="promocionForm.estado_origen === 'promovido'" class="flex items-start mt-2">
+                        <div class="flex items-center h-5">
+                            <input id="con_pendientes" v-model="promocionForm.con_pendientes" type="checkbox"
+                                class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700">
+                        </div>
+                        <div class="ml-3 text-sm">
+                            <label for="con_pendientes" class="font-medium text-gray-700 dark:text-gray-300">Promover con asignaturas pendientes</label>
+                            <p class="text-gray-500 dark:text-gray-400">Marque esta opción si los estudiantes seleccionados arrastran asignaturas pendientes.</p>
+                        </div>
+                    </div>
+
                     <!-- Error -->
                     <div v-if="promocionError" class="text-red-600 dark:text-red-400 text-sm bg-red-50 dark:bg-red-900/20 rounded p-3">
                         {{ promocionError }}
@@ -248,6 +260,7 @@ const promocionForm = reactive({
     anio_destino_id: null as number | null,
     aula_destino_id: null as number | null,
     estado_origen: 'promovido' as 'promovido' | 'repitente' | 'retirado',
+    con_pendientes: false as boolean,
 })
 
 // ── Computed ───────────────────────────────────────────────────────────────
@@ -428,6 +441,7 @@ async function ejecutarPromocion() {
                 estudiante_id: id,
                 aula_id: promocionForm.estado_origen !== 'retirado' ? promocionForm.aula_destino_id : null,
                 estado_origen: promocionForm.estado_origen,
+                con_pendientes: promocionForm.estado_origen === 'promovido' ? promocionForm.con_pendientes : false
             })),
         }
 
