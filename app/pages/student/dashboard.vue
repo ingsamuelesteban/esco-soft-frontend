@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="space-y-6">
     <!-- Bienvenida -->
     <div class="glass-card p-6 rounded-xl flex justify-between items-center">
@@ -615,7 +615,21 @@
           Horario de Clases
         </h3>
 
-        <div class="glass-card p-4">
+        <!-- 🏝️ BLOQUE DE VACACIONES -->
+        <div v-if="dashboardData?.en_vacaciones" class="glass-card p-8 text-center flex flex-col items-center justify-center border border-purple-200 bg-purple-50/30">
+          <div class="text-6xl mb-4">🏖️</div>
+          <h4 class="text-xl font-bold text-gray-900 dark:text-gray-100 mb-2">¡Estás de Vacaciones!</h4>
+          <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">
+            El horario de clases ha sido ocultado durante este periodo de descanso. Aprovecha este tiempo para recargar energías.
+          </p>
+          <div v-if="dashboardData?.fecha_regreso" class="inline-flex items-center px-4 py-2 bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300 rounded-lg text-sm font-bold">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+            Clases inician: {{ formatDate(dashboardData.fecha_regreso) }}
+          </div>
+        </div>
+
+        <!-- 📚 HORARIO NORMAL -->
+        <div v-else class="glass-card p-4">
           <!-- Selector de día simple -->
           <div class="flex space-x-1 mb-4 overflow-x-auto pb-2">
             <button v-for="(dayName, index) in days" :key="index" @click="selectedDay = index + 1"
