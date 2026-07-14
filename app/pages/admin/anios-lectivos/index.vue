@@ -110,10 +110,17 @@
                             <input v-model="form.fecha_fin" type="date"
                                 class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                         </div>
-                        <div class="flex items-center">
-                            <input id="activo" v-model="form.activo" type="checkbox"
-                                class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded">
-                            <label for="activo" class="ml-2 block text-sm text-gray-900 dark:text-gray-100">Activo</label>
+                        <div class="flex items-center space-x-6 mt-4">
+                            <div class="flex items-center">
+                                <input id="activo" v-model="form.activo" type="checkbox"
+                                    class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded">
+                                <label for="activo" class="ml-2 block text-sm font-medium text-gray-900 dark:text-gray-100">Activo</label>
+                            </div>
+                            <div class="flex items-center">
+                                <input id="en_vacaciones" v-model="form.en_vacaciones" type="checkbox"
+                                    class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 dark:border-gray-600 rounded">
+                                <label for="en_vacaciones" class="ml-2 block text-sm font-medium text-purple-900 dark:text-purple-300">Modo Vacaciones</label>
+                            </div>
                         </div>
                         <div v-if="formError" class="text-red-600 text-sm">{{ formError }}</div>
                     </div>
@@ -261,7 +268,8 @@ const form = reactive({
     descripcion: '' as string | null | undefined,
     fecha_inicio: null as string | null,
     fecha_fin: null as string | null,
-    activo: true
+    activo: true,
+    en_vacaciones: false
 })
 
 function openConfigModal(anio: AnioLectivo) {
@@ -284,6 +292,7 @@ function openModal(item?: AnioLectivo) {
         form.fecha_inicio = item.fecha_inicio || null
         form.fecha_fin = item.fecha_fin || null
         form.activo = item.activo
+        form.en_vacaciones = !!(item as any).en_vacaciones
     } else {
         isEdit.value = false
         editingId.value = null
@@ -292,6 +301,7 @@ function openModal(item?: AnioLectivo) {
         form.fecha_inicio = null
         form.fecha_fin = null
         form.activo = true
+        form.en_vacaciones = false
     }
     showModal.value = true
 }
