@@ -10,6 +10,9 @@
       <NuxtPage />
     </NuxtLayout>
   </div>
+
+  <!-- Banner global de actualización -->
+  <UpdateBanner />
 </template>
 
 <script setup lang="ts">

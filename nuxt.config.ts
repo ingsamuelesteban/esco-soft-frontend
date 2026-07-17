@@ -1,3 +1,9 @@
+import fs from 'node:fs'
+import { fileURLToPath } from 'node:url'
+import path from 'node:path'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-10-25',
@@ -62,5 +68,14 @@ export default defineNuxtConfig({
   },
 
   // SSR configuration for SPA mode with cookie-based auth
-  ssr: false
+  ssr: false,
+
+  hooks: {
+    'build:before'() {
+      const versionPath = path.resolve(__dirname, 'public/version.json')
+      const versionData = { version: Date.now().toString() }
+      fs.writeFileSync(versionPath, JSON.stringify(versionData, null, 2))
+      console.log('\x1b[32m%s\x1b[0m', '✔ Generated public/version.json with version:', versionData.version)
+    }
+  }
 })
