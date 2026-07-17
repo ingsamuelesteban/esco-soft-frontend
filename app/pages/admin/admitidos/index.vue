@@ -210,7 +210,7 @@
               <!-- Nombre -->
               <td class="px-4 py-3">
                 <div class="font-medium text-gray-900 dark:text-gray-100 text-sm">
-                  {{ est.apellidos }}, {{ est.nombres }}
+                  {{ est.nombres }} {{ est.apellidos }}
                 </div>
                 <div class="text-xs text-gray-400">{{ est.cedula ?? 'Sin cédula' }}</div>
               </td>
