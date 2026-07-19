@@ -98,6 +98,8 @@
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <button v-if="invoice.delivery_status !== 'delivered'" @click="openEditModal(invoice)"
+                                class="text-blue-600 hover:text-blue-900 ml-2">Editar</button>
                             <button @click="openManageModal(invoice)"
                                 class="text-primary-600 hover:text-primary-900 ml-4">Gestionar</button>
                         </td>
@@ -288,7 +290,7 @@
                                 <div
                                     class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center bg-gray-50 dark:bg-gray-900/50 flex-shrink-0">
                                     <DialogTitle as="h3" class="text-lg font-semibold leading-6 text-gray-900 dark:text-gray-100">
-                                        Nueva Factura de Uniformes
+                                        {{ isEditMode ? 'Editar Factura de Uniformes' : 'Nueva Factura de Uniformes' }}
                                     </DialogTitle>
                                     <button type="button" @click="closeCreateModal"
                                         class="text-gray-400 hover:text-gray-500 dark:text-gray-400">
@@ -351,7 +353,7 @@
                                                     <div class="text-xs text-primary-700">{{ selectedStudent.matricula
                                                         || 'Sin matrícula' }}</div>
                                                 </div>
-                                                <button type="button" @click="clearStudent"
+                                                <button type="button" @click="clearStudent" v-if="!isEditMode"
                                                     class="text-primary-600 hover:text-primary-800 text-sm font-medium">Cambiar</button>
                                             </div>
                                         </div>
@@ -438,7 +440,9 @@
                                                                     class="p-1 px-2 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:bg-gray-900/50">+</button>
                                                             </div>
                                                             <button type="button" @click="removeFromCart(index)"
-                                                                class="text-red-500 hover:text-red-700 p-1">
+                                                                class="text-red-500 hover:text-red-700 p-1"
+                                                                title="Eliminar ítem"
+                                                                :class="{'opacity-50 cursor-not-allowed': item.delivered_quantity > 0}">
                                                                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24"
                                                                     stroke="currentColor">
                                                                     <path stroke-linecap="round" stroke-linejoin="round"
@@ -467,7 +471,7 @@
                                         class="inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 shadow-sm hover:bg-gray-50 dark:bg-gray-900/50">
                                         Cancelar
                                     </button>
-                                    <button type="button" @click="createInvoice"
+                                    <button type="button" @click="saveInvoice"
                                         :disabled="!isCreateValid || isSubmitting"
                                         class="inline-flex justify-center rounded-md border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-700 disabled:opacity-50 min-w-[120px]">
                                         <span v-if="isSubmitting"><svg
@@ -478,8 +482,8 @@
                                                 <path class="opacity-75" fill="currentColor"
                                                     d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
                                                 </path>
-                                            </svg> Generando...</span>
-                                        <span v-else>Generar Factura</span>
+                                            </svg> Guardando...</span>
+                                        <span v-else>{{ isEditMode ? 'Guardar Cambios' : 'Generar Factura' }}</span>
                                     </button>
                                 </div>
                             </DialogPanel>
@@ -519,6 +523,8 @@ const catalogItems = ref([])
 const cart = ref([])
 const createNotes = ref('')
 const isSubmitting = ref(false)
+const isEditMode = ref(false)
+const editingInvoiceId = ref(null)
 
 const filters = ref({
     search: '',
@@ -645,6 +651,8 @@ const printInvoice = async (id) => {
 
 // Modal Creacion Logic
 const openCreateModal = () => {
+    isEditMode.value = false
+    editingInvoiceId.value = null
     isCreateOpen.value = true
     cart.value = []
     selectedStudent.value = null
@@ -652,6 +660,25 @@ const openCreateModal = () => {
     searchResults.value = []
     searchPerformed.value = false
     createNotes.value = ''
+    fetchCatalog()
+}
+
+const openEditModal = (invoice) => {
+    isEditMode.value = true
+    editingInvoiceId.value = invoice.id
+    isCreateOpen.value = true
+    
+    selectedStudent.value = invoice.estudiante
+    createNotes.value = invoice.notes || ''
+    
+    // Fill cart with existing details
+    cart.value = invoice.details.map(d => ({
+        article: d.article,
+        quantity: d.quantity,
+        detail_id: d.id,
+        delivered_quantity: d.delivered_quantity || 0
+    }))
+    
     fetchCatalog()
 }
 
@@ -701,11 +728,22 @@ const increaseQty = (index) => {
     item.quantity++
 }
 const decreaseQty = (index) => {
-    if (cart.value[index].quantity > 1) {
-        cart.value[index].quantity--
+    const item = cart.value[index]
+    const minQty = item.delivered_quantity || 1
+    if (item.quantity > minQty) {
+        item.quantity--
+    } else if (item.delivered_quantity > 0) {
+        Swal.fire('Atención', 'No puedes reducir la cantidad por debajo de lo ya entregado.', 'warning')
     }
 }
-const removeFromCart = (index) => cart.value.splice(index, 1)
+const removeFromCart = (index) => {
+    const item = cart.value[index]
+    if (item.delivered_quantity > 0) {
+        Swal.fire('Atención', 'No puedes eliminar un artículo que ya tiene entregas parciales.', 'warning')
+        return
+    }
+    cart.value.splice(index, 1)
+}
 
 const cartTotal = computed(() => {
     return cart.value.reduce((total, item) => total + (item.article.price * item.quantity), 0)
@@ -715,7 +753,7 @@ const isCreateValid = computed(() => {
     return selectedStudent.value && cart.value.length > 0
 })
 
-const createInvoice = async () => {
+const saveInvoice = async () => {
     if (!isCreateValid.value) return
     isSubmitting.value = true
 
@@ -723,18 +761,26 @@ const createInvoice = async () => {
         estudiante_id: selectedStudent.value.id,
         notes: createNotes.value,
         items: cart.value.map(item => ({
+            detail_id: item.detail_id || null,
             article_id: item.article.id,
             quantity: item.quantity
         }))
     }
 
     try {
-        await $api.post('/api/student-invoices', payload)
-        Swal.fire('Éxito', 'Factura/Orden creada correctamente', 'success')
-        closeCreateModal()
-        fetchInvoices(1)
+        if (isEditMode.value) {
+            await $api.put(`/api/student-invoices/${editingInvoiceId.value}`, payload)
+            Swal.fire('Éxito', 'Factura/Orden actualizada correctamente', 'success')
+            closeCreateModal()
+            fetchInvoices(pagination.value.current_page) // Stay on current page
+        } else {
+            await $api.post('/api/student-invoices', payload)
+            Swal.fire('Éxito', 'Factura/Orden creada correctamente', 'success')
+            closeCreateModal()
+            fetchInvoices(1)
+        }
     } catch (e) {
-        Swal.fire('Error', e.response?.data?.message || 'Error al crear la orden', 'error')
+        Swal.fire('Error', e.response?.data?.message || 'Error al guardar la orden', 'error')
     } finally {
         isSubmitting.value = false
     }
