@@ -21,6 +21,12 @@
     <!-- Announcements Banner -->
     <AnnouncementsBanner />
 
+    <!-- Uniform Ready for Pickup Banner -->
+    <UniformReadyBanner
+      v-if="!loading && dashboardData?.ready_uniforms"
+      :ready-uniforms="dashboardData.ready_uniforms"
+    />
+
     <div v-if="loading" class="flex justify-center py-12">
       <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none"
         viewBox="0 0 24 24">
@@ -671,6 +677,7 @@ import { ref, onMounted, computed } from 'vue'
 import { api } from '../../utils/api'
 import { normalizeUrl } from '~/utils/url'
 import AnnouncementsBanner from '~/components/anuncios/AnnouncementsBanner.vue'
+import UniformReadyBanner from '~/components/student/UniformReadyBanner.vue'
 import Swal from 'sweetalert2'
 import {
   CalendarIcon,
