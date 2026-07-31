@@ -24,6 +24,49 @@
             </div>
         </div>
 
+        <!-- Control de Visibilidad Global del Portal del Estudiante -->
+        <div class="mb-6 bg-white dark:bg-gray-800 rounded-xl p-4 shadow-sm ring-1 ring-gray-200 dark:ring-gray-700 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 transition-all hover:shadow-md">
+            <div class="flex items-start sm:items-center gap-3.5">
+                <div class="p-2.5 bg-indigo-50 dark:bg-indigo-950/60 rounded-lg text-indigo-600 dark:text-indigo-400 shrink-0 border border-indigo-100 dark:border-indigo-900/50">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="text-sm font-bold text-gray-900 dark:text-gray-100 tracking-tight">Mostrar disponibilidad de inventario a estudiantes</span>
+                        <span title="Si está activo (true), los estudiantes verán en su dashboard un banner cuando tengan uniformes pagados o con stock reservado listos para retirar en administración. Si se desactiva (false), el banner nunca se mostrará." class="cursor-help text-indigo-500 hover:text-indigo-700 dark:text-indigo-400 dark:hover:text-indigo-300 transition-colors inline-flex">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </span>
+                    </div>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Control global en tiempo real sobre la visibilidad de alertas de retiro e inventario de uniformes en el portal de los alumnos.</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3 self-end sm:self-center">
+                <span class="text-xs font-semibold px-2 py-1 rounded-full" :class="mostrarExistenciaEstudiantes ? 'bg-green-100 text-green-800 dark:bg-green-950/80 dark:text-green-300 border border-green-200 dark:border-green-800' : 'bg-gray-100 text-gray-600 dark:bg-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-600'">
+                    {{ mostrarExistenciaEstudiantes ? 'Visible' : 'Oculto' }}
+                </span>
+                <button type="button" 
+                    @click="toggleStudentVisibility" 
+                    :disabled="loadingVisibility"
+                    :class="[
+                        mostrarExistenciaEstudiantes ? 'bg-indigo-600 dark:bg-indigo-500' : 'bg-gray-300 dark:bg-gray-600',
+                        'relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 shadow-inner'
+                    ]"
+                    role="switch" 
+                    :aria-checked="mostrarExistenciaEstudiantes">
+                    <span class="sr-only">Mostrar disponibilidad a estudiantes</span>
+                    <span :class="[
+                        mostrarExistenciaEstudiantes ? 'translate-x-5' : 'translate-x-0',
+                        'pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow-md ring-0 transition duration-200 ease-in-out'
+                    ]" />
+                </button>
+            </div>
+        </div>
+
         <!-- Tabla -->
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow ring-1 ring-gray-200 dark:ring-gray-700 overflow-x-auto flex-1 overflow-y-auto">
             <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
@@ -219,6 +262,8 @@ const { $api } = useNuxtApp()
 const articles = ref([])
 const loading = ref(false)
 const saving = ref(false)
+const mostrarExistenciaEstudiantes = ref(true)
+const loadingVisibility = ref(false)
 const isOpen = ref(false)
 const form = ref({
     id: null,
@@ -361,7 +406,58 @@ const deleteArticle = async (id) => {
     }
 }
 
+const fetchVisibilitySetting = async () => {
+    try {
+        const response = await $api.get('/api/admin/uniforms/settings')
+        if (response && response.mostrar_existencia_estudiantes !== undefined) {
+            mostrarExistenciaEstudiantes.value = response.mostrar_existencia_estudiantes
+        }
+    } catch (e) {
+        console.error('Error cargando configuración de visibilidad de uniformes:', e)
+    }
+}
+
+const toggleStudentVisibility = async () => {
+    if (loadingVisibility.value) return
+    loadingVisibility.value = true
+    const previousState = mostrarExistenciaEstudiantes.value
+    const newState = !previousState
+    
+    try {
+        mostrarExistenciaEstudiantes.value = newState
+        const response = await $api.patch('/api/admin/uniforms/settings', {
+            mostrar_existencia_estudiantes: newState
+        })
+        if (response && response.mostrar_existencia_estudiantes !== undefined) {
+            mostrarExistenciaEstudiantes.value = response.mostrar_existencia_estudiantes
+        }
+        Swal.fire({
+            icon: 'success',
+            title: 'Visibilidad de inventario actualizada',
+            toast: true,
+            position: 'top-end',
+            timer: 2500,
+            showConfirmButton: false
+        })
+    } catch (e) {
+        console.error('Error al actualizar visibilidad:', e)
+        mostrarExistenciaEstudiantes.value = previousState
+        Swal.fire({
+            icon: 'error',
+            title: 'Error',
+            text: e.response?.data?.message || 'Error al cambiar la visibilidad de inventario',
+            toast: true,
+            position: 'top-end',
+            timer: 3000,
+            showConfirmButton: false
+        })
+    } finally {
+        loadingVisibility.value = false
+    }
+}
+
 onMounted(() => {
     fetchArticles()
+    fetchVisibilitySetting()
 })
 </script>
