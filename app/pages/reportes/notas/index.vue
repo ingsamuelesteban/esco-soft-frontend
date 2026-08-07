@@ -1443,19 +1443,33 @@ const finalReportStatus = (preview: any): { status: 'POR DEFINIR' | 'APLAZADO' |
 let searchTimeout: any = null
 
 // Watchers
-watch(selectedAnioId, () => {
-   selectedStudent.value = null
-   selectedAula.value = null
-   selectedMateria.value = null
-   reportPreview.value = null
-   classroomPreview.value = null
-   subjectPreview.value = null
-   meritPreview.value = null
-   aplazadosPreview.value = null
-   finalPreview.value = null
-   selectedFinalStudent.value = null
-   finalStudentSearch.value = ''
-   finalStudentResults.value = []
+const refreshActiveReport = () => {
+   switch (currentTab.value) {
+      case 'student':
+         if (selectedStudent.value) previewStudentReport();
+         break;
+      case 'classroom':
+         if (selectedAula.value) previewClassroomReport();
+         break;
+      case 'subject':
+         if (selectedAula.value && selectedMateria.value) previewSubjectReport();
+         break;
+      case 'merit':
+         if (selectedAula.value) previewMeritReport();
+         break;
+      case 'aplazados':
+         if (selectedAula.value) previewAplazadosReport();
+         break;
+      case 'final':
+         if (selectedFinalStudent.value) previewFinalReport();
+         break;
+   }
+}
+
+watch(selectedAnioId, (newYear, oldYear) => {
+   if (newYear !== oldYear) {
+      refreshActiveReport();
+   }
 })
 
 // Search Students
