@@ -61,7 +61,7 @@
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tiempo de Espera</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Resumen de Prendas</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Estado</th>
-                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Visibilidad</th>
+                        <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Alerta de Retiro</th>
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
@@ -292,10 +292,14 @@ const toggleVisibility = async (order) => {
 }
 
 const toggleBulkVisibility = async (visible) => {
-    const textAction = visible ? 'mostrar' : 'ocultar'
+    const textAction = visible ? 'activar' : 'desactivar'
+    const textMessage = visible 
+        ? "Esto activará el banner de 'Listo para retirar' en el dashboard para los estudiantes que tengan stock asignado."
+        : "Esto desactivará el banner de 'Listo para retirar' en el dashboard de los estudiantes para todas las órdenes pendientes. El historial de compras seguirá visible."
+    
     const { isConfirmed } = await Swal.fire({
-        title: `¿Estás seguro?`,
-        text: `Esto va a ${textAction} TODAS las órdenes pendientes a los estudiantes.`,
+        title: '¿Cambiar visibilidad de alertas de retiro?',
+        text: textMessage,
         icon: 'warning',
         showCancelButton: true,
         confirmButtonColor: visible ? '#16a34a' : '#dc2626',
