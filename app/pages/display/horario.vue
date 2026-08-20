@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-gray-950 text-gray-100 min-h-screen p-8 overflow-hidden select-none flex flex-col justify-between"
+  <div class="fixed inset-0 w-screen h-screen bg-gray-950 text-white overflow-hidden p-6 flex flex-col justify-between z-50"
     @mousemove="handleMouseMove" :class="{ 'cursor-none': isCursorHidden }">
 
     <!-- Botón de Pantalla Completa Flotante -->
@@ -52,37 +52,28 @@
     </header>
 
     <!-- Cuadrícula de Aulas y Clases en Vivo -->
-    <main class="flex-1 my-6 relative min-h-[500px]">
-      <div v-if="!currentEntries.length" class="absolute inset-0 flex flex-col items-center justify-center">
-        <!-- Pantalla de Descanso / Protector con Video -->
-        <template v-if="tenant?.display_idle_video_url">
-          <video
-            :src="tenant.display_idle_video_url"
-            autoplay
-            loop
-            muted
-            playsinline
-            class="max-w-md lg:max-w-lg xl:max-w-2xl max-h-[50vh] object-contain mx-auto rounded-3xl shadow-2xl drop-shadow-[0_0_40px_rgba(255,255,255,0.15)] my-auto"
-          ></video>
-        </template>
-        <template v-else-if="tenant?.logo_url">
-          <img :src="tenant.logo_url" class="max-w-md lg:max-w-lg xl:max-w-xl max-h-[50vh] object-contain mx-auto opacity-70" alt="Logo Institucional">
-        </template>
-        <div v-else class="text-6xl text-gray-700">
-          🏫
-        </div>
+    <main class="flex-1 my-6 relative min-h-[500px] flex flex-col">
+      <div v-if="isRecessOrIdle" class="flex-1 flex flex-col items-center justify-center my-auto">
+        <!-- Video si existe URL -->
+        <video
+          v-if="idleVideoUrl"
+          :src="idleVideoUrl"
+          autoplay
+          loop
+          muted
+          playsinline
+          class="max-w-xl max-h-[55vh] object-contain mx-auto rounded-2xl shadow-2xl drop-shadow-[0_0_30px_rgba(255,255,255,0.15)]"
+        ></video>
 
-        <div class="mt-12 text-3xl font-medium text-gray-500 text-center">
-          <template v-if="currentPeriods.length && currentPeriods[0].type === 'break'">
-            ¡Hora de Receso! • Las clases se reanudarán en el siguiente bloque.
-          </template>
-          <template v-else>
-            Jornada Académica Finalizada • El horario se reanudará en el próximo bloque escolar.
-          </template>
+        <!-- Fallback si no hay video cargado -->
+        <div v-else class="text-center text-gray-400">
+          <img v-if="tenant?.logo_url" :src="tenant.logo_url" class="max-w-md max-h-[40vh] object-contain mx-auto opacity-70 mb-8" alt="Logo Institucional">
+          <p class="text-4xl font-bold text-white mb-4">{{ statusTitle }}</p>
+          <p class="text-2xl text-gray-400">{{ statusSubtitle }}</p>
         </div>
       </div>
       
-      <TransitionGroup v-else name="fade" tag="div" class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <TransitionGroup v-else name="fade" tag="div" class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
         <div v-for="e in paginatedEntries" :key="e.id" 
           class="bg-gray-900/90 rounded-2xl p-6 border flex flex-col justify-between"
           :class="isClassActive(e) ? 'border-2 border-emerald-500 shadow-[0_0_25px_rgba(16,185,129,0.25)]' : 'border-gray-800 shadow-xl'">
@@ -126,7 +117,7 @@ import { useAniosLectivosStore } from '../../stores/anios_lectivos'
 import { useAuthStore } from '../../stores/auth'
 import { formatTime12h } from '../../utils/timeFormat'
 
-definePageMeta({ layout: 'empty' })
+definePageMeta({ layout: false })
 
 const entries = useTimetableEntriesStore()
 const periods = usePeriodsStore()
@@ -217,6 +208,30 @@ const currentEntries = computed(() => {
   if (diaActual.value === -1 || !currentPeriods.value.length) return []
   const ids = new Set(currentPeriods.value.map(p => p.id))
   return entries.items.filter(e => e.dia === diaActual.value && ids.has(e.period_id))
+})
+
+const isRecessOrIdle = computed(() => {
+  return currentEntries.value.length === 0
+})
+
+const idleVideoUrl = computed(() => {
+  const url = tenant.value?.display_idle_video_url
+  console.log('Video URL:', url)
+  return url || null
+})
+
+const statusTitle = computed(() => {
+  if (currentPeriods.value.length && currentPeriods.value[0].type === 'break') {
+    return '¡Hora de Receso!'
+  }
+  return 'Jornada Académica Finalizada'
+})
+
+const statusSubtitle = computed(() => {
+  if (currentPeriods.value.length && currentPeriods.value[0].type === 'break') {
+    return 'Las clases se reanudarán en el siguiente bloque.'
+  }
+  return 'El horario se reanudará en el próximo bloque escolar.'
 })
 
 const teacherName = (a?: ClassAssignment) => a?.profesor ? `${a.profesor.nombre} ${a.profesor.apellido}` : '—'
