@@ -214,21 +214,32 @@ const isRecessOrIdle = computed(() => {
   return currentEntries.value.length === 0
 })
 
-const idleVideoUrl = computed(() => {
-  let url = tenant.value?.display_idle_video_url
-  if (url && url.startsWith('http://') && !url.includes('localhost')) {
-    url = url.replace('http://', 'https://')
+const resolveMediaUrl = (url?: string) => {
+  if (!url) return null
+  if (url.startsWith('http')) {
+    // If it's already absolute (e.g. from an external source or S3), just ensure HTTPS if not localhost
+    if (url.startsWith('http://') && !url.includes('localhost')) {
+      return url.replace('http://', 'https://')
+    }
+    return url
   }
-  console.log('Video URL:', url)
-  return url || null
+  
+  // If it's a relative path from the backend storage
+  const config = useRuntimeConfig()
+  const apiBase = config.public.apiBase
+  const baseUrl = apiBase.endsWith('/') ? apiBase.slice(0, -1) : apiBase
+  const path = url.startsWith('/') ? url : `/${url}`
+  return `${baseUrl}${path}`
+}
+
+const idleVideoUrl = computed(() => {
+  const url = resolveMediaUrl(tenant.value?.display_idle_video_url)
+  console.log('Video URL resolved:', url)
+  return url
 })
 
 const safeLogoUrl = computed(() => {
-  let url = tenant.value?.logo_url
-  if (url && url.startsWith('http://') && !url.includes('localhost')) {
-    url = url.replace('http://', 'https://')
-  }
-  return url || null
+  return resolveMediaUrl(tenant.value?.logo_url)
 })
 
 const statusTitle = computed(() => {
