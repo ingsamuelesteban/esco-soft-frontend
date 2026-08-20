@@ -67,7 +67,7 @@
 
         <!-- Fallback si no hay video cargado -->
         <div v-else class="text-center text-gray-400">
-          <img v-if="tenant?.logo_url" :src="tenant.logo_url" class="max-w-md max-h-[40vh] object-contain mx-auto opacity-70 mb-8" alt="Logo Institucional">
+          <img v-if="safeLogoUrl" :src="safeLogoUrl" class="max-w-md max-h-[40vh] object-contain mx-auto opacity-70 mb-8" alt="Logo Institucional">
           <p class="text-4xl font-bold text-white mb-4">{{ statusTitle }}</p>
           <p class="text-2xl text-gray-400">{{ statusSubtitle }}</p>
         </div>
@@ -215,8 +215,19 @@ const isRecessOrIdle = computed(() => {
 })
 
 const idleVideoUrl = computed(() => {
-  const url = tenant.value?.display_idle_video_url
+  let url = tenant.value?.display_idle_video_url
+  if (url && url.startsWith('http://') && !url.includes('localhost')) {
+    url = url.replace('http://', 'https://')
+  }
   console.log('Video URL:', url)
+  return url || null
+})
+
+const safeLogoUrl = computed(() => {
+  let url = tenant.value?.logo_url
+  if (url && url.startsWith('http://') && !url.includes('localhost')) {
+    url = url.replace('http://', 'https://')
+  }
   return url || null
 })
 
