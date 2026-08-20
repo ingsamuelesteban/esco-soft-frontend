@@ -6,10 +6,20 @@ export default defineNuxtRouteMiddleware((to, from) => {
   const { isPublicSite } = useDomain()
 
   if (to.path === '/login' && authStore.isAuthenticated) {
+    if (authStore.user?.role === 'display_horario') {
+      return navigateTo('/display/horario')
+    }
     if (authStore.user?.role === 'estudiante') {
       return navigateTo('/student/dashboard')
     }
     return navigateTo('/')
+  }
+
+  // Kiosk isolation
+  if (authStore.user?.role === 'display_horario') {
+    if (to.path !== '/display/horario' && to.path !== '/login') {
+      return navigateTo('/display/horario')
+    }
   }
 
   // Si es un sitio público (subdominio) y vamos a la raíz o a una página de noticias pública, NO redirigir a login

@@ -6,6 +6,14 @@
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Clases en curso ahora mismo por período actual.</p>
       </div>
       <div class="flex items-center gap-2">
+        <NuxtLink to="/display/horario" target="_blank"
+          class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md text-emerald-700 bg-emerald-100 hover:bg-emerald-200 dark:text-emerald-300 dark:bg-emerald-900/30 dark:hover:bg-emerald-900/50 transition-colors"
+          title="Abrir en Modo Pantalla Completa / TV">
+          <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+          </svg>
+          <span class="hidden sm:inline">Modo TV</span>
+        </NuxtLink>
         <button
           class="inline-flex items-center justify-center p-1.5 rounded-md text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800 transition-colors"
           @click="reload" title="Refrescar">

@@ -587,14 +587,14 @@ const handleLogin = async () => {
       try {
         // Redirigir según el rol del usuario
         const role = authStore.user?.role?.toLowerCase() || ''
-        const targetRoute = ['sec4', 'sec5', 'sec6'].includes(role) ? '/calificaciones' : '/'
+        const targetRoute = role === 'display_horario' ? '/display/horario' : (['sec4', 'sec5', 'sec6'].includes(role) ? '/calificaciones' : '/')
         await navigateTo(targetRoute, { replace: true })
       } catch (navError) {
         console.error('Error en navegación:', navError)
         // Fallback: usar window.location
         if (process.client) {
           const role = authStore.user?.role?.toLowerCase() || ''
-          const targetRoute = ['sec4', 'sec5', 'sec6'].includes(role) ? '/calificaciones' : '/'
+          const targetRoute = role === 'display_horario' ? '/display/horario' : (['sec4', 'sec5', 'sec6'].includes(role) ? '/calificaciones' : '/')
           window.location.href = targetRoute
         }
       }
@@ -725,13 +725,13 @@ const handlePasswordChange = async () => {
       try {
         // Redirigir según el rol del usuario
         const role = authStore.user?.role?.toLowerCase() || ''
-        const targetRoute = ['sec4', 'sec5', 'sec6'].includes(role) ? '/calificaciones' : '/'
+        const targetRoute = role === 'display_horario' ? '/display/horario' : (['sec4', 'sec5', 'sec6'].includes(role) ? '/calificaciones' : '/')
         await navigateTo(targetRoute, { replace: true })
       } catch (navError) {
         console.error('Error en navegación:', navError)
         if (process.client) {
           const role = authStore.user?.role?.toLowerCase() || ''
-          const targetRoute = ['sec4', 'sec5', 'sec6'].includes(role) ? '/calificaciones' : '/'
+          const targetRoute = role === 'display_horario' ? '/display/horario' : (['sec4', 'sec5', 'sec6'].includes(role) ? '/calificaciones' : '/')
           window.location.href = targetRoute
         }
       }
@@ -794,7 +794,12 @@ const handleEmailVerification = async () => {
 // Si ya está autenticado, redirigir al dashboard
 onMounted(() => {
   if (authStore.isAuthenticated) {
-    navigateTo('/')
+    const role = authStore.user?.role?.toLowerCase() || ''
+    if (role === 'display_horario') {
+      navigateTo('/display/horario')
+    } else {
+      navigateTo('/')
+    }
   } else {
     // Cargar datos recordados si existen
     const remembered = authStore.getRememberedCredentials()

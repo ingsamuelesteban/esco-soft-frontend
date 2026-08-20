@@ -28,7 +28,8 @@ function checkAdminAccess(path: string, userRole: string) {
     '/login',
     '/dashboard',
     '/calificaciones',
-    '/horarios/en-vivo'
+    '/horarios/en-vivo',
+    '/display/horario'
   ]
 
   // Si es una ruta pública, permitir acceso
