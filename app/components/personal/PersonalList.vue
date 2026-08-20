@@ -175,6 +175,7 @@ import { usePersonalStore, type Personal } from '../../stores/personal'
 import { useCargosStore } from '../../stores/cargos'
 import { useTelefono } from '../../composables/useTelefono'
 import { showConfirm, showError, showToast, showLoading, closeLoading } from '../../utils/sweetalert'
+import Swal from 'sweetalert2'
 
 // ... existing code ...
 
@@ -324,19 +325,42 @@ const generatedCredentials = ref({ username: '', email: '', password: '' })
 const creatingAccess = ref(false)
 
 const handleCreateAccess = async (personal: Personal) => {
-  const result = await showConfirm(
-    `¿Generar acceso al sistema para ${personal.nombre} ${personal.apellido}?`,
-    'Crear usuario',
-    'info',
-    'Sí, generar',
-    'Cancelar'
-  )
+  const result = await Swal.fire({
+    title: 'Generar acceso',
+    text: `Generar acceso al sistema para ${personal.nombre} ${personal.apellido}`,
+    icon: 'info',
+    input: 'select',
+    inputOptions: {
+      profesor: 'Profesor',
+      admin: 'Administrador',
+      psicologo: 'Psicología',
+      secretaria: 'Secretaría',
+      display_horario: 'Pantalla Horario en Vivo'
+    },
+    inputPlaceholder: 'Selecciona un rol',
+    inputValue: 'profesor',
+    showCancelButton: true,
+    confirmButtonColor: '#3b82f6',
+    cancelButtonColor: '#6b7280',
+    confirmButtonText: 'Sí, generar',
+    cancelButtonText: 'Cancelar',
+    inputValidator: (value) => {
+      return new Promise((resolve) => {
+        if (value) {
+          resolve()
+        } else {
+          resolve('Debes seleccionar un rol')
+        }
+      })
+    }
+  })
 
   if (!result.isConfirmed) return
 
   creatingAccess.value = true
   try {
-    const response = await store.createAccess(personal.id, 'profesor') // Default rol profesor por ahora
+    const role = result.value
+    const response = await store.createAccess(personal.id, role)
     if (response && response.credenciales_temporales) {
       generatedCredentials.value = response.credenciales_temporales
       showCredentialsModal.value = true
