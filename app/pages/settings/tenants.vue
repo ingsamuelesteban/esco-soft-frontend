@@ -198,6 +198,20 @@
                                     </div>
                                 </div>
                                 
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Video de Logo Animado (Modo TV / Kiosco)</label>
+                                    <div class="mt-1 flex items-center">
+                                        <div v-if="displayIdleVideoPreview || form.display_idle_video_url" class="mr-4 relative">
+                                            <video :src="displayIdleVideoPreview || form.display_idle_video_url" 
+                                                class="h-16 w-24 object-contain border rounded p-1" muted autoplay loop></video>
+                                            <button @click="removeDisplayIdleVideo" type="button" v-if="form.display_idle_video_url && !displayIdleVideoPreview" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">×</button>
+                                        </div>
+                                        <input type="file" @change="onDisplayIdleVideoChange" accept="video/mp4,video/webm"
+                                            class="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-primary-50 dark:file:bg-primary-900/30 file:text-primary-700 dark:file:text-primary-300 hover:file:bg-primary-100" />
+                                    </div>
+                                    <p class="mt-1 text-[10px] text-gray-400 italic">Formatos permitidos: MP4, WebM (Máx 20MB).</p>
+                                </div>
+                                
                                 <!-- Sección de Features -->
                                 <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-6">
                                     <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">Módulos Contratados (Features)</h4>
@@ -424,20 +438,6 @@
                                             class="text-xs text-gray-500 dark:text-gray-400 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-primary-50 dark:file:bg-primary-900/30 file:text-primary-700 dark:file:text-primary-300 hover:file:bg-primary-100 dark:hover:file:bg-primary-800/50" />
                                     </div>
                                     <p class="mt-1 text-[10px] text-gray-400 italic">Este sello aparecerá como fondo en los certificados y documentos oficiales generados.</p>
-                                </div>
-                                
-                                <div class="border-t border-gray-100 dark:border-gray-700 pt-3">
-                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Video de Logo Animado (Modo TV / Pantalla de Descanso)</label>
-                                    <div class="mt-1 flex items-center">
-                                        <div v-if="displayIdleVideoPreview || form.display_idle_video_url" class="mr-4 relative">
-                                            <video :src="displayIdleVideoPreview || form.display_idle_video_url" 
-                                                class="h-20 w-32 object-contain border rounded p-1" muted autoplay loop></video>
-                                            <button @click="removeDisplayIdleVideo" type="button" v-if="form.display_idle_video_url && !displayIdleVideoPreview" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">×</button>
-                                        </div>
-                                        <input type="file" @change="onDisplayIdleVideoChange" accept="video/mp4,video/webm"
-                                            class="text-xs text-gray-500 dark:text-gray-400 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-primary-50 dark:file:bg-primary-900/30 file:text-primary-700 dark:file:text-primary-300 hover:file:bg-primary-100 dark:hover:file:bg-primary-800/50" />
-                                    </div>
-                                    <p class="mt-1 text-[10px] text-gray-400 italic">Formatos permitidos: MP4, WebM (Máx 20MB).</p>
                                 </div>
                             </div>
                         </div>
