@@ -53,11 +53,36 @@
 
     <!-- Cuadrícula de Aulas y Clases en Vivo -->
     <main class="flex-1 my-6 relative min-h-[500px]">
-      <div v-if="!currentEntries.length" class="absolute inset-0 flex items-center justify-center text-3xl font-medium text-gray-600">
-        No hay clases en curso en este momento.
+      <div v-if="!currentEntries.length" class="absolute inset-0 flex flex-col items-center justify-center">
+        <!-- Pantalla de Descanso / Protector con Video -->
+        <template v-if="tenant?.display_idle_video_url">
+          <video
+            :src="tenant.display_idle_video_url"
+            autoplay
+            loop
+            muted
+            playsinline
+            class="max-w-md lg:max-w-lg xl:max-w-2xl max-h-[50vh] object-contain mx-auto rounded-3xl shadow-2xl drop-shadow-[0_0_40px_rgba(255,255,255,0.15)] my-auto"
+          ></video>
+        </template>
+        <template v-else-if="tenant?.logo_url">
+          <img :src="tenant.logo_url" class="max-w-md lg:max-w-lg xl:max-w-xl max-h-[50vh] object-contain mx-auto opacity-70" alt="Logo Institucional">
+        </template>
+        <div v-else class="text-6xl text-gray-700">
+          🏫
+        </div>
+
+        <div class="mt-12 text-3xl font-medium text-gray-500 text-center">
+          <template v-if="currentPeriods.length && currentPeriods[0].type === 'break'">
+            ¡Hora de Receso! • Las clases se reanudarán en el siguiente bloque.
+          </template>
+          <template v-else>
+            Jornada Académica Finalizada • El horario se reanudará en el próximo bloque escolar.
+          </template>
+        </div>
       </div>
       
-      <TransitionGroup name="fade" tag="div" class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <TransitionGroup v-else name="fade" tag="div" class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         <div v-for="e in paginatedEntries" :key="e.id" 
           class="bg-gray-900/90 rounded-2xl p-6 border flex flex-col justify-between"
           :class="isClassActive(e) ? 'border-2 border-emerald-500 shadow-[0_0_25px_rgba(16,185,129,0.25)]' : 'border-gray-800 shadow-xl'">
@@ -98,6 +123,7 @@ import { usePeriodsStore, type Period } from '../../stores/periods'
 import { useClassAssignmentsStore, type ClassAssignment } from '../../stores/class_assignments'
 import { useAulasStore, type Aula } from '../../stores/aulas'
 import { useAniosLectivosStore } from '../../stores/anios_lectivos'
+import { useAuthStore } from '../../stores/auth'
 import { formatTime12h } from '../../utils/timeFormat'
 
 definePageMeta({ layout: 'empty' })
@@ -107,6 +133,9 @@ const periods = usePeriodsStore()
 const assignments = useClassAssignmentsStore()
 const aulasStore = useAulasStore()
 const aniosStore = useAniosLectivosStore()
+const authStore = useAuthStore()
+
+const tenant = computed(() => authStore.tenant)
 
 const now = ref(new Date())
 const isOffline = ref(false)

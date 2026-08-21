@@ -425,6 +425,20 @@
                                     </div>
                                     <p class="mt-1 text-[10px] text-gray-400 italic">Este sello aparecerá como fondo en los certificados y documentos oficiales generados.</p>
                                 </div>
+                                
+                                <div class="border-t border-gray-100 dark:border-gray-700 pt-3">
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Video de Logo Animado (Modo TV / Pantalla de Descanso)</label>
+                                    <div class="mt-1 flex items-center">
+                                        <div v-if="displayIdleVideoPreview || form.display_idle_video_url" class="mr-4 relative">
+                                            <video :src="displayIdleVideoPreview || form.display_idle_video_url" 
+                                                class="h-20 w-32 object-contain border rounded p-1" muted autoplay loop></video>
+                                            <button @click="removeDisplayIdleVideo" type="button" v-if="form.display_idle_video_url && !displayIdleVideoPreview" class="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 w-6 h-6 flex items-center justify-center text-xs hover:bg-red-600">×</button>
+                                        </div>
+                                        <input type="file" @change="onDisplayIdleVideoChange" accept="video/mp4,video/webm"
+                                            class="text-xs text-gray-500 dark:text-gray-400 file:mr-2 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:bg-primary-50 dark:file:bg-primary-900/30 file:text-primary-700 dark:file:text-primary-300 hover:file:bg-primary-100 dark:hover:file:bg-primary-800/50" />
+                                    </div>
+                                    <p class="mt-1 text-[10px] text-gray-400 italic">Formatos permitidos: MP4, WebM (Máx 20MB).</p>
+                                </div>
                             </div>
                         </div>
 
@@ -489,6 +503,8 @@ const form = reactive({
     director_name: '',
     director_bio: '',
     director_image_url: '',
+    display_idle_video_url: '',
+    remove_display_idle_video: false,
     mission: '',
     vision: '',
     values: '',
@@ -565,6 +581,8 @@ const openCreateModal = () => {
         director_name: '',
         director_bio: '',
         director_image_url: '',
+    display_idle_video_url: '',
+    remove_display_idle_video: false,
         mission: '',
         vision: '',
         values: '',
@@ -589,6 +607,8 @@ const openCreateModal = () => {
     heroImagePreview.value = null
     directorImageFile.value = null
     directorImagePreview.value = null
+    displayIdleVideoFile.value = null
+    displayIdleVideoPreview.value = null
     showModal.value = true
 }
 
@@ -618,6 +638,8 @@ const editTenant = (tenant: Tenant) => {
         director_name: tenant.director_name || '',
         director_bio: tenant.director_bio || '',
         director_image_url: tenant.director_image_url || '',
+        display_idle_video_url: tenant.display_idle_video_url || '',
+        remove_display_idle_video: false,
         mission: tenant.mission || '',
         vision: tenant.vision || '',
         values: tenant.values || '',
@@ -646,6 +668,8 @@ const editTenant = (tenant: Tenant) => {
     heroImagePreview.value = null
     directorImageFile.value = null
     directorImagePreview.value = null
+    displayIdleVideoFile.value = null
+    displayIdleVideoPreview.value = null
     showModal.value = true
 }
 
@@ -670,6 +694,9 @@ const heroImagePreview = ref<string | null>(null)
 
 const directorImageFile = ref<File | null>(null)
 const directorImagePreview = ref<string | null>(null)
+
+const displayIdleVideoFile = ref<File | null>(null)
+const displayIdleVideoPreview = ref<string | null>(null)
 
 const onLogoChange = (event: Event) => {
     const input = event.target as HTMLInputElement
@@ -717,6 +744,32 @@ const onDirectorImageChange = (event: Event) => {
         directorImageFile.value = input.files[0]
         directorImagePreview.value = URL.createObjectURL(input.files[0])
     }
+}
+
+const onDisplayIdleVideoChange = (event: Event) => {
+    const input = event.target as HTMLInputElement
+    if (input.files && input.files[0]) {
+        const file = input.files[0]
+        if (file.size > 20 * 1024 * 1024) {
+            Swal.fire({
+                title: 'Error',
+                text: 'El video no debe exceder los 20MB',
+                icon: 'error'
+            })
+            input.value = ''
+            return
+        }
+        displayIdleVideoFile.value = file
+        displayIdleVideoPreview.value = URL.createObjectURL(file)
+        form.remove_display_idle_video = false
+    }
+}
+
+const removeDisplayIdleVideo = () => {
+    displayIdleVideoFile.value = null
+    displayIdleVideoPreview.value = null
+    form.display_idle_video_url = ''
+    form.remove_display_idle_video = true
 }
 
 const saveTenant = async () => {
@@ -780,6 +833,13 @@ const saveTenant = async () => {
 
         if (directorImageFile.value) {
             formData.append('director_image', directorImageFile.value)
+        }
+
+        if (displayIdleVideoFile.value) {
+            formData.append('display_idle_video', displayIdleVideoFile.value)
+        }
+        if (form.remove_display_idle_video) {
+            formData.append('remove_display_idle_video', '1')
         }
 
         let url = '/api/tenants'
