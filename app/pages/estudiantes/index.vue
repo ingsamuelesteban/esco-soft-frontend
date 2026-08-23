@@ -33,9 +33,9 @@
     </div>
 
     <div class="mt-6">
-      <EstudiantesList :status-filter="statusFilter" :anio-lectivo-id="selectedAnioLectivo" @edit="openEditModal" @delete="handleDelete"
+      <EstudiantesList ref="listRef" :status-filter="statusFilter" :anio-lectivo-id="selectedAnioLectivo" @edit="openEditModal" @delete="handleDelete"
         @restore="handleRestore" @generate-user="handleGenerateUser" @generate-batch="handleGenerateBatch"
-        @reset-password="handleResetPassword" @saved="onSaved" />
+        @reset-password="handleResetPassword" @marcar-egresados="handleMarcarEgresados" @saved="onSaved" />
     </div>
 
     <!-- Modal para crear/editar -->
@@ -241,6 +241,251 @@ const handleResetPassword = async (estudiante: Estudiante) => {
       showCredentialsModal.value = true
     } catch (error: any) {
       showError(error?.data?.message || 'Error al restablecer contraseña')
+</template>
+
+<script setup lang="ts">
+import { ref, watch } from 'vue'
+import { useEstudiantesStore, type Estudiante } from '../../stores/estudiantes'
+import { showConfirm, showError, showToast } from '../../utils/sweetalert'
+import FilterStatus from '../../components/common/FilterStatus.vue'
+import CredentialsModal from '../../components/estudiantes/CredentialsModal.vue'
+import { useAniosLectivosStore } from '../../stores/anios_lectivos'
+import { onMounted } from 'vue'
+
+definePageMeta({
+  middleware: ['auth', 'admin']
+})
+
+const store = useEstudiantesStore()
+const showModal = ref(false)
+const selectedEstudiante = ref<Estudiante | null>(null)
+const statusFilter = ref<'active' | 'inactive' | 'retirado' | 'all'>('active')
+const aniosStore = useAniosLectivosStore()
+const selectedAnioLectivo = ref<number | null>(null)
+
+// Estado para credenciales
+const showCredentialsModal = ref(false)
+const generatedCredentials = ref<any[]>([])
+const currentPdfToken = ref<string | undefined>(undefined)
+
+onMounted(async () => {
+  if (aniosStore.items.length === 0) {
+    await aniosStore.fetchAll()
+  }
+  const activo = aniosStore.activos[0]
+  if (activo) {
+    selectedAnioLectivo.value = activo.id
+  } else {
+    await store.fetchAll({ status: statusFilter.value })
+  }
+})
+
+// Watcher para los filtros
+watch([statusFilter, selectedAnioLectivo], async () => {
+  if (selectedAnioLectivo.value) {
+    await store.fetchAll({ 
+      status: statusFilter.value, 
+      anio_lectivo_id: selectedAnioLectivo.value 
+    })
+  }
+})
+
+const openCreateModal = () => {
+  selectedEstudiante.value = null
+  showModal.value = true
+}
+
+const openEditModal = (estudiante: Estudiante) => {
+  selectedEstudiante.value = estudiante
+  showModal.value = true
+}
+
+const closeModal = () => {
+  showModal.value = false
+  selectedEstudiante.value = null
+}
+
+const onSaved = async () => {
+  closeModal()
+  await reloadData('Actualizando lista...')
+  showToast('Estudiante guardado correctamente', 'success')
+}
+
+const reloadData = async (message: string) => {
+  const { default: Swal } = await import('sweetalert2')
+
+  Swal.fire({
+    title: message,
+    text: 'Por favor espere',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading()
+    }
+  })
+
+  try {
+    await store.reordenarNumeros()
+    await store.fetchAll({ 
+      status: statusFilter.value, 
+      anio_lectivo_id: selectedAnioLectivo.value || undefined 
+    })
+    Swal.close()
+  } catch (error) {
+    Swal.close()
+    console.error(error)
+  }
+}
+
+const handleDelete = async (estudiante: Estudiante) => {
+  const result = await showConfirm(
+    `¿Estás seguro de que deseas eliminar a ${estudiante.nombres} ${estudiante.apellidos}?`,
+    'Esta acción se puede deshacer más tarde.',
+    'warning'
+  )
+
+  if (result.isConfirmed) {
+    try {
+      await store.delete(estudiante.id)
+      await store.reordenarNumeros()
+      showToast('Estudiante eliminado correctamente', 'success')
+    } catch (error: any) {
+      showError(error?.data?.message || 'Error al eliminar el estudiante')
+    }
+  }
+}
+
+const handleRestore = async (estudiante: Estudiante) => {
+  const result = await showConfirm(
+    `¿Restaurar a ${estudiante.nombres} ${estudiante.apellidos}?`,
+    'El estudiante volverá a estar activo en el sistema.',
+    'question'
+  )
+
+  if (result.isConfirmed) {
+    try {
+      await store.restore(estudiante.id)
+      showToast('Estudiante restaurado correctamente', 'success')
+    } catch (error: any) {
+      showError(error?.data?.message || 'Error al restaurar el estudiante')
+    }
+  }
+}
+
+const handleGenerateUser = async (estudiante: Estudiante) => {
+  const result = await showConfirm(
+    `¿Generar usuario para ${estudiante.nombres}?`,
+    'Se creará una cuenta de usuario con contraseña aleatoria.',
+    'question'
+  )
+
+  if (result.isConfirmed) {
+    try {
+      const response = await store.generateUser(estudiante.id)
+      generatedCredentials.value = [response.data]
+      currentPdfToken.value = response.pdf_token
+      showCredentialsModal.value = true
+
+      // Recargar para actualizar el estado del botón
+      await store.fetchAll(statusFilter.value)
+    } catch (error: any) {
+      showError(error?.data?.message || 'Error al generar usuario')
+    }
+  }
+}
+
+const handleGenerateBatch = async (aulaId: number) => {
+  const result = await showConfirm(
+    '¿Generar usuarios para toda el aula?',
+    'Se crearán cuentas solo para los estudiantes que no tengan una asignada.',
+    'question'
+  )
+
+  if (result.isConfirmed) {
+    try {
+      const response = await store.generateUsersBatch(aulaId)
+
+      if (response.data.length === 0) {
+        showToast('Todos los estudiantes ya tienen usuario asignado', 'info')
+        return
+      }
+
+      generatedCredentials.value = response.data
+      currentPdfToken.value = response.pdf_token
+      showCredentialsModal.value = true
+
+      // Recargar lista
+      await store.fetchAll(statusFilter.value)
+    } catch (error: any) {
+      showError(error?.data?.message || 'Error al generar usuarios')
+    }
+  }
+}
+
+const handleResetPassword = async (estudiante: Estudiante) => {
+  const result = await showConfirm(
+    `¿Restablecer contraseña para ${estudiante.nombres}?`,
+    'Se generará una nueva contraseña aleatoria y se solicitará cambiarla al iniciar sesión.',
+    'warning'
+  )
+
+  if (result.isConfirmed) {
+    try {
+      const response = await store.resetPassword(estudiante.id)
+      generatedCredentials.value = [response.data]
+      currentPdfToken.value = response.pdf_token
+      showCredentialsModal.value = true
+    } catch (error: any) {
+      showError(error?.data?.message || 'Error al restablecer contraseña')
+    }
+  }
+}
+const listRef = ref<any>(null)
+
+const handleMarcarEgresados = async (ids: number[]) => {
+  const { default: Swal } = await import('sweetalert2')
+  
+  // Construir opciones de años lectivos para el selector
+  const optionsHtml = aniosStore.items.map(a => 
+    `<option value="${a.id}" ${a.activo ? 'selected' : ''}>${a.nombre} ${a.activo ? '(Actual)' : ''}</option>`
+  ).join('')
+
+  const result = await Swal.fire({
+    title: '¿Marcar como Egresados?',
+    html: `
+      <p class="mb-4 text-sm text-gray-600">Los <b>${ids.length}</b> estudiantes seleccionados serán desvinculados de su aula actual, marcados como egresados y perderán su acceso a la plataforma.</p>
+      <div class="text-left mt-4">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Año Lectivo de Egreso (Opcional):</label>
+        <select id="swal-anio-egreso" class="swal2-select" style="display: flex; width: 100%; font-size: 14px; padding: 0.5rem;">
+          <option value="">Por defecto (Año Activo)</option>
+          ${optionsHtml}
+        </select>
+      </div>
+    `,
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#10B981',
+    cancelButtonColor: '#6B7280',
+    confirmButtonText: 'Sí, marcar como egresados',
+    cancelButtonText: 'Cancelar',
+    preConfirm: () => {
+      const select = document.getElementById('swal-anio-egreso') as HTMLSelectElement
+      return select.value ? parseInt(select.value) : undefined
+    }
+  })
+
+  if (result.isConfirmed) {
+    try {
+      await store.marcarEgresados({
+        estudiante_ids: ids,
+        anio_lectivo_egreso_id: result.value
+      })
+      
+      showToast('Estudiantes marcados como egresados correctamente', 'success')
+      if (listRef.value) {
+        listRef.value.clearSelection()
+      }
+    } catch (error: any) {
+      showError(error?.data?.message || 'Error al procesar los estudiantes')
     }
   }
 }

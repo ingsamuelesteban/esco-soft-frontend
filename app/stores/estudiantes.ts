@@ -52,7 +52,7 @@ export const useEstudiantesStore = defineStore('estudiantes', {
     items: [] as Estudiante[],
     loading: false as boolean,
     error: null as string | null,
-    statusFilter: 'active' as 'active' | 'inactive' | 'retirado' | 'all' // Nuevo filtro
+    statusFilter: 'active' as 'active' | 'inactive' | 'retirado' | 'all' | 'egresado' // Nuevo filtro
   }),
 
   getters: {
@@ -92,11 +92,11 @@ export const useEstudiantesStore = defineStore('estudiantes', {
   },
 
   actions: {
-    async fetchAll(options: { status?: 'active' | 'inactive' | 'retirado' | 'all', aula_id?: number, anio_lectivo_id?: number, include_psychology?: boolean } | string = 'active') {
+    async fetchAll(options: { status?: 'active' | 'inactive' | 'retirado' | 'all' | 'egresado', aula_id?: number, anio_lectivo_id?: number, include_psychology?: boolean } | string = 'active') {
       this.loading = true
       this.error = null
       
-      const status = (typeof options === 'string' ? options : (options.status || 'active')) as 'active' | 'inactive' | 'retirado' | 'all'
+      const status = (typeof options === 'string' ? options : (options.status || 'active')) as 'active' | 'inactive' | 'retirado' | 'all' | 'egresado'
       const aula_id = typeof options === 'object' ? options.aula_id : undefined
       const anio_lectivo_id = typeof options === 'object' ? options.anio_lectivo_id : undefined
       const include_psychology = typeof options === 'object' ? options.include_psychology : undefined
@@ -256,6 +256,21 @@ export const useEstudiantesStore = defineStore('estudiantes', {
       startLoading()
       try {
         const response = await api.post<{ success: boolean; data: any; message: string; pdf_token?: string }>(`/api/estudiantes/${estudianteId}/reset-password`, {})
+        return response
+      } catch (e: any) {
+        console.error(e)
+        throw e
+      } finally {
+        finishLoading()
+      }
+    },
+
+    async marcarEgresados(payload: { estudiante_ids: number[], anio_lectivo_egreso_id?: number }) {
+      startLoading()
+      try {
+        const response = await api.post<{ success: boolean; message: string }>('/api/estudiantes/marcar-egresados', payload)
+        // Refrescar lista actual
+        await this.fetchAll({ status: this.statusFilter })
         return response
       } catch (e: any) {
         console.error(e)

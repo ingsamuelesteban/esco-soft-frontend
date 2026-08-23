@@ -39,6 +39,16 @@
           </svg>
           Generar Usuarios
         </button>
+
+        <!-- Botón de acción masiva Egresados -->
+        <button v-if="selectedIds.length > 0 && statusFilter === 'active'" @click="$emit('marcar-egresados', selectedIds)"
+          class="ml-2 px-3 py-2 text-sm bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors inline-flex items-center shadow-sm">
+          <svg class="w-4 h-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+          </svg>
+          Marcar como Egresados ({{ selectedIds.length }})
+        </button>
+
         <div class="ml-auto text-sm text-gray-500 dark:text-gray-400" v-if="!loading">Total: {{ filtered.length }}</div>
       </div>
     </div>
@@ -47,6 +57,9 @@
       <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-900/50">
           <tr>
+            <th class="px-4 py-3 text-left w-10">
+              <input type="checkbox" v-model="selectAll" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+            </th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">N°</th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nombres</th>
             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Apellidos</th>
@@ -61,6 +74,9 @@
         </thead>
         <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700 text-gray-900 dark:text-gray-100">
           <tr v-for="e in filtered" :key="e.id">
+            <td class="px-4 py-3 text-left">
+              <input type="checkbox" :value="e.id" v-model="selectedIds" class="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+            </td>
             <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
               {{ e.numero_orden_historial ?? e.numero_orden ?? '-' }}
             </td>
@@ -170,10 +186,10 @@
             </td>
           </tr>
           <tr v-if="!loading && filtered.length === 0">
-            <td colspan="10" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Sin resultados</td>
+            <td colspan="11" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">Sin resultados</td>
           </tr>
           <tr v-if="loading && filtered.length === 0">
-            <td colspan="10" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
+            <td colspan="11" class="px-4 py-6 text-center text-sm text-gray-500 dark:text-gray-400">
               <div class="flex justify-center items-center">
                 <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg"
                   fill="none" viewBox="0 0 24 24">
@@ -219,10 +235,11 @@ defineEmits<{
   'generate-user': [estudiante: Estudiante]
   'generate-batch': [aulaId: number]
   'reset-password': [estudiante: Estudiante]
+  'marcar-egresados': [ids: number[]]
 }>()
 
 interface Props {
-  statusFilter?: 'active' | 'inactive' | 'retirado' | 'all'
+  statusFilter?: 'active' | 'inactive' | 'retirado' | 'all' | 'egresado'
   anioLectivoId?: number
 }
 
@@ -235,6 +252,8 @@ const aulasStore = useAulasStore()
 const query = ref('')
 const filterSexo = ref<'Masculino' | 'Femenino' | undefined>(undefined)
 const filterAula = ref<number | undefined>(undefined)
+
+const selectedIds = ref<number[]>([])
 
 onMounted(() => {
   if (aulasStore.items.length === 0) {
@@ -318,4 +337,28 @@ const formatDate = (date: string) => {
     return date
   }
 }
+
+const selectAll = computed({
+  get: () => filtered.value.length > 0 && selectedIds.value.length === filtered.value.length,
+  set: (val) => {
+    if (val) {
+      selectedIds.value = filtered.value.map(e => e.id)
+    } else {
+      selectedIds.value = []
+    }
+  }
+})
+
+import { watch } from 'vue'
+
+watch([query, filterSexo, filterAula, () => props.statusFilter, () => props.anioLectivoId], () => {
+  selectedIds.value = []
+})
+
+// Exponer método para limpiar selección desde el padre
+defineExpose({
+  clearSelection: () => {
+    selectedIds.value = []
+  }
+})
 </script>
