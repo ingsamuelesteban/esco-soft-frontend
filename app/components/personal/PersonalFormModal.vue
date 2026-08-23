@@ -136,7 +136,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { usePersonalStore, type Personal } from '../../stores/personal'
 import { useCargosStore } from '../../stores/cargos'
-import { showError } from '../../utils/sweetalert'
+import { showErrorAlert } from '../../utils/sweetalert'
 import CedulaInput from '../forms/CedulaInput.vue'
 import TelefonoInput from '../forms/TelefonoInput.vue'
 import SueldoInput from '../forms/SueldoInput.vue'
@@ -221,7 +221,7 @@ const handleSubmit = async () => {
     }
 
     error.value = errorMsg
-    showError(errorMsg)
+    showErrorAlert(errorMsg)
   } finally {
     loading.value = false
   }

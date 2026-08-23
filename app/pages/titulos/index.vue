@@ -29,7 +29,7 @@ import { ref } from 'vue'
 import TitulosList from '../../components/titulos/TitulosList.vue'
 import TitulosFormModal from '../../components/titulos/TitulosFormModal.vue'
 import { useTitulosStore, type Titulo } from '../../stores/titulos'
-import { showConfirm, showError, showToast } from '../../utils/sweetalert'
+import { showConfirm, showErrorAlert, showToast } from '../../utils/sweetalert'
 
 definePageMeta({
   middleware: ['auth', 'admin']
@@ -63,7 +63,7 @@ const handleDelete = async (id: number) => {
     await store.delete(id)
     showToast('Título desactivado', 'success')
   } catch (e) {
-    showError('No se pudo desactivar el título. Intenta nuevamente.')
+    showErrorAlert('No se pudo desactivar el título. Intenta nuevamente.')
   }
 }
 </script>

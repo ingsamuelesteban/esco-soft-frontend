@@ -335,7 +335,7 @@ import {
 } from '@heroicons/vue/24/outline'
 import { api } from '~/utils/api'
 import { useAuthStore } from '~/stores/auth'
-import { showSuccess, showError, showConfirm, showToast, showLoading, closeLoading } from '~/utils/sweetalert'
+import { showSuccess, showErrorAlert, showConfirm, showToast, showLoading, closeLoading } from '~/utils/sweetalert'
 import { navigateTo } from '#imports'
 
 definePageMeta({
@@ -486,7 +486,7 @@ const generateInvoices = async () => {
   } catch (error) {
     console.error('Error', error)
     closeLoading()
-    showError(error.response?.data?.message || 'Ocurrió un error al intentar generar las cuotas.')
+    showErrorAlert(error.response?.data?.message || 'Ocurrió un error al intentar generar las cuotas.')
   }
 }
 
@@ -519,7 +519,7 @@ const processPayment = async () => {
     await loadInvoices()
   } catch (error) {
     console.error(error)
-    showError(error.response?.data?.message || 'Error procesando cobro. Por favor, inténtelo de nuevo.')
+    showErrorAlert(error.response?.data?.message || 'Error procesando cobro. Por favor, inténtelo de nuevo.')
   } finally {
     isProcessing.value = false
   }
@@ -539,7 +539,7 @@ const fetchAndPrintTicket = async (paymentId) => {
     }, 800)
   } catch (error) {
     console.error('Error al generar ticket', error)
-    showError('No se pudo generar el ticket de impresión.')
+    showErrorAlert('No se pudo generar el ticket de impresión.')
   }
 }
 

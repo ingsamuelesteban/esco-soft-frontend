@@ -234,7 +234,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 import { useEstudiantesStore, type Estudiante } from '../../stores/estudiantes'
-import { showConfirm, showToast, showError } from '../../utils/sweetalert'
+import { showConfirm, showToast, showErrorAlert } from '../../utils/sweetalert'
 import type { Aula } from '../../stores/aulas'
 
 interface Props {
@@ -294,7 +294,7 @@ const cargarEstudiantesAsignados = async () => {
     estudiantesAsignados.value = response.data
   } catch (error) {
     console.error('Error al cargar estudiantes asignados:', error)
-    showError('Error al cargar estudiantes asignados')
+    showErrorAlert('Error al cargar estudiantes asignados')
   } finally {
     loading.value = false
   }
@@ -312,7 +312,7 @@ const cargarEstudiantesSinAula = async () => {
     )
   } catch (error) {
     console.error('Error al cargar estudiantes sin aula:', error)
-    showError('Error al cargar estudiantes sin aula')
+    showErrorAlert('Error al cargar estudiantes sin aula')
   } finally {
     loadingUnassigned.value = false
   }
@@ -330,7 +330,7 @@ const reordenarHistorial = async () => {
     await cargarEstudiantesAsignados()
   } catch (error) {
     console.error('Error al reordenar historial:', error)
-    showError('No se pudo reordenar la lista')
+    showErrorAlert('No se pudo reordenar la lista')
   } finally {
     loadingReorder.value = false
   }
@@ -363,7 +363,7 @@ const asignarAAula = async (estudiante: Estudiante) => {
     emit('updated')
   } catch (error) {
     console.error('Error al asignar estudiante:', error)
-    showError('Error al asignar estudiante')
+    showErrorAlert('Error al asignar estudiante')
   }
 }
 
@@ -403,7 +403,7 @@ const removerDeAula = async (estudiante: Estudiante) => {
     emit('updated')
   } catch (error) {
     console.error('Error al remover estudiante:', error)
-    showError('Error al remover estudiante')
+    showErrorAlert('Error al remover estudiante')
   }
 }
 
@@ -467,7 +467,7 @@ const asignarSeleccionadosAAula = async () => {
     }
 
     if (fallidos > 0) {
-      showError(`${fallidos} estudiante(s) no pudieron ser asignados`)
+      showErrorAlert(`${fallidos} estudiante(s) no pudieron ser asignados`)
     }
 
     // Limpiar selecciones y recargar datos

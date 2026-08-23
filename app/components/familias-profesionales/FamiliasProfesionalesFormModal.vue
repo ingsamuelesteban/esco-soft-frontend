@@ -76,7 +76,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 import { useFamiliasProfesionalesStore, type FamiliaProfesional } from '../../stores/familias_profesionales'
-import { showError } from '../../utils/sweetalert'
+import { showErrorAlert } from '../../utils/sweetalert'
 
 const props = defineProps<{
   familia: FamiliaProfesional | null
@@ -153,7 +153,7 @@ const handleSubmit = async () => {
       if (!validateLocal()) {
         const first = nombreError.value || codigoError.value || 'Corrige los errores del formulario.'
         error.value = first
-        showError(first)
+        showErrorAlert(first)
         return
       }
     }
@@ -172,11 +172,11 @@ const handleSubmit = async () => {
       codigoError.value = apiErrors.codigo?.[0] || null
       const first = nombreError.value || codigoError.value || e.data?.message
       error.value = first || 'Error al guardar la familia profesional'
-      showError(error.value as string)
+      showErrorAlert(error.value as string)
     } else {
       const errorMsg = e?.data?.message || 'Error al guardar la familia profesional'
       error.value = errorMsg
-      showError(errorMsg)
+      showErrorAlert(errorMsg)
     }
   } finally {
     loading.value = false

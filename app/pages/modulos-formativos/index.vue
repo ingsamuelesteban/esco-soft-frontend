@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import { useModulosFormativosApiStore, type ModuloFormativoApi } from '../../stores/modulos-formativos-api'
-import { showConfirm, showError, showToast } from '../../utils/sweetalert'
+import { showConfirm, showErrorAlert, showToast } from '../../utils/sweetalert'
 import FilterStatus from '../../components/common/FilterStatus.vue'
 
 definePageMeta({
@@ -81,7 +81,7 @@ const onDelete = async (moduloFormativo: ModuloFormativoApi) => {
     showToast('Módulo formativo eliminado exitosamente', 'success')
     refresh()
   } catch (e: any) {
-    showError(e?.data?.message || 'No se pudo eliminar el módulo formativo')
+    showErrorAlert(e?.data?.message || 'No se pudo eliminar el módulo formativo')
   }
 }
 
@@ -100,7 +100,7 @@ const onRestore = async (moduloFormativo: ModuloFormativoApi) => {
     showToast('Módulo formativo restaurado exitosamente', 'success')
     refresh()
   } catch (e: any) {
-    showError(e?.data?.message || 'No se pudo restaurar el módulo formativo')
+    showErrorAlert(e?.data?.message || 'No se pudo restaurar el módulo formativo')
   }
 }
 </script>

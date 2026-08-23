@@ -174,7 +174,7 @@ import { computed, onMounted, ref } from 'vue'
 import { usePersonalStore, type Personal } from '../../stores/personal'
 import { useCargosStore } from '../../stores/cargos'
 import { useTelefono } from '../../composables/useTelefono'
-import { showConfirm, showError, showToast, showLoading, closeLoading } from '../../utils/sweetalert'
+import { showConfirm, showErrorAlert, showToast, showLoading, closeLoading } from '../../utils/sweetalert'
 import Swal from 'sweetalert2'
 
 // ... existing code ...
@@ -206,7 +206,7 @@ const handleResetAccess = async (personal: Personal) => {
     }
   } catch (e: any) {
     closeLoading()
-    showError('Error al resetear contraseña: ' + (e.data?.message || e.message))
+    showErrorAlert('Error al resetear contraseña: ' + (e.data?.message || e.message))
   } finally {
     creatingAccess.value = false
     // closeLoading() is called in try/catch blocks to ensure it closes before modal opens or error shows
@@ -247,7 +247,7 @@ const handleToggleBlock = async (personal: Personal) => {
     await store.updateAccess(personal.id, { active: !isBlocking })
     showToast(`Usuario ${isBlocking ? 'bloqueado' : 'desbloqueado'} correctamente`, 'success')
   } catch (e: any) {
-    showError(`Error al ${action.toLowerCase()} usuario: ` + (e.data?.message || e.message))
+    showErrorAlert(`Error al ${action.toLowerCase()} usuario: ` + (e.data?.message || e.message))
   } finally {
     closeLoading()
   }
@@ -367,7 +367,7 @@ const handleCreateAccess = async (personal: Personal) => {
       showToast('Acceso generado correctamente', 'success')
     }
   } catch (e: any) {
-    showError('Error al generar acceso: ' + (e.data?.message || e.message))
+    showErrorAlert('Error al generar acceso: ' + (e.data?.message || e.message))
   } finally {
     creatingAccess.value = false
   }

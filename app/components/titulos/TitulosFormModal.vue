@@ -65,7 +65,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import { useTitulosStore, type Titulo } from '../../stores/titulos'
 import { useFamiliasProfesionalesStore } from '../../stores/familias_profesionales'
-import { showError } from '../../utils/sweetalert'
+import { showErrorAlert } from '../../utils/sweetalert'
 
 const props = defineProps<{ titulo: Titulo | null }>()
 const emit = defineEmits<{ close: []; saved: [] }>()
@@ -142,7 +142,7 @@ const handleSubmit = async () => {
     } else {
       error.value = e?.data?.message || 'Error al guardar el título'
     }
-    showError(error.value as string)
+    showErrorAlert(error.value as string)
   } finally {
     loading.value = false
   }

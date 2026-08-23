@@ -35,7 +35,7 @@
 import { ref, watch } from 'vue'
 import Swal from 'sweetalert2'
 import { usePersonalStore, type Personal } from '../../stores/personal'
-import { showConfirm, showError, showToast } from '../../utils/sweetalert'
+import { showConfirm, showErrorAlert, showToast } from '../../utils/sweetalert'
 import FilterStatus from '../../components/common/FilterStatus.vue'
 
 definePageMeta({
@@ -96,7 +96,7 @@ const handleDelete = async (personal: Personal) => {
           confirmButtonText: 'Entendido',
         })
       } else {
-        showError(error?.data?.message || 'Error al eliminar el personal')
+        showErrorAlert(error?.data?.message || 'Error al eliminar el personal')
       }
     }
   }
@@ -116,7 +116,7 @@ const handleRestore = async (personal: Personal) => {
       await store.restore(personal.id)
       showToast('Personal restaurado correctamente', 'success')
     } catch (error: any) {
-      showError(error?.data?.message || 'Error al restaurar el personal')
+      showErrorAlert(error?.data?.message || 'Error al restaurar el personal')
     }
   }
 }

@@ -206,7 +206,7 @@ import {
   PlusCircleIcon, XMarkIcon, TagIcon, CurrencyDollarIcon, InformationCircleIcon 
 } from '@heroicons/vue/24/outline'
 import { api } from '~/utils/api'
-import { showSuccess, showError, showConfirm } from '~/utils/sweetalert'
+import { showSuccess, showErrorAlert, showConfirm } from '~/utils/sweetalert'
 
 definePageMeta({
   middleware: 'auth'
@@ -235,7 +235,7 @@ const loadConcepts = async () => {
     concepts.value = res.data?.data || res.data || res || []
   } catch (error) {
     console.error(error)
-    showError('No se pudieron cargar los conceptos')
+    showErrorAlert('No se pudieron cargar los conceptos')
   } finally {
     loading.value = false
   }
@@ -278,7 +278,7 @@ const saveConcept = async () => {
     loadConcepts()
   } catch (error) {
     console.error(error)
-    showError(error.response?.data?.message || 'Error al guardar el concepto')
+    showErrorAlert(error.response?.data?.message || 'Error al guardar el concepto')
   } finally {
     saving.value = false
   }
@@ -301,7 +301,7 @@ const deleteConcept = async (id) => {
     loadConcepts()
   } catch (error) {
     console.error(error)
-    showError(error.response?.data?.message || 'Error al eliminar el concepto')
+    showErrorAlert(error.response?.data?.message || 'Error al eliminar el concepto')
   }
 }
 </script>

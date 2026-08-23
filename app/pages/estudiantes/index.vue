@@ -51,7 +51,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
 import { useEstudiantesStore, type Estudiante } from '../../stores/estudiantes'
-import { showConfirm, showError, showToast } from '../../utils/sweetalert'
+import { showConfirm, showErrorAlert, showToast } from '../../utils/sweetalert'
 import FilterStatus from '../../components/common/FilterStatus.vue'
 import CredentialsModal from '../../components/estudiantes/CredentialsModal.vue'
 import { useAniosLectivosStore } from '../../stores/anios_lectivos'
@@ -154,7 +154,7 @@ const handleDelete = async (estudiante: Estudiante) => {
       await store.reordenarNumeros()
       showToast('Estudiante eliminado correctamente', 'success')
     } catch (error: any) {
-      showError(error?.data?.message || 'Error al eliminar el estudiante')
+      showErrorAlert(error?.data?.message || 'Error al eliminar el estudiante')
     }
   }
 }
@@ -171,7 +171,7 @@ const handleRestore = async (estudiante: Estudiante) => {
       await store.restore(estudiante.id)
       showToast('Estudiante restaurado correctamente', 'success')
     } catch (error: any) {
-      showError(error?.data?.message || 'Error al restaurar el estudiante')
+      showErrorAlert(error?.data?.message || 'Error al restaurar el estudiante')
     }
   }
 }
@@ -193,7 +193,7 @@ const handleGenerateUser = async (estudiante: Estudiante) => {
       // Recargar para actualizar el estado del botón
       await store.fetchAll(statusFilter.value)
     } catch (error: any) {
-      showError(error?.data?.message || 'Error al generar usuario')
+      showErrorAlert(error?.data?.message || 'Error al generar usuario')
     }
   }
 }
@@ -221,7 +221,7 @@ const handleGenerateBatch = async (aulaId: number) => {
       // Recargar lista
       await store.fetchAll(statusFilter.value)
     } catch (error: any) {
-      showError(error?.data?.message || 'Error al generar usuarios')
+      showErrorAlert(error?.data?.message || 'Error al generar usuarios')
     }
   }
 }
@@ -240,205 +240,11 @@ const handleResetPassword = async (estudiante: Estudiante) => {
       currentPdfToken.value = response.pdf_token
       showCredentialsModal.value = true
     } catch (error: any) {
-      showError(error?.data?.message || 'Error al restablecer contraseña')
-</template>
-
-<script setup lang="ts">
-import { ref, watch } from 'vue'
-import { useEstudiantesStore, type Estudiante } from '../../stores/estudiantes'
-import { showConfirm, showError, showToast } from '../../utils/sweetalert'
-import FilterStatus from '../../components/common/FilterStatus.vue'
-import CredentialsModal from '../../components/estudiantes/CredentialsModal.vue'
-import { useAniosLectivosStore } from '../../stores/anios_lectivos'
-import { onMounted } from 'vue'
-
-definePageMeta({
-  middleware: ['auth', 'admin']
-})
-
-const store = useEstudiantesStore()
-const showModal = ref(false)
-const selectedEstudiante = ref<Estudiante | null>(null)
-const statusFilter = ref<'active' | 'inactive' | 'retirado' | 'all'>('active')
-const aniosStore = useAniosLectivosStore()
-const selectedAnioLectivo = ref<number | null>(null)
-
-// Estado para credenciales
-const showCredentialsModal = ref(false)
-const generatedCredentials = ref<any[]>([])
-const currentPdfToken = ref<string | undefined>(undefined)
-
-onMounted(async () => {
-  if (aniosStore.items.length === 0) {
-    await aniosStore.fetchAll()
-  }
-  const activo = aniosStore.activos[0]
-  if (activo) {
-    selectedAnioLectivo.value = activo.id
-  } else {
-    await store.fetchAll({ status: statusFilter.value })
-  }
-})
-
-// Watcher para los filtros
-watch([statusFilter, selectedAnioLectivo], async () => {
-  if (selectedAnioLectivo.value) {
-    await store.fetchAll({ 
-      status: statusFilter.value, 
-      anio_lectivo_id: selectedAnioLectivo.value 
-    })
-  }
-})
-
-const openCreateModal = () => {
-  selectedEstudiante.value = null
-  showModal.value = true
-}
-
-const openEditModal = (estudiante: Estudiante) => {
-  selectedEstudiante.value = estudiante
-  showModal.value = true
-}
-
-const closeModal = () => {
-  showModal.value = false
-  selectedEstudiante.value = null
-}
-
-const onSaved = async () => {
-  closeModal()
-  await reloadData('Actualizando lista...')
-  showToast('Estudiante guardado correctamente', 'success')
-}
-
-const reloadData = async (message: string) => {
-  const { default: Swal } = await import('sweetalert2')
-
-  Swal.fire({
-    title: message,
-    text: 'Por favor espere',
-    allowOutsideClick: false,
-    didOpen: () => {
-      Swal.showLoading()
-    }
-  })
-
-  try {
-    await store.reordenarNumeros()
-    await store.fetchAll({ 
-      status: statusFilter.value, 
-      anio_lectivo_id: selectedAnioLectivo.value || undefined 
-    })
-    Swal.close()
-  } catch (error) {
-    Swal.close()
-    console.error(error)
-  }
-}
-
-const handleDelete = async (estudiante: Estudiante) => {
-  const result = await showConfirm(
-    `¿Estás seguro de que deseas eliminar a ${estudiante.nombres} ${estudiante.apellidos}?`,
-    'Esta acción se puede deshacer más tarde.',
-    'warning'
-  )
-
-  if (result.isConfirmed) {
-    try {
-      await store.delete(estudiante.id)
-      await store.reordenarNumeros()
-      showToast('Estudiante eliminado correctamente', 'success')
-    } catch (error: any) {
-      showError(error?.data?.message || 'Error al eliminar el estudiante')
+      showErrorAlert(error?.data?.message || 'Error al restablecer contraseña')
     }
   }
 }
 
-const handleRestore = async (estudiante: Estudiante) => {
-  const result = await showConfirm(
-    `¿Restaurar a ${estudiante.nombres} ${estudiante.apellidos}?`,
-    'El estudiante volverá a estar activo en el sistema.',
-    'question'
-  )
-
-  if (result.isConfirmed) {
-    try {
-      await store.restore(estudiante.id)
-      showToast('Estudiante restaurado correctamente', 'success')
-    } catch (error: any) {
-      showError(error?.data?.message || 'Error al restaurar el estudiante')
-    }
-  }
-}
-
-const handleGenerateUser = async (estudiante: Estudiante) => {
-  const result = await showConfirm(
-    `¿Generar usuario para ${estudiante.nombres}?`,
-    'Se creará una cuenta de usuario con contraseña aleatoria.',
-    'question'
-  )
-
-  if (result.isConfirmed) {
-    try {
-      const response = await store.generateUser(estudiante.id)
-      generatedCredentials.value = [response.data]
-      currentPdfToken.value = response.pdf_token
-      showCredentialsModal.value = true
-
-      // Recargar para actualizar el estado del botón
-      await store.fetchAll(statusFilter.value)
-    } catch (error: any) {
-      showError(error?.data?.message || 'Error al generar usuario')
-    }
-  }
-}
-
-const handleGenerateBatch = async (aulaId: number) => {
-  const result = await showConfirm(
-    '¿Generar usuarios para toda el aula?',
-    'Se crearán cuentas solo para los estudiantes que no tengan una asignada.',
-    'question'
-  )
-
-  if (result.isConfirmed) {
-    try {
-      const response = await store.generateUsersBatch(aulaId)
-
-      if (response.data.length === 0) {
-        showToast('Todos los estudiantes ya tienen usuario asignado', 'info')
-        return
-      }
-
-      generatedCredentials.value = response.data
-      currentPdfToken.value = response.pdf_token
-      showCredentialsModal.value = true
-
-      // Recargar lista
-      await store.fetchAll(statusFilter.value)
-    } catch (error: any) {
-      showError(error?.data?.message || 'Error al generar usuarios')
-    }
-  }
-}
-
-const handleResetPassword = async (estudiante: Estudiante) => {
-  const result = await showConfirm(
-    `¿Restablecer contraseña para ${estudiante.nombres}?`,
-    'Se generará una nueva contraseña aleatoria y se solicitará cambiarla al iniciar sesión.',
-    'warning'
-  )
-
-  if (result.isConfirmed) {
-    try {
-      const response = await store.resetPassword(estudiante.id)
-      generatedCredentials.value = [response.data]
-      currentPdfToken.value = response.pdf_token
-      showCredentialsModal.value = true
-    } catch (error: any) {
-      showError(error?.data?.message || 'Error al restablecer contraseña')
-    }
-  }
-}
 const listRef = ref<any>(null)
 
 const handleMarcarEgresados = async (ids: number[]) => {
@@ -485,7 +291,7 @@ const handleMarcarEgresados = async (ids: number[]) => {
         listRef.value.clearSelection()
       }
     } catch (error: any) {
-      showError(error?.data?.message || 'Error al procesar los estudiantes')
+      showErrorAlert(error?.data?.message || 'Error al procesar los estudiantes')
     }
   }
 }

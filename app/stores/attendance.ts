@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { useAuthStore } from './auth'
 import { api } from '../utils/api'
 
-export interface Estudiante {
+interface Estudiante {
   id: number
   nombres: string
   apellidos: string

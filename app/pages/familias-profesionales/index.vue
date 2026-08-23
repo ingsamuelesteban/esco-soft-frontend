@@ -28,7 +28,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useFamiliasProfesionalesStore, type FamiliaProfesional } from '../../stores/familias_profesionales'
-import { showConfirm, showError, showToast } from '../../utils/sweetalert'
+import { showConfirm, showErrorAlert, showToast } from '../../utils/sweetalert'
 
 definePageMeta({
   middleware: ['auth', 'admin']
@@ -73,7 +73,7 @@ const handleDelete = async (id: number) => {
       await store.delete(id)
       showToast('Familia profesional desactivada', 'success')
     } catch (e) {
-      showError('No se pudo desactivar la familia profesional. Intenta nuevamente.')
+      showErrorAlert('No se pudo desactivar la familia profesional. Intenta nuevamente.')
     }
   }
 }

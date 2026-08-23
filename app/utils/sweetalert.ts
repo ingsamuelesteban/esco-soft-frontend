@@ -16,7 +16,7 @@ export const showSuccess = (message: string, title: string = '¡Éxito!') => {
 /**
  * Muestra un mensaje de error
  */
-export const showError = (message: string, title: string = 'Error') => {
+export const showErrorAlert = (message: string, title: string = 'Error') => {
   return Swal.fire({
     icon: 'error',
     title,

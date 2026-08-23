@@ -226,7 +226,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { apiCall } from '~/utils/api'
-import { showSuccess, showError, showLoading, closeLoading } from '~/utils/sweetalert'
+import { showSuccess, showErrorAlert, showLoading, closeLoading } from '~/utils/sweetalert'
 
 const loading = ref(true)
 const saving = ref(false)
@@ -334,7 +334,7 @@ async function saveSettings() {
   } catch (err) {
     closeLoading()
     console.error('Error saving settings:', err)
-    showError('No se pudieron guardar los cambios. Por favor, revise los datos e intente de nuevo.')
+    showErrorAlert('No se pudieron guardar los cambios. Por favor, revise los datos e intente de nuevo.')
   } finally {
     saving.value = false
   }

@@ -130,7 +130,7 @@ import { apiCall as useApi, api } from '@/utils/api';
 import { usePrint } from '@/composables/usePrint';
 import { useAniosLectivosStore } from '~/stores/anios_lectivos';
 import { useAuthStore } from '~/stores/auth';
-import { showConfirm, showSuccess, showError, showLoading, closeLoading } from '@/utils/sweetalert';
+import { showConfirm, showSuccess, showErrorAlert, showLoading, closeLoading } from '@/utils/sweetalert';
 
 const router = useRouter();
 const aniosStore = useAniosLectivosStore();
@@ -246,7 +246,7 @@ async function deleteObservation(id: number) {
       showSuccess('El acompañamiento ha sido eliminado permanentemente.');
     } catch (e: any) {
       console.error("Error deleting observation", e);
-      showError(e.data?.message || 'Error al eliminar el acompañamiento');
+      showErrorAlert(e.data?.message || 'Error al eliminar el acompañamiento');
     } finally {
       closeLoading();
     }

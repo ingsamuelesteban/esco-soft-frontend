@@ -60,7 +60,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 import { useModulosFormativosApiStore, type ModuloFormativoApi } from '../../stores/modulos-formativos-api'
-import { showError } from '../../utils/sweetalert'
+import { showErrorAlert } from '../../utils/sweetalert'
 
 const props = defineProps<{ moduloFormativo: ModuloFormativoApi | null }>()
 const emit = defineEmits<{ close: []; saved: [] }>()
@@ -118,7 +118,7 @@ const handleSubmit = async () => {
     } else {
       error.value = e?.data?.message || 'Error al guardar el módulo formativo'
     }
-    showError(error.value as string)
+    showErrorAlert(error.value as string)
   } finally {
     loading.value = false
   }
