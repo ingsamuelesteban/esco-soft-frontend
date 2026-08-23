@@ -168,21 +168,30 @@ export const useEstudiantesStore = defineStore('estudiantes', {
     },
 
     async reordenarNumeros(options?: { aula_id?: number, anio_lectivo_id?: number }) {
+      this.loading = true
       startLoading()
+      
       try {
         const payload = options ? { aula_id: options.aula_id, anio_lectivo_id: options.anio_lectivo_id } : {}
         const response = await api.post<{ success: boolean; message: string }>('/api/estudiantes/reordenar', payload)
-        // Volver a cargar la lista para obtener los datos correctos del historial
-        if (options && options.aula_id && options.anio_lectivo_id) {
-            await this.fetchAll({ status: this.statusFilter, aula_id: options.aula_id, anio_lectivo_id: options.anio_lectivo_id })
+        
+        // Refrescamos manteniendo el anio_lectivo_id pero SIN restringir el aula_id,
+        // garantizando que el array global en memoria preserve todas las aulas.
+        if (options && options.anio_lectivo_id) {
+          await this.fetchAll({ 
+            status: this.statusFilter, 
+            anio_lectivo_id: options.anio_lectivo_id 
+          })
         } else {
-            await this.fetchAll(this.statusFilter)
+          await this.fetchAll(this.statusFilter)
         }
+        
         return response
       } catch (e: any) {
-        console.error(e)
+        console.error('Error al reordenar números:', e)
         throw e
       } finally {
+        this.loading = false
         finishLoading()
       }
     },
