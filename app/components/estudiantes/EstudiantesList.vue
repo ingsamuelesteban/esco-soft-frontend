@@ -371,18 +371,34 @@ watch([query, filterSexo, filterAula, () => props.statusFilter, () => props.anio
 const { printPdfBlob, loading: printLoading } = usePrint()
 
 const handlePrint = async () => {
+  let Swal;
   try {
+    const swalModule = await import('sweetalert2');
+    Swal = swalModule.default;
+
+    Swal.fire({
+      title: 'Generando Listado...',
+      text: 'Por favor espere mientras se prepara el documento.',
+      allowOutsideClick: false,
+      didOpen: () => {
+        Swal.showLoading();
+      }
+    });
+
     const blob = await store.exportPdfList({
       status: props.statusFilter,
       aula_id: filterAula.value,
       anio_lectivo_id: props.anioLectivoId,
       search: query.value
-    })
-    printPdfBlob(blob, 'listado_estudiantes.pdf', 'Preparando listado de estudiantes...')
+    });
+
+    Swal.close();
+    printPdfBlob(blob, 'listado_estudiantes.pdf', 'Preparando listado de estudiantes...');
   } catch (error) {
-    console.error('Error al imprimir listado:', error)
-    const { default: Swal } = await import('sweetalert2')
-    await Swal.fire('Error', 'No se pudo generar el listado', 'error')
+    if (Swal) Swal.close();
+    console.error('Error al imprimir listado:', error);
+    const { default: SwalError } = await import('sweetalert2');
+    await SwalError.fire('Error', 'No se pudo generar el listado', 'error');
   }
 }
 
