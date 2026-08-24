@@ -278,6 +278,26 @@ export const useEstudiantesStore = defineStore('estudiantes', {
       } finally {
         finishLoading()
       }
+    },
+
+    async exportPdfList(options: { status?: 'active' | 'inactive' | 'retirado' | 'all' | 'egresado', aula_id?: number, anio_lectivo_id?: number, search?: string }) {
+      startLoading()
+      try {
+        const params = new URLSearchParams()
+        if (options.status) params.append('status', options.status)
+        if (options.aula_id) params.append('aula_id', options.aula_id.toString())
+        if (options.anio_lectivo_id) params.append('anio_lectivo_id', options.anio_lectivo_id.toString())
+        if (options.search) params.append('search', options.search)
+        
+        const url = `/api/estudiantes/export/pdf?${params.toString()}`
+        const blob = await api.getBlob(url)
+        return blob
+      } catch (e: any) {
+        console.error('Error exportando PDF:', e)
+        throw e
+      } finally {
+        finishLoading()
+      }
     }
   }
 })
