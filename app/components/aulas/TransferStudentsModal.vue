@@ -124,10 +124,10 @@ const fetchAulas = async () => {
   try {
     const params: any = {}
     if (props.anioLectivoId) params.anio_lectivo_id = props.anioLectivoId
-    const response = await api.get('/api/aulas', { params })
+    const response = await api.get<Aula[]>('/api/aulas', { params })
     
     // Filtrar aulas disponibles (activas y excluyendo la de origen)
-    aulasDisponibles.value = response.data.filter(
+    aulasDisponibles.value = response.filter(
       (a: Aula) => a.activo && a.id !== props.aulaOrigen?.id
     )
   } catch (error) {
