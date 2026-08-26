@@ -98,41 +98,78 @@
             <div v-else-if="estudiantesAsignados.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400">
               No hay estudiantes asignados a esta aula
             </div>
-            <div v-else class="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
-              <table class="min-w-full divide-y divide-gray-300 dark:divide-gray-600">
-                <thead class="bg-gray-50 dark:bg-gray-900/50">
-                  <tr>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">#</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nombre
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">RNE</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones
-                    </th>
-                  </tr>
-                </thead>
-                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                  <tr v-for="estudiante in estudiantesAsignados" :key="estudiante.id" class="hover:bg-gray-50 dark:bg-gray-900/50">
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
-                      {{ (estudiante as any).numero_orden_historial || estudiante.numero_orden || '-' }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap">
-                      <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
-                        {{ estudiante.nombres }} {{ estudiante.apellidos }}
-                      </div>
-                      <div class="text-sm text-gray-500 dark:text-gray-400">{{ estudiante.cedula }}</div>
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
-                      {{ estudiante.rne }}
-                    </td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
-                      <button @click="removerDeAula(estudiante)"
-                        class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                        Remover
-                      </button>
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
+            <div v-else>
+              <!-- Barra de acciones múltiples para estudiantes asignados -->
+              <div v-if="estudiantesAsignados.length > 0"
+                class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-4 p-3 bg-gray-50 dark:bg-gray-900/50 rounded-lg">
+                <div class="flex items-center space-x-3">
+                  <label class="flex items-center">
+                    <input type="checkbox" :checked="todosAsignadosSeleccionados"
+                      :indeterminate="algunosAsignadosSeleccionados && !todosAsignadosSeleccionados" @change="toggleSeleccionTodosAsignados"
+                      class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded" />
+                    <span class="ml-2 text-sm text-gray-700 dark:text-gray-300">
+                      {{ asignadosSeleccionados.size > 0 ? `${asignadosSeleccionados.size} seleccionado(s)` :
+                        'Seleccionar todos' }}
+                    </span>
+                  </label>
+                </div>
+                <button v-if="asignadosSeleccionados.size > 0" @click="transferirSeleccionados"
+                  class="inline-flex items-center justify-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 w-full sm:w-auto">
+                  <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                  </svg>
+                  Transferir {{ asignadosSeleccionados.size }} estudiante(s)
+                </button>
+              </div>
+
+              <div class="overflow-x-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg">
+                <table class="min-w-full divide-y divide-gray-300 dark:divide-gray-600">
+                  <thead class="bg-gray-50 dark:bg-gray-900/50">
+                    <tr>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        <input type="checkbox" :checked="todosAsignadosSeleccionados"
+                          :indeterminate="algunosAsignadosSeleccionados && !todosAsignadosSeleccionados" @change="toggleSeleccionTodosAsignados"
+                          class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded" />
+                      </th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">#</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nombre</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">RNE</th>
+                      <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                    <tr v-for="estudiante in estudiantesAsignados" :key="estudiante.id" class="hover:bg-gray-50 dark:bg-gray-900/50">
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <input type="checkbox" :checked="asignadosSeleccionados.has(estudiante.id)"
+                          @change="toggleSeleccionAsignado(estudiante.id)"
+                          class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded" />
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">
+                        {{ (estudiante as any).numero_orden_historial || estudiante.numero_orden || '-' }}
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          {{ estudiante.nombres }} {{ estudiante.apellidos }}
+                        </div>
+                        <div class="text-sm text-gray-500 dark:text-gray-400">{{ estudiante.cedula }}</div>
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">
+                        {{ estudiante.rne }}
+                      </td>
+                      <td class="px-6 py-4 whitespace-nowrap text-sm space-x-2">
+                        <button @click="transferirIndividual(estudiante)"
+                          class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-blue-700 bg-blue-100 hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                          Transferir
+                        </button>
+                        <button @click="removerDeAula(estudiante)"
+                          class="inline-flex items-center px-2.5 py-1.5 border border-transparent text-xs font-medium rounded text-red-700 bg-red-100 hover:bg-red-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
+                          Remover
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
             </div>
           </div>
 
@@ -228,6 +265,14 @@
         </div>
       </div>
     </div>
+    
+    <TransferStudentsModal
+      v-model="showTransferModal"
+      :estudiantes="estudiantesATransferir"
+      :aula-origen="props.aula"
+      :anio-lectivo-id="props.anioLectivoId"
+      @transferred="onTransferCompleted"
+    />
   </div>
 </template>
 
@@ -236,6 +281,8 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useEstudiantesStore, type Estudiante } from '../../stores/estudiantes'
 import { showConfirm, showToast, showErrorAlert } from '../../utils/sweetalert'
 import type { Aula } from '../../stores/aulas'
+
+import TransferStudentsModal from './TransferStudentsModal.vue'
 
 interface Props {
   open: boolean
@@ -257,8 +304,12 @@ const loadingUnassigned = ref(false)
 const loadingReorder = ref(false)
 const estudiantesAsignados = ref<Estudiante[]>([])
 const estudiantesSinAula = ref<Estudiante[]>([])
-const estudiantesSeleccionados = ref<Set<number>>(new Set())
+const estudiantesSeleccionados = ref<Set<number>>(new Set()) // For unassigned
+const asignadosSeleccionados = ref<Set<number>>(new Set()) // For assigned (transfer)
 const asignandoMultiple = ref(false)
+
+const showTransferModal = ref(false)
+const estudiantesATransferir = ref<Estudiante[]>([])
 
 const aulaLabel = computed(() => {
   if (!props.aula) return ''
@@ -273,10 +324,19 @@ const algunosSeleccionados = computed(() => {
   return estudiantesSinAula.value.some(e => estudiantesSeleccionados.value.has(e.id))
 })
 
+const todosAsignadosSeleccionados = computed(() => {
+  return estudiantesAsignados.value.length > 0 && estudiantesAsignados.value.every(e => asignadosSeleccionados.value.has(e.id))
+})
+
+const algunosAsignadosSeleccionados = computed(() => {
+  return estudiantesAsignados.value.some(e => asignadosSeleccionados.value.has(e.id))
+})
+
 // Cargar estudiantes cuando se abre el modal
 watch(() => props.open, async (isOpen) => {
   if (isOpen && props.aula) {
     estudiantesSeleccionados.value.clear()
+    asignadosSeleccionados.value.clear()
     await cargarEstudiantesAsignados()
     await cargarEstudiantesSinAula()
   }
@@ -425,6 +485,41 @@ const toggleSeleccionEstudiante = (estudianteId: number) => {
   } else {
     estudiantesSeleccionados.value.add(estudianteId)
   }
+}
+
+const toggleSeleccionTodosAsignados = () => {
+  if (todosAsignadosSeleccionados.value) {
+    asignadosSeleccionados.value.clear()
+  } else {
+    estudiantesAsignados.value.forEach(estudiante => {
+      asignadosSeleccionados.value.add(estudiante.id)
+    })
+  }
+}
+
+const toggleSeleccionAsignado = (estudianteId: number) => {
+  if (asignadosSeleccionados.value.has(estudianteId)) {
+    asignadosSeleccionados.value.delete(estudianteId)
+  } else {
+    asignadosSeleccionados.value.add(estudianteId)
+  }
+}
+
+const transferirIndividual = (estudiante: Estudiante) => {
+  estudiantesATransferir.value = [estudiante]
+  showTransferModal.value = true
+}
+
+const transferirSeleccionados = () => {
+  estudiantesATransferir.value = estudiantesAsignados.value.filter(e => asignadosSeleccionados.value.has(e.id))
+  showTransferModal.value = true
+}
+
+const onTransferCompleted = async () => {
+  asignadosSeleccionados.value.clear()
+  await cargarEstudiantesAsignados()
+  await cargarEstudiantesSinAula()
+  emit('updated')
 }
 
 const asignarSeleccionadosAAula = async () => {
