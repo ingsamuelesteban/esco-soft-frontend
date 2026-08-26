@@ -212,6 +212,16 @@
                                     <p class="mt-1 text-[10px] text-gray-400 italic">Formatos permitidos: MP4, WebM (Máx 20MB).</p>
                                 </div>
                                 
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Color de Fondo (Modo TV / Pantalla Horario)</label>
+                                    <div class="mt-1 flex items-center gap-3">
+                                        <input v-model="form.display_bg_color" type="color"
+                                            class="h-10 w-20 rounded-md border-gray-300 shadow-sm cursor-pointer" />
+                                        <span class="text-sm text-gray-500 font-mono">{{ form.display_bg_color }}</span>
+                                    </div>
+                                    <p class="mt-1 text-[10px] text-gray-400 italic">Este color se usará como fondo en las pantallas de horario en vivo.</p>
+                                </div>
+                                
                                 <!-- Sección de Features -->
                                 <div class="border-t border-gray-200 dark:border-gray-700 pt-4 mt-6">
                                     <h4 class="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-3">Módulos Contratados (Features)</h4>
@@ -505,6 +515,7 @@ const form = reactive({
     director_image_url: '',
     display_idle_video_url: '',
     remove_display_idle_video: false,
+    display_bg_color: '#030712',
     mission: '',
     vision: '',
     values: '',
@@ -640,6 +651,7 @@ const editTenant = (tenant: Tenant) => {
         director_image_url: tenant.director_image_url || '',
         display_idle_video_url: tenant.display_idle_video_url || '',
         remove_display_idle_video: false,
+        display_bg_color: tenant.display_bg_color || '#030712',
         mission: tenant.mission || '',
         vision: tenant.vision || '',
         values: tenant.values || '',
@@ -840,6 +852,9 @@ const saveTenant = async () => {
         }
         if (form.remove_display_idle_video) {
             formData.append('remove_display_idle_video', '1')
+        }
+        if (form.display_bg_color) {
+            formData.append('display_bg_color', form.display_bg_color)
         }
 
         let url = '/api/tenants'

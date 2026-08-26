@@ -1,5 +1,6 @@
 <template>
-  <div class="fixed inset-0 w-screen h-screen bg-gray-950 text-white overflow-hidden p-6 flex flex-col justify-between z-50"
+  <div class="fixed inset-0 w-screen h-screen text-white overflow-hidden p-6 flex flex-col justify-between z-50 transition-colors duration-500"
+    :style="{ backgroundColor: tenant?.display_bg_color || '#030712' }"
     @mousemove="handleMouseMove" :class="{ 'cursor-none': isCursorHidden }">
 
     <!-- Botón de Pantalla Completa Flotante -->
@@ -79,7 +80,7 @@
           :class="isClassActive(e) ? 'border-2 border-emerald-500 shadow-[0_0_25px_rgba(16,185,129,0.25)]' : 'border-gray-800 shadow-xl'">
           
           <div class="mb-4">
-            <h2 class="text-3xl xl:text-4xl font-extrabold text-white truncate" :title="e.assignment?.materia?.nombre">
+            <h2 class="font-extrabold text-white leading-tight" :class="getSubjectTextSize(e.assignment?.materia?.nombre)" :title="e.assignment?.materia?.nombre">
               {{ e.assignment?.materia?.nombre || '—' }}
             </h2>
           </div>
@@ -88,9 +89,23 @@
             <div class="text-xl xl:text-2xl font-medium text-emerald-400 truncate mb-1">
               {{ teacherName(e.assignment) }}
             </div>
-            <div class="text-lg text-gray-400 flex justify-between items-center">
+            <div class="text-lg text-gray-400 flex justify-between items-center mb-3">
               <span>{{ aulaName(e.assignment?.aula) }}</span>
               <span class="text-sm font-mono opacity-60">{{ currentPeriodRange }}</span>
+            </div>
+
+            <div class="border-t border-gray-700/50 pt-3">
+              <!-- Si ya pasó lista -->
+              <div v-if="e.asistencia_tomada" class="flex items-center gap-2 text-emerald-400 font-semibold text-lg xl:text-xl">
+                <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]"></span>
+                <span>Trabajando con {{ e.estudiantes_presentes }} de {{ e.total_estudiantes }}</span>
+              </div>
+
+              <!-- Si no ha pasado lista -->
+              <div v-else class="flex items-center gap-2 text-amber-400/90 font-medium text-lg xl:text-xl">
+                <span class="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_8px_#fbbf24]"></span>
+                <span>Aún sin pasar lista ({{ e.total_estudiantes }} est.)</span>
+              </div>
             </div>
           </div>
         </div>
@@ -269,8 +284,15 @@ const isClassActive = (entry: any) => {
   return true // All currentEntries are active by definition
 }
 
+const getSubjectTextSize = (name: string) => {
+  if (!name) return 'text-2xl'
+  if (name.length > 45) return 'text-xl xl:text-2xl'
+  if (name.length > 25) return 'text-2xl xl:text-3xl'
+  return 'text-3xl xl:text-4xl'
+}
+
 // ── Pagination (Carousel) ────────────────────────────────────────────────────────
-const ITEMS_PER_PAGE = 12
+const ITEMS_PER_PAGE = 8
 const currentPage = ref(0)
 
 const totalPages = computed(() => Math.ceil(currentEntries.value.length / ITEMS_PER_PAGE))
