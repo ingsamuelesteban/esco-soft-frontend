@@ -520,6 +520,7 @@ const onTransferCompleted = async () => {
   await cargarEstudiantesAsignados()
   await cargarEstudiantesSinAula()
   emit('updated')
+  emit('close') // Cerrar el modal principal tras la transferencia
 }
 
 const asignarSeleccionadosAAula = async () => {
