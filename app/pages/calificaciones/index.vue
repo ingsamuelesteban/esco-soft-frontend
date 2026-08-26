@@ -70,7 +70,18 @@
       <!-- Selector de curso -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
         <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Seleccionar Curso</h3>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div :class="['grid grid-cols-1 gap-4', canChangeAnioLectivo ? 'md:grid-cols-4' : 'md:grid-cols-3']">
+          <div v-if="canChangeAnioLectivo">
+            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Año Lectivo</label>
+            <div class="relative">
+              <select v-model="anioLectivoSeleccionado" @change="onChangeAnioLectivo" :disabled="loadingAulas"
+                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 disabled:dark:bg-gray-800 disabled:cursor-not-allowed">
+                <option v-for="anio in aniosLectivos" :key="anio.id" :value="anio.id">
+                  {{ anio.nombre }} {{ anio.activo ? '(Actual)' : '' }}
+                </option>
+              </select>
+            </div>
+          </div>
           <div>
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Aula</label>
             <div class="relative">
@@ -126,6 +137,18 @@
                 Cada RA tiene hasta 4 oportunidades
               </div>
             </div>
+          </div>
+        </div>
+        
+        <!-- Banner Histórico -->
+        <div v-if="isHistoricalMode" class="mt-4 bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800/50 rounded-md p-3">
+          <div class="flex items-center">
+            <svg class="w-5 h-5 text-amber-600 dark:text-amber-400 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            <span class="text-sm font-medium text-amber-800 dark:text-amber-300">
+              Modo Histórico / Edición Extemporánea ({{ anioLectivoName }})
+            </span>
           </div>
         </div>
       </div>
@@ -330,6 +353,7 @@
               :periodo="tipoParaCalificar" :tipo="tipoParaCalificar"
               :calificacion-actual="calificacionCompetenciaActual"
               :observaciones-actuales="observacionesCompetenciaActual" :calificacion-id="calificacionCompetenciaId"
+              :anio-lectivo-id="anioLectivoSeleccionado"
               @close="cerrarModalCompetencia" @save="guardarCalificacionCompetencia" />
 
             <!-- Calificaciones para módulos técnicos (RA) -->
@@ -661,6 +685,25 @@ const calificacionesRA = ref([])
 const calificacionesCompetencias = ref([])
 
 // Selecciones
+const aniosLectivos = ref([])
+const anioLectivoSeleccionado = ref('')
+const activeAnioLectivoId = ref(null)
+
+const canChangeAnioLectivo = computed(() => {
+  const role = authStore.user?.role?.toLowerCase() || authStore.user?.roles?.[0]?.name?.toLowerCase() || ''
+  return ['admin', 'coordinador', 'coordi'].includes(role)
+})
+
+const isHistoricalMode = computed(() => {
+  return anioLectivoSeleccionado.value && activeAnioLectivoId.value && anioLectivoSeleccionado.value !== activeAnioLectivoId.value
+})
+
+const anioLectivoName = computed(() => {
+  if (!anioLectivoSeleccionado.value) return ''
+  const anio = aniosLectivos.value.find(a => a.id === anioLectivoSeleccionado.value)
+  return anio ? anio.nombre : ''
+})
+
 const aulaSeleccionada = ref('')
 const moduloSeleccionado = ref('')
 const moduloData = ref(null)
@@ -737,11 +780,44 @@ const calcularTotalRA = (moduloData) => {
   return parseFloat(total.toFixed(2))
 }
 
+const cargarAniosLectivos = async () => {
+  try {
+    const response = await api.get('/api/anios-lectivos')
+    aniosLectivos.value = response.data || response || []
+    
+    // Set default value
+    const active = aniosLectivos.value.find(a => a.activo)
+    if (active) {
+      activeAnioLectivoId.value = active.id
+      anioLectivoSeleccionado.value = active.id
+    } else if (aniosLectivos.value.length > 0) {
+      activeAnioLectivoId.value = aniosLectivos.value[0].id
+      anioLectivoSeleccionado.value = aniosLectivos.value[0].id
+    }
+  } catch (error) {
+    console.error('Error al cargar años lectivos:', error)
+  }
+}
+
+const onChangeAnioLectivo = async () => {
+  aulaSeleccionada.value = ''
+  moduloSeleccionado.value = ''
+  estudiantes.value = []
+  modulosDisponibles.value = []
+  calificacionesRA.value = []
+  calificacionesCompetencias.value = []
+  await cargarAulas()
+}
+
 // Métodos
 const cargarAulas = async () => {
   loadingAulas.value = true
   try {
-    const response = await api.get('/api/aulas')
+    let url = '/api/aulas'
+    if (anioLectivoSeleccionado.value) {
+      url += `?anio_lectivo_id=${anioLectivoSeleccionado.value}`
+    }
+    const response = await api.get(url)
     aulas.value = response || []
   } catch (error) {
     console.error('Error al cargar aulas:', error)
@@ -756,11 +832,14 @@ const cargarModulosYEstudiantes = async () => {
   loadingModulosYEstudiantes.value = true
   try {
     // Cargar estudiantes del aula
-    const estudiantesResponse = await api.get(`/api/aulas/${aulaSeleccionada.value}/estudiantes`)
+    let estUrl = `/api/aulas/${aulaSeleccionada.value}/estudiantes`
+    if (anioLectivoSeleccionado.value) estUrl += `?anio_lectivo_id=${anioLectivoSeleccionado.value}`
+    const estudiantesResponse = await api.get(estUrl)
     estudiantes.value = estudiantesResponse.data || []
 
     // Construir URL para class assignments
     let url = `/api/class-assignments?aula_id=${aulaSeleccionada.value}&only_active=true`
+    if (anioLectivoSeleccionado.value) url += `&anio_lectivo_id=${anioLectivoSeleccionado.value}`
 
     // Si es profesor, filtrar por su ID para ver solo sus materias
     if (authStore.user?.role === 'profesor' && authStore.user?.personal_id) {
@@ -812,11 +891,15 @@ const cargarCalificaciones = async (background = false) => {
 
     if (moduloData.value?.tipo === 'Tecnico') {
       // Cargar calificaciones RA para módulos técnicos
-      const response = await api.get(`/api/calificaciones-ra?aula_id=${aulaSeleccionada.value}&materia_id=${moduloData.value.materia_id}`)
+      let url = `/api/calificaciones-ra?aula_id=${aulaSeleccionada.value}&materia_id=${moduloData.value.materia_id}`
+      if (anioLectivoSeleccionado.value) url += `&anio_lectivo_id=${anioLectivoSeleccionado.value}`
+      const response = await api.get(url)
       calificacionesRA.value = response.data || []
     } else if (moduloData.value?.tipo === 'Academico') {
       // Cargar calificaciones de competencias para módulos académicos
-      const response = await api.get(`/api/calificaciones-competencias?aula_id=${aulaSeleccionada.value}&materia_id=${moduloData.value.materia_id}`)
+      let url = `/api/calificaciones-competencias?aula_id=${aulaSeleccionada.value}&materia_id=${moduloData.value.materia_id}`
+      if (anioLectivoSeleccionado.value) url += `&anio_lectivo_id=${anioLectivoSeleccionado.value}`
+      const response = await api.get(url)
       calificacionesCompetencias.value = response.data || []
     }
   } catch (error) {
@@ -981,6 +1064,7 @@ const handleBulkSave = async (grades) => {
     const payload = {
       materia_id: moduloData.value.materia_id,
       aula_id: aulaSeleccionada.value,
+      anio_lectivo_id: anioLectivoSeleccionado.value,
       grades,
       // Context mappings based on type
       ...(importContext.value.type === 'academic' ? {
@@ -1085,6 +1169,7 @@ const eliminarCalificacionesPorLote = async (type, context) => {
     const payload = {
       materia_id: moduloData.value.materia_id,
       aula_id: aulaSeleccionada.value,
+      anio_lectivo_id: anioLectivoSeleccionado.value,
       estudiante_ids: estudianteIds,
       ...(type === 'academic' ? {
         competencia_codigo: context.competencia,
@@ -1163,6 +1248,7 @@ const guardarCalificacion = async (payload) => {
     const response = await api.post('/api/calificaciones-ra', {
       estudiante_id: estudianteParaCalificar.value.id,
       materia_id: moduloData.value.materia_id,
+      anio_lectivo_id: anioLectivoSeleccionado.value,
       ra_numero: raParaCalificar.value,
       oportunidad: oportunidadParaCalificar.value,
       nota: parseFloat(payload.nota),
@@ -1372,6 +1458,7 @@ const getTitleCasilla = (estudianteId, raNumero, oportunidad) => {
 
 // Lifecycle
 onMounted(async () => {
+  await cargarAniosLectivos()
   await cargarAulas()
 })
 

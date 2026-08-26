@@ -83,7 +83,8 @@ const props = defineProps({
     tipo: String, // "P" (Periodo) or "RP" (Recuperacion)
     calificacionActual: [Number, String],
     observacionesActuales: String,
-    calificacionId: [Number, String]
+    calificacionId: [Number, String],
+    anioLectivoId: [Number, String]
 })
 
 const emit = defineEmits(['close', 'save'])
@@ -128,6 +129,7 @@ const guardarCalificacion = async () => {
             estudiante_id: props.estudiante.id,
             // Prioritize materia_id (from ClassAssignment) if available, otherwise use id (ModuloFormativo)
             materia_id: props.modulo.materia_id ?? props.modulo.id,
+            anio_lectivo_id: props.anioLectivoId,
             competencia_codigo: props.competenciaTitulo,
             bloque: props.bloqueIndex,
             periodo: props.periodo,
