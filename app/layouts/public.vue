@@ -155,6 +155,7 @@
             <div class="flex space-x-6">
               <a href="#" class="hover:text-white transition-colors">Términos</a>
               <a href="#" class="hover:text-white transition-colors">Privacidad</a>
+              <NuxtLink to="/soporte" class="hover:text-white transition-colors">Soporte Técnico</NuxtLink>
             </div>
           </div>
         </div>
