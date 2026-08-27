@@ -25,9 +25,9 @@
           </div>
 
           <div>
-            <label for="identificador" class="block text-sm font-medium text-gray-700">Usuario, Matrícula o Cédula (Opcional)</label>
+            <label for="identificador" class="block text-sm font-medium text-gray-700">Usuario</label>
             <div class="mt-1">
-              <input v-model="form.identificador" type="text" class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Si lo recuerdas..." />
+              <input v-model="form.identificador" type="text" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Ingresa tu usuario..." />
             </div>
           </div>
 
@@ -103,12 +103,9 @@ const form = reactive({
   description: ''
 })
 
-// Cargar tenants al montar (necesitaremos un endpoint público para esto, o usar /api/tenants si es accesible)
-// Si no hay endpoint público, el usuario asumirá que lo hay o lo dejaremos como mock para que lo conecten.
 onMounted(async () => {
   try {
-    // Aquí idealmente hay un endpoint público para listar los colegios
-    const response = await $fetch('/api/tenants', { baseURL: config.public.apiBase })
+    const response = await $fetch('/api/soporte/instituciones', { baseURL: config.public.apiBase })
     tenants.value = response.data || response // Depende del formato de respuesta
   } catch (error) {
     console.error('Error cargando instituciones', error)
