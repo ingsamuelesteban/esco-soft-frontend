@@ -25,9 +25,9 @@
           </div>
 
           <div>
-            <label for="cedula" class="block text-sm font-medium text-gray-700">Cédula o RNE</label>
+            <label for="identificador" class="block text-sm font-medium text-gray-700">Usuario, Matrícula o Cédula (Opcional)</label>
             <div class="mt-1">
-              <input v-model="form.cedula_rne" type="text" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
+              <input v-model="form.identificador" type="text" class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Si lo recuerdas..." />
             </div>
           </div>
 
@@ -39,7 +39,7 @@
           </div>
 
           <div>
-            <label for="telefono" class="block text-sm font-medium text-gray-700">Teléfono</label>
+            <label for="telefono" class="block text-sm font-medium text-gray-700">Teléfono o Celular (Para contactarte)</label>
             <div class="mt-1">
               <input v-model="form.telefono" type="text" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
             </div>
@@ -96,7 +96,7 @@ const submitted = ref(false)
 
 const form = reactive({
   tenant_id: '',
-  cedula_rne: '',
+  identificador: '',
   nombre_completo: '',
   telefono: '',
   email_alternativo: '',

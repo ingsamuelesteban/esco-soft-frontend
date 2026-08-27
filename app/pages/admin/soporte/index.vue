@@ -30,7 +30,7 @@
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ ticket.tenant?.name || 'N/A' }}</td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
                     {{ ticket.nombre_completo }}<br>
-                    <span class="text-xs text-gray-400">{{ ticket.cedula_rne }}</span>
+                    <span v-if="ticket.identificador" class="text-xs text-gray-400">{{ ticket.identificador }}</span>
                   </td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">{{ new Date(ticket.created_at).toLocaleString() }}</td>
                   <td class="whitespace-nowrap px-3 py-4 text-sm text-gray-500">
