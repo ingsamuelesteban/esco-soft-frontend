@@ -123,6 +123,8 @@ definePageMeta({
   middleware: ['auth']
 })
 
+import Swal from 'sweetalert2'
+
 const route = useRoute()
 const config = useRuntimeConfig()
 
@@ -162,14 +164,34 @@ const loadTicket = async () => {
 
 const resolverTicket = async () => {
   if (!selectedUserId.value) {
-    alert('Por favor selecciona un usuario.');
+    Swal.fire('Atención', 'Por favor selecciona un usuario.', 'warning');
     return;
   }
   
-  if (!confirm('¿Estás seguro de generar una nueva contraseña para este usuario? Asegúrate de haber validado su identidad por teléfono.')) return;
+  const confirmacion = await Swal.fire({
+    title: '¿Generar nueva contraseña?',
+    text: 'Asegúrate de haber validado la identidad del usuario por teléfono.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#3085d6',
+    cancelButtonColor: '#d33',
+    confirmButtonText: 'Sí, generar contraseña',
+    cancelButtonText: 'Cancelar'
+  });
+
+  if (!confirmacion.isConfirmed) return;
   
   loading.value = true
   temporalPassword.value = null
+  
+  Swal.fire({
+    title: 'Procesando...',
+    text: 'Generando contraseña y enviando correos',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading()
+    }
+  })
   
   try {
     const res = await $fetch(`/api/admin/soporte/tickets/${route.params.id}/resolver`, {
@@ -184,10 +206,15 @@ const resolverTicket = async () => {
     
     temporalPassword.value = res.temporal_password
     await loadTicket() // Recargar para ver estado resolved
-    alert('Ticket resuelto correctamente.')
+    
+    Swal.fire({
+      title: '¡Resuelto!',
+      text: 'El ticket se resolvió y el correo fue enviado.',
+      icon: 'success'
+    });
   } catch (error) {
     console.error('Error resolviendo ticket', error)
-    alert(error.data?.message || 'Error al resolver el ticket.')
+    Swal.fire('Error', error.data?.message || 'Error al resolver el ticket.', 'error');
   } finally {
     loading.value = false
   }

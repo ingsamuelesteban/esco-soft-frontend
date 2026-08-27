@@ -89,6 +89,8 @@
 </template>
 
 <script setup>
+import Swal from 'sweetalert2'
+
 const config = useRuntimeConfig()
 const tenants = ref([])
 const loading = ref(false)
@@ -114,17 +116,27 @@ onMounted(async () => {
 
 const submitTicket = async () => {
   loading.value = true
+  Swal.fire({
+    title: 'Validando y enviando...',
+    text: 'Por favor espera un momento',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading()
+    }
+  })
+
   try {
     await $fetch('/api/soporte/tickets', {
       method: 'POST',
       baseURL: config.public.apiBase,
       body: form
     })
+    Swal.close()
     submitted.value = true
   } catch (error) {
     console.error('Error enviando ticket', error)
     const errorMsg = error.data?.message || 'Ocurrió un error al enviar el ticket. Intenta de nuevo.'
-    alert(errorMsg)
+    Swal.fire('Error', errorMsg, 'error')
   } finally {
     loading.value = false
   }

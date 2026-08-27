@@ -91,6 +91,8 @@ definePageMeta({
   middleware: ['auth'] // Add role check middleware for master
 })
 
+import Swal from 'sweetalert2'
+
 const config = useRuntimeConfig()
 const searchQuery = ref('')
 const usuarios = ref([])
@@ -142,6 +144,15 @@ const abrirModalRoles = (user) => {
 
 const guardarRoles = async () => {
   guardando.value = true
+  
+  Swal.fire({
+    title: 'Guardando...',
+    allowOutsideClick: false,
+    didOpen: () => {
+      Swal.showLoading()
+    }
+  })
+
   try {
     await $fetch(`/api/admin/master/usuarios/${usuarioSeleccionado.value.id}/roles`, {
       method: 'POST',
@@ -149,12 +160,13 @@ const guardarRoles = async () => {
       headers: { Authorization: `Bearer ${useCookie('auth_token').value}` },
       baseURL: config.public.apiBase
     })
-    alert('Roles actualizados')
+    
+    Swal.fire('Roles actualizados', 'Los roles se guardaron correctamente', 'success')
     modalAbierto.value = false
     await buscarUsuarios() // Refrescar lista
   } catch (error) {
     console.error('Error guardando roles', error)
-    alert('Error al guardar roles')
+    Swal.fire('Error', 'No se pudieron guardar los roles', 'error')
   } finally {
     guardando.value = false
   }
