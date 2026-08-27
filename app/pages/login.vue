@@ -136,7 +136,7 @@
 
       <!-- Enlace a Soporte Técnico -->
       <div class="mt-6 text-center text-sm text-gray-500 dark:text-gray-400 border-t border-gray-200 dark:border-gray-700 pt-4">
-        ¿No recuerdas tu correo registrado o cambiaste de número? 
+        ¿No recuerdas tu correo o tu contraseña?
         <br/>
         <NuxtLink to="/soporte" class="text-blue-600 hover:text-blue-500 font-medium">
           Solicitar asistencia a Soporte Técnico
