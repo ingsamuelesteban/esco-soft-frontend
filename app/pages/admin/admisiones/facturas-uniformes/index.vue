@@ -18,37 +18,56 @@
         </div>
 
         <!-- Filtros -->
-        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow ring-1 ring-gray-200 dark:ring-gray-700 mb-6 flex flex-wrap gap-4 items-end">
-            <div class="flex-1 min-w-[200px]">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Buscar Factura o Estudiante</label>
-                <input type="text" v-model="filters.search" @keyup.enter="fetchInvoices(1)"
-                    placeholder="Nº Factura o Nombre..."
-                    class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+        <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow ring-1 ring-gray-200 dark:ring-gray-700 mb-6 flex flex-col gap-4">
+            <div class="flex flex-wrap gap-4 items-end">
+                <div class="flex-1 min-w-[200px]">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Buscar Factura o Estudiante</label>
+                    <input type="text" v-model="filters.search" @keyup.enter="fetchInvoices(1)"
+                        placeholder="Nº Factura o Nombre..."
+                        class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                </div>
+                <div class="flex-1 min-w-[150px]">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Estado de Pago</label>
+                    <select v-model="filters.payment_status" @change="fetchInvoices(1)"
+                        class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                        <option value="">Todos</option>
+                        <option value="pending">Pendiente</option>
+                        <option value="paid">Pagado</option>
+                    </select>
+                </div>
+                <div class="flex-1 min-w-[150px]">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Estado de Entrega</label>
+                    <select v-model="filters.delivery_status" @change="fetchInvoices(1)"
+                        class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                        <option value="">Todos</option>
+                        <option value="pending">Pendiente</option>
+                        <option value="partial">Parcial</option>
+                        <option value="delivered">Entregado</option>
+                    </select>
+                </div>
+                <div class="flex-1 min-w-[130px]">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Desde</label>
+                    <input type="date" v-model="filters.fecha_inicio" @change="fetchInvoices(1)"
+                        class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                </div>
+                <div class="flex-1 min-w-[130px]">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hasta</label>
+                    <input type="date" v-model="filters.fecha_fin" @change="fetchInvoices(1)"
+                        class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                </div>
+                <div class="flex-none">
+                    <button @click="fetchInvoices(1)"
+                        class="px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-600 hover:bg-gray-700 focus:outline-none">
+                        Buscar
+                    </button>
+                </div>
             </div>
-            <div class="flex-1 min-w-[150px]">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Estado de Pago</label>
-                <select v-model="filters.payment_status" @change="fetchInvoices"
-                    class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
-                    <option value="">Todos</option>
-                    <option value="pending">Pendiente</option>
-                    <option value="paid">Pagado</option>
-                </select>
-            </div>
-            <div class="flex-1">
-                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Estado de Entrega</label>
-                <select v-model="filters.delivery_status" @change="fetchInvoices"
-                    class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
-                    <option value="">Todos</option>
-                    <option value="pending">Pendiente</option>
-                    <option value="partial">Parcial</option>
-                    <option value="delivered">Entregado</option>
-                </select>
-            </div>
-            <div class="flex-none">
-                <button @click="fetchInvoices(1)"
-                    class="px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-600 hover:bg-gray-700 focus:outline-none">
-                    Buscar
-                </button>
+            
+            <div class="flex flex-wrap gap-2">
+                <button @click="setDateFilter('hoy')" class="px-3 py-1 text-xs font-medium rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">Hoy</button>
+                <button @click="setDateFilter('semana')" class="px-3 py-1 text-xs font-medium rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">Esta Semana</button>
+                <button @click="setDateFilter('mes')" class="px-3 py-1 text-xs font-medium rounded-md bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600">Este Mes</button>
+                <button @click="setDateFilter('clear')" class="px-3 py-1 text-xs font-medium rounded-md bg-red-50 text-red-700 hover:bg-red-100 dark:bg-red-900/30 dark:text-red-400 dark:hover:bg-red-900/50">Limpiar Fechas</button>
             </div>
         </div>
 
@@ -546,8 +565,43 @@ const editingInvoiceId = ref(null)
 const filters = ref({
     search: '',
     payment_status: '',
-    delivery_status: ''
+    delivery_status: '',
+    fecha_inicio: '',
+    fecha_fin: ''
 })
+
+const setDateFilter = (type) => {
+    const today = new Date()
+    const formatDate = (date) => {
+        const d = new Date(date)
+        const month = '' + (d.getMonth() + 1)
+        const day = '' + d.getDate()
+        const year = d.getFullYear()
+        return [year, month.padStart(2, '0'), day.padStart(2, '0')].join('-')
+    }
+    
+    if (type === 'hoy') {
+        filters.value.fecha_inicio = formatDate(today)
+        filters.value.fecha_fin = formatDate(today)
+    } else if (type === 'semana') {
+        const firstDay = new Date(today)
+        const day = firstDay.getDay() || 7
+        firstDay.setDate(firstDay.getDate() - day + 1)
+        const lastDay = new Date(firstDay)
+        lastDay.setDate(lastDay.getDate() + 6)
+        filters.value.fecha_inicio = formatDate(firstDay)
+        filters.value.fecha_fin = formatDate(lastDay)
+    } else if (type === 'mes') {
+        const firstDay = new Date(today.getFullYear(), today.getMonth(), 1)
+        const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0)
+        filters.value.fecha_inicio = formatDate(firstDay)
+        filters.value.fecha_fin = formatDate(lastDay)
+    } else if (type === 'clear') {
+        filters.value.fecha_inicio = ''
+        filters.value.fecha_fin = ''
+    }
+    fetchInvoices(1)
+}
 
 const pagination = ref({ current_page: 1, last_page: 1 })
 
