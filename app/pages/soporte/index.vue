@@ -123,7 +123,8 @@ const submitTicket = async () => {
     submitted.value = true
   } catch (error) {
     console.error('Error enviando ticket', error)
-    alert('Ocurrió un error al enviar el ticket. Intenta de nuevo.')
+    const errorMsg = error.data?.message || 'Ocurrió un error al enviar el ticket. Intenta de nuevo.'
+    alert(errorMsg)
   } finally {
     loading.value = false
   }
