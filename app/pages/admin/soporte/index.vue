@@ -43,7 +43,7 @@
                     </span>
                   </td>
                   <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6">
-                    <NuxtLink :to="`/admin/soporte/${ticket.id}`" class="text-blue-600 hover:text-blue-900">Resolver<span class="sr-only">, {{ ticket.id }}</span></NuxtLink>
+                    <NuxtLink :to="`/admin/soporte/${ticket.id}`" class="text-blue-600 hover:text-blue-900">{{ ticket.status === 'resolved' ? 'Ver Detalles' : 'Resolver' }}<span class="sr-only">, {{ ticket.id }}</span></NuxtLink>
                   </td>
                 </tr>
                 <tr v-if="tickets.length === 0">

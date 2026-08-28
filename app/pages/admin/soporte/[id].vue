@@ -209,7 +209,7 @@ const resolverTicket = async () => {
     
     Swal.fire({
       title: '¡Resuelto!',
-      text: 'El ticket se resolvió y el correo fue enviado.',
+      html: `El ticket se resolvió exitosamente.<br><br><b>Contraseña temporal:</b> <code class="bg-gray-100 px-2 py-1 rounded text-lg">${res.temporal_password}</code><br><br>Puedes enviarle esta contraseña vía Whatsapp al solicitante.`,
       icon: 'success'
     });
   } catch (error) {
