@@ -142,7 +142,7 @@ onMounted(async () => {
 const loadTicket = async () => {
   try {
     const res = await $fetch(`/api/admin/soporte/tickets/${route.params.id}`, {
-      headers: { Authorization: `Bearer ${useCookie('auth_token').value}` },
+      headers: { Accept: 'application/json', Authorization: `Bearer ${localStorage.getItem('auth_token')}` },
       baseURL: config.public.apiBase
     })
     ticket.value = res.ticket
@@ -196,7 +196,7 @@ const resolverTicket = async () => {
   try {
     const res = await $fetch(`/api/admin/soporte/tickets/${route.params.id}/resolver`, {
       method: 'POST',
-      headers: { Authorization: `Bearer ${useCookie('auth_token').value}` },
+      headers: { Accept: 'application/json', Authorization: `Bearer ${localStorage.getItem('auth_token')}` },
       baseURL: config.public.apiBase,
       body: { 
         user_id: selectedUserId.value,

@@ -111,7 +111,7 @@ onMounted(async () => {
 const cargarRoles = async () => {
   try {
     const res = await $fetch('/api/admin/master/roles', {
-      headers: { Authorization: `Bearer ${useCookie('auth_token').value}` },
+      headers: { Accept: 'application/json', Authorization: `Bearer ${localStorage.getItem('auth_token')}` },
       baseURL: config.public.apiBase
     })
     rolesDisponibles.value = res
@@ -126,7 +126,7 @@ const buscarUsuarios = async () => {
   try {
     const res = await $fetch('/api/admin/master/usuarios', {
       params: { search: searchQuery.value },
-      headers: { Authorization: `Bearer ${useCookie('auth_token').value}` },
+      headers: { Accept: 'application/json', Authorization: `Bearer ${localStorage.getItem('auth_token')}` },
       baseURL: config.public.apiBase
     })
     usuarios.value = res.data || res
@@ -157,7 +157,7 @@ const guardarRoles = async () => {
     await $fetch(`/api/admin/master/usuarios/${usuarioSeleccionado.value.id}/roles`, {
       method: 'POST',
       body: { roles: rolesSeleccionados.value },
-      headers: { Authorization: `Bearer ${useCookie('auth_token').value}` },
+      headers: { Accept: 'application/json', Authorization: `Bearer ${localStorage.getItem('auth_token')}` },
       baseURL: config.public.apiBase
     })
     

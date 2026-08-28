@@ -75,7 +75,8 @@ const loadTickets = async () => {
   try {
     const { data } = await $fetch('/api/admin/soporte/tickets', {
       headers: {
-        Authorization: `Bearer ${useCookie('auth_token').value}`
+        Accept: 'application/json',
+        Authorization: `Bearer ${localStorage.getItem('auth_token')}`
       },
       baseURL: config.public.apiBase
     })
