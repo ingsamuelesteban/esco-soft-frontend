@@ -53,8 +53,13 @@
     <!-- ═══ MAIN: Estado de Receso / Cuadrícula 4×2 ═══ -->
     <main class="flex-1 w-full min-h-0 flex flex-col">
 
-      <!-- Estado de receso o sin clases -->
-      <div v-if="isRecessOrIdle" class="flex-1 flex flex-col items-center justify-center">
+      <!-- ═══ RECESO / IDLE: contenedor siempre montado (v-show) para precargar video ═══ -->
+      <!-- v-show en vez de v-if: el decoder del TV necesita el elemento en el DOM -->
+      <div
+        v-show="isRecessOrIdle"
+        class="flex-1 flex flex-col items-center justify-center relative"
+      >
+        <!-- Video: siempre en DOM mientras haya URL, visible solo en receso -->
         <video
           v-if="idleVideoUrl"
           ref="recesoVideoRef"
@@ -64,19 +69,31 @@
           loop
           playsinline
           webkit-playsinline
+          preload="auto"
+          crossorigin="anonymous"
           class="max-w-xl max-h-[55vh] object-contain mx-auto rounded-2xl shadow-2xl drop-shadow-[0_0_30px_rgba(255,255,255,0.15)]"
+          @error="handleVideoError"
+          @canplay="handleCanPlay"
         ></video>
-        <div v-else class="text-center text-gray-400">
-          <img v-if="safeLogoUrl" :src="safeLogoUrl" class="max-w-md max-h-[40vh] object-contain mx-auto opacity-70 mb-8" alt="Logo Institucional">
+
+        <!-- Fallback: logo + texto. Se muestra cuando no hay URL o el video falla -->
+        <div v-if="!idleVideoUrl || videoHasError" class="text-center text-gray-400">
+          <img
+            v-if="safeLogoUrl"
+            :src="safeLogoUrl"
+            class="max-w-md max-h-[40vh] object-contain mx-auto opacity-70 mb-8"
+            alt="Logo Institucional"
+          >
           <p class="text-4xl font-bold text-white mb-4">{{ statusTitle }}</p>
           <p class="text-2xl text-gray-400">{{ statusSubtitle }}</p>
         </div>
       </div>
 
+
       <!-- ═══ GRID RÍGIDO 4 COLUMNAS × 2 FILAS ═══ -->
       <!-- Sin breakpoints variables: siempre 4 cols. El carrusel limita a max 8 tarjetas. -->
       <div
-        v-else
+        v-show="!isRecessOrIdle"
         class="flex-1 w-full grid grid-cols-4 grid-rows-2 gap-4 min-h-0"
       >
         <div
@@ -345,19 +362,68 @@ watch(totalPages, (newTotal) => {
   startCarousel()
 }, { immediate: true })
 
-// ── Autoplay forzado del video de receso (política TV WebView) ─────────────────
-// Los navegadores embebidos en Smart TV bloquean autoplay sin gesto del usuario.
-// Al entrar en modo receso, forzamos .play() desde JS tras el siguiente tick
-// para asegurar que el elemento ya está montado en el DOM.
+// ── Video de Receso: Autoplay Blindado para TV WebView ─────────────────────────
 const recesoVideoRef = ref<HTMLVideoElement | null>(null)
+const videoHasError = ref(false)
 
-watch(isRecessOrIdle, (val) => {
-  if (val && idleVideoUrl.value) {
-    nextTick(() => {
-      recesoVideoRef.value?.play().catch((err) => {
-        console.warn('[Display] Autoplay bloqueado, esperando interacción del usuario:', err)
+/**
+ * Fuerza la reproducción garantizando muted a nivel de propiedad JS.
+ * Muchos Chromium embebidos en Smart TV ignoran el atributo HTML muted
+ * pero respetan la propiedad JS .muted = true antes del primer play().
+ */
+const ejecutarPlaySeguro = () => {
+  const el = recesoVideoRef.value
+  if (!el) return
+
+  // Blindaje de mute a nivel DOM/JS (imprescindible en TV WebViews)
+  el.muted = true
+  el.defaultMuted = true
+  el.volume = 0
+
+  const promise = el.play()
+  if (promise !== undefined) {
+    promise.catch((err) => {
+      console.warn('[Display] Autoplay rechazado, reintentando silenciado:', err)
+      // Segundo intento garantizado tras asegurar silence
+      el.muted = true
+      el.play().catch((err2) => {
+        console.error('[Display] Autoplay falló definitivamente:', err2)
+        videoHasError.value = true
       })
     })
+  }
+}
+
+const handleVideoError = (e: Event) => {
+  const target = e.target as HTMLVideoElement
+  const code = target?.error?.code
+  const msg = target?.error?.message
+  console.error(`[Display] Error cargando video de receso (code=${code}):`, msg, e)
+  videoHasError.value = true
+}
+
+const handleCanPlay = () => {
+  // El decoder del TV está listo: intentar play si estamos en receso
+  if (isRecessOrIdle.value) {
+    ejecutarPlaySeguro()
+  }
+}
+
+// Al entrar/salir del receso controlar reproducción
+watch(isRecessOrIdle, (activo) => {
+  videoHasError.value = false
+  if (activo && idleVideoUrl.value) {
+    nextTick(() => ejecutarPlaySeguro())
+  } else {
+    recesoVideoRef.value?.pause()
+  }
+})
+
+// Si la URL del video cambia (tenant cargado tarde), reiniciar reproductor
+watch(idleVideoUrl, (url) => {
+  videoHasError.value = false
+  if (url && isRecessOrIdle.value) {
+    nextTick(() => ejecutarPlaySeguro())
   }
 })
 
