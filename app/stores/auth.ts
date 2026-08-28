@@ -52,6 +52,11 @@ export interface Tenant {
     youtube?: string
   }
   features?: string[]
+  // ── Campos de pantalla de TV / Display ──────────────────────────────────────
+  /** URL relativa generada por el accessor del backend: /storage/tenants/videos/... */
+  display_idle_video_url?: string | null
+  /** Color de fondo de la pantalla TV (ej: "#030712") */
+  display_bg_color?: string | null
 }
 
 export interface LoginResponse {

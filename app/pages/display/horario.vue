@@ -252,29 +252,36 @@ const isRecessOrIdle = computed(() => {
   return currentEntries.value.length === 0
 })
 
-const resolveMediaUrl = (url?: string) => {
+const resolveMediaUrl = (url?: string | null): string | null => {
   if (!url) return null
-  if (url.startsWith('http')) {
-    // If it's already absolute (e.g. from an external source or S3), just ensure HTTPS if not localhost
+
+  // Si ya es absoluta (http/https), usarla directamente
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    // Forzar HTTPS en producción (no localhost)
     if (url.startsWith('http://') && !url.includes('localhost')) {
       return url.replace('http://', 'https://')
     }
     return url
   }
-  
-  // If it's a relative path from the backend storage
+
+  // Rutas relativas del backend (/storage/... o cualquier /ruta):
+  // Se construyen desde la URL base del servidor (sin el prefijo /api)
   const config = useRuntimeConfig()
-  const apiBase = config.public.apiBase
-  const baseUrl = apiBase.endsWith('/') ? apiBase.slice(0, -1) : apiBase
+  const apiBase: string = config.public.apiBase as string
+  // apiBase puede ser "https://api.ejemplo.com/api" o "http://localhost:8000/api"
+  // Necesitamos solo "https://api.ejemplo.com" (quitar el segmento de path /api)
+  const serverBase = apiBase.replace(/\/api(\/v\d+)?$/, '').replace(/\/$/, '')
   const path = url.startsWith('/') ? url : `/${url}`
-  return `${baseUrl}${path}`
+  return `${serverBase}${path}`
 }
 
-const idleVideoUrl = computed(() => {
-  const url = resolveMediaUrl(tenant.value?.display_idle_video_url)
-  console.log('Video URL resolved:', url)
-  return url
+const idleVideoUrl = computed((): string | null => {
+  const raw = tenant.value?.display_idle_video_url
+  const resolved = resolveMediaUrl(raw)
+  console.log('[Display] Video URL — raw:', raw, '| resolved:', resolved)
+  return resolved
 })
+
 
 const safeLogoUrl = computed(() => {
   return resolveMediaUrl(tenant.value?.logo_url)
