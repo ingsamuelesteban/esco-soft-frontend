@@ -11,9 +11,10 @@ export default defineNuxtRouteMiddleware((to, from) => {
 
     try {
       const userRole = authStore.user.role
+      const roles = authStore.user.roles || []
 
       // Verificar rol para rutas administrativas
-      checkAdminAccess(to.path, userRole)
+      checkAdminAccess(to.path, userRole, roles)
     } catch (e) {
       // Si checkAdminAccess lanza error (403), Nuxt lo maneja
       throw e
@@ -21,7 +22,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
   }
 })
 
-function checkAdminAccess(path: string, userRole: string) {
+function checkAdminAccess(path: string, userRole: string, roles: any[] = []) {
   // Rutas que pueden acceder todos los usuarios autenticados
   const publicRoutes = [
     '/',
@@ -55,19 +56,24 @@ function checkAdminAccess(path: string, userRole: string) {
   // Verificar si la ruta requiere permisos de admin
   const requiresAdmin = adminOnlyRoutes.some(route => path.startsWith(route))
 
+  const hasRole = (role) => {
+    if (userRole === role) return true;
+    return roles.some(r => r.name === role);
+  };
+
   // Excepción: Permitir acceso a Horarios por Profesor para profesores
   // aunque /horarios esté restringido
   // Usamos startsWith para cubrir rutas hijas o trailing slashes
-  if (path.startsWith('/horarios/profesores') && (userRole === 'profesor' || userRole === 'admin' || userRole === 'master')) {
+  if (path.startsWith('/horarios/profesores') && (hasRole('profesor') || hasRole('admin') || hasRole('master'))) {
     return
   }
 
   // Si es master, tiene acceso a todo (skip admin check)
-  if (userRole === 'master') {
+  if (hasRole('master')) {
     return
   }
 
-  if (requiresAdmin && userRole !== 'admin') {
+  if (requiresAdmin && !hasRole('admin')) {
     throw createError({
       statusCode: 403,
       statusMessage: 'No tienes permisos para acceder a esta página. Esta función es solo para administradores.'

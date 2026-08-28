@@ -37,20 +37,30 @@ export default defineNuxtRouteMiddleware((to, from) => {
     return navigateTo('/')
   }
 
+  const hasAdminOverride = () => {
+    if (!authStore.user) return false;
+    const roles = authStore.user.roles || [];
+    return roles.some(r => ['master', 'admin', 'soporte_tecnico'].includes(r.name));
+  };
+
   // Protect admin routes from students
   if (!to.path.startsWith('/student') && authStore.user?.role === 'estudiante' && to.path !== '/login') {
-    return navigateTo('/student/dashboard')
+    if (!hasAdminOverride()) {
+      return navigateTo('/student/dashboard')
+    }
   }
 
   // Protect all /admin routes from non-administrative users
   if (to.path.startsWith('/admin')) {
     const nonAdminRoles = ['estudiante', 'padre', 'profesor'];
     if (authStore.user && nonAdminRoles.includes(authStore.user.role)) {
-      // Redirect teachers to their dashboard, otherwise home
-      if (authStore.user.role === 'profesor') {
-        return navigateTo('/dashboard');
+      if (!hasAdminOverride()) {
+        // Redirect teachers to their dashboard, otherwise home
+        if (authStore.user.role === 'profesor') {
+          return navigateTo('/dashboard');
+        }
+        return navigateTo('/');
       }
-      return navigateTo('/');
     }
   }
 })
