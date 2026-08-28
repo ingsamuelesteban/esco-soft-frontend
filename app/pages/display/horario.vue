@@ -3,21 +3,40 @@
     :style="{ backgroundColor: tenant?.display_bg_color || '#030712' }"
     @mousemove="handleMouseMove" :class="{ 'cursor-none': isCursorHidden }">
 
-    <!-- Botón de Pantalla Completa Flotante -->
-    <button
-      @click="toggleFullscreen"
-      class="fixed top-6 right-6 z-50 p-3 bg-gray-900/80 hover:bg-gray-800 text-gray-300 hover:text-white border border-gray-700/60 rounded-xl shadow-lg backdrop-blur-md cursor-pointer transition-all duration-300"
+    <!-- Contenedor de Botones Flotantes (Fullscreen & Logout) -->
+    <div
+      class="fixed top-6 right-6 z-50 flex items-center gap-3 transition-all duration-300"
       :class="{ 'opacity-0 pointer-events-none': isCursorHidden, 'opacity-100': !isCursorHidden }"
-      :title="isFullscreen ? 'Salir de pantalla completa' : 'Pantalla Completa'">
-      <svg v-if="!isFullscreen" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-      </svg>
-      <svg v-else class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    </button>
+    >
+      <!-- Botón de Cerrar Sesión (solo visible si no está en fullscreen) -->
+      <button
+        v-if="!isFullscreen"
+        @click="authStore.logout()"
+        class="flex items-center gap-2 p-3 px-4 bg-red-900/80 hover:bg-red-800 text-red-100 hover:text-white border border-red-700/60 rounded-xl shadow-lg backdrop-blur-md cursor-pointer transition-all duration-300"
+        title="Cerrar Sesión"
+      >
+        <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+        </svg>
+        <span class="text-sm font-semibold">Salir</span>
+      </button>
+
+      <!-- Botón de Pantalla Completa Flotante -->
+      <button
+        @click="toggleFullscreen"
+        class="p-3 bg-gray-900/80 hover:bg-gray-800 text-gray-300 hover:text-white border border-gray-700/60 rounded-xl shadow-lg backdrop-blur-md cursor-pointer transition-all duration-300"
+        :title="isFullscreen ? 'Salir de pantalla completa' : 'Pantalla Completa'"
+      >
+        <svg v-if="!isFullscreen" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+        </svg>
+        <svg v-else class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    </div>
 
     <!-- ═══ CABECERA ═══ -->
     <header class="flex-shrink-0 flex justify-between items-start mb-3">
