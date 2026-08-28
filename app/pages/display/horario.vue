@@ -165,7 +165,20 @@ const aulasStore = useAulasStore()
 const aniosStore = useAniosLectivosStore()
 const authStore = useAuthStore()
 
-const tenant = computed(() => authStore.tenant)
+const tenant = computed(() => {
+  const t = authStore.tenant
+  // LOG DIAGNÓSTICO: muestra todos los campos del tenant que llegan del backend
+  if (t) {
+    console.log('[Display] Tenant recibido:', JSON.stringify({
+      id: t.id,
+      name: t.name,
+      display_bg_color: t.display_bg_color,
+      display_idle_video_url: t.display_idle_video_url,
+    }))
+  }
+  return t
+})
+
 
 const now = ref(new Date())
 const isOffline = ref(false)
