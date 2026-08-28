@@ -155,9 +155,13 @@ export const useAuthStore = defineStore('auth', {
           this.isAuthenticated = true
 
           if (process.client) {
-            // Fix: Asegurar que el ID del tenant esté en localStorage para que api.ts pueda construir la URL correcta
+            // Guardar ID del tenant para que api.ts construya URLs correctamente
             if (this.tenant) {
               localStorage.setItem('selected_tenant_id', this.tenant.id.toString())
+              // ── Cachear el objeto tenant completo ────────────────────────────────
+              // Necesario porque /api/me puede devolver tenant:null para usuarios
+              // display_horario (contexto de tenant no establecido en esa ruta)
+              localStorage.setItem('cached_tenant', JSON.stringify(this.tenant))
             }
           }
 
@@ -257,7 +261,8 @@ export const useAuthStore = defineStore('auth', {
 
       if (process.client) {
         localStorage.removeItem('auth_token')
-        this.stopActivityTracker() // Stop tracker on logout
+        localStorage.removeItem('cached_tenant')   // Limpiar cache de tenant
+        this.stopActivityTracker()
       }
 
       await navigateTo('/login')
@@ -314,11 +319,11 @@ export const useAuthStore = defineStore('auth', {
       if (process.client && !this.isAuthenticated) {
         const savedToken = localStorage.getItem('auth_token')
         const savedTenantId = localStorage.getItem('selected_tenant_id')
+        const cachedTenantRaw = localStorage.getItem('cached_tenant')
 
         if (savedToken) {
           this.token = savedToken
           try {
-            // Usar api.get que ya incluye el token automáticamente
             const response = await api.get<ApiResponse<{ user: User, isAuthenticated: boolean, tenant?: Tenant, director?: Director }>>('/api/me')
 
             let data: any = response
@@ -336,47 +341,70 @@ export const useAuthStore = defineStore('auth', {
             }
 
             if (data.success) {
-              console.log('Auth initialized, tenant:', data.data.tenant)
               this.user = data.data.user
-              this.tenant = data.data.tenant || null
               this.tenantFeatures = data.data.tenant_features || []
               this.director = data.data.director || null
 
-              // Fix: Asegurar que se restaure el tenant ID en localStorage
-              // PERO: Si ya hay uno seleccionado y somos master, no lo sobrescribamos con el default del backend (que suele ser localhost=tenant1)
-              if (this.tenant && process.client) {
-                // Si no hay nada guardado, guardamos lo que llega
-                if (!savedTenantId) {
-                  localStorage.setItem('selected_tenant_id', this.tenant.id.toString())
-                }
-                // Si hay algo guardado
-                else if (savedTenantId !== this.tenant.id.toString()) {
-                  // Si somos master, DAMOS PRIORIDAD al guardado (el backend devuelve tenant1 por defecto en localhost)
-                  if (this.isMaster) {
-                    console.log('Manteniendo tenant seleccionado manualmente (Master):', savedTenantId);
+              // ── Diagnóstico: qué devuelve /api/me ─────────────────────────────
+              console.log('[Auth] /api/me tenant from server:', data.data.tenant)
+              console.log('[Auth] cached_tenant in localStorage:', cachedTenantRaw ? 'PRESENT' : 'EMPTY')
 
-                    // Buscar el tenant correcto
+              if (data.data.tenant) {
+                // ── Caso normal: el servidor devolvió el tenant ────────────────
+                this.tenant = data.data.tenant
+
+                // Actualizar cache con datos frescos del servidor
+                localStorage.setItem('cached_tenant', JSON.stringify(this.tenant))
+                localStorage.setItem('selected_tenant_id', this.tenant.id.toString())
+
+                // Corrección para master: priorizar tenant guardado manualmente
+                if (savedTenantId && savedTenantId !== this.tenant.id.toString() && this.isMaster) {
+                  console.log('[Auth] Master: restaurando tenant seleccionado manualmente:', savedTenantId)
+                  try {
+                    const tenantRes = await api.get<ApiResponse<Tenant>>(`/api/tenants/${savedTenantId}`)
+                    if (tenantRes.success && tenantRes.data) {
+                      this.tenant = tenantRes.data
+                      localStorage.setItem('cached_tenant', JSON.stringify(this.tenant))
+                      console.log('[Auth] Tenant de master corregido:', this.tenant.name)
+                    }
+                  } catch (e) {
+                    console.warn('[Auth] No se pudo recuperar el tenant del master, usando el del servidor', e)
+                  }
+                }
+              } else {
+                // ── Caso display_horario / usuario sin contexto tenant ─────────
+                // El backend no pudo resolver el tenant (contexto no establecido en /api/me)
+                // Intentar restaurar desde el cache localStorage generado en el login
+                console.warn('[Auth] Servidor devolvió tenant:null — intentando restaurar desde cache local')
+
+                if (cachedTenantRaw) {
+                  try {
+                    const cachedTenant: Tenant = JSON.parse(cachedTenantRaw)
+                    this.tenant = cachedTenant
+                    console.log('[Auth] ✅ Tenant restaurado desde cache:', cachedTenant.name, '| video_url:', cachedTenant.display_idle_video_url)
+                  } catch (e) {
+                    console.error('[Auth] Error parseando cached_tenant:', e)
+                    this.tenant = null
+                  }
+                } else {
+                  // Fallback: intentar fetch directo del tenant por ID si lo tenemos
+                  if (savedTenantId) {
+                    console.warn('[Auth] Sin cache, intentando fetch por ID:', savedTenantId)
                     try {
                       const tenantRes = await api.get<ApiResponse<Tenant>>(`/api/tenants/${savedTenantId}`)
                       if (tenantRes.success && tenantRes.data) {
                         this.tenant = tenantRes.data
-                        console.log('Tenant corregido en frontend:', this.tenant)
+                        localStorage.setItem('cached_tenant', JSON.stringify(this.tenant))
+                        console.log('[Auth] ✅ Tenant recuperado por ID:', this.tenant.name)
                       }
                     } catch (e) {
-                      console.warn('No se pudo recuperar el tenant guardado, manteniendo el default', e)
+                      console.error('[Auth] No se pudo recuperar el tenant por ID:', e)
+                      this.tenant = null
                     }
                   } else {
-                    // Si no somos master, forzamos el tenant que dice el backend
-                    localStorage.setItem('selected_tenant_id', this.tenant.id.toString())
+                    this.tenant = null
+                    console.error('[Auth] ❌ Tenant no disponible: sin cache ni ID guardado')
                   }
-                }
-              }
-
-              // Si tenemos un tenant ID guardado pero la API no devolvió tenant (ej: global user), podríamos intentar restaurarlo
-              if (!this.tenant && savedTenantId && this.availableTenants.length > 0) {
-                const found = this.availableTenants.find(t => t.id === Number(savedTenantId))
-                if (found) {
-                  this.tenant = found
                 }
               }
 
@@ -387,8 +415,6 @@ export const useAuthStore = defineStore('auth', {
             }
           } catch (error: any) {
             console.error('Error in initializeAuth:', error)
-            // Critical fix: Only logout on strict 401. 
-            // 403 might be lack of permissions but valid user. 500 is server error.
             if (error.status === 401 || error.statusCode === 401) {
               this.clearTokens()
             }
