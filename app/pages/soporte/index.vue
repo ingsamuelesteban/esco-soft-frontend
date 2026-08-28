@@ -13,7 +13,7 @@
       <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
         <form v-if="!submitted" class="space-y-6" @submit.prevent="submitTicket">
           <div>
-            <label for="tenant_id" class="block text-sm font-medium text-gray-700">Institución Educativa</label>
+            <label for="tenant_id" class="block text-sm font-medium text-gray-700">Institución Educativa <span class="text-red-500">*</span></label>
             <div class="mt-1">
               <select v-model="form.tenant_id" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                 <option value="" disabled>Selecciona tu institución...</option>
@@ -25,28 +25,25 @@
           </div>
 
           <div>
-            <label for="identificador" class="block text-sm font-medium text-gray-700">Usuario</label>
+            <label for="identificador" class="block text-sm font-medium text-gray-700">Usuario <span class="text-red-500">*</span></label>
             <div class="mt-1">
               <input v-model="form.identificador" type="text" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Ingresa tu usuario..." />
             </div>
           </div>
 
           <div>
-            <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre Completo</label>
+            <label for="nombre" class="block text-sm font-medium text-gray-700">Nombre Completo <span class="text-red-500">*</span></label>
             <div class="mt-1">
               <input v-model="form.nombre_completo" type="text" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
             </div>
           </div>
 
           <div>
-            <label for="telefono" class="block text-sm font-medium text-gray-700">Teléfono o Celular (Para contactarte)</label>
-            <div class="mt-1">
-              <input v-model="form.telefono" type="text" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
-            </div>
+            <TelefonoInput v-model="form.telefono" label="Whatsapp donde deseas recibir tu nueva contraseña" required />
           </div>
 
           <div>
-            <label for="email" class="block text-sm font-medium text-gray-700">Correo Electrónico (Alternativo)</label>
+            <label for="email" class="block text-sm font-medium text-gray-700">Correo Electrónico (Alternativo) <span class="text-red-500">*</span></label>
             <p class="text-xs text-gray-500">A este correo enviaremos tu nueva contraseña temporal.</p>
             <div class="mt-1">
               <input v-model="form.email_alternativo" type="email" required class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" />
