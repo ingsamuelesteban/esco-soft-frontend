@@ -57,8 +57,13 @@
       <div v-if="isRecessOrIdle" class="flex-1 flex flex-col items-center justify-center">
         <video
           v-if="idleVideoUrl"
+          ref="recesoVideoRef"
           :src="idleVideoUrl"
-          autoplay loop muted playsinline
+          autoplay
+          muted
+          loop
+          playsinline
+          webkit-playsinline
           class="max-w-xl max-h-[55vh] object-contain mx-auto rounded-2xl shadow-2xl drop-shadow-[0_0_30px_rgba(255,255,255,0.15)]"
         ></video>
         <div v-else class="text-center text-gray-400">
@@ -125,7 +130,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useTimetableEntriesStore } from '../../stores/timetable_entries'
 import { usePeriodsStore, type Period } from '../../stores/periods'
 import { useClassAssignmentsStore, type ClassAssignment } from '../../stores/class_assignments'
@@ -326,12 +331,35 @@ const startCarousel = () => {
   }
 }
 
-// Reiniciar a página 0 y reanudar carrusel cuando cambian los datos
-watch(currentEntries, () => {
-  currentPage.value = 0
+// ── Watch SOLO sobre totalPages (no sobre currentEntries) ──────────────────────
+// Motivo: currentEntries cambia en cada poll de asistencia (cada 60s), lo que
+// reiniciaba el carrusel a página 0 antes de que transcurrieran los 12 segundos.
+// Con watch(totalPages) solo reaccionamos cuando el número real de páginas
+// cambia (alta/baja de clases, cambio de período), preservando la posición actual.
+watch(totalPages, (newTotal) => {
+  // Corregir out-of-range si el número de páginas se redujo
+  if (currentPage.value >= newTotal) {
+    currentPage.value = 0
+  }
+  // Reiniciar el timer solo si el número de páginas cambió
   startCarousel()
-})
+}, { immediate: true })
 
+// ── Autoplay forzado del video de receso (política TV WebView) ─────────────────
+// Los navegadores embebidos en Smart TV bloquean autoplay sin gesto del usuario.
+// Al entrar en modo receso, forzamos .play() desde JS tras el siguiente tick
+// para asegurar que el elemento ya está montado en el DOM.
+const recesoVideoRef = ref<HTMLVideoElement | null>(null)
+
+watch(isRecessOrIdle, (val) => {
+  if (val && idleVideoUrl.value) {
+    nextTick(() => {
+      recesoVideoRef.value?.play().catch((err) => {
+        console.warn('[Display] Autoplay bloqueado, esperando interacción del usuario:', err)
+      })
+    })
+  }
+})
 
 // ── Fullscreen & Cursor Hide ────────────────────────────────────────────────────────
 const isFullscreen = ref(false)
@@ -414,8 +442,8 @@ onMounted(() => {
   // Fetch de datos (cada 60s)
   dataTimer = window.setInterval(loadData, 60 * 1000)
 
-  // Arrancar carrusel (se detiene y reinicia automáticamente al cambiar currentEntries via watch)
-  startCarousel()
+  // NOTA: startCarousel() es invocado por watch(totalPages, { immediate: true })
+  // No hace falta llamarlo aquí para evitar doble arranque del timer.
 
   // Auto-reload a las 3:00 AM para prevenir memory leaks
   restartTimer = window.setInterval(() => {
