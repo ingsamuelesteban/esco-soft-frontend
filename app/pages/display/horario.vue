@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed inset-0 w-screen h-screen text-white overflow-hidden p-6 flex flex-col justify-between z-50 transition-colors duration-500"
+  <div class="fixed inset-0 w-screen h-screen text-white overflow-hidden p-6 flex flex-col z-50 transition-colors duration-500"
     :style="{ backgroundColor: tenant?.display_bg_color || '#030712' }"
     @mousemove="handleMouseMove" :class="{ 'cursor-none': isCursorHidden }">
 
@@ -19,15 +19,14 @@
       </svg>
     </button>
 
-    <!-- Cabecera Ejecutiva -->
-    <header class="flex justify-between items-start mb-8">
+    <!-- ═══ CABECERA ═══ -->
+    <header class="flex-shrink-0 flex justify-between items-start mb-3">
       <div>
-        <div class="text-6xl md:text-8xl font-black text-white tracking-tight leading-none mb-4">
+        <div class="text-6xl font-black text-white tracking-tight leading-none mb-2">
           {{ formattedTime }}
         </div>
-        <div class="text-2xl md:text-3xl font-semibold text-gray-400 capitalize flex items-center gap-4">
+        <div class="text-2xl font-semibold text-gray-400 capitalize flex items-center gap-4">
           {{ formattedDate }}
-          
           <div v-if="isOffline" class="flex items-center gap-2 text-red-500 text-lg bg-red-950/50 px-3 py-1 rounded-full border border-red-900">
             <svg class="h-5 w-5 animate-pulse" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
@@ -36,94 +35,97 @@
           </div>
         </div>
       </div>
-      
-      <div class="text-right flex flex-col items-end">
+
+      <div class="text-right flex flex-col items-end gap-3">
         <div v-if="currentPeriods.length" class="px-6 py-3 rounded-2xl font-bold text-2xl border-2" :class="statusClass">
           {{ statusLabel }}
         </div>
         <div v-else class="px-6 py-3 rounded-2xl font-bold text-2xl bg-gray-900 border border-gray-700 text-gray-400">
           Fuera de período
         </div>
-        
-        <!-- Paginación Indicador -->
-        <div v-if="totalPages > 1" class="mt-4 text-xl font-medium text-gray-500">
-          Mostrando página {{ currentPage + 1 }} de {{ totalPages }}
-        </div>
+        <!-- Indicador de Páginas -->
+        <span v-if="totalPages > 1" class="text-sm bg-white/10 px-3 py-1 rounded-full text-white/80">
+          Pantalla {{ currentPage + 1 }} de {{ totalPages }}
+        </span>
       </div>
     </header>
 
-    <!-- Cuadrícula de Aulas y Clases en Vivo -->
-    <main class="flex-1 my-6 relative min-h-[500px] flex flex-col">
-      <div v-if="isRecessOrIdle" class="flex-1 flex flex-col items-center justify-center my-auto">
-        <!-- Video si existe URL -->
+    <!-- ═══ MAIN: Estado de Receso / Cuadrícula 4×2 ═══ -->
+    <main class="flex-1 w-full min-h-0 flex flex-col">
+
+      <!-- Estado de receso o sin clases -->
+      <div v-if="isRecessOrIdle" class="flex-1 flex flex-col items-center justify-center">
         <video
           v-if="idleVideoUrl"
           :src="idleVideoUrl"
-          autoplay
-          loop
-          muted
-          playsinline
+          autoplay loop muted playsinline
           class="max-w-xl max-h-[55vh] object-contain mx-auto rounded-2xl shadow-2xl drop-shadow-[0_0_30px_rgba(255,255,255,0.15)]"
         ></video>
-
-        <!-- Fallback si no hay video cargado -->
         <div v-else class="text-center text-gray-400">
           <img v-if="safeLogoUrl" :src="safeLogoUrl" class="max-w-md max-h-[40vh] object-contain mx-auto opacity-70 mb-8" alt="Logo Institucional">
           <p class="text-4xl font-bold text-white mb-4">{{ statusTitle }}</p>
           <p class="text-2xl text-gray-400">{{ statusSubtitle }}</p>
         </div>
       </div>
-      
-      <TransitionGroup v-else name="fade" tag="div" class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 w-full">
-        <div v-for="e in paginatedEntries" :key="e.id" 
-          class="bg-gray-900/90 rounded-2xl p-6 border flex flex-col justify-between"
-          :class="isClassActive(e) ? 'border-2 border-emerald-500 shadow-[0_0_25px_rgba(16,185,129,0.25)]' : 'border-gray-800 shadow-xl'">
-          
-          <div class="mb-4">
-            <h2 class="font-extrabold text-white leading-tight" :class="getSubjectTextSize(e.assignment?.materia?.nombre)" :title="e.assignment?.materia?.nombre">
+
+      <!-- ═══ GRID RÍGIDO 4 COLUMNAS × 2 FILAS ═══ -->
+      <!-- Sin breakpoints variables: siempre 4 cols. El carrusel limita a max 8 tarjetas. -->
+      <div
+        v-else
+        class="flex-1 w-full grid grid-cols-4 grid-rows-2 gap-4 min-h-0"
+      >
+        <div
+          v-for="e in paginatedEntries"
+          :key="e.id"
+          class="bg-gray-900/90 border border-emerald-500/60 rounded-xl p-4 flex flex-col justify-between overflow-hidden shadow-lg min-h-0"
+        >
+          <!-- Cabecera de la Card -->
+          <div class="min-h-0 flex-1">
+            <h3
+              class="font-bold text-white leading-tight line-clamp-2"
+              :class="getSubjectTextSize(e.assignment?.materia?.nombre)"
+              :title="e.assignment?.materia?.nombre"
+            >
               {{ e.assignment?.materia?.nombre || '—' }}
-            </h2>
-          </div>
-          
-          <div>
-            <div class="text-xl xl:text-2xl font-medium text-emerald-400 truncate mb-1">
+            </h3>
+            <p class="text-sm text-gray-300 font-medium mt-1 truncate">
               {{ teacherName(e.assignment) }}
-            </div>
-            <div class="text-lg text-gray-400 flex justify-between items-center mb-3">
-              <span>{{ aulaName(e.assignment?.aula) }}</span>
-              <span class="text-sm font-mono opacity-60">{{ currentPeriodRange }}</span>
-            </div>
+            </p>
+            <p class="text-xs text-emerald-400 truncate">
+              {{ aulaName(e.assignment?.aula) }}
+              <span v-if="currentPeriodRange" class="text-gray-500 ml-1">· {{ currentPeriodRange }}</span>
+            </p>
+          </div>
 
-            <div class="border-t border-gray-700/50 pt-3">
-              <!-- Si ya pasó lista -->
-              <div v-if="e.asistencia_tomada" class="flex items-center gap-2 text-emerald-400 font-semibold text-lg xl:text-xl">
-                <span class="w-3 h-3 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_8px_#10b981]"></span>
-                <span>Trabajando con {{ e.estudiantes_presentes }} de {{ e.total_estudiantes }}</span>
-              </div>
-
-              <!-- Si no ha pasado lista -->
-              <div v-else class="flex items-center gap-2 text-amber-400/90 font-medium text-lg xl:text-xl">
-                <span class="w-3 h-3 rounded-full bg-amber-400 shadow-[0_0_8px_#fbbf24]"></span>
-                <span>Aún sin pasar lista ({{ e.total_estudiantes }} est.)</span>
-              </div>
+          <!-- Pie de la Card: Estado de Asistencia -->
+          <div class="pt-2 border-t border-gray-800/80 mt-2 flex items-center justify-between text-xs">
+            <div v-if="e.asistencia_tomada" class="flex items-center gap-1.5 text-emerald-400 font-semibold truncate">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 flex-shrink-0 animate-pulse"></span>
+              <span class="truncate">Con {{ e.estudiantes_presentes }}/{{ e.total_estudiantes }}</span>
+            </div>
+            <div v-else class="flex items-center gap-1.5 text-amber-400/90 font-medium truncate">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-400 flex-shrink-0"></span>
+              <span class="truncate">Sin pasar lista ({{ e.total_estudiantes }})</span>
             </div>
           </div>
         </div>
-      </TransitionGroup>
+      </div>
     </main>
 
-    <!-- Indicador Puntos de Paginación -->
-    <footer v-if="totalPages > 1" class="flex justify-center gap-3 mt-4">
-      <div v-for="p in totalPages" :key="p" 
+    <!-- ═══ FOOTER: Puntos de Paginación ═══ -->
+    <footer class="flex-shrink-0 flex justify-center gap-3 mt-3">
+      <div
+        v-for="p in totalPages"
+        :key="p"
         class="w-3 h-3 rounded-full transition-colors duration-500"
-        :class="p - 1 === currentPage ? 'bg-white' : 'bg-gray-700'">
-      </div>
+        :class="p - 1 === currentPage ? 'bg-white' : 'bg-gray-700'"
+      ></div>
     </footer>
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useTimetableEntriesStore } from '../../stores/timetable_entries'
 import { usePeriodsStore, type Period } from '../../stores/periods'
 import { useClassAssignmentsStore, type ClassAssignment } from '../../stores/class_assignments'
@@ -150,7 +152,6 @@ const isOffline = ref(false)
 let clockTimer: number | undefined
 let dataTimer: number | undefined
 let restartTimer: number | undefined
-let paginationTimer: number | undefined
 let mouseTimer: number | undefined
 
 const formattedTime = computed(() => {
@@ -284,31 +285,53 @@ const isClassActive = (entry: any) => {
   return true // All currentEntries are active by definition
 }
 
-const getSubjectTextSize = (name: string) => {
-  if (!name) return 'text-2xl'
-  if (name.length > 45) return 'text-xl xl:text-2xl'
-  if (name.length > 25) return 'text-2xl xl:text-3xl'
-  return 'text-3xl xl:text-4xl'
+const getSubjectTextSize = (name?: string) => {
+  if (!name) return 'text-xl'
+  if (name.length > 45) return 'text-base'
+  if (name.length > 25) return 'text-lg'
+  return 'text-xl'
 }
 
-// ── Pagination (Carousel) ────────────────────────────────────────────────────────
+// ── Pagination / Carrusel (máx 8 elementos en pantalla) ────────────────────────
 const ITEMS_PER_PAGE = 8
 const currentPage = ref(0)
+let carouselTimer: ReturnType<typeof setInterval> | null = null
 
-const totalPages = computed(() => Math.ceil(currentEntries.value.length / ITEMS_PER_PAGE))
+const totalPages = computed(() =>
+  Math.ceil(currentEntries.value.length / ITEMS_PER_PAGE) || 1
+)
 
-const paginatedEntries = computed(() => {
+// Alias para el template (nombre coherente con la spec del carrusel)
+const currentPageItems = computed(() => {
   const start = currentPage.value * ITEMS_PER_PAGE
   return currentEntries.value.slice(start, start + ITEMS_PER_PAGE)
 })
 
-const cyclePagination = () => {
-  if (totalPages.value > 1) {
-    currentPage.value = (currentPage.value + 1) % totalPages.value
-  } else {
-    currentPage.value = 0
+// Mantener alias para compatibilidad (el template usa paginatedEntries en el v-for)
+const paginatedEntries = currentPageItems
+
+const stopCarousel = () => {
+  if (carouselTimer) {
+    clearInterval(carouselTimer)
+    carouselTimer = null
   }
 }
+
+const startCarousel = () => {
+  stopCarousel()
+  if (totalPages.value > 1) {
+    carouselTimer = setInterval(() => {
+      currentPage.value = (currentPage.value + 1) % totalPages.value
+    }, 12_000) // 12 segundos por pantalla
+  }
+}
+
+// Reiniciar a página 0 y reanudar carrusel cuando cambian los datos
+watch(currentEntries, () => {
+  currentPage.value = 0
+  startCarousel()
+})
+
 
 // ── Fullscreen & Cursor Hide ────────────────────────────────────────────────────────
 const isFullscreen = ref(false)
@@ -391,8 +414,8 @@ onMounted(() => {
   // Fetch de datos (cada 60s)
   dataTimer = window.setInterval(loadData, 60 * 1000)
 
-  // Carrusel de paginación (cada 12s)
-  paginationTimer = window.setInterval(cyclePagination, 12 * 1000)
+  // Arrancar carrusel (se detiene y reinicia automáticamente al cambiar currentEntries via watch)
+  startCarousel()
 
   // Auto-reload a las 3:00 AM para prevenir memory leaks
   restartTimer = window.setInterval(() => {
@@ -410,11 +433,12 @@ onMounted(() => {
 onUnmounted(() => {
   if (clockTimer) clearInterval(clockTimer)
   if (dataTimer) clearInterval(dataTimer)
-  if (paginationTimer) clearInterval(paginationTimer)
+  stopCarousel()
   if (restartTimer) clearInterval(restartTimer)
   if (mouseTimer) clearTimeout(mouseTimer)
   document.removeEventListener('fullscreenchange', onFullscreenChange)
 })
+
 </script>
 
 <style scoped>
