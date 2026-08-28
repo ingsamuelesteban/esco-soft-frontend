@@ -80,9 +80,10 @@ const loadTickets = async () => {
       },
       baseURL: config.public.apiBase
     })
-    tickets.value = data
+    tickets.value = data || []
   } catch (error) {
     console.error('Error cargando tickets:', error)
+    tickets.value = []
   }
 }
 </script>
