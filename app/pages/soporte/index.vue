@@ -41,21 +41,19 @@
           </div>
 
           <div class="sm:col-span-1">
-            <ClientOnly>
-              <TelefonoInput v-model="form.telefono" label="Whatsapp de contacto" required />
-              <template #fallback>
-                <div class="space-y-1">
-                  <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">Whatsapp de contacto <span class="text-red-500">*</span></label>
-                  <input
-                    type="tel"
-                    v-model="form.telefono"
-                    class="w-full rounded-md border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800/80 px-3 py-2 text-gray-900 dark:text-white focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 sm:text-sm"
-                    placeholder="Cargando selector..."
-                    required
-                  />
-                </div>
-              </template>
-            </ClientOnly>
+            <label for="telefono" class="block text-sm font-medium text-gray-700 dark:text-gray-300">Whatsapp de contacto <span class="text-red-500">*</span></label>
+            <div class="mt-1">
+              <input
+                id="telefono"
+                type="tel"
+                v-model="form.telefono"
+                @input="formatPhone"
+                class="appearance-none block w-full px-3 py-2 border border-gray-300 dark:border-gray-700 rounded-md shadow-sm placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800/80 text-gray-900 dark:text-white focus:outline-none focus:ring-emerald-500 dark:focus:ring-emerald-400 focus:border-emerald-500 dark:focus:border-emerald-400 sm:text-sm"
+                placeholder="(809) 000-0000"
+                maxlength="14"
+                required
+              />
+            </div>
           </div>
 
           <div class="sm:col-span-1">
@@ -117,6 +115,20 @@ const form = reactive({
   email_alternativo: '',
   description: ''
 })
+
+const formatPhone = (event) => {
+  let input = event.target.value.replace(/\D/g, '').substring(0, 10);
+  
+  if (input.length === 0) {
+    form.telefono = '';
+  } else if (input.length <= 3) {
+    form.telefono = `(${input}`;
+  } else if (input.length <= 6) {
+    form.telefono = `(${input.substring(0, 3)}) ${input.substring(3)}`;
+  } else {
+    form.telefono = `(${input.substring(0, 3)}) ${input.substring(3, 6)}-${input.substring(6, 10)}`;
+  }
+}
 
 onMounted(async () => {
   try {
