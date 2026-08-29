@@ -6,7 +6,14 @@
                 <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Gestiona las órdenes de uniformes, pagos y entregas de estudiantes
                     activos.</p>
             </div>
-            <div>
+            <div class="flex gap-2">
+                <button @click="printReport()"
+                    class="inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md shadow-sm text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
+                    <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    Imprimir Reporte
+                </button>
                 <button @click="openCreateModal()"
                     class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500">
                     <svg class="-ml-1 mr-2 h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -25,6 +32,15 @@
                     <input type="text" v-model="filters.search" @keyup.enter="fetchInvoices(1)"
                         placeholder="Nº Factura o Nombre..."
                         class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                </div>
+                <div class="flex-1 min-w-[200px]">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ordenar Por</label>
+                    <select v-model="filters.order_by" @change="fetchInvoices(1)"
+                        class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                        <option value="class_asc">Por Aula (Antiguas primero)</option>
+                        <option value="date_asc">Cronológico: Más antiguas primero</option>
+                        <option value="date_desc">Cronológico: Más recientes primero</option>
+                    </select>
                 </div>
                 <div class="flex-1 min-w-[150px]">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Estado de Pago</label>
@@ -572,7 +588,8 @@ const filters = ref({
     payment_status: '',
     delivery_status: '',
     fecha_inicio: '',
-    fecha_fin: ''
+    fecha_fin: '',
+    order_by: 'class_asc'
 })
 
 const setDateFilter = (type) => {
@@ -722,6 +739,54 @@ const printInvoice = async (id) => {
     } catch (error) {
         console.error(error)
         Swal.fire('Error', 'No se pudo generar el documento PDF.', 'error')
+    }
+}
+
+const printReport = async () => {
+    Swal.fire({
+        title: '¡No desesperes!',
+        text: 'Estamos preparando tu reporte de facturación...',
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+    })
+
+    try {
+        // Clean up empty filters
+        const activeFilters = Object.fromEntries(Object.entries(filters.value).filter(([_, v]) => v !== ''))
+        const queryParams = new URLSearchParams(activeFilters).toString()
+        const response = await $api.get(`/api/student-invoices/report/pdf?${queryParams}`, {
+            responseType: 'blob'
+        })
+        
+        const blob = response.data ? new Blob([response.data], { type: 'application/pdf' }) : new Blob([response], { type: 'application/pdf' });
+        const blobUrl = URL.createObjectURL(blob)
+
+        if (window.innerWidth < 768) {
+            const link = document.createElement('a')
+            link.href = blobUrl
+            link.download = `reporte_uniformes_${Date.now()}.pdf`
+            link.click()
+            Swal.close()
+            return
+        }
+
+        const printFrame = document.createElement('iframe')
+        printFrame.style.display = 'none'
+        printFrame.src = blobUrl
+        document.body.appendChild(printFrame)
+
+        printFrame.onload = () => {
+            Swal.close()
+            printFrame.contentWindow?.focus()
+            printFrame.contentWindow?.print()
+            setTimeout(() => {
+                document.body.removeChild(printFrame)
+                URL.revokeObjectURL(blobUrl)
+            }, 60000)
+        }
+    } catch (error) {
+        console.error(error)
+        Swal.fire('Error', 'No se pudo generar el reporte', 'error')
     }
 }
 
