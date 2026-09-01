@@ -85,7 +85,7 @@ const handleDelete = async (personal: Personal) => {
   if (result.isConfirmed) {
     try {
       await store.delete(personal.id)
-      showToast('Personal dado de baja y cuenta de usuario desactivada correctamente.', 'success')
+      showToast('Personal dado de baja exitosamente. Sus asignaturas activas han quedado vacantes para reasignación y su cuenta de usuario ha sido desactivada.', 'success')
       store.fetchAll(statusFilter.value)
     } catch (error: any) {
       if (error?.data?.has_assignments || error?.response?.status === 422) {
