@@ -70,19 +70,59 @@
           </div>
         </div>
 
-        <div v-else-if="userMatches && userMatches.length > 0" class="space-y-4">
+        <div v-else class="space-y-4">
+          
+          <div v-if="!userMatches || userMatches.length === 0" class="rounded-md bg-red-50 p-4 border border-red-200 mb-4">
+            <h4 class="text-md font-semibold text-red-800">No hay coincidencias exactas</h4>
+            <p class="text-sm text-red-700 mt-1">El sistema no encontró automáticamente un usuario vinculado a esta solicitud. Utiliza el buscador manual a continuación para seleccionarlo.</p>
+          </div>
+
           <div class="rounded-md bg-blue-50 p-4 border border-blue-200">
-            <h4 class="text-md font-semibold text-blue-800 mb-2">Usuarios Sugeridos</h4>
+            <h4 class="text-md font-semibold text-blue-800 mb-2">Seleccionar Usuario</h4>
             <p class="text-sm text-blue-700 mb-4">Selecciona el usuario al que corresponde este reseteo tras haber validado su identidad (vía teléfono o WhatsApp).</p>
             
-            <div class="space-y-3 max-h-60 overflow-y-auto bg-white p-2 border rounded">
+            <div class="mb-4">
+              <label for="search_user" class="block text-sm font-medium text-gray-700 mb-1">Buscar Usuario Manualmente (Cross-Tenant)</label>
+              <div class="relative">
+                <input 
+                  type="text" 
+                  id="search_user" 
+                  v-model="searchQuery" 
+                  @input="onSearchInput"
+                  placeholder="Escribe nombre, usuario, correo o teléfono..." 
+                  class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border" 
+                />
+                <div v-if="searching" class="absolute right-3 top-2">
+                  <svg class="animate-spin h-5 w-5 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                </div>
+              </div>
+
+              <!-- Resultados de búsqueda desplegables -->
+              <div v-if="searchResults.length > 0 && searchQuery.length >= 2" class="mt-1 absolute z-10 w-full md:w-2/3 bg-white shadow-lg border rounded-md max-h-60 overflow-y-auto">
+                <ul class="divide-y divide-gray-200">
+                  <li v-for="res in searchResults" :key="'s-'+res.id" class="p-3 hover:bg-gray-50 cursor-pointer flex justify-between items-center" @click="selectUserFromSearch(res)">
+                    <div>
+                      <p class="text-sm font-medium text-gray-900">{{ res.name }} <span class="text-xs text-gray-500">({{ res.username }})</span></p>
+                      <p class="text-xs text-gray-500">Email: {{ res.email || 'N/A' }} | Inst: {{ res.tenant?.name || 'N/A' }} | Estado: <span :class="res.active ? 'text-green-600' : 'text-red-600'">{{ res.active ? 'Activo' : 'Inactivo' }}</span></p>
+                      <p class="text-xs text-blue-600 mt-1">Roles: {{ res.roles?.map(r => r.name).join(', ') || 'N/A' }}</p>
+                    </div>
+                    <button class="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded border border-blue-300 hover:bg-blue-200">Seleccionar</button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div v-if="userMatches && userMatches.length > 0" class="space-y-3 max-h-60 overflow-y-auto bg-white p-2 border rounded">
               <div v-for="user in userMatches" :key="user.id" class="flex items-start">
                 <div class="flex items-center h-5">
                   <input :id="'user-' + user.id" :value="user.id" v-model="selectedUserId" type="radio" name="selectedUser" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300" />
                 </div>
                 <div class="ml-3 text-sm">
                   <label :for="'user-' + user.id" class="font-medium text-gray-700">{{ user.name }} ({{ user.role }})</label>
-                  <p class="text-gray-500">Usuario: {{ user.username || user.personal_id || 'N/A' }} | Email: {{ user.email || 'N/A' }} | Tel: {{ user.phone || 'N/A' }}</p>
+                  <p class="text-gray-500">Usuario: {{ user.username || user.personal_id || 'N/A' }} | Email: {{ user.email || 'N/A' }} | Tel: {{ user.phone || user.telefono || 'N/A' }} | Inst: {{ user.tenant?.name || 'N/A' }}</p>
                 </div>
               </div>
             </div>
@@ -91,7 +131,7 @@
           <form @submit.prevent="resolverTicket" class="mt-4">
             <div class="mb-4">
               <label class="block text-sm font-medium text-gray-700">¿Actualizar el correo en la base de datos?</label>
-              <p class="text-xs text-gray-500 mb-2">Las nuevas credenciales se enviarán a este correo.</p>
+              <p class="text-xs text-gray-500 mb-2">Las nuevas credenciales se enviarán a este correo. <span class="font-bold text-red-600">Requerido si el usuario no tiene correo.</span></p>
               <input v-model="nuevoEmail" type="email" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border" />
             </div>
 
@@ -106,11 +146,6 @@
             <p class="text-sm text-yellow-700 mt-1">La clave temporal es: <code class="font-bold bg-white px-2 py-1 rounded">{{ temporalPassword }}</code></p>
             <p class="text-xs text-yellow-600 mt-1">El usuario ha sido notificado por correo.</p>
           </div>
-        </div>
-
-        <div v-else class="rounded-md bg-red-50 p-4 border border-red-200">
-          <h4 class="text-md font-semibold text-red-800">Usuario no encontrado</h4>
-          <p class="text-sm text-red-700 mt-1">No se encontró ningún usuario con ese nombre o identificador en esta institución. El agente debe contactar al solicitante y/o corregir los datos manualmente en el sistema central.</p>
         </div>
       </div>
     </div>
@@ -134,6 +169,47 @@ const selectedUserId = ref(null)
 const nuevoEmail = ref('')
 const loading = ref(false)
 const temporalPassword = ref(null)
+
+const searchQuery = ref('')
+const searching = ref(false)
+const searchResults = ref([])
+let searchTimeout = null
+
+const onSearchInput = () => {
+  if (searchTimeout) clearTimeout(searchTimeout)
+  if (searchQuery.value.length < 2) {
+    searchResults.value = []
+    return
+  }
+  
+  searchTimeout = setTimeout(async () => {
+    searching.value = true
+    try {
+      const res = await $fetch(`/api/admin/soporte/usuarios/buscar?query=${encodeURIComponent(searchQuery.value)}`, {
+        headers: { Accept: 'application/json', Authorization: `Bearer ${localStorage.getItem('auth_token')}` },
+        baseURL: config.public.apiBase
+      })
+      searchResults.value = res || []
+    } catch (error) {
+      console.error('Error buscando usuarios:', error)
+    } finally {
+      searching.value = false
+    }
+  }, 400)
+}
+
+const selectUserFromSearch = (user) => {
+  // Limpiar resultados
+  searchQuery.value = ''
+  searchResults.value = []
+  
+  // Reemplazar la lista de coincidencias con este Ãºnico usuario o aÃ±adirlo si no estÃ¡
+  userMatches.value = [user]
+  
+  // Seleccionarlo automÃ¡ticamente
+  selectedUserId.value = user.id
+  nuevoEmail.value = user.email || ''
+}
 
 onMounted(async () => {
   await loadTicket()
