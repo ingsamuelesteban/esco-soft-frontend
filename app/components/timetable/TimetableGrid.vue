@@ -137,7 +137,6 @@ const days = [
 const keyOf = (dia: number, periodId: number, aula?: number) => `${dia}-${periodId}-${aula ?? 0}`
 
 onMounted(async () => {
-  if (aulasStore.items.length === 0) await aulasStore.fetchAll()
   if (periodsStore.items.length === 0) await periodsStore.fetchAll()
   if (aniosLectivosStore.items.length === 0) await aniosLectivosStore.fetchAll()
 
@@ -145,8 +144,16 @@ onMounted(async () => {
   const activeYear = aniosLectivosStore.items.find(a => a.activo)
   if (activeYear && !anioId.value) {
     anioId.value = activeYear.id
+  } else if (!anioId.value && aulasStore.items.length === 0) {
+    await aulasStore.fetchAll()
   }
 })
+
+watch(anioId, async (newAnioId) => {
+  if (newAnioId) {
+    await aulasStore.fetchAll({ anioLectivoId: newAnioId })
+  }
+}, { immediate: true })
 
 watch([anioId, aulaId], async () => {
   if (!aulaId.value || !anioId.value) return
