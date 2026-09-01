@@ -101,7 +101,7 @@
               </div>
 
               <!-- Resultados de búsqueda desplegables -->
-              <div v-if="searchResults.length > 0 && searchQuery.length >= 2" class="mt-1 absolute z-10 w-full md:w-2/3 bg-white dark:bg-gray-900 shadow-lg border rounded-md max-h-60 overflow-y-auto">
+              <div v-if="searchResults.length > 0 && searchQuery.length >= 2" class="mt-2 w-full bg-white dark:bg-gray-900 shadow-lg border rounded-md max-h-60 overflow-y-auto">
                 <ul class="divide-y divide-gray-200 dark:divide-gray-700">
                   <li v-for="res in searchResults" :key="'s-'+res.id" class="p-3 hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer flex justify-between items-center" @click="selectUserFromSearch(res)">
                     <div>
