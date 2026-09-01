@@ -75,28 +75,30 @@ const onSaved = () => {
 
 const handleDelete = async (personal: Personal) => {
   const result = await showConfirm(
-    `¿Estás seguro de que deseas eliminar a ${personal.nombre} ${personal.apellido}?`,
-    'Eliminar personal',
+    `¿Está seguro que desea dar de baja a ${personal.nombre} ${personal.apellido}? Su registro pasará a estado inactivo. Si posee una cuenta de acceso, esta será desactivada de inmediato y se revocarán todas sus sesiones activas.`,
+    'Dar de baja personal',
     'warning',
-    'Sí, eliminar',
+    'Sí, dar de baja',
     'Cancelar'
   )
 
   if (result.isConfirmed) {
     try {
       await store.delete(personal.id)
-      showToast('Personal eliminado correctamente', 'success')
+      showToast('Personal dado de baja y cuenta de usuario desactivada correctamente.', 'success')
+      store.fetchAll(statusFilter.value)
     } catch (error: any) {
-      if (error?.data?.has_assignments) {
+      if (error?.data?.has_assignments || error?.response?.status === 422) {
+        const message = error?.data?.message || error?.response?.data?.message || 'No se puede dar de baja. El personal tiene asignaturas activas asignadas en el año lectivo actual. Reasigne o retire las materias antes de continuar.';
         Swal.fire({
           icon: 'warning',
           title: 'No se puede eliminar',
-          text: error.data.message,
+          text: message,
           confirmButtonColor: '#3b82f6',
           confirmButtonText: 'Entendido',
         })
       } else {
-        showErrorAlert(error?.data?.message || 'Error al eliminar el personal')
+        showErrorAlert(error?.data?.message || 'Error al dar de baja el personal')
       }
     }
   }
