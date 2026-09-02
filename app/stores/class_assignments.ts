@@ -149,5 +149,20 @@ export const useClassAssignmentsStore = defineStore('classAssignments', {
         finishLoading()
       }
     },
+
+    async bulkDeactivate(payload: { anio_lectivo_id: number; modo?: 'liberar_docentes' | 'desactivar_completas'; aula_ids?: number[] }) {
+      startLoading()
+      try {
+        const response = await api.post<{ message: string; afectados: number }>('/api/class-assignments/bulk-deactivate', payload)
+        // Refresh list
+        await this.fetchAll({ anio_lectivo_id: payload.anio_lectivo_id })
+        return response
+      } catch (e) {
+        console.error(e)
+        throw e
+      } finally {
+        finishLoading()
+      }
+    },
   },
 })

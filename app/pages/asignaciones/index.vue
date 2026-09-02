@@ -6,6 +6,13 @@
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Relaciona materias, profesores y aulas por año lectivo.</p>
       </div>
       <div class="flex gap-3">
+        <button @click="openBulkDeactivate"
+          class="px-3 py-2 bg-white dark:bg-gray-800 text-yellow-600 dark:text-yellow-500 font-medium rounded-md shadow-sm border border-yellow-300 dark:border-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/30 flex items-center gap-2">
+          <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+          </svg>
+          Desactivar en Lote
+        </button>
         <button @click="openTransfer"
           class="px-3 py-2 bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-medium rounded-md shadow-sm border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:bg-gray-900/50 flex items-center gap-2">
           <svg class="h-5 w-5 text-gray-500 dark:text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -24,6 +31,7 @@
     <AssignmentFormModal :open="modalOpen" :model="current" @close="closeModal" @saved="onSaved" />
     <TransferAssignmentsModal :open="transferModalOpen" :teachers="teachers" @close="closeTransferModal"
       @transfer="onTransfer" />
+    <BulkDeactivateAssignmentsModal :open="bulkModalOpen" @close="closeBulkModal" @success="onBulkSuccess" />
   </section>
 </template>
 
@@ -32,6 +40,7 @@ import { ref, onMounted } from 'vue'
 import AssignmentsList from '../../components/assignments/AssignmentsList.vue'
 import AssignmentFormModal from '../../components/assignments/AssignmentFormModal.vue'
 import TransferAssignmentsModal from '../../components/assignments/TransferAssignmentsModal.vue'
+import BulkDeactivateAssignmentsModal from '../../components/assignments/BulkDeactivateAssignmentsModal.vue'
 import { useClassAssignmentsStore, type ClassAssignment } from '../../stores/class_assignments'
 import { usePersonalStore } from '../../stores/personal'
 
@@ -41,6 +50,7 @@ definePageMeta({
 
 const modalOpen = ref(false)
 const transferModalOpen = ref(false)
+const bulkModalOpen = ref(false)
 const current = ref<ClassAssignment | null>(null)
 const store = useClassAssignmentsStore()
 const personalStore = usePersonalStore()
@@ -55,6 +65,14 @@ const onSaved = (a: ClassAssignment) => {
 }
 const onDeactivate = async (id: number) => {
   await store.deactivate(id)
+}
+
+// Bulk Deactivate Logic
+const openBulkDeactivate = () => { bulkModalOpen.value = true }
+const closeBulkModal = () => { bulkModalOpen.value = false }
+const onBulkSuccess = () => {
+  // Store handles fetchAll internally, we just close
+  closeBulkModal()
 }
 
 // Transfer Logic
