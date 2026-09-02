@@ -32,8 +32,7 @@
           </div>
           <div>
             <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Cantidad</label>
-            <input v-model.number="form.quantity" type="number" min="1" :max="maxQuantity" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required>
-            <span v-if="form.type === 'salida_manual' && maxQuantity > 0" class="text-xs text-gray-500">Máx disponible: {{ maxQuantity }}</span>
+            <input v-model.number="form.quantity" type="number" min="1" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-600 dark:border-gray-500 dark:placeholder-gray-400 dark:text-white" required>
           </div>
           <div>
             <label class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Motivo</label>
@@ -98,10 +97,6 @@ const close = () => {
 
 const submit = async () => {
   if (!form.value.item_id || !form.value.quantity) return
-
-  if (form.value.type === 'salida_manual' && form.value.quantity > maxQuantity.value) {
-    return $swal.fire('Error', 'Stock insuficiente para la salida solicitada', 'error')
-  }
 
   loading.value = true
   try {
