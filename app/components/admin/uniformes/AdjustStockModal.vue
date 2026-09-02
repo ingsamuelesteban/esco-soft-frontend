@@ -67,7 +67,7 @@
                                       placeholder="Detalles adicionales sobre el ajuste..."></textarea>
                               </div>
                               
-                              <div v-if="delta !== 0" class="mt-4 p-3 rounded-lg" :class="isInvalid ? 'bg-red-50 border border-red-200 dark:bg-red-900/30 dark:border-red-800' : 'bg-gray-50 border border-gray-200 dark:bg-gray-800 dark:border-gray-700'">
+                              <div v-if="delta !== 0" class="mt-4 p-3 rounded-lg bg-gray-50 border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
                                   <div class="flex justify-between items-center text-sm mb-1">
                                       <span class="text-gray-600 dark:text-gray-400">Variación de stock:</span>
                                       <span class="font-bold" :class="delta > 0 ? 'text-green-600 dark:text-green-400' : 'text-orange-600 dark:text-orange-400'">
@@ -80,18 +80,15 @@
                                   </div>
                                   <div class="flex justify-between items-center text-sm pt-1 border-t border-gray-200 dark:border-gray-600 mt-1">
                                       <span class="font-semibold text-gray-700 dark:text-gray-300">Disponible Resultante:</span>
-                                      <span class="font-bold" :class="availableStockResult < 0 ? 'text-red-600' : 'text-gray-900 dark:text-gray-100'">
+                                      <span class="font-bold text-gray-900 dark:text-gray-100">
                                           {{ availableStockResult }}
                                       </span>
                                   </div>
-                                  <p v-if="isInvalid" class="mt-2 text-xs text-red-600 dark:text-red-400 font-medium">
-                                      Error: No puedes reducir el stock físico por debajo del stock ya reservado y notificado ({{ article?.reserved_stock ?? 0 }}).
-                                  </p>
                               </div>
                           </div>
 
                           <div class="bg-gray-50 dark:bg-gray-900/50 px-6 py-4 flex flex-row-reverse rounded-b-xl gap-2">
-                              <button type="submit" :disabled="saving || isInvalid || form.new_stock === null"
+                              <button type="submit" :disabled="saving || form.new_stock === null || delta === 0"
                                   class="inline-flex justify-center rounded-md border border-transparent bg-primary-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed">
                                   {{ saving ? 'Guardando...' : 'Confirmar Ajuste' }}
                               </button>
@@ -143,17 +140,26 @@ const currentStock = computed(() => props.article?.stock ?? 0)
 const reservedStock = computed(() => props.article?.reserved_stock ?? 0)
 const delta = computed(() => (form.value.new_stock === null || form.value.new_stock === '') ? 0 : form.value.new_stock - currentStock.value)
 const availableStockResult = computed(() => (form.value.new_stock === null || form.value.new_stock === '') ? 0 : form.value.new_stock - reservedStock.value)
-const isInvalid = computed(() => availableStockResult.value < 0)
 
 const closeModal = () => {
     emit('close')
 }
 
 const submitAdjustment = async () => {
-    if (isInvalid.value) return
+    if (delta.value === 0) return
     saving.value = true
     try {
-        await $api.post(`/api/admission-articles/${props.article.id}/adjust-stock`, form.value)
+        const type = delta.value > 0 ? 'entrada' : 'salida_manual'
+        const quantity = Math.abs(delta.value)
+        
+        await $api.post(`/api/uniformes/inventario/ajuste`, {
+            item_id: props.article.id,
+            type: type,
+            quantity: quantity,
+            reason: form.value.reason,
+            description: form.value.notes
+        })
+        
         emit('adjusted')
         Swal.fire({
             icon: 'success',
