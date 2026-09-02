@@ -64,7 +64,7 @@
               <div class="text-xs">{{ formatTime12h(p.start_time) }} - {{ formatTime12h(p.end_time) }}</div>
             </td>
             <td v-for="d in days" :key="d.value" class="px-1 py-1">
-              <div class="h-20 border rounded p-1 text-xs relative min-w-0"
+              <div class="h-20 border rounded p-1 text-xs relative group min-w-0"
                 :class="entryAt(d.value, p.id) ? 'bg-blue-50 border-blue-200' : 'bg-gray-50 dark:bg-gray-900/50'">
                 <template v-if="entryAt(d.value, p.id)">
                   <div class="h-full w-full min-w-0 flex flex-col justify-between" 
@@ -82,9 +82,25 @@
                       <span v-if="(entryAt(d.value, p.id) as any).isSubstitution" class="text-[9px] bg-green-100 text-green-600 px-1 rounded font-bold">SUPLENCIA</span>
                     </div>
                   </div>
+                  <!-- Botón eliminar si hay permisos -->
+                  <button v-if="canEdit" @click="remove(entryAt(d.value, p.id)?.id as number)"
+                    class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 inline-flex items-center justify-center p-1.5 rounded-md text-red-600 hover:text-red-800 hover:bg-red-50 transition-colors bg-white dark:bg-gray-800 shadow-sm"
+                    title="Eliminar">
+                    <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
                 </template>
                 <template v-else>
-                  <div class="w-full h-full flex items-center justify-center text-center px-1">
+                  <!-- Botón asignar si hay permisos y está vacío -->
+                  <button v-if="canEdit" @click="openAssignModal(d.value, p.id)"
+                    class="w-full h-full flex items-center justify-center text-gray-400 hover:text-gray-600 dark:text-gray-400 opacity-0 group-hover:opacity-100 transition-opacity border-2 border-dashed border-gray-300 dark:border-gray-600 rounded"
+                    title="Asignar aquí">
+                    <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                    </svg>
+                  </button>
+                  <div v-else class="w-full h-full flex items-center justify-center text-center px-1">
                     <span class="text-xs text-gray-400 leading-tight">Hora Pedagógica</span>
                   </div>
                 </template>
@@ -127,11 +143,24 @@
         </div>
       </div>
     </div>
+
+    <!-- Modal de Asignación -->
+    <ProfesorAssignModal
+      v-model:show="showAssignModal"
+      :profesorId="profesorId"
+      :anioId="anioId"
+      :dia="selectedDia"
+      :periodId="selectedPeriodId"
+      :profesorAssignments="profesorAssignments"
+      @assigned="reload"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, ref, watch } from 'vue'
+import Swal from 'sweetalert2'
+import ProfesorAssignModal from './ProfesorAssignModal.vue'
 import { usePeriodsStore } from '../../stores/periods'
 import { useTimetableEntriesStore } from '../../stores/timetable_entries'
 import { formatTime12h } from '../../utils/timeFormat'
@@ -198,6 +227,11 @@ const teacherEntries = ref<TimetableEntry[]>([])
 const substitutions = ref<any[]>([])
 const profesorAssignments = ref<any[]>([])
 
+// Modal state
+const showAssignModal = ref(false)
+const selectedDia = ref<number | undefined>(undefined)
+const selectedPeriodId = ref<number | undefined>(undefined)
+
 const days = [
   { value: 1, label: 'Lun' },
   { value: 2, label: 'Mar' },
@@ -205,6 +239,43 @@ const days = [
   { value: 4, label: 'Jue' },
   { value: 5, label: 'Vie' },
 ]
+
+// Computed: Can Edit?
+const canEdit = computed(() => {
+  if (!profesorId.value || !anioId.value) return false
+  return !authStore.isProfesor || authStore.user?.personal_id === profesorId.value
+})
+
+const openAssignModal = (dia: number, periodId: number) => {
+  selectedDia.value = dia
+  selectedPeriodId.value = periodId
+  showAssignModal.value = true
+}
+
+const remove = async (id: number) => {
+  if (id < 0) return // Subtitution, block remove
+
+  const result = await Swal.fire({
+    title: '¿Retirar del horario?',
+    text: "El docente ya no tendrá asignada esta aula en este período.",
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#d33',
+    cancelButtonColor: '#3085d6',
+    confirmButtonText: 'Sí, retirar',
+    cancelButtonText: 'Cancelar'
+  })
+
+  if (result.isConfirmed) {
+    try {
+      await entries.remove(id)
+      await reload()
+    } catch (e) {
+      console.error('Error removing entry', e)
+      Swal.fire('Error', 'No se pudo retirar del horario', 'error')
+    }
+  }
+}
 
 const keyOf = (dia: number, periodId: number) => `${dia}-${periodId}`
 
