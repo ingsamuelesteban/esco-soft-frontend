@@ -61,10 +61,16 @@
                 <template v-if="entryAt(d.value, p.id)">
                   <div class="h-full w-full min-w-0 flex flex-col justify-between">
                     <div class="font-semibold truncate" :title="entryAt(d.value, p.id)?.assignment?.materia?.nombre">
-                      {{
-                        entryAt(d.value, p.id)?.assignment?.materia?.nombre }}</div>
-                    <div class="text-gray-500 dark:text-gray-400 truncate" :title="teacherName(entryAt(d.value, p.id)?.assignment)">{{
-                      teacherName(entryAt(d.value, p.id)?.assignment) }}</div>
+                      {{ entryAt(d.value, p.id)?.assignment?.materia?.nombre }}
+                    </div>
+                    <div v-if="entryAt(d.value, p.id)?.assignment?.profesor" class="text-gray-500 dark:text-gray-400 truncate" :title="teacherName(entryAt(d.value, p.id)?.assignment)">
+                      {{ teacherName(entryAt(d.value, p.id)?.assignment) }}
+                    </div>
+                    <div v-else class="mt-1">
+                      <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400">
+                        Vacante
+                      </span>
+                    </div>
                   </div>
                   <button v-if="!readOnly" @click="remove(entryAt(d.value, p.id)?.id as number)"
                     class="absolute top-1 right-1 opacity-0 group-hover:opacity-100 inline-flex items-center justify-center p-1.5 rounded-md text-red-600 hover:text-red-800 hover:bg-red-50 transition-colors"

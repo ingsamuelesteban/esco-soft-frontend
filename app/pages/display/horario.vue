@@ -277,7 +277,7 @@ const diaActual = computed(() => {
 const currentEntries = computed(() => {
   if (diaActual.value === -1 || !currentPeriods.value.length) return []
   const ids = new Set(currentPeriods.value.map(p => p.id))
-  return entries.items.filter(e => e.dia === diaActual.value && ids.has(e.period_id))
+  return entries.items.filter(e => e.dia === diaActual.value && ids.has(e.period_id) && e.assignment?.profesor_id != null)
 })
 
 const isRecessOrIdle = computed(() => {
