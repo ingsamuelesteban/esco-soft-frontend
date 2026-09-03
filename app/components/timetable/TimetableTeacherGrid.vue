@@ -354,7 +354,11 @@ const loadTeacherSchedule = async () => {
     })
 
     if ((assignmentsResponse as any).data) {
-      profesorAssignments.value = (assignmentsResponse as any).data
+      const fetchedAssignments = (assignmentsResponse as any).data
+      // Filtramos activamente aquí también por si el backend falla en recibir el query string
+      profesorAssignments.value = Array.isArray(fetchedAssignments) 
+        ? fetchedAssignments.filter(a => a.activo !== false && a.activo !== 0)
+        : (fetchedAssignments.data ? fetchedAssignments.data.filter((a: any) => a.activo !== false && a.activo !== 0) : fetchedAssignments)
     }
 
     // Cargar suplencias del día actual
