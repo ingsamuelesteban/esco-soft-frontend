@@ -58,6 +58,20 @@
                       </option>
                     </select>
                   </div>
+                  <div>
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Horas Semanales
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="40"
+                      v-model.number="newHorasSemanales"
+                      class="mt-1 block w-full rounded-md border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:outline-none"
+                      placeholder="Ej. 4"
+                      required
+                    />
+                  </div>
                 </div>
 
               </div>
@@ -84,8 +98,8 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted } from 'vue'
 import Swal from 'sweetalert2'
+import { api } from '~/utils/api'
 import { useAulasStore } from '~/stores/aulas'
-import { useModulosFormativosApiStore } from '~/stores/modulos-formativos-api'
 import { useClassAssignmentsStore } from '~/stores/class_assignments'
 import { useTimetableEntriesStore } from '~/stores/timetable_entries'
 import { usePeriodsStore } from '~/stores/periods'
@@ -102,7 +116,6 @@ const props = defineProps<{
 const emit = defineEmits(['update:show', 'assigned'])
 
 const aulasStore = useAulasStore()
-const materiasStore = useModulosFormativosApiStore()
 const assignmentsStore = useClassAssignmentsStore()
 const entriesStore = useTimetableEntriesStore()
 const periodsStore = usePeriodsStore()
@@ -116,10 +129,19 @@ const selectedAssignmentId = ref<number | undefined>(undefined)
 // Option B
 const newAulaId = ref<number | undefined>(undefined)
 const newMateriaId = ref<number | undefined>(undefined)
+const newHorasSemanales = ref<number>(2)
+const allMaterias = ref<any[]>([])
 
 onMounted(async () => {
   if (aulasStore.items.length === 0) await aulasStore.fetchAll({ anioLectivoId: props.anioId })
-  if (materiasStore.items.length === 0) await materiasStore.fetchAll('active')
+  try {
+    const res = await api.get('/api/modulos-formativos', {
+      params: { status: 'active', all_catalog: true, per_page: 1000 }
+    })
+    allMaterias.value = (res as any).data?.data || (res as any).data || []
+  } catch (error) {
+    console.error('Error fetching modules', error)
+  }
 })
 
 watch(() => props.show, (newVal) => {
@@ -127,12 +149,22 @@ watch(() => props.show, (newVal) => {
     selectedAssignmentId.value = undefined
     newAulaId.value = undefined
     newMateriaId.value = undefined
+    newHorasSemanales.value = 2
     tab.value = 'existing'
   }
 })
 
+watch(newMateriaId, (val) => {
+  if (val) {
+    const materia = allMaterias.value.find(m => m.id === val)
+    if (materia && (materia.horas_semanales || materia.creditos_horas)) {
+      newHorasSemanales.value = materia.horas_semanales || materia.creditos_horas
+    }
+  }
+})
+
 const aulas = computed(() => aulasStore.items)
-const materias = computed(() => materiasStore.items)
+const materias = computed(() => allMaterias.value)
 
 const sortedAssignments = computed(() => {
   return [...props.profesorAssignments].sort((a, b) => {
@@ -144,7 +176,7 @@ const sortedAssignments = computed(() => {
 
 const isValid = computed(() => {
   if (tab.value === 'existing') return !!selectedAssignmentId.value
-  return !!newAulaId.value && !!newMateriaId.value
+  return !!newAulaId.value && !!newMateriaId.value && newHorasSemanales.value >= 1
 })
 
 const aulaName = (aula?: any) => {
@@ -187,7 +219,7 @@ const save = async () => {
         profesor_id: props.profesorId,
         aula_id: newAulaId.value!,
         anio_lectivo_id: props.anioId,
-        horas_semanales: 2 // Default
+        horas_semanales: newHorasSemanales.value
       })
       assignId = created.id
     }

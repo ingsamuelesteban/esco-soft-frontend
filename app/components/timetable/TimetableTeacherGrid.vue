@@ -348,6 +348,7 @@ const loadTeacherSchedule = async () => {
       params: {
         profesor_id: profesorId.value,
         anio_lectivo_id: anioId.value,
+        only_active: true,
         per_page: 1000
       }
     })
