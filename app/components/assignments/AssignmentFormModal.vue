@@ -118,8 +118,17 @@ const initialFocus = ref<HTMLSelectElement | null>(null)
 onMounted(async () => {
   if (modulosFormativosStore.items.length === 0) await modulosFormativosStore.fetchAll()
   if (personalStore.items.length === 0) await personalStore.fetchAll()
-  if (aulasStore.items.length === 0) await aulasStore.fetchAll()
   if (aniosStore.items.length === 0) await aniosStore.fetchAll({ activo: true })
+  
+  if (aulasStore.items.length === 0) {
+    await aulasStore.fetchAll({ anioLectivoId: form.anio_lectivo_id || undefined })
+  }
+})
+
+watch(() => form.anio_lectivo_id, async (newVal, oldVal) => {
+  if (newVal && newVal !== oldVal) {
+    await aulasStore.fetchAll({ anioLectivoId: newVal })
+  }
 })
 
 function resetForm() {

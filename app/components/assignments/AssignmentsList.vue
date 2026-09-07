@@ -125,16 +125,22 @@ onMounted(async () => {
       assignments.anioLectivoId = anioId.value
   }
 
-  if (aulasStore.items.length === 0) await aulasStore.fetchAll()
+  // Initial fetch of aulas based on current anioId
+  await aulasStore.fetchAll({ anioLectivoId: anioId.value || undefined })
   
   await fetch()
 })
 
-watch([anioId, aulaId], () => {
-  if (anioId.value) {
-      assignments.anioLectivoId = anioId.value // Keep global sync
-      fetch()
+watch(() => anioId.value, async (newVal, oldVal) => {
+  if (newVal && newVal !== oldVal) {
+    assignments.anioLectivoId = newVal
+    await aulasStore.fetchAll({ anioLectivoId: newVal })
+    fetch()
   }
+})
+
+watch(() => aulaId.value, () => {
+  fetch()
 })
 
 const fetch = () => {
