@@ -40,7 +40,7 @@ export const useAulasStore = defineStore('aulas', {
       }))
   },
   actions: {
-    async fetchAll(params: { tituloId?: number; search?: string; anioLectivoId?: number } = {}) {
+    async fetchAll(params: { tituloId?: number; search?: string; anioLectivoId?: number; allCatalog?: boolean } = {}) {
       this.loading = true
       this.error = null
       startLoading()
@@ -49,6 +49,7 @@ export const useAulasStore = defineStore('aulas', {
         if (params.tituloId) query.titulo_id = params.tituloId
         if (params.search) query.search = params.search
         if (params.anioLectivoId) query.anio_lectivo_id = params.anioLectivoId
+        if (params.allCatalog) query.all_catalog = params.allCatalog
         const data = await api.get<Aula[]>('/api/aulas', { params: query })
         if (Array.isArray(data)) {
           this.items = data

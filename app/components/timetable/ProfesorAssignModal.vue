@@ -146,6 +146,7 @@ const newMateriaId = ref<number | undefined>(undefined)
 const newHorasSemanales = ref<number>(2)
 const newCantidadRA = ref<number | undefined>(undefined)
 const allMaterias = ref<any[]>([])
+const allAulas = ref<any[]>([])
 
 const selectedMateria = computed(() => {
   return allMaterias.value.find(m => m.id === newMateriaId.value)
@@ -158,14 +159,18 @@ const isMateriaTecnica = computed(() => {
 })
 
 onMounted(async () => {
-  if (aulasStore.items.length === 0) await aulasStore.fetchAll({ anioLectivoId: props.anioId })
   try {
+    const resAulas = await api.get('/api/aulas', {
+      params: { anio_lectivo_id: props.anioId, all_catalog: true, per_page: 1000 }
+    })
+    allAulas.value = (resAulas as any).data?.data || (resAulas as any).data || []
+    
     const res = await api.get('/api/modulos-formativos', {
       params: { status: 'active', all_catalog: true, per_page: 1000 }
     })
     allMaterias.value = (res as any).data?.data || (res as any).data || []
   } catch (error) {
-    console.error('Error fetching modules', error)
+    console.error('Error fetching data for modal', error)
   }
 })
 
@@ -194,7 +199,7 @@ watch(newMateriaId, (val) => {
   }
 })
 
-const aulas = computed(() => aulasStore.items)
+const aulas = computed(() => allAulas.value)
 const materias = computed(() => allMaterias.value)
 
 const sortedAssignments = computed(() => {
