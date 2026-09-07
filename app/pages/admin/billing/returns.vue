@@ -13,7 +13,7 @@
             v-model="searchQuery" 
             @keyup.enter="searchInvoices"
             type="text" 
-            placeholder="N° Factura, Matrícula o Nombre..." 
+            placeholder="N° Factura, RNE o Nombre..." 
             class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
           >
         </div>
@@ -44,7 +44,7 @@
             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ inv.invoice_number }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
               {{ inv.estudiante?.nombres }} {{ inv.estudiante?.apellidos }}
-              <span class="text-xs text-gray-400 dark:text-gray-500 block">{{ inv.estudiante?.matricula }}</span>
+              <span class="text-xs text-gray-400 dark:text-gray-500 block">{{ inv.estudiante?.rne }}</span>
             </td>
             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ new Date(inv.created_at).toLocaleDateString() }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
