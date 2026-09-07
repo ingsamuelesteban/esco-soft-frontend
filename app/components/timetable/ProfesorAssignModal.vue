@@ -72,6 +72,20 @@
                       required
                     />
                   </div>
+                  <div v-if="isMateriaTecnica">
+                    <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                      Cantidad de RA (Obligatorio)
+                    </label>
+                    <input
+                      type="number"
+                      min="1"
+                      max="20"
+                      v-model.number="newCantidadRA"
+                      class="mt-1 block w-full rounded-md border-gray-300 bg-white px-3 py-2 text-sm text-gray-900 focus:ring-blue-500 focus:border-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white shadow-sm focus:outline-none"
+                      placeholder="Ej. 6"
+                      required
+                    />
+                  </div>
                 </div>
 
               </div>
@@ -130,7 +144,18 @@ const selectedAssignmentId = ref<number | undefined>(undefined)
 const newAulaId = ref<number | undefined>(undefined)
 const newMateriaId = ref<number | undefined>(undefined)
 const newHorasSemanales = ref<number>(2)
+const newCantidadRA = ref<number | undefined>(undefined)
 const allMaterias = ref<any[]>([])
+
+const selectedMateria = computed(() => {
+  return allMaterias.value.find(m => m.id === newMateriaId.value)
+})
+
+const isMateriaTecnica = computed(() => {
+  if (!selectedMateria.value) return false
+  const t = String(selectedMateria.value.tipo).toLowerCase()
+  return t.includes('tecnico') || t.includes('técnico') || t.includes('tecnic')
+})
 
 onMounted(async () => {
   if (aulasStore.items.length === 0) await aulasStore.fetchAll({ anioLectivoId: props.anioId })
@@ -150,15 +175,21 @@ watch(() => props.show, (newVal) => {
     newAulaId.value = undefined
     newMateriaId.value = undefined
     newHorasSemanales.value = 2
+    newCantidadRA.value = undefined
     tab.value = 'existing'
   }
 })
 
 watch(newMateriaId, (val) => {
   if (val) {
-    const materia = allMaterias.value.find(m => m.id === val)
+    const materia = selectedMateria.value
     if (materia && (materia.horas_semanales || materia.creditos_horas)) {
       newHorasSemanales.value = materia.horas_semanales || materia.creditos_horas
+    }
+    if (materia && materia.cantidad_ra) {
+      newCantidadRA.value = materia.cantidad_ra
+    } else {
+      newCantidadRA.value = undefined
     }
   }
 })
@@ -176,7 +207,11 @@ const sortedAssignments = computed(() => {
 
 const isValid = computed(() => {
   if (tab.value === 'existing') return !!selectedAssignmentId.value
-  return !!newAulaId.value && !!newMateriaId.value && newHorasSemanales.value >= 1
+  let valid = !!newAulaId.value && !!newMateriaId.value && newHorasSemanales.value >= 1
+  if (isMateriaTecnica.value && (!newCantidadRA.value || newCantidadRA.value < 1)) {
+    valid = false
+  }
+  return valid
 })
 
 const aulaName = (aula?: any) => {
@@ -214,13 +249,19 @@ const save = async () => {
 
   try {
     if (tab.value === 'new') {
-      const created = await assignmentsStore.create({
+      const payload: any = {
         materia_id: newMateriaId.value!,
         profesor_id: props.profesorId,
         aula_id: newAulaId.value!,
         anio_lectivo_id: props.anioId,
         horas_semanales: newHorasSemanales.value
-      })
+      }
+      
+      if (isMateriaTecnica.value && newCantidadRA.value) {
+        payload.cantidad_ra = newCantidadRA.value
+      }
+
+      const created = await assignmentsStore.create(payload)
       assignId = created.id
     }
 
