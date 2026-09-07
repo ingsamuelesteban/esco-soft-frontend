@@ -286,9 +286,11 @@ const submitReturn = async () => {
       showConfirmButton: true,
       confirmButtonText: 'Descargar Comprobante'
     }).then(async (result) => {
-      // Descargar PDF
-      const baseURL = api.defaults?.baseURL || window.location.origin
-      window.open(`${baseURL}/api/uniformes/devoluciones/${returnId}/pdf`, '_blank')
+      const response = await api.getBlob(`/api/uniformes/devoluciones/${returnId}/pdf`)
+      const file = new Blob([response], { type: 'application/pdf' })
+      const fileURL = URL.createObjectURL(file)
+      window.open(fileURL, '_blank')
+      setTimeout(() => URL.revokeObjectURL(fileURL), 10000)
       
       // Reset
       selectedInvoice.value = null
