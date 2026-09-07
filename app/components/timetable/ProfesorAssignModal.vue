@@ -163,12 +163,16 @@ onMounted(async () => {
     const resAulas = await api.get('/api/aulas', {
       params: { anio_lectivo_id: props.anioId, all_catalog: true, per_page: 1000 }
     })
-    allAulas.value = (resAulas as any).data?.data || (resAulas as any).data || []
+    allAulas.value = Array.isArray(resAulas) 
+      ? resAulas 
+      : ((resAulas as any).data?.data || (resAulas as any).data || [])
     
     const res = await api.get('/api/modulos-formativos', {
       params: { status: 'active', all_catalog: true, per_page: 1000 }
     })
-    allMaterias.value = (res as any).data?.data || (res as any).data || []
+    allMaterias.value = Array.isArray(res) 
+      ? res 
+      : ((res as any).data?.data || (res as any).data || [])
   } catch (error) {
     console.error('Error fetching data for modal', error)
   }
