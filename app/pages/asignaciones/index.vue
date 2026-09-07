@@ -5,7 +5,7 @@
         <h1 class="text-2xl font-semibold text-gray-900 dark:text-gray-100">Asignaciones</h1>
         <p class="mt-1 text-sm text-gray-600 dark:text-gray-400">Relaciona materias, profesores y aulas por año lectivo.</p>
       </div>
-      <div class="flex gap-3">
+      <div class="flex gap-3" v-if="!isTeacher">
         <button @click="openBulkDeactivate"
           class="px-3 py-2 bg-white dark:bg-gray-800 text-yellow-600 dark:text-yellow-500 font-medium rounded-md shadow-sm border border-yellow-300 dark:border-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/30 flex items-center gap-2">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -43,10 +43,14 @@ import TransferAssignmentsModal from '../../components/assignments/TransferAssig
 import BulkDeactivateAssignmentsModal from '../../components/assignments/BulkDeactivateAssignmentsModal.vue'
 import { useClassAssignmentsStore, type ClassAssignment } from '../../stores/class_assignments'
 import { usePersonalStore } from '../../stores/personal'
+import { useAuthStore } from '../../stores/auth'
 
 definePageMeta({
-  middleware: ['auth', 'admin']
+  middleware: ['auth', 'role']
 })
+
+const authStore = useAuthStore()
+const isTeacher = computed(() => authStore.user?.role === 'profesor' || authStore.user?.role === 'docente')
 
 const modalOpen = ref(false)
 const transferModalOpen = ref(false)

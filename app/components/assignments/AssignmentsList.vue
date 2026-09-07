@@ -28,7 +28,7 @@
               d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
         </button>
-        <button @click="$emit('new')"
+        <button v-if="!isTeacher" @click="$emit('new')"
           class="inline-flex items-center justify-center p-1.5 rounded-md text-green-600 hover:text-green-800 hover:bg-green-50 transition-colors"
           title="Nueva asignación">
           <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -69,7 +69,7 @@
                     d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                 </svg>
               </button>
-              <button v-if="a.activo" @click="$emit('deactivate', a.id)"
+              <button v-if="a.activo && !isTeacher" @click="$emit('deactivate', a.id)"
                 class="inline-flex items-center justify-center p-1.5 rounded-md text-red-600 hover:text-red-800 hover:bg-red-50 transition-colors"
                 title="Desactivar">
                 <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -96,6 +96,7 @@ import { computed, onMounted, ref, watch } from 'vue'
 import { useClassAssignmentsStore, type ClassAssignment } from '../../stores/class_assignments'
 import { useAulasStore, type Aula } from '../../stores/aulas'
 import { useAniosLectivosStore } from '../../stores/anios_lectivos'
+import { useAuthStore } from '../../stores/auth'
 
 defineEmits<{
   new: []
@@ -107,6 +108,9 @@ defineEmits<{
 const assignments = useClassAssignmentsStore()
 const aulasStore = useAulasStore()
 const aniosStore = useAniosLectivosStore()
+const authStore = useAuthStore()
+
+const isTeacher = computed(() => authStore.user?.role === 'profesor' || authStore.user?.role === 'docente')
 
 const anioId = ref<number | null>(assignments.anioLectivoId)
 const aulaId = ref<number | undefined>(undefined)

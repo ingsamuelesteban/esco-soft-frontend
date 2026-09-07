@@ -16,7 +16,7 @@
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Año lectivo</label>
-              <select ref="initialFocus" v-model.number="form.anio_lectivo_id" class="border dark:border-gray-600 rounded px-2 py-2 w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+              <select ref="initialFocus" v-model.number="form.anio_lectivo_id" :disabled="isTeacher" class="border dark:border-gray-600 rounded px-2 py-2 w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:opacity-50">
                 <option :value="undefined">Seleccionar...</option>
                 <option v-for="a in anios" :key="a.id" :value="a.id">{{ a.nombre }}</option>
               </select>
@@ -31,7 +31,7 @@
           <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
               <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Módulo Formativo</label>
-              <select v-model.number="form.materia_id" class="border dark:border-gray-600 rounded px-2 py-2 w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+              <select v-model.number="form.materia_id" :disabled="isTeacher" class="border dark:border-gray-600 rounded px-2 py-2 w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:opacity-50">
                 <option :value="undefined">Seleccionar…</option>
                 <option v-for="m in modulosFormativos" :key="m.id" :value="m.id">{{ m.nombre }}</option>
               </select>
@@ -39,7 +39,7 @@
             </div>
             <div>
               <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Profesor</label>
-              <select v-model.number="form.profesor_id" class="border dark:border-gray-600 rounded px-2 py-2 w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+              <select v-model.number="form.profesor_id" :disabled="isTeacher" class="border dark:border-gray-600 rounded px-2 py-2 w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:opacity-50">
                 <option :value="undefined">Seleccionar…</option>
                 <option v-for="p in profesores" :key="p.id" :value="p.id">{{ p.nombre }} {{ p.apellido }}</option>
               </select>
@@ -47,7 +47,7 @@
             </div>
             <div>
               <label class="block text-sm text-gray-600 dark:text-gray-400 mb-1">Aula</label>
-              <select v-model.number="form.aula_id" class="border dark:border-gray-600 rounded px-2 py-2 w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
+              <select v-model.number="form.aula_id" :disabled="isTeacher" class="border dark:border-gray-600 rounded px-2 py-2 w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:opacity-50">
                 <option :value="undefined">Seleccionar…</option>
                 <option v-for="a in aulas" :key="a.id" :value="a.id">{{ aulaName(a) }}</option>
               </select>
@@ -63,8 +63,8 @@
 
           <div class="mt-2">
             <label class="inline-flex items-center">
-              <input type="checkbox" v-model="form.compartido"
-                class="rounded border-gray-300 dark:border-gray-600 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+              <input type="checkbox" v-model="form.compartido" :disabled="isTeacher"
+                class="rounded border-gray-300 dark:border-gray-600 text-blue-600 shadow-sm focus:border-blue-300 focus:ring focus:ring-blue-200 focus:ring-opacity-50 disabled:opacity-50">
               <span class="ml-2 text-sm text-gray-600 dark:text-gray-400">Asignación Compartida (Permitir múltiples profesores)</span>
             </label>
           </div>
@@ -89,6 +89,7 @@ import { usePersonalStore } from '../../stores/personal'
 import { useAulasStore, type Aula } from '../../stores/aulas'
 import { useClassAssignmentsStore, type ClassAssignment } from '../../stores/class_assignments'
 import { useAniosLectivosStore } from '../../stores/anios_lectivos'
+import { useAuthStore } from '../../stores/auth'
 
 const props = defineProps<{ open: boolean; model?: ClassAssignment | null }>()
 const emit = defineEmits<{ close: []; saved: [item: ClassAssignment] }>()
@@ -98,6 +99,9 @@ const personalStore = usePersonalStore()
 const aulasStore = useAulasStore()
 const assignments = useClassAssignmentsStore()
 const aniosStore = useAniosLectivosStore()
+const authStore = useAuthStore()
+
+const isTeacher = computed(() => authStore.user?.role === 'profesor' || authStore.user?.role === 'docente')
 
 const form = reactive<{ anio_lectivo_id?: number; horas_semanales: number | null; materia_id?: number; profesor_id?: number; aula_id?: number; compartido: boolean; cantidad_ra: number | null }>({
   anio_lectivo_id: assignments.anioLectivoId || undefined,

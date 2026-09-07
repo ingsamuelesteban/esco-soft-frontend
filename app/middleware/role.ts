@@ -64,7 +64,12 @@ function checkAdminAccess(path: string, userRole: string, roles: any[] = []) {
   // Excepción: Permitir acceso a Horarios por Profesor para profesores
   // aunque /horarios esté restringido
   // Usamos startsWith para cubrir rutas hijas o trailing slashes
-  if (path.startsWith('/horarios/profesores') && (hasRole('profesor') || hasRole('admin') || hasRole('master'))) {
+  if (path.startsWith('/horarios/profesores') && (hasRole('profesor') || hasRole('docente') || hasRole('admin') || hasRole('master'))) {
+    return
+  }
+
+  // Excepción: Permitir acceso a Asignaciones para profesores/docentes
+  if (path.startsWith('/asignaciones') && (hasRole('profesor') || hasRole('docente') || hasRole('admin') || hasRole('master'))) {
     return
   }
 
