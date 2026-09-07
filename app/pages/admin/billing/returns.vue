@@ -1,20 +1,20 @@
 <template>
   <div class="p-6">
     <div class="mb-6 flex justify-between items-center">
-      <h1 class="text-2xl font-bold text-gray-800">Devoluciones y Cambios de Uniformes</h1>
+      <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Devoluciones y Cambios de Uniformes</h1>
     </div>
 
     <!-- Buscador -->
-    <div class="bg-white p-4 rounded-lg shadow-sm border mb-6">
+    <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow-sm border dark:border-gray-700 mb-6">
       <div class="flex gap-4 items-end">
         <div class="flex-1">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Buscar Factura o Estudiante</label>
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Buscar Factura o Estudiante</label>
           <input 
             v-model="searchQuery" 
             @keyup.enter="searchInvoices"
             type="text" 
             placeholder="N° Factura, Matrícula o Nombre..." 
-            class="w-full border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+            class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
           >
         </div>
         <button 
@@ -29,90 +29,90 @@
     </div>
 
     <!-- Resultados Búsqueda -->
-    <div v-if="invoices.length > 0 && !selectedInvoice" class="bg-white rounded-lg shadow-sm border overflow-hidden">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
+    <div v-if="invoices.length > 0 && !selectedInvoice" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700 overflow-hidden">
+      <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+        <thead class="bg-gray-50 dark:bg-gray-700">
           <tr>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Factura</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Estudiante</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Fecha</th>
-            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Acción</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Factura</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Estudiante</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Fecha</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Acción</th>
           </tr>
         </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
+        <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
           <tr v-for="inv in invoices" :key="inv.id">
-            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ inv.invoice_number }}</td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{ inv.invoice_number }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
               {{ inv.estudiante?.nombres }} {{ inv.estudiante?.apellidos }}
-              <span class="text-xs text-gray-400 block">{{ inv.estudiante?.matricula }}</span>
+              <span class="text-xs text-gray-400 dark:text-gray-500 block">{{ inv.estudiante?.matricula }}</span>
             </td>
-            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ new Date(inv.created_at).toLocaleDateString() }}</td>
+            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">{{ new Date(inv.created_at).toLocaleDateString() }}</td>
             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-              <button @click="selectInvoice(inv)" class="text-blue-600 hover:text-blue-900">Seleccionar</button>
+              <button @click="selectInvoice(inv)" class="text-blue-600 dark:text-blue-400 hover:text-blue-900 dark:hover:text-blue-300">Seleccionar</button>
             </td>
           </tr>
         </tbody>
       </table>
     </div>
 
-    <div v-else-if="searchPerformed && invoices.length === 0" class="text-center py-8 text-gray-500 bg-white rounded-lg border">
+    <div v-else-if="searchPerformed && invoices.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 rounded-lg border dark:border-gray-700">
       No se encontraron facturas con artículos disponibles para devolución o cambio.
     </div>
 
     <!-- Procesador de Devolución -->
-    <div v-if="selectedInvoice" class="bg-white rounded-lg shadow-sm border overflow-hidden mt-6">
-      <div class="bg-gray-50 px-6 py-4 border-b flex justify-between items-center">
+    <div v-if="selectedInvoice" class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border dark:border-gray-700 overflow-hidden mt-6">
+      <div class="bg-gray-50 dark:bg-gray-700 px-6 py-4 border-b dark:border-gray-600 flex justify-between items-center">
         <div>
-          <h3 class="text-lg font-medium text-gray-900">Factura: {{ selectedInvoice.invoice_number }}</h3>
-          <p class="text-sm text-gray-500">{{ selectedInvoice.estudiante?.nombres }} {{ selectedInvoice.estudiante?.apellidos }}</p>
+          <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">Factura: {{ selectedInvoice.invoice_number }}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400">{{ selectedInvoice.estudiante?.nombres }} {{ selectedInvoice.estudiante?.apellidos }}</p>
         </div>
-        <button @click="selectedInvoice = null" class="text-gray-500 hover:text-gray-700">Cambiar Factura</button>
+        <button @click="selectedInvoice = null" class="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200">Cambiar Factura</button>
       </div>
 
       <div class="p-6">
-        <h4 class="font-medium text-gray-800 mb-4">Artículos Entregados Disponibles</h4>
+        <h4 class="font-medium text-gray-800 dark:text-gray-200 mb-4">Artículos Entregados Disponibles</h4>
         
         <div class="space-y-4">
-          <div v-for="detail in selectedInvoice.details" :key="detail.id" class="border rounded-lg p-4 bg-gray-50">
+          <div v-for="detail in selectedInvoice.details" :key="detail.id" class="border dark:border-gray-700 rounded-lg p-4 bg-gray-50 dark:bg-gray-900">
             <div class="flex justify-between items-start mb-4">
               <div>
-                <span class="font-bold block">{{ detail.article?.name }}</span>
-                <span class="text-sm text-gray-500">Disponible: {{ detail.delivered_quantity - detail.returned_quantity }} ud(s)</span>
+                <span class="font-bold block dark:text-gray-200">{{ detail.article?.name }}</span>
+                <span class="text-sm text-gray-500 dark:text-gray-400">Disponible: {{ detail.delivered_quantity - detail.returned_quantity }} ud(s)</span>
               </div>
               <button 
                 v-if="!isProcessing(detail.id)"
                 @click="startProcess(detail)" 
-                class="bg-white border border-gray-300 text-gray-700 px-3 py-1 rounded shadow-sm text-sm hover:bg-gray-50"
+                class="bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 px-3 py-1 rounded shadow-sm text-sm hover:bg-gray-50 dark:hover:bg-gray-700"
               >
                 Devolver / Cambiar
               </button>
               <button 
                 v-else
                 @click="cancelProcess(detail.id)" 
-                class="text-red-600 text-sm hover:underline"
+                class="text-red-600 dark:text-red-400 text-sm hover:underline"
               >
                 Cancelar Acción
               </button>
             </div>
 
             <!-- Formulario por Renglón -->
-            <div v-if="isProcessing(detail.id)" class="bg-white p-4 border rounded shadow-inner mt-2">
+            <div v-if="isProcessing(detail.id)" class="bg-white dark:bg-gray-800 p-4 border dark:border-gray-700 rounded shadow-inner mt-2">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 
                 <div>
-                  <label class="block text-xs font-medium text-gray-700">Cantidad a Devolver</label>
+                  <label class="block text-xs font-medium text-gray-700 dark:text-gray-300">Cantidad a Devolver</label>
                   <input 
                     type="number" 
                     v-model.number="getProcessingData(detail.id).quantity" 
                     min="1" 
                     :max="detail.delivered_quantity - detail.returned_quantity"
-                    class="mt-1 block w-full text-sm border-gray-300 rounded-md"
+                    class="mt-1 block w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md"
                   >
                 </div>
                 
                 <div>
-                  <label class="block text-xs font-medium text-gray-700">Motivo</label>
-                  <select v-model="getProcessingData(detail.id).reason" class="mt-1 block w-full text-sm border-gray-300 rounded-md">
+                  <label class="block text-xs font-medium text-gray-700 dark:text-gray-300">Motivo</label>
+                  <select v-model="getProcessingData(detail.id).reason" class="mt-1 block w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md">
                     <option value="Cambio de talla">Cambio de talla</option>
                     <option value="Defecto de fábrica">Defecto de fábrica</option>
                     <option value="Devolución definitiva">Devolución definitiva (Sin cambio)</option>
@@ -121,15 +121,14 @@
                 </div>
 
                 <div class="md:col-span-2" v-if="getProcessingData(detail.id).reason !== 'Devolución definitiva'">
-                  <label class="block text-xs font-medium text-gray-700 mb-1">Entregar a Cambio (Nuevo Artículo)</label>
-                  <!-- En un sistema real esto usaría un combobox autocompletable. Simulamos un select -->
-                  <select v-model="getProcessingData(detail.id).exchange_article_id" class="block w-full text-sm border-gray-300 rounded-md">
+                  <label class="block text-xs font-medium text-gray-700 dark:text-gray-300 mb-1">Entregar a Cambio (Nuevo Artículo)</label>
+                  <select v-model="getProcessingData(detail.id).exchange_article_id" class="block w-full text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md">
                     <option :value="null">Seleccionar artículo...</option>
                     <option v-for="art in articles" :key="art.id" :value="art.id" :disabled="art.stock < getProcessingData(detail.id).quantity">
                       {{ art.name }} (Stock: {{ art.stock }}) - ${{ art.price }}
                     </option>
                   </select>
-                  <p v-if="getProcessingData(detail.id).exchange_article_id" class="text-xs mt-1" :class="isStockSufficient(detail.id) ? 'text-green-600' : 'text-red-600'">
+                  <p v-if="getProcessingData(detail.id).exchange_article_id" class="text-xs mt-1" :class="isStockSufficient(detail.id) ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'">
                     Stock disponible: {{ getSelectedArticleStock(detail.id) }} | Requerido: {{ getProcessingData(detail.id).quantity }}
                   </p>
                 </div>
@@ -139,9 +138,9 @@
           </div>
         </div>
 
-        <div class="mt-6 pt-6 border-t">
-          <label class="block text-sm font-medium text-gray-700 mb-1">Notas Generales (Opcional)</label>
-          <textarea v-model="notes" rows="2" class="w-full border-gray-300 rounded-md shadow-sm"></textarea>
+        <div class="mt-6 pt-6 border-t dark:border-gray-700">
+          <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notas Generales (Opcional)</label>
+          <textarea v-model="notes" rows="2" class="w-full border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white rounded-md shadow-sm"></textarea>
         </div>
 
         <div class="mt-6 flex justify-end">
