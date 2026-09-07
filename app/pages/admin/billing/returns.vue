@@ -163,8 +163,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import Swal from 'sweetalert2'
-
-const { $api } = useNuxtApp()
+import { api } from '~/utils/api'
 
 const searchQuery = ref('')
 const loading = ref(false)
@@ -180,8 +179,8 @@ const processingItems = ref({}) // map de detail_id => datos del form
 onMounted(async () => {
   // Cargar artículos para el selector de cambios
   try {
-    const res = await $api.get('/admission-articles')
-    articles.value = res.data.data || res.data
+    const res = await api.get('/api/admission-articles')
+    articles.value = res.data?.data || res.data || res || []
   } catch (error) {
     console.error('Error fetching articles', error)
   }
@@ -192,10 +191,10 @@ const searchInvoices = async () => {
   loading.value = true
   searchPerformed.value = true
   try {
-    const res = await $api.get('/uniformes/devoluciones/facturas-disponibles', {
+    const res = await api.get('/api/uniformes/devoluciones/facturas-disponibles', {
       params: { search: searchQuery.value }
     })
-    invoices.value = res.data
+    invoices.value = res.data?.data || res.data || res || []
     selectedInvoice.value = null
     processingItems.value = {}
   } catch (e) {
@@ -272,13 +271,13 @@ const submitReturn = async () => {
   submitting.value = true
   
   try {
-    const res = await $api.post('/uniformes/devoluciones', {
+    const res = await api.post('/api/uniformes/devoluciones', {
       student_invoice_id: selectedInvoice.value.id,
       notes: notes.value,
       items
     })
 
-    const returnId = res.data.uniform_return.id
+    const returnId = res.data?.uniform_return?.id || res.data?.id || res.uniform_return?.id;
 
     Swal.fire({
       icon: 'success',
@@ -288,7 +287,8 @@ const submitReturn = async () => {
       confirmButtonText: 'Descargar Comprobante'
     }).then(async (result) => {
       // Descargar PDF
-      window.open(`${$api.defaults.baseURL}/uniformes/devoluciones/${returnId}/pdf`, '_blank')
+      const baseURL = api.defaults?.baseURL || window.location.origin
+      window.open(`${baseURL}/api/uniformes/devoluciones/${returnId}/pdf`, '_blank')
       
       // Reset
       selectedInvoice.value = null
