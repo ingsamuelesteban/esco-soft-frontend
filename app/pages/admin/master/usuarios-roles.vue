@@ -2,18 +2,18 @@
   <div>
     <div class="sm:flex sm:items-center mb-6">
       <div class="sm:flex-auto">
-        <h1 class="text-xl font-semibold text-gray-900">Gestión de Roles Global (Master)</h1>
-        <p class="mt-2 text-sm text-gray-700">Busca usuarios de cualquier institución y asigna roles administrativos.</p>
+        <h1 class="text-xl font-semibold text-gray-900 dark:text-white">Gestión de Roles Global (Master)</h1>
+        <p class="mt-2 text-sm text-gray-700 dark:text-gray-300">Busca usuarios de cualquier institución y asigna roles administrativos.</p>
       </div>
     </div>
 
     <!-- Buscador -->
-    <div class="bg-white shadow sm:rounded-lg mb-6 p-4">
+    <div class="bg-white dark:bg-gray-800 shadow sm:rounded-lg mb-6 p-4">
       <div class="max-w-xl">
         <label for="search" class="sr-only">Buscar usuario</label>
         <div class="relative rounded-md shadow-sm flex">
-          <input v-model="searchQuery" type="text" @keyup.enter="buscarUsuarios" class="focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-none rounded-l-md p-2 border" placeholder="Buscar por nombre, cédula o correo..." />
-          <button @click="buscarUsuarios" class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 text-sm font-medium rounded-r-md text-gray-700 bg-gray-50 hover:bg-gray-100 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
+          <input v-model="searchQuery" type="text" @keyup.enter="buscarUsuarios" class="focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 rounded-none rounded-l-md p-2 border" placeholder="Buscar por nombre, cédula o correo..." />
+          <button @click="buscarUsuarios" class="-ml-px relative inline-flex items-center space-x-2 px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-r-md text-gray-700 dark:text-gray-300 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500">
             <span>Buscar</span>
           </button>
         </div>
@@ -21,22 +21,22 @@
     </div>
 
     <!-- Resultados -->
-    <div v-if="usuarios.length > 0" class="bg-white shadow overflow-hidden sm:rounded-lg">
-      <ul class="divide-y divide-gray-200">
-        <li v-for="user in usuarios" :key="user.id" class="p-4 hover:bg-gray-50 flex items-center justify-between">
+    <div v-if="usuarios.length > 0" class="bg-white dark:bg-gray-800 shadow overflow-hidden sm:rounded-lg">
+      <ul class="divide-y divide-gray-200 dark:divide-gray-700">
+        <li v-for="user in usuarios" :key="user.id" class="p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50 flex items-center justify-between">
           <div>
-            <p class="text-sm font-medium text-blue-600 truncate">{{ user.name }}</p>
-            <p class="text-sm text-gray-500">{{ user.email || 'Sin correo' }} | {{ user.personal_id }}</p>
-            <p class="text-xs text-gray-400 mt-1">Institución: {{ user.tenant?.name || 'Global/N/A' }}</p>
+            <p class="text-sm font-medium text-blue-600 dark:text-blue-400 truncate">{{ user.name }}</p>
+            <p class="text-sm text-gray-500 dark:text-gray-400">{{ user.email || 'Sin correo' }} | {{ user.personal_id }}</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">Institución: {{ user.tenant?.name || 'Global/N/A' }}</p>
             <div class="mt-2 flex gap-1 flex-wrap">
-              <span v-for="role in user.roles" :key="role.id" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 text-indigo-800">
+              <span v-for="role in user.roles" :key="role.id" class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-indigo-100 dark:bg-indigo-900/50 text-indigo-800 dark:text-indigo-300">
                 {{ role.name }}
               </span>
-              <span v-if="user.roles?.length === 0" class="text-xs text-gray-400">Sin roles asignados en Spatie</span>
+              <span v-if="user.roles?.length === 0" class="text-xs text-gray-400 dark:text-gray-500">Sin roles asignados en Spatie</span>
             </div>
           </div>
           <div>
-            <button @click="abrirModalRoles(user)" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+            <button @click="abrirModalRoles(user)" class="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded shadow-sm text-white bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-900 focus:ring-blue-500 transition-colors">
               Gestionar Roles
             </button>
           </div>
@@ -44,37 +44,37 @@
       </ul>
     </div>
     
-    <div v-else-if="buscado && usuarios.length === 0" class="text-center py-8 text-gray-500">
+    <div v-else-if="buscado && usuarios.length === 0" class="text-center py-8 text-gray-500 dark:text-gray-400">
       No se encontraron usuarios con ese criterio.
     </div>
 
     <!-- Modal Roles -->
     <div v-if="modalAbierto" class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
       <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="modalAbierto = false"></div>
+        <div class="fixed inset-0 bg-gray-500 dark:bg-gray-900 bg-opacity-75 dark:bg-opacity-80 transition-opacity" @click="modalAbierto = false"></div>
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+        <div class="inline-block align-bottom bg-white dark:bg-gray-800 rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
           <div>
-            <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+            <h3 class="text-lg leading-6 font-medium text-gray-900 dark:text-white" id="modal-title">
               Roles para: {{ usuarioSeleccionado.name }}
             </h3>
             <div class="mt-4 space-y-4">
               <div v-for="role in rolesDisponibles" :key="role.id" class="relative flex items-start">
                 <div class="flex items-center h-5">
-                  <input :id="`role-${role.id}`" :value="role.name" v-model="rolesSeleccionados" type="checkbox" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 rounded" />
+                  <input :id="`role-${role.id}`" :value="role.name" v-model="rolesSeleccionados" type="checkbox" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 rounded" />
                 </div>
                 <div class="ml-3 text-sm">
-                  <label :for="`role-${role.id}`" class="font-medium text-gray-700">{{ role.name }}</label>
+                  <label :for="`role-${role.id}`" class="font-medium text-gray-700 dark:text-gray-300">{{ role.name }}</label>
                 </div>
               </div>
             </div>
           </div>
           <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
-            <button @click="guardarRoles" :disabled="guardando" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:col-start-2 sm:text-sm">
+            <button @click="guardarRoles" :disabled="guardando" type="button" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 dark:hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-900 focus:ring-blue-500 sm:col-start-2 sm:text-sm transition-colors">
               <span v-if="guardando">Guardando...</span>
               <span v-else>Guardar Roles</span>
             </button>
-            <button @click="modalAbierto = false" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm">
+            <button @click="modalAbierto = false" type="button" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-900 focus:ring-blue-500 sm:mt-0 sm:col-start-1 sm:text-sm transition-colors">
               Cancelar
             </button>
           </div>
