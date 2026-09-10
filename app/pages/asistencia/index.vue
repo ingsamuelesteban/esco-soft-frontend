@@ -238,6 +238,7 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAttendanceStore } from '~/stores/attendance'
 import { useAulasStore } from '~/stores/aulas'
+import { useAniosLectivosStore } from '~/stores/anios_lectivos'
 import { useAuthStore } from '~/stores/auth' // Import auth store
 import { useLiveSchedule } from '~/composables/useLiveSchedule'
 import AttendanceGrid from '~/components/attendance/AttendanceGrid.vue'
@@ -258,6 +259,7 @@ definePageMeta({
 const attendanceStore = useAttendanceStore()
 const aulasStore = useAulasStore()
 const authStore = useAuthStore() // Initialize auth store
+const aniosStore = useAniosLectivosStore()
 
 // Composable de horario en vivo
 const { isInPeriod } = useLiveSchedule()
@@ -551,6 +553,10 @@ onMounted(async () => {
   }
 
   // Cargar aulas al montar el componente (para administradores)
-  await aulasStore.fetchAll()
+  if (aniosStore.items.length === 0) {
+    await aniosStore.fetchAll()
+  }
+  const activeYear = aniosStore.activos[0]
+  await aulasStore.fetchAll({ anioLectivoId: activeYear?.id })
 })
 </script>

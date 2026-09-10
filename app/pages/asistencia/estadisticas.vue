@@ -315,6 +315,7 @@
 <script setup lang="ts">
 import { ref, reactive, watch, onMounted, computed } from 'vue'
 import { useAulasStore } from '~/stores/aulas'
+import { useAniosLectivosStore } from '~/stores/anios_lectivos'
 import { useAuthStore } from '~/stores/auth'
 import { api } from '~/utils/api'
 import StatsBoard from '~/components/attendance/StatsBoard.vue'
@@ -327,6 +328,7 @@ const { printPdfBlob } = usePrint()
 
 const aulasStore = useAulasStore()
 const authStore = useAuthStore()
+const aniosStore = useAniosLectivosStore()
 
 // State
 const loading = ref(false)
@@ -625,7 +627,11 @@ watch(() => [filters.date, filters.aulaId, viewMode, filters.month, filters.year
 // Init
 onMounted(async () => {
     try {
-        await aulasStore.fetchAll()
+        if (aniosStore.items.length === 0) {
+            await aniosStore.fetchAll()
+        }
+        const activeYear = aniosStore.activos[0]
+        await aulasStore.fetchAll({ anioLectivoId: activeYear?.id })
     } catch (e) {
         console.error("Error loading aulas initially", e)
     }
