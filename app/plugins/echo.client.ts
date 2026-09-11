@@ -17,6 +17,8 @@ export default defineNuxtPlugin((nuxtApp) => {
     const config = useRuntimeConfig()
     const reverbConfig = config.public.reverb as { appKey: string, host: string, port: string, scheme: string }
 
+    const token = localStorage.getItem('auth_token')
+
     window.Echo = new Echo({
         broadcaster: 'reverb',
         key: reverbConfig.appKey,
@@ -29,6 +31,7 @@ export default defineNuxtPlugin((nuxtApp) => {
         auth: {
             headers: {
                 Accept: 'application/json',
+                Authorization: token ? `Bearer ${token}` : undefined,
             }
         },
         authorizer: (channel, options) => {
