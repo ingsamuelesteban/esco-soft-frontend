@@ -97,6 +97,12 @@ export const useChatStore = defineStore('chat', {
                 if (index !== -1) {
                     this.messages[index] = sentMessage
                 }
+
+                // Update latest message in the conversations list
+                const conv = this.conversations.find(c => c.id === this.activeConversation.id)
+                if (conv) {
+                    conv.latest_message = sentMessage
+                }
             } catch (error) {
                 console.error('Error sending message:', error)
                 // Handle error (remove temp message, show alert)
