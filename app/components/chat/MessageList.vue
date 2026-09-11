@@ -6,9 +6,9 @@
                 :class="isMyMessage(message) ? 'justify-end' : 'justify-start'">
                 <div class="max-w-[80%] rounded-lg p-3 text-sm"
                     :class="isMyMessage(message) ? 'bg-blue-600 text-white rounded-br-none' : 'bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 border border-gray-200 dark:border-gray-700 rounded-bl-none shadow-sm'">
-                    <div v-if="!isMyMessage(message) && chatStore.activeConversation?.is_general"
+                    <div v-if="!isMyMessage(message) && chatStore.activeConversation?.type !== 'private'"
                         class="text-xs font-bold mb-1 opacity-75">
-                        {{ message.sender?.name }}
+                        {{ message.sender?.name || 'Usuario' }}
                     </div>
                     <p>{{ message.content }}</p>
                     <div class="text-[10px] mt-1 text-right opacity-70">

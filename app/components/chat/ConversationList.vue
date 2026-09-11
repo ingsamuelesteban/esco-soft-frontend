@@ -69,7 +69,7 @@
                     <p class="text-xs truncate"
                         :class="conversation.unread_count > 0 ? 'text-gray-800 dark:text-gray-200 font-medium' : 'text-gray-500 dark:text-gray-400'">
                         <span v-if="conversation.latest_message">
-                            {{ conversation.latest_message.sender_id === useAuthStore().user?.id ? 'Tú: ' : '' }}
+                            {{ conversation.latest_message.user_id === useAuthStore().user?.id ? 'Tú: ' : '' }}
                             {{ conversation.latest_message.content }}
                         </span>
                         <span v-else class="italic">Iniciar conversación</span>
