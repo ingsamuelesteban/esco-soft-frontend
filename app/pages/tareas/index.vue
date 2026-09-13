@@ -11,18 +11,34 @@
                         </p>
                     </div>
 
-                    <!-- Teacher Selector (Admin/Master only) -->
-                    <div v-if="canSelectTeacher" class="w-full md:w-72">
-                        <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                            Supervisar Profesor
-                        </label>
-                        <select v-model="selectedTeacherId"
-                            class="w-full border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm">
-                            <option :value="null">Seleccionar profesor...</option>
-                            <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">
-                                {{ teacher.name }}
-                            </option>
-                        </select>
+                    <!-- Filtros (Profesor y Año Lectivo) -->
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <!-- Teacher Selector (Admin/Master only) -->
+                        <div v-if="canSelectTeacher" class="w-full sm:w-64">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Supervisar Profesor
+                            </label>
+                            <select v-model="selectedTeacherId"
+                                class="w-full border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm">
+                                <option :value="null">Seleccionar profesor...</option>
+                                <option v-for="teacher in teachers" :key="teacher.id" :value="teacher.id">
+                                    {{ teacher.name }}
+                                </option>
+                            </select>
+                        </div>
+                        
+                        <!-- Academic Year Selector -->
+                        <div class="w-full sm:w-48">
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                                Año Lectivo
+                            </label>
+                            <select v-model="selectedAnioLectivoId"
+                                class="w-full border-gray-300 dark:border-gray-600 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:text-white sm:text-sm">
+                                <option v-for="anio in aniosLectivos" :key="anio.id" :value="anio.id">
+                                    {{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}
+                                </option>
+                            </select>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -125,6 +141,12 @@ interface Teacher {
     personal_id: number
 }
 
+interface AnioLectivo {
+    id: number
+    nombre: string
+    activo: boolean
+}
+
 definePageMeta({
     middleware: ['auth', 'role'],
     roles: ['profesor', 'admin', 'master', 'psicologia', 'orientacion']
@@ -135,7 +157,9 @@ const authStore = useAuthStore()
 const loading = ref(true)
 const classAssignments = ref<ClassAssignment[]>([])
 const teachers = ref<Teacher[]>([])
+const aniosLectivos = ref<AnioLectivo[]>([])
 const selectedTeacherId = ref<number | null>(null)
+const selectedAnioLectivoId = ref<number | null>(null)
 
 const canSelectTeacher = computed(() => {
     const role = authStore.user?.role?.toLowerCase() || ''
@@ -143,24 +167,37 @@ const canSelectTeacher = computed(() => {
 })
 
 onMounted(async () => {
+    await fetchAniosLectivos()
     if (canSelectTeacher.value) {
         await fetchTeachers()
-        // If admin/master is also a teacher (unlikely in this model but possible), 
-        // we could set selectedTeacherId to their own ID if they have one.
-        // For now, let's leave it null to show "Select a teacher" prompt or show all?
-        // Showing all might be too much, better to force selection or show empty state.
+        // Wait for teacher selection to fetch assignments
     } else {
         await fetchClassAssignments()
     }
 })
 
-watch(selectedTeacherId, async (newValue) => {
-    if (newValue) {
-        await fetchClassAssignments(newValue)
-    } else {
+watch([selectedTeacherId, selectedAnioLectivoId], async ([newTeacher, newAnio]) => {
+    if (canSelectTeacher.value && !newTeacher) {
         classAssignments.value = []
+    } else {
+        await fetchClassAssignments(newTeacher || undefined)
     }
 })
+
+async function fetchAniosLectivos() {
+    try {
+        const response = await api.get('/api/anios-lectivos')
+        aniosLectivos.value = response.data?.data || response.data || []
+        const activeYear = aniosLectivos.value.find((a: AnioLectivo) => a.activo)
+        if (activeYear) {
+            selectedAnioLectivoId.value = activeYear.id
+        } else if (aniosLectivos.value.length > 0) {
+            selectedAnioLectivoId.value = aniosLectivos.value[0].id
+        }
+    } catch (error) {
+        console.error('Error fetching anios lectivos:', error)
+    }
+}
 
 function navigateToClass(id: number) {
     if (id) {
@@ -197,48 +234,34 @@ async function fetchClassAssignments(teacherId?: number) {
     try {
         loading.value = true
 
-        // Get user ID based on role
         let targetId = authStore.user?.id
         
-        // If supervising, use selected teacher's Personal ID
         if (canSelectTeacher.value) {
            if (teacherId) {
-               // We need to pass the Personal ID if that's what the controller expects
-               // ClassAssignmentController: $profesorIdFromRequest = $request->integer('profesor_id');
-               // And it filters where('profesor_id', $profesorIdFromRequest)
-               // So we need to pass the Personal ID.
                targetId = teacherId
            } else {
-               // No teacher selected, return empty or all?
-               // Let's return empty until selected
                classAssignments.value = []
                loading.value = false
                return
            }
-        } else {
-             // For regular teachers, we might need to resolve their Personal ID or just rely on the controller resolving it from Auth user
-             // Controller: if ($user && $user->role === 'profesor') { $profesorIdFromRequest = $user->personal_id; }
-             // So we don't strictly need to send it for logged-in teacher.
         }
 
-        const params: any = {
-            only_active: 1
+        const params: any = {}
+        
+        if (selectedAnioLectivoId.value) {
+            params.anio_lectivo_id = selectedAnioLectivoId.value
         }
+
         if (canSelectTeacher.value && teacherId) {
             params.profesor_id = teacherId
         } else if (!canSelectTeacher.value && authStore.user?.role === 'profesor') {
-             // Optional: explicitly send ID
              params.profesor_id = authStore.user?.personal_id
         }
 
         const response = await api.get('/api/class-assignments', { params })
-
-        // Handle different response structures
-        const data = response.data?.data || response.data?.data || response.data || [] // paginate wrap
+        const data = response.data?.data || response.data?.data || response.data || [] 
 
         classAssignments.value = Array.isArray(data) ? data : []
-
-        // Fetch homework stats for each class assignment
         await fetchHomeworkStats()
 
     } catch (error) {
@@ -250,23 +273,22 @@ async function fetchClassAssignments(teacherId?: number) {
 }
 
 async function fetchHomeworkStats() {
-    // Fetch homework count and pending submissions for each class
-    // We should not set loading=true here to avoid flickering or loops if loading is watched
-    
     const promises = classAssignments.value.map(async (assignment: ClassAssignment) => {
         try {
             const params: any = {
                 class_assignment_id: assignment.id
             }
             
-            // We use a separate try-catch to avoid failing all if one fails
+            if (selectedAnioLectivoId.value) {
+                params.anio_lectivo_id = selectedAnioLectivoId.value
+            }
+            
             const response = await api.get('/api/homeworks', { params })
 
             const homeworks: Homework[] = Array.isArray(response.data?.data) ? response.data.data : (Array.isArray(response.data) ? response.data : [])
             
             assignment.homework_count = homeworks.length
 
-            // Count pending submissions (submitted but not graded)
             let pendingCount = 0
             for (const homework of homeworks) {
                 if (homework.submission_count !== undefined && homework.graded_count !== undefined) {
