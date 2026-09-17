@@ -135,6 +135,31 @@
               <input v-model="nuevoEmail" type="email" class="shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 dark:border-gray-600 rounded-md p-2 border" />
             </div>
 
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Opciones de Contraseña</label>
+              <div class="space-y-3">
+                <label class="flex items-start">
+                  <input type="radio" v-model="passwordType" value="auto" class="mt-1 text-blue-600 focus:ring-blue-500">
+                  <span class="ml-2">
+                    <span class="block text-sm font-medium text-gray-900 dark:text-gray-100">Generar contraseña automática (Recomendado)</span>
+                    <span class="block text-xs text-gray-500 dark:text-gray-400">Crea una contraseña segura alfanumérica y pedirá cambio al iniciar sesión.</span>
+                  </span>
+                </label>
+                <label class="flex items-start">
+                  <input type="radio" v-model="passwordType" value="manual" class="mt-1 text-blue-600 focus:ring-blue-500">
+                  <span class="ml-2 w-full">
+                    <span class="block text-sm font-medium text-gray-900 dark:text-gray-100">Ingresar manualmente</span>
+                    <span class="block text-xs text-gray-500 dark:text-gray-400">Si se ingresa manualmente, el usuario NO tendrá que cambiarla al iniciar sesión.</span>
+                    <input v-if="passwordType === 'manual'" 
+                           v-model="manualPassword" 
+                           type="text" 
+                           class="mt-2 w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100" 
+                           placeholder="Mínimo 8 caracteres" />
+                  </span>
+                </label>
+              </div>
+            </div>
+
             <button type="submit" :disabled="loading || !selectedUserId" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-50">
               <span v-if="loading">Procesando...</span>
               <span v-else>Resetear Contraseña y Notificar por Correo</span>
@@ -169,6 +194,9 @@ const selectedUserId = ref(null)
 const nuevoEmail = ref('')
 const loading = ref(false)
 const temporalPassword = ref(null)
+
+const passwordType = ref('auto')
+const manualPassword = ref('')
 
 const searchQuery = ref('')
 const searching = ref(false)
@@ -244,6 +272,11 @@ const resolverTicket = async () => {
     return;
   }
   
+  if (passwordType.value === 'manual' && manualPassword.value.length < 8) {
+    Swal.fire('Atención', 'La contraseña manual debe tener al menos 8 caracteres.', 'warning');
+    return;
+  }
+  
   const confirmacion = await Swal.fire({
     title: '¿Generar nueva contraseña?',
     text: 'Asegúrate de haber validado la identidad del usuario por teléfono.',
@@ -270,14 +303,21 @@ const resolverTicket = async () => {
   })
   
   try {
+    const payload = { 
+      user_id: selectedUserId.value,
+      nuevo_email: nuevoEmail.value,
+      password_type: passwordType.value,
+    }
+    
+    if (passwordType.value === 'manual') {
+      payload.manual_password = manualPassword.value
+    }
+    
     const res = await $fetch(`/api/admin/soporte/tickets/${route.params.id}/resolver`, {
       method: 'POST',
       headers: { Accept: 'application/json', Authorization: `Bearer ${localStorage.getItem('auth_token')}` },
       baseURL: config.public.apiBase,
-      body: { 
-        user_id: selectedUserId.value,
-        nuevo_email: nuevoEmail.value 
-      }
+      body: payload
     })
     
     temporalPassword.value = res.temporal_password
@@ -285,7 +325,7 @@ const resolverTicket = async () => {
     
     Swal.fire({
       title: '¡Resuelto!',
-      html: `El ticket se resolvió exitosamente.<br><br><b>Contraseña temporal:</b> <code class="bg-gray-100 px-2 py-1 rounded text-lg">${res.temporal_password}</code><br><br>Puedes enviarle esta contraseña vía Whatsapp al solicitante.`,
+      html: `El ticket se resolvió exitosamente.<br><br><b>Contraseña temporal:</b> <code class="bg-gray-100 dark:bg-gray-800 px-2 py-1 rounded text-lg">${res.temporal_password}</code><br><br>Puedes enviarle esta contraseña vía Whatsapp al solicitante.`,
       icon: 'success'
     });
   } catch (error) {
