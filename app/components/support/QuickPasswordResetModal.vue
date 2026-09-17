@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue'
+import Swal from 'sweetalert2'
 
 const emit = defineEmits(['closed', 'reset-success'])
 
@@ -89,20 +90,26 @@ const selectUser = (user: any) => {
 const handleReset = async () => {
   if (!selectedUser.value) return
   if (passwordType.value === 'manual' && manualPassword.value.length < 8) {
-    alert('La contraseña manual debe tener al menos 8 caracteres.')
+    Swal.fire('Atención', 'La contraseña manual debe tener al menos 8 caracteres.', 'warning')
     return
   }
 
   isLoading.value = true
   try {
+    const payload: any = {
+      user_id: selectedUser.value.id,
+      password_type: passwordType.value,
+      notes: notes.value
+    }
+    
+    // Solo enviamos manual_password si realmente fue elegida para evitar que el backend valide strings vacías
+    if (passwordType.value === 'manual') {
+      payload.manual_password = manualPassword.value
+    }
+
     const data = await $fetch('/api/admin/soporte/usuarios/quick-password-reset', {
       method: 'POST',
-      body: {
-        user_id: selectedUser.value.id,
-        password_type: passwordType.value,
-        manual_password: manualPassword.value,
-        notes: notes.value
-      },
+      body: payload,
       headers: {
         Accept: 'application/json',
         Authorization: `Bearer ${localStorage.getItem('auth_token')}`
@@ -118,7 +125,7 @@ const handleReset = async () => {
     }
   } catch (e: any) {
     console.error(e)
-    alert(e.response?._data?.message || e.message || 'Ocurrió un error al restablecer la contraseña.')
+    Swal.fire('Error', e.response?._data?.message || e.message || 'Ocurrió un error al restablecer la contraseña.', 'error')
   } finally {
     isLoading.value = false
   }
@@ -127,7 +134,14 @@ const handleReset = async () => {
 const copyToClipboard = async () => {
   try {
     await navigator.clipboard.writeText(tempPassword.value)
-    alert('Contraseña copiada al portapapeles.')
+    Swal.fire({
+      toast: true,
+      position: 'top-end',
+      icon: 'success',
+      title: 'Contraseña copiada al portapapeles',
+      showConfirmButton: false,
+      timer: 2000
+    })
   } catch (err) {
     console.error('Failed to copy: ', err)
   }
