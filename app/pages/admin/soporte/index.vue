@@ -5,6 +5,14 @@
         <h1 class="text-xl font-semibold text-gray-900 dark:text-white">Tickets de Soporte Técnico</h1>
         <p class="mt-2 text-sm text-gray-700 dark:text-gray-300">Panel global de solicitudes de reseteo de contraseña e incidencias.</p>
       </div>
+      <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+        <button @click="openQuickReset" type="button" class="inline-flex items-center justify-center rounded-md border border-transparent bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 sm:w-auto">
+          <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
+          Reseteo Rápido
+        </button>
+      </div>
     </div>
     
     <div class="mt-8 flex flex-col">
@@ -55,10 +63,14 @@
         </div>
       </div>
     </div>
+
+    <SupportQuickPasswordResetModal ref="quickResetModal" @reset-success="handleResetSuccess" />
   </div>
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
+
 definePageMeta({
   layout: 'default',
   middleware: ['auth'] // Add role check middleware as needed
@@ -66,6 +78,7 @@ definePageMeta({
 
 const config = useRuntimeConfig()
 const tickets = ref([])
+const quickResetModal = ref(null)
 
 onMounted(async () => {
   await loadTickets()
@@ -85,5 +98,13 @@ const loadTickets = async () => {
     console.error('Error cargando tickets:', error)
     tickets.value = []
   }
+}
+
+const openQuickReset = () => {
+  quickResetModal.value?.open()
+}
+
+const handleResetSuccess = () => {
+  loadTickets()
 }
 </script>
