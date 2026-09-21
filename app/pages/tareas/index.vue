@@ -263,7 +263,23 @@ async function fetchClassAssignments(teacherId?: number) {
         const response = await api.get('/api/class-assignments', { params })
         const data = response.data?.data || response.data?.data || response.data || [] 
 
-        classAssignments.value = Array.isArray(data) ? data : []
+        let assignments = Array.isArray(data) ? data : []
+        
+        assignments.sort((a: any, b: any) => {
+            const gradoA = parseInt(a.aula?.grado_cardinal) || 0;
+            const gradoB = parseInt(b.aula?.grado_cardinal) || 0;
+            if (gradoA !== gradoB) return gradoA - gradoB;
+            
+            const seccionA = a.aula?.seccion || '';
+            const seccionB = b.aula?.seccion || '';
+            if (seccionA !== seccionB) return seccionA.localeCompare(seccionB);
+            
+            const materiaA = a.materia?.nombre || '';
+            const materiaB = b.materia?.nombre || '';
+            return materiaA.localeCompare(materiaB);
+        });
+
+        classAssignments.value = assignments
         await fetchHomeworkStats()
 
     } catch (error) {
