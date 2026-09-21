@@ -49,7 +49,7 @@
                 </div>
 
                 <!-- Stats -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
                         <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">{{ totalSubmittedCount }} / {{ submissions.length }}</p>
                         <p class="text-sm text-gray-600 dark:text-gray-400">Total entregas / Asignados</p>
@@ -65,6 +65,10 @@
                     <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
                         <p class="text-2xl font-bold text-gray-600 dark:text-gray-400">{{ averageScore }}</p>
                         <p class="text-sm text-gray-600 dark:text-gray-400">Promedio</p>
+                    </div>
+                    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-4 border-l-4 border-green-500">
+                        <p class="text-2xl font-bold text-green-600 dark:text-green-400">{{ meta?.viewed_count || 0 }} / {{ submissions.length }} <span class="text-sm text-gray-500">({{ meta?.viewed_percentage || 0 }}%)</span></p>
+                        <p class="text-sm text-gray-600 dark:text-gray-400">Estudiantes han visto</p>
                     </div>
                 </div>
 
@@ -107,6 +111,14 @@
                                 </th>
                                 <th
                                     class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-900">
+                                    Lectura de Tarea
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-900">
+                                    Última Actividad
+                                </th>
+                                <th
+                                    class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider bg-gray-50 dark:bg-gray-900">
                                     Fecha de entrega
                                 </th>
                                 <th
@@ -142,6 +154,31 @@
                                     <span v-if="submission.is_late"
                                         class="ml-2 px-2 py-1 text-xs font-medium bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200 rounded-full">
                                         Tardía
+                                    </span>
+                                </td>
+                                <!-- Lectura de Tarea -->
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <div v-if="submission.view" class="group relative inline-block">
+                                        <span class="px-2 py-1 text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 rounded-full cursor-help">
+                                            👁️ Visto
+                                        </span>
+                                        <!-- Tooltip -->
+                                        <div class="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 hidden group-hover:block w-48 bg-gray-800 text-white text-xs rounded py-1 px-2 z-10 text-center">
+                                            Abierto {{ submission.view.view_count }} veces.<br/>
+                                            Primera: {{ formatDate(submission.view.first_viewed_at) }}
+                                        </div>
+                                    </div>
+                                    <span v-else class="px-2 py-1 text-xs font-medium text-gray-400 bg-gray-100 dark:bg-gray-700 dark:text-gray-400 rounded-full">
+                                        ⏳ Sin abrir
+                                    </span>
+                                </td>
+                                <!-- Última Actividad (Last seen) -->
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
+                                    <span v-if="submission.student?.user?.last_seen_at" :title="formatDate(submission.student.user.last_seen_at)">
+                                        {{ timeAgo(submission.student.user.last_seen_at) }}
+                                    </span>
+                                    <span v-else class="italic">
+                                        Nunca conectado
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100 dark:text-white">
@@ -225,7 +262,17 @@ import { useRoute } from 'vue-router'
 import { useAuthStore } from '~/stores/auth'
 import { api } from '~/utils/api'
 import dayjs from 'dayjs'
+import relativeTime from 'dayjs/plugin/relativeTime'
+import 'dayjs/locale/es'
 import SubmissionViewModal from '~/components/homework/SubmissionViewModal.vue'
+
+dayjs.extend(relativeTime)
+dayjs.locale('es')
+
+function timeAgo(date: string) {
+    if (!date) return ''
+    return dayjs(date).fromNow()
+}
 
 definePageMeta({
     middleware: ['auth', 'role'],
@@ -335,10 +382,13 @@ async function fetchHomework() {
     }
 }
 
+const meta = ref<any>(null)
+
 async function fetchSubmissions() {
     try {
         const response = await api.get(`/api/homeworks/${homeworkId.value}/submissions`)
         submissions.value = response.data || []
+        meta.value = response.meta || null
     } catch (error) {
         console.error('Error fetching submissions:', error)
     }

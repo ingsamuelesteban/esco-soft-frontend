@@ -343,6 +343,13 @@ const hasContent = computed(() => {
 
 onMounted(async () => {
     await fetchHomework()
+    
+    // Register read receipt
+    if (homeworkId.value) {
+        api.post(`/api/student/homeworks/${homeworkId.value}/mark-as-viewed`).catch(() => {
+            console.warn('Could not register homework view')
+        })
+    }
 })
 
 async function fetchHomework() {
