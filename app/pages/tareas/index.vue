@@ -246,7 +246,9 @@ async function fetchClassAssignments(teacherId?: number) {
            }
         }
 
-        const params: any = {}
+        const params: any = {
+            only_active: true
+        }
         
         if (selectedAnioLectivoId.value) {
             params.anio_lectivo_id = selectedAnioLectivoId.value

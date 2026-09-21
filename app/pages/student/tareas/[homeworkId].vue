@@ -346,7 +346,7 @@ onMounted(async () => {
     
     // Register read receipt
     if (homeworkId.value) {
-        api.post(`/api/student/homeworks/${homeworkId.value}/mark-as-viewed`).catch(() => {
+        api.post(`/api/homeworks/student/${homeworkId.value}/mark-as-viewed`).catch(() => {
             console.warn('Could not register homework view')
         })
     }
