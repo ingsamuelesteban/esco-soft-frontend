@@ -187,7 +187,7 @@ watch([selectedTeacherId, selectedAnioLectivoId], async ([newTeacher, newAnio]) 
 async function fetchAniosLectivos() {
     try {
         const response = await api.get('/api/anios-lectivos')
-        aniosLectivos.value = response.data?.data || response.data || []
+        aniosLectivos.value = Array.isArray(response) ? response : (response?.data || [])
         const activeYear = aniosLectivos.value.find((a: AnioLectivo) => a.activo)
         if (activeYear) {
             selectedAnioLectivoId.value = activeYear.id
