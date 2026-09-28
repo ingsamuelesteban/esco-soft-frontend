@@ -21,6 +21,25 @@
         </div>
 
         <!-- Filtro por Área Solicitada -->
+        <!-- Filtro por Año Lectivo -->
+        <select v-model="anioLectivoId" @change="handleSearch"
+          class="w-48 block bg-white dark:bg-gray-800 rounded-md border-0 py-1.5 pl-3 pr-8 text-gray-900 dark:text-gray-100 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
+          <option v-for="anio in aniosLectivos" :key="anio.id" :value="anio.id">
+            {{ anio.nombre }}
+          </option>
+        </select>
+
+        <!-- Filtro por Estado -->
+        <select v-model="estadoFilter" @change="handleSearch"
+          class="w-40 block bg-white dark:bg-gray-800 rounded-md border-0 py-1.5 pl-3 pr-8 text-gray-900 dark:text-gray-100 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
+          <option value="todos">Todos los Estados</option>
+          <option value="pre-admitido">Preadmitidos</option>
+          <option value="admitido">Admitidos</option>
+          <option value="no-admitido">No Admitidos</option>
+          <option value="activo">Activos</option>
+          <option value="retirado">Retirados</option>
+        </select>
+
         <select v-model="tituloFilter" @change="handleSearch"
           class="w-48 block bg-white dark:bg-gray-800 rounded-md border-0 py-1.5 pl-3 pr-8 text-gray-900 dark:text-gray-100 ring-1 ring-inset ring-gray-300 dark:ring-gray-600 focus:ring-2 focus:ring-inset focus:ring-primary-600 sm:text-sm sm:leading-6">
           <option value="">Todas las áreas</option>
