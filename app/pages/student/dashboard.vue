@@ -18,6 +18,9 @@
       </div>
     </div>
 
+    <!-- Unread Homeworks Banner -->
+    <UnreadHomeworksBanner />
+
     <!-- Announcements Banner -->
     <AnnouncementsBanner />
 
@@ -678,6 +681,7 @@ import { api } from '../../utils/api'
 import { normalizeUrl } from '~/utils/url'
 import AnnouncementsBanner from '~/components/anuncios/AnnouncementsBanner.vue'
 import UniformReadyBanner from '~/components/student/UniformReadyBanner.vue'
+import UnreadHomeworksBanner from '~/components/student/UnreadHomeworksBanner.vue'
 import Swal from 'sweetalert2'
 import {
   CalendarIcon,
@@ -794,4 +798,6 @@ onMounted(async () => {
   @apply bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm transition-all duration-300;
 }
 </style>
+
+
 

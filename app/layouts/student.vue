@@ -111,6 +111,9 @@
                 d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
             </svg>
             Tareas
+            <span v-if="homeworkStore.unreadCount > 0" class="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-red-100 bg-red-600 rounded-full">
+              {{ homeworkStore.unreadCount > 99 ? '99+' : homeworkStore.unreadCount }}
+            </span>
           </NuxtLink>
 
           <NuxtLink v-if="!user?.is_preadmitted" to="/student/tienda"
@@ -157,10 +160,16 @@ import { storeToRefs } from 'pinia'
 import { ref, onMounted, onUnmounted } from 'vue'
 import StudentProfileEditModal from '../components/student/StudentProfileEditModal.vue'
 import { useTheme } from '../composables/useTheme'
+import { useHomeworkStore } from '../stores/homework'
 
 const authStore = useAuthStore()
 const router = useRouter()
 const { user } = storeToRefs(authStore)
+const homeworkStore = useHomeworkStore()
+
+onMounted(() => {
+  homeworkStore.fetchUnreadData()
+})
 const { isDark, toggleTheme } = useTheme()
 
 const dropdownOpen = ref(false)
@@ -212,3 +221,4 @@ onUnmounted(() => {
   document.removeEventListener('click', handleClickOutside)
 })
 </script>
+

@@ -275,6 +275,7 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useAuthStore } from '~/stores/auth'
+import { useHomeworkStore } from '~/stores/homework'
 import { api } from '~/utils/api'
 import dayjs from 'dayjs'
 import Swal from 'sweetalert2'
@@ -323,6 +324,7 @@ interface Homework {
 
 const route = useRoute()
 const authStore = useAuthStore()
+const homeworkStore = useHomeworkStore()
 const homeworkId = computed(() => route.params.homeworkId)
 
 const loading = ref(true)
@@ -346,7 +348,9 @@ onMounted(async () => {
     
     // Register read receipt
     if (homeworkId.value) {
-        api.post(`/api/homeworks/student/${homeworkId.value}/mark-as-viewed`).catch(() => {
+        api.post(`/api/homeworks/student/${homeworkId.value}/mark-as-viewed`).then(() => {
+            homeworkStore.markAsOpened(homeworkId.value)
+        }).catch(() => {
             console.warn('Could not register homework view')
         })
     }
@@ -574,3 +578,7 @@ async function downloadFile(url: string, path: string) {
     }
 }
 </script>
+
+
+
+
