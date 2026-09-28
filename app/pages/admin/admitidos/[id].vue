@@ -29,6 +29,12 @@
           </svg>
           Formulario Simple
         </button>
+        <button type="button" @click="openAdmissionForm(estudiante.id)" class="inline-flex items-center justify-center rounded-lg border border-indigo-300 dark:border-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 px-4 py-2 text-sm font-medium text-indigo-700 dark:text-indigo-300 shadow-sm hover:bg-indigo-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors">
+          Ver Expediente Original
+        </button>
+        <button type="button" @click="printAdmissionForm(estudiante)" class="inline-flex items-center justify-center rounded-lg border border-red-300 dark:border-red-600 bg-red-50 dark:bg-red-900/30 px-4 py-2 text-sm font-medium text-red-700 dark:text-red-300 shadow-sm hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors">
+          PDF Original
+        </button>
 
         <button
           v-if="estudiante?.admision?.pdf_token"
@@ -149,7 +155,8 @@
                       class="inline-flex items-center rounded-md bg-gray-100 dark:bg-gray-700 px-2.5 py-0.5 text-xs font-medium text-gray-800 dark:text-gray-200">
                       {{ d }}
                     </span>
-                  </template>
+                    <AdminAdmissionFormViewModal :is-open="isModalOpen" :estudiante-id="selectedEstudianteId" @close="isModalOpen = false" />
+</template>
                   <span v-else class="text-gray-400 italic">Ninguna registrada</span>
                 </dd>
               </div>
@@ -161,7 +168,8 @@
                       class="inline-flex items-center rounded-md bg-red-50 px-2.5 py-0.5 text-xs font-medium text-red-700 ring-1 ring-inset ring-red-600/10">
                       {{ e }}
                     </span>
-                  </template>
+                    <AdminAdmissionFormViewModal :is-open="isModalOpen" :estudiante-id="selectedEstudianteId" @close="isModalOpen = false" />
+</template>
                   <span v-else class="text-gray-400 italic">Ninguna registrada</span>
                 </dd>
               </div>
@@ -173,7 +181,8 @@
                       class="inline-flex items-center rounded-md bg-green-50 px-2.5 py-0.5 text-xs font-medium text-green-700 ring-1 ring-inset ring-green-600/20">
                       {{ v }}
                     </span>
-                  </template>
+                    <AdminAdmissionFormViewModal :is-open="isModalOpen" :estudiante-id="selectedEstudianteId" @close="isModalOpen = false" />
+</template>
                   <span v-else class="text-gray-400 italic">Ninguna registrada</span>
                 </dd>
               </div>
@@ -219,7 +228,8 @@
                   </div>
                 </div>
               </div>
-            </template>
+              <AdminAdmissionFormViewModal :is-open="isModalOpen" :estudiante-id="selectedEstudianteId" @close="isModalOpen = false" />
+</template>
             <div v-else class="p-6 text-center text-gray-500 dark:text-gray-400">
               No se han registrado familiares.
             </div>
@@ -271,7 +281,8 @@
                 {{ estudiante.direccion.sector }}<br>
                 {{ estudiante.direccion.municipio }}, {{ estudiante.direccion.provincia }}
               </address>
-            </template>
+              <AdminAdmissionFormViewModal :is-open="isModalOpen" :estudiante-id="selectedEstudianteId" @close="isModalOpen = false" />
+</template>
             <div v-else class="text-sm text-gray-500 dark:text-gray-400 italic">No hay dirección registrada.</div>
           </div>
         </div>
@@ -293,7 +304,8 @@
                   <dd class="text-xs text-gray-900 dark:text-gray-100 text-right">{{ estudiante.nacionalidad || 'N/A' }}</dd>
                 </div>
               </dl>
-            </template>
+              <AdminAdmissionFormViewModal :is-open="isModalOpen" :estudiante-id="selectedEstudianteId" @close="isModalOpen = false" />
+</template>
             <template v-else-if="estudiante.acta">
               <dl class="space-y-3">
                 <div class="flex justify-between border-b pb-1 border-gray-100 dark:border-gray-700">
@@ -313,7 +325,8 @@
                   <dd class="text-xs text-gray-900 dark:text-gray-100 text-right">{{ estudiante.acta.acta_numero || 'N/A' }} / {{ estudiante.acta.anio || 'N/A' }}</dd>
                 </div>
               </dl>
-            </template>
+              <AdminAdmissionFormViewModal :is-open="isModalOpen" :estudiante-id="selectedEstudianteId" @close="isModalOpen = false" />
+</template>
             <div v-else class="text-sm text-gray-500 dark:text-gray-400 italic">No se registraron datos de acta.</div>
           </div>
         </div>
@@ -338,6 +351,7 @@
       </div>
     </div>
   </div>
+  <AdminAdmissionFormViewModal :is-open="isModalOpen" :estudiante-id="selectedEstudianteId" @close="isModalOpen = false" />
 </template>
 
 <script setup>

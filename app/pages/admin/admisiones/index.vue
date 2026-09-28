@@ -166,7 +166,18 @@
             </tr>
             <tr v-for="estudiante in estudiantes" :key="estudiante.id" class="hover:bg-gray-50 dark:bg-gray-900/50">
               <td class="whitespace-nowrap py-4 pl-4 pr-3 text-sm font-medium text-gray-900 dark:text-gray-100 sm:pl-6">
-                <div>{{ estudiante.nombres }} {{ estudiante.apellidos }}</div>
+                <div>
+                    {{ estudiante.nombres }} {{ estudiante.apellidos }}
+                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium" 
+                          :class="{
+                            'bg-yellow-100 text-yellow-800': estudiante.estado === 'pre-admitido',
+                            'bg-blue-100 text-blue-800': estudiante.estado === 'admitido',
+                            'bg-green-100 text-green-800': estudiante.estado === 'activo',
+                            'bg-gray-100 text-gray-800': !['pre-admitido', 'admitido', 'activo'].includes(estudiante.estado)
+                          }">
+                      {{ estudiante.estado }}
+                    </span>
+                  </div>
                 <div v-if="estudiante.admision?.betado" class="mt-1 flex items-center">
                   <UiTooltip :text="estudiante.admision?.razon_betado || 'No hay razón especificada'">
                     <span class="inline-flex items-center rounded-md bg-red-50 px-2 py-1 text-[10px] font-medium text-red-700 ring-1 ring-inset ring-red-600/10 cursor-help">
@@ -195,7 +206,7 @@
               </td>
               <td class="relative whitespace-nowrap py-4 pl-3 pr-4 text-right text-sm font-medium sm:pr-6 min-w-[120px]">
                 <div class="flex items-center justify-end gap-2">
-                  <button type="button" @click="viewDetails(estudiante)" title="Ver Perfil"
+                  <button type="button" @click="openAdmissionForm(estudiante.id)" title="Ver Formulario Original" class="text-indigo-600 hover:text-indigo-900 hover:bg-indigo-50 p-2 rounded-md transition-colors"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg></button><button type="button" @click="printAdmissionForm(estudiante)" title="Imprimir Formulario Original" class="text-red-600 hover:text-red-900 hover:bg-red-50 p-2 rounded-md transition-colors"><svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg></button><button type="button" @click="viewDetails(estudiante)" title="Ver Perfil"
                     class="text-primary-600 hover:text-primary-900 hover:bg-primary-50 p-2 rounded-md transition-colors">
                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -265,6 +276,7 @@
       </div>
     </div>
   </div>
+  <AdminAdmissionFormViewModal :is-open="isModalOpen" :estudiante-id="selectedEstudianteId" @close="isModalOpen = false" />
 </template>
 
 <script setup>
@@ -297,7 +309,48 @@ const page = ref(1)
 const currentPage = ref(1)
 const totalPages = ref(1)
 const totalItems = ref(0)
+const page = ref(1)
+const currentPage = ref(1)
+const totalPages = ref(1)
+const totalItems = ref(0)
 const perPage = ref(15)
+
+const aniosLectivos = ref([])
+const anioLectivoId = ref('')
+const estadoFilter = ref('todos')
+
+const isModalOpen = ref(false)
+const selectedEstudianteId = ref(null)
+
+const openAdmissionForm = (id) => {
+  selectedEstudianteId.value = id
+  isModalOpen.value = true
+}
+
+const printAdmissionForm = async (estudiante) => {
+  try {
+    const cedula = estudiante.cedula || estudiante.id
+    const url = `/api/estudiantes/${estudiante.id}/expediente-admision/pdf`
+    const blob = await api.getBlob(url)
+    printPdfBlob(blob, `formulario_admision_${cedula}.pdf`, 'Preparando impresión...')
+  } catch (error) {
+    console.error('Error al generar PDF del formulario:', error)
+    Swal.fire('Error', 'No se pudo generar el PDF', 'error')
+  }
+}
+
+const fetchAniosLectivos = async () => {
+  try {
+    const res = await api.get('/api/anios-lectivos')
+    aniosLectivos.value = res.data ?? res ?? []
+    const activeAnio = aniosLectivos.value.find(a => a.activo)
+    if (activeAnio) {
+      anioLectivoId.value = activeAnio.id
+    }
+  } catch (error) {
+    console.error('Error fetching años lectivos:', error)
+  }
+}
 
 const fetchTitulos = async () => {
   try {
@@ -335,7 +388,9 @@ const getCentroProcedenciaName = (estudiante) => {
 const fetchAdmitidos = async (page = 1) => {
   try {
     loading.value = true
-    let url = `/api/admisiones?page=${page}&search=${searchQuery.value}`
+    let url = `/api/admisiones/historico?page=${page}&search=${searchQuery.value}`
+    if (anioLectivoId.value) url += `&anio_lectivo_id=${anioLectivoId.value}`
+    if (estadoFilter.value) url += `&estado=${estadoFilter.value}`
     if (tituloFilter.value) url += `&titulo_id=${tituloFilter.value}`
     const res = await api.get(url)
 
