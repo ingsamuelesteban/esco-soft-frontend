@@ -57,6 +57,7 @@ export default defineNuxtConfig({
     public: {
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8010',
       sanctumEndpoint: process.env.NUXT_PUBLIC_SANCTUM_ENDPOINT || 'http://localhost:8010/sanctum/csrf-cookie',
+      vapidPublicKey: process.env.VAPID_PUBLIC_KEY || '',
       // Reverb WebSocket Configuration
       reverb: {
         appKey: process.env.NUXT_PUBLIC_REVERB_APP_KEY || 'm8ltbfspcqtzuj4girhc',

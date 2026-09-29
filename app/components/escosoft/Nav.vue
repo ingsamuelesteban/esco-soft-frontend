@@ -191,6 +191,7 @@
 import { ref, onMounted, computed } from 'vue'
 import { useAuthStore } from '../../stores/auth'
 import { useNotificationStore } from '../../stores/notifications'
+  import { useWebPush } from '../../composables/useWebPush'
 import { useTheme } from '../../composables/useTheme'
 import StudentProfileEditModal from '../student/StudentProfileEditModal.vue'
 import dayjs from 'dayjs'
@@ -207,6 +208,7 @@ const emit = defineEmits(['toggleSidebar'])
 const authStore = useAuthStore()
 const notificationStore = useNotificationStore()
 const { isDark, toggleTheme } = useTheme()
+  const { registerServiceWorker, subscribeUser, unsubscribeUser, isSubscribed, isSupported } = useWebPush()
 
 // Estados
 const isUserMenuOpen = ref(false)
@@ -305,6 +307,7 @@ const closeNotifications = () => {
 
 // Cargar notificaciones iniciales
 onMounted(() => {
+    registerServiceWorker()
   if (authStore.isAuthenticated) {
     notificationStore.fetchUnreadCount()
     // Polling cada 60 segundos
