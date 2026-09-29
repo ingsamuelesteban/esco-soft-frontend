@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import { useRuntimeConfig } from '#app';
-import { api } from '~/utils/api'; // Fix API import
+import { api } from '~/utils/api';
+import Swal from 'sweetalert2'; // Fix API import
 
 export const useWebPush = () => {
   const config = useRuntimeConfig();
@@ -47,12 +48,14 @@ export const useWebPush = () => {
       const existingSubscription = await registration.pushManager.getSubscription();
       if (existingSubscription) {
         isSubscribed.value = true;
+        try { await api.post('/api/push-subscriptions', existingSubscription.toJSON()); } catch(e) {}
         return;
       }
 
       const vapidKey = config.public.vapidPublicKey;
       if (!vapidKey) {
         console.error('No VAPID key configured');
+        Swal.fire({ icon: 'error', title: 'Error de Configuración', text: 'Falta la VAPID_PUBLIC_KEY en el .env del frontend.' });
         return;
       }
 
@@ -66,6 +69,7 @@ export const useWebPush = () => {
       isSubscribed.value = true;
     } catch (e) {
       console.error('Failed to subscribe the user: ', e);
+      Swal.fire({ icon: 'error', title: 'Error de Suscripción', text: e.response?.data?.message || e.message || 'Error desconocido al suscribir.' });
     }
   };
 
