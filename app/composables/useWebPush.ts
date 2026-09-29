@@ -1,10 +1,9 @@
-import { ref, onMounted } from 'vue';
-import { useNuxtApp, useRuntimeConfig } from '#app';
-import { useApi } from '~/composables/useApi'; // Assuming useApi exists or $fetch
+import { ref } from 'vue';
+import { useRuntimeConfig } from '#app';
+import { api } from '~/utils/api'; // Fix API import
 
 export const useWebPush = () => {
   const config = useRuntimeConfig();
-  const api = useApi(); // Replace with your standard api fetcher if different
   const isSubscribed = ref(false);
   const isSupported = ref(false);
 
