@@ -209,6 +209,7 @@
 import { ref, reactive, onMounted, watch } from 'vue'
 import { api } from '~/utils/api'
 import DropZone from '~/components/ui/DropZone.vue'
+import Swal from 'sweetalert2'
 
 const props = defineProps<{
     classAssignmentId: string | number
@@ -336,7 +337,7 @@ async function handleSubmit() {
 
         // Validation: if not assign_to_all, must select at least one student
         if (!form.assign_to_all && form.student_ids.length === 0) {
-            alert('Por favor selecciona al menos un estudiante')
+            Swal.fire({ icon: "warning", title: "Atenci�n", text: "Por favor selecciona al menos un estudiante" })
             saving.value = false
             return
         }
@@ -381,7 +382,7 @@ async function handleSubmit() {
         emit('saved')
     } catch (error) {
         console.error('Error saving homework:', error)
-        alert('Error al guardar la tarea')
+        Swal.fire({ icon: "error", title: "Error", text: "Error al guardar la tarea" })
     } finally {
         saving.value = false
     }
