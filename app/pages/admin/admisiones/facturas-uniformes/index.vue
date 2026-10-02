@@ -26,54 +26,55 @@
 
         <!-- Filtros -->
         <div class="bg-white dark:bg-gray-800 p-4 rounded-lg shadow ring-1 ring-gray-200 dark:ring-gray-700 mb-6 flex flex-col gap-4">
-            <div class="flex flex-wrap gap-4 items-end">
-                <div class="flex-1 min-w-[200px]">
+            <div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end">
+                <div class="flex-1 w-full sm:w-auto sm:min-w-[200px]">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Buscar Factura o Estudiante</label>
                     <input type="text" v-model="filters.search" @keyup.enter="fetchInvoices(1)"
                         placeholder="Nº Factura o Nombre..."
-                        class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                        class="w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
                 </div>
-                <div class="flex-1 min-w-[200px]">
+                <div class="flex-1 w-full sm:w-auto sm:min-w-[200px]">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Ordenar Por</label>
                     <select v-model="filters.order_by" @change="fetchInvoices(1)"
-                        class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                        class="w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
                         <option value="class_asc">Por Aula (Antiguas primero)</option>
                         <option value="date_asc">Cronológico: Más antiguas primero</option>
                         <option value="date_desc">Cronológico: Más recientes primero</option>
                     </select>
                 </div>
-                <div class="flex-1 min-w-[150px]">
+                <div class="flex-1 w-full sm:w-auto sm:min-w-[150px]">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Estado de Pago</label>
                     <select v-model="filters.payment_status" @change="fetchInvoices(1)"
-                        class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                        class="w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
                         <option value="">Todos</option>
                         <option value="pending">Pendiente</option>
+                        <option value="partial">Pago Parcial</option>
                         <option value="paid">Pagado</option>
                     </select>
                 </div>
-                <div class="flex-1 min-w-[150px]">
+                <div class="flex-1 w-full sm:w-auto sm:min-w-[150px]">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Estado de Entrega</label>
                     <select v-model="filters.delivery_status" @change="fetchInvoices(1)"
-                        class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                        class="w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
                         <option value="">Todos</option>
                         <option value="pending">Pendiente</option>
                         <option value="partial">Parcial</option>
                         <option value="delivered">Entregado</option>
                     </select>
                 </div>
-                <div class="flex-1 min-w-[130px]">
+                <div class="flex-1 w-full sm:w-auto sm:min-w-[130px]">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Desde</label>
                     <input type="date" v-model="filters.fecha_inicio" @change="fetchInvoices(1)"
-                        class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                        class="w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
                 </div>
-                <div class="flex-1 min-w-[130px]">
+                <div class="flex-1 w-full sm:w-auto sm:min-w-[130px]">
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Hasta</label>
                     <input type="date" v-model="filters.fecha_fin" @change="fetchInvoices(1)"
-                        class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
+                        class="w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm" />
                 </div>
-                <div class="flex-none">
+                <div class="w-full sm:w-auto flex-none">
                     <button @click="fetchInvoices(1)"
-                        class="px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-600 hover:bg-gray-700 focus:outline-none">
+                        class="w-full sm:w-auto px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-gray-600 hover:bg-gray-700 focus:outline-none">
                         Buscar
                     </button>
                 </div>
@@ -109,7 +110,7 @@
                     </tr>
                 </thead>
                 <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    <tr v-for="invoice in invoices" :key="invoice.id" class="hover:bg-gray-50 dark:bg-gray-900/50">
+                    <tr v-for="invoice in invoices" :key="invoice.id" class="hover:bg-gray-50 dark:hover:bg-gray-700/40 transition-colors dark:bg-gray-800">
                         <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">{{
                             invoice.invoice_number }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
@@ -121,19 +122,24 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-100">${{
                             parseFloat(invoice.total_amount).toFixed(2) }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <span :class="[
-                                invoice.payment_status === 'paid' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800',
-                                'px-2 inline-flex text-xs leading-5 font-semibold rounded-full'
-                            ]">
-                                {{ invoice.payment_status === 'paid' ? 'Pagado' : 'Pendiente' }}
+                            <span v-if="invoice.payment_status === 'paid'" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 border border-green-200 dark:border-green-700/50">
+                                Pagado
+                            </span>
+                            <span v-else-if="invoice.payment_status === 'partial'" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-amber-100 text-amber-800 dark:bg-amber-900/40 dark:text-amber-300 border border-amber-200 dark:border-amber-700/50">
+                                Parcial (Pendiente: ${{ (parseFloat(invoice.total_amount) - parseFloat(invoice.amount_paid || 0)).toFixed(2) }})
+                            </span>
+                            <span v-else class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-700/50">
+                                Pendiente
                             </span>
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <span :class="[
-                                invoice.delivery_status === 'delivered' ? 'bg-green-100 text-green-800' :
-                                    invoice.delivery_status === 'partial' ? 'bg-blue-100 text-blue-800' : 'bg-yellow-100 text-yellow-800',
-                                'px-2 inline-flex text-xs leading-5 font-semibold rounded-full'
-                            ]">
+                            <span v-if="invoice.delivery_status === 'delivered'" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800 dark:bg-green-900/40 dark:text-green-300 border border-green-200 dark:border-green-700/50">
+                                {{ deliveryStatusText(invoice.delivery_status) }}
+                            </span>
+                            <span v-else-if="invoice.delivery_status === 'partial'" class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800 dark:bg-blue-900/40 dark:text-blue-300 border border-blue-200 dark:border-blue-700/50">
+                                {{ deliveryStatusText(invoice.delivery_status) }}
+                            </span>
+                            <span v-else class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800 dark:bg-yellow-900/40 dark:text-yellow-300 border border-yellow-200 dark:border-yellow-700/50">
                                 {{ deliveryStatusText(invoice.delivery_status) }}
                             </span>
                         </td>
@@ -172,12 +178,12 @@
         <!-- Paginación -->
         <div class="mt-4 flex items-center justify-between" v-if="pagination.last_page > 1">
             <button @click="fetchInvoices(pagination.current_page - 1)" :disabled="pagination.current_page === 1"
-                class="px-4 py-2 border rounded-md text-sm bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50 disabled:opacity-50">Anterior</button>
+                class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50">Anterior</button>
             <span class="text-sm text-gray-600 dark:text-gray-400">Página {{ pagination.current_page }} de {{ pagination.last_page
                 }}</span>
             <button @click="fetchInvoices(pagination.current_page + 1)"
                 :disabled="pagination.current_page === pagination.last_page"
-                class="px-4 py-2 border rounded-md text-sm bg-white dark:bg-gray-800 hover:bg-gray-50 dark:bg-gray-900/50 disabled:opacity-50">Siguiente</button>
+                class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 disabled:opacity-50">Siguiente</button>
         </div>
 
 
@@ -186,7 +192,7 @@
             <Dialog as="div" @close="closeManageModal" class="relative z-50">
                 <TransitionChild as="template" enter="duration-300 ease-out" enter-from="opacity-0"
                     enter-to="opacity-100" leave="duration-200 ease-in" leave-from="opacity-100" leave-to="opacity-0">
-                    <div class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm" />
+                    <div class="fixed inset-0 bg-gray-900/75 backdrop-blur-sm" />
                 </TransitionChild>
                 <div class="fixed inset-0 overflow-y-auto">
                     <div class="flex min-h-full items-center justify-center p-4">
@@ -202,7 +208,7 @@
                                             Gestionar Factura {{ selectedInvoice?.invoice_number }}
                                         </DialogTitle>
                                         <button type="button" @click="closeManageModal"
-                                            class="text-gray-400 hover:text-gray-500 dark:text-gray-400">
+                                            class="text-gray-400 hover:text-gray-500 dark:text-gray-300">
                                             <span class="sr-only">Cerrar</span>
                                             <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
@@ -220,17 +226,17 @@
                                                         class="font-semibold text-gray-700 dark:text-gray-300">${{
                                                             parseFloat(selectedInvoice.total_amount).toFixed(2) }}</span>
                                                 </p>
-                                                <p class="text-xs text-green-600">Pagado: <span
+                                                <p class="text-xs text-green-600 dark:text-green-400">Pagado: <span
                                                         class="font-semibold">${{ parseFloat(selectedInvoice.amount_paid
                                                             || 0).toFixed(2) }}</span></p>
-                                                <p class="text-sm text-red-600 mt-1">Pendiente: <span
+                                                <p class="text-sm text-red-600 dark:text-red-400 mt-1">Pendiente: <span
                                                         class="font-bold">${{ (parseFloat(selectedInvoice.total_amount)
                                                             - parseFloat(selectedInvoice.amount_paid || 0)).toFixed(2)
                                                         }}</span></p>
                                             </div>
                                             <div class="w-full md:w-auto flex flex-col items-end justify-center">
                                                 <span v-if="selectedInvoice.payment_status === 'paid'"
-                                                    class="inline-flex rounded-full bg-green-100 px-3 py-1 text-sm font-semibold text-green-800 self-end">
+                                                    class="inline-flex rounded-full bg-green-100 dark:bg-green-900/40 px-3 py-1 text-sm font-semibold text-green-800 dark:text-green-300 self-end">
                                                     Pagado en su totalidad
                                                 </span>
                                                 <div v-else class="flex flex-col gap-2 w-full md:w-auto">
@@ -244,7 +250,7 @@
                                                             <input type="number" v-model="abonoAmount" min="1"
                                                                 :max="parseFloat(selectedInvoice.total_amount) - parseFloat(selectedInvoice.amount_paid || 0)"
                                                                 step="0.01"
-                                                                class="block w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 pl-7 focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
+                                                                class="block w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 pl-7 focus:border-primary-500 focus:ring-primary-500 sm:text-sm">
                                                         </div>
                                                     </div>
                                                     <button @click.prevent="registerAbono" type="button"
@@ -292,7 +298,7 @@
                                                                 <input type="number" v-model.number="deliveries[detail.id]"
                                                                     min="0" :max="detail.pending_quantity"
                                                                     :disabled="detail.pending_quantity === 0"
-                                                                    class="w-20 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm text-center disabled:opacity-50">
+                                                                    class="w-20 bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm text-center disabled:opacity-50">
                                                             </td>
                                                         </tr>
                                                     </tbody>
@@ -372,7 +378,7 @@
                                                 <div class="flex gap-2">
                                                     <input type="text" v-model="searchQuery"
                                                         @keyup.enter="searchStudents"
-                                                        class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                                                        class="w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
                                                         placeholder="Ej. Juan Pérez">
                                                     <button type="button" @click="searchStudents"
                                                         class="inline-flex justify-center rounded-md border border-transparent bg-primary-600 px-3 py-2 text-sm font-medium text-white hover:bg-primary-700">Buscar</button>
@@ -419,7 +425,7 @@
                                             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notas
                                                 (Opcional)</label>
                                             <textarea v-model="createNotes" rows="3"
-                                                class="w-full bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
+                                                class="w-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-md border-gray-300 dark:border-gray-600 shadow-sm focus:border-primary-500 focus:ring-primary-500 sm:text-sm"
                                                 placeholder="Observaciones de la factura..."></textarea>
                                         </div>
                                     </div>
