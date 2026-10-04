@@ -573,7 +573,7 @@ const printMonthly = async () => {
             const text = await blob.text()
             try {
                 const json = JSON.parse(text)
-                Swal.fire({ icon: 'error', title: 'Error', text: `Error: ' + (json.message || json.error || 'Unknown server error` }))
+                Swal.fire({ icon: 'error', title: 'Error', text: `Error: ${json.message || json.error || 'Unknown server error'}` })
             } catch (e) {
                 Swal.fire({ icon: 'error', title: 'Error', text: `Error del servidor` })
             }
