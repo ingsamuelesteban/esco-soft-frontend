@@ -475,6 +475,7 @@
 </template>
 
 <script setup lang="ts">
+import Swal from 'sweetalert2'
 
 
 interface Profesor {
@@ -748,7 +749,7 @@ const crearNuevaAsignacion = async () => {
 
 const ejecutarDuplicacion = async () => {
   if (!asignacionADuplicar.value || opcionesDuplicacion.value.aulas_ids.length === 0) {
-    alert('Selecciona al menos un aula para duplicar')
+    Swal.fire({ icon: 'info', title: 'Aviso', text: `Selecciona al menos un aula para duplicar` })
     return
   }
 

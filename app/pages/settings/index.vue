@@ -105,6 +105,7 @@
 </template>
 
 <script setup lang="ts">
+import Swal from 'sweetalert2'
 import { ref, reactive, computed } from 'vue'
 import { useAuthStore } from '../../stores/auth'
 
@@ -158,7 +159,7 @@ const saveProfile = () => {
 
 const changePassword = () => {
   if (passwordForm.new !== passwordForm.confirm) {
-    alert('Las contraseñas no coinciden')
+    Swal.fire({ icon: 'info', title: 'Aviso', text: `Las contraseñas no coinciden` })
     return
   }
   // TODO: Implementar cambio de contraseña

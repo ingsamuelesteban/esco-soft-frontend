@@ -130,6 +130,7 @@
 </template>
 
 <script setup lang="ts">
+import Swal from 'sweetalert2'
 import { ref, reactive, onMounted, computed } from 'vue'
 import { api } from '~/utils/api'
 import dayjs from 'dayjs'
@@ -176,7 +177,7 @@ async function handleGrade() {
         emit('graded')
     } catch (error) {
         console.error('Error grading submission:', error)
-        alert('Error al calificar la entrega')
+        Swal.fire({ icon: 'error', title: 'Error', text: `Error al calificar la entrega` })
     } finally {
         saving.value = false
     }
@@ -198,7 +199,7 @@ async function downloadFile() {
         window.URL.revokeObjectURL(urlObj)
     } catch (error) {
         console.error('Error downloading file:', error)
-        alert('Error al descargar el archivo')
+        Swal.fire({ icon: 'error', title: 'Error', text: `Error al descargar el archivo` })
     }
 }
 </script>

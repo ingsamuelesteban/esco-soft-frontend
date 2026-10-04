@@ -76,6 +76,7 @@
 </template>
 
 <script setup lang="ts">
+import Swal from 'sweetalert2'
 import { computed, ref } from 'vue'
 import { api } from '../../utils/api'
 import { useRuntimeConfig } from '#app'
@@ -107,7 +108,7 @@ const copyToClipboard = () => {
   const header = "Estudiante\tUsuario\tContraseña\n"
   const rows = props.credentials.map(c => `${c.estudiante_nombre}\t${c.username}\t${c.password}`).join("\n")
   navigator.clipboard.writeText(header + rows)
-    .then(() => alert('Datos copiados al portapapeles'))
+    .then(() => Swal.fire({ icon: 'info', title: 'Aviso', text: `Datos copiados al portapapeles` }))
     .catch(err => console.error('Error al copiar: ', err))
 }
 
@@ -125,7 +126,7 @@ const downloadPdf = async () => {
     
   } catch (e) {
     console.error('Error fetching PDF:', e)
-    alert('Error al descargar el PDF.')
+    Swal.fire({ icon: 'error', title: 'Error', text: `Error al descargar el PDF.` })
   } finally {
     isPrinting.value = false
   }
