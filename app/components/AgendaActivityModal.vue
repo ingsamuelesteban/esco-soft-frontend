@@ -107,7 +107,7 @@
 
                 <!-- Visible for students -->
                 <div class="flex items-center mt-4">
-                  <button type="button" :disabled="form.es_privada" class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500" :class="[form.visibleToStudents ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700', form.es_privada ? 'opacity-50 cursor-not-allowed' : '']" role="switch" :aria-checked="form.visibleToStudents" @click="if(!form.es_privada) form.visibleToStudents = !form.visibleToStudents">
+                  <button type="button" :disabled="form.es_privada" class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500" :class="[form.visibleToStudents ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700', form.es_privada ? 'opacity-50 cursor-not-allowed' : '']" role="switch" :aria-checked="form.visibleToStudents" @click="form.es_privada ? null : form.visibleToStudents = !form.visibleToStudents">
                     <span class="sr-only">Visible para estudiantes</span>
                     <span aria-hidden="true" class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200" :class="[form.visibleToStudents ? 'translate-x-5' : 'translate-x-0']"></span>
                   </button>
