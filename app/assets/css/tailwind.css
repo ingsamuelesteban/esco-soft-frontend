@@ -37,3 +37,10 @@ html.dark {
   --fc-today-bg-color: rgba(59, 130, 246, 0.15);
   --fc-list-event-hover-bg-color: #374151;
 }
+.fc { width: 100% !important; max-width: 100% !important; }
+.fc .fc-view-harness { min-height: 650px !important; height: auto !important; }
+.dark .fc { --fc-page-bg-color: #1f2937; --fc-neutral-bg-color: #374151; --fc-border-color: #374151; --fc-today-bg-color: rgba(59, 130, 246, 0.12); }
+.dark .fc-col-header-cell-cushion, .dark .fc-daygrid-day-number, .dark .fc-toolbar-title { color: #e5e7eb !important; }
+.dark .fc-button { background-color: #374151 !important; border-color: #4b5563 !important; color: #f3f4f6 !important; }
+.dark .fc-button:hover { background-color: #4b5563 !important; }
+.dark .fc-button-active { background-color: #2563eb !important; border-color: #1d4ed8 !important; }
