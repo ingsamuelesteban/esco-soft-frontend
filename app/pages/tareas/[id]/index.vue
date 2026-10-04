@@ -131,7 +131,6 @@
 </template>
 
 <script setup lang="ts">
-import Swal from 'sweetalert2'
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '~/stores/auth'
@@ -278,7 +277,7 @@ async function deleteHomework(homework: any) {
         await fetchHomeworks()
     } catch (error) {
         console.error('Error deleting homework:', error)
-        Swal.fire({ icon: 'error', title: 'Error', text: `Error al eliminar la tarea` })
+        alert('Error al eliminar la tarea')
     }
 }
 

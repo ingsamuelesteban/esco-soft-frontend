@@ -574,7 +574,7 @@ async function downloadFile(url: string, path: string) {
         window.URL.revokeObjectURL(urlObj)
     } catch (error) {
         console.error('Error downloading file:', error)
-        Swal.fire({ icon: 'error', title: 'Error', text: `Error al descargar el archivo` })
+        alert('Error al descargar el archivo')
     }
 }
 </script>

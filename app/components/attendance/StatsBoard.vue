@@ -151,7 +151,6 @@
 </template>
 
 <script setup lang="ts">
-import Swal from 'sweetalert2'
 import { ref, computed } from 'vue'
 import { PrinterIcon, TableCellsIcon } from '@heroicons/vue/24/outline'
 import StudentListCard from './StudentListCard.vue'
@@ -212,7 +211,7 @@ const handlePrint = async () => {
 
     } catch (e: any) {
         console.error('Error printing:', e)
-        Swal.fire({ icon: 'error', title: 'Error', text: `Error al imprimir: ' + (e.message || e))
+        alert('Error al imprimir: ' + (e.message || e))
     } finally {
         isPrinting.value = false
     }
@@ -231,10 +230,10 @@ const handleExport = async () => {
         })
 
         if (response && response.url) {
-            window.open(response.url, '_blank` })
+            window.open(response.url, '_blank')
         } else {
             console.error('No URL returned for excel export', response)
-            Swal.fire({ icon: 'error', title: 'Error', text: `Error: No se pudo generar la URL de descarga.` })
+            alert('Error: No se pudo generar la URL de descarga.')
         }
 
     } catch (e: any) {

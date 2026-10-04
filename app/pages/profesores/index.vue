@@ -338,7 +338,7 @@ const cargarProfesores = async () => {
     profesores.value = response.data || []
   } catch (error) {
     console.error('Error al cargar profesores:', error)
-    Swal.fire({ icon: 'error', title: 'Error', text: `Error al cargar la lista de profesores` })
+    alert('Error al cargar la lista de profesores')
   } finally {
     loading.value = false
   }

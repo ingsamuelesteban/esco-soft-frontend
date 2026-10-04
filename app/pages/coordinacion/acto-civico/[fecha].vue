@@ -263,7 +263,7 @@ const guardar = async () => {
     }
   } catch {}
 
-  if (!anioId) { Swal.fire({ icon: 'info', title: 'Aviso', text: `No se encontró año lectivo activo.` }); return }
+  if (!anioId) { alert('No se encontró año lectivo activo.'); return }
 
   guardando.value = true
   mensajeExito.value = ''
