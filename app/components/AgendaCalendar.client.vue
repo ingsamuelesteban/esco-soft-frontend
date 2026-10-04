@@ -9,7 +9,7 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list'
 import interactionPlugin from '@fullcalendar/interaction'
-import { useMeDíaQuery } from '@vueuse/core'
+import { useMediaQuery } from '@vueuse/core'
 
 const props = defineProps({
   fetchEvents: { type: Function, required: true },
@@ -19,7 +19,7 @@ const props = defineProps({
 
 const emit = defineEmits(['date-select', 'event-click'])
 
-const isDesktop = useMeDíaQuery('(min-width: 768px)')
+const isDesktop = useMediaQuery('(min-width: 768px)')
 const fullCalendar = ref(null)
 
 const calendarOptions = computed(() => ({
@@ -55,9 +55,9 @@ const calendarOptions = computed(() => ({
     
     let innerHTML = '';
     if (arg.timeText) {
-      innerHTML += <div class="fc-event-time mr-1 font-semibold text-xs whitespace-nowrap">\</div>;
+      innerHTML += `<div class="fc-event-time mr-1 font-semibold text-xs whitespace-nowrap">${arg.timeText}</div>`;
     }
-    innerHTML += <div class="fc-event-title-container truncate text-xs flex items-center"><span class="mr-1" title="Privado">🔒</span><span class="truncate">\</span></div>;
+    innerHTML += `<div class="fc-event-title-container truncate text-xs flex items-center"><span class="mr-1" title="Privado">🔒</span><span class="truncate">${arg.event.title}</span></div>`;
     
     content.innerHTML = innerHTML;
     return { domNodes: [content] };
@@ -125,4 +125,9 @@ defineExpose({
   @apply border-dashed !bg-purple-100 !border-purple-400 !text-purple-800 dark:!bg-purple-950/40 dark:!border-purple-800 dark:!text-purple-200;
 }
 </style>
+
+
+
+
+
 
