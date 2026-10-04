@@ -122,7 +122,47 @@ watch(() => props.modelValue, (newVal) => {
   if (newVal) {
     if (props.activity) {
       isEditing.value = true
-      form.value = { ...defaultForm, ...props.activity }
+      
+      let startDate = ''
+      let startTime = '08:00'
+      if (props.activity.fecha_inicio) {
+        const parts = props.activity.fecha_inicio.split(' ')
+        if (parts.length > 1) {
+          startDate = parts[0]
+          startTime = parts[1].substring(0,5)
+        } else if (props.activity.fecha_inicio.includes('T')) {
+           const tParts = props.activity.fecha_inicio.split('T')
+           startDate = tParts[0]
+           startTime = tParts[1].substring(0,5)
+        } else {
+          startDate = props.activity.fecha_inicio
+        }
+      }
+
+      let endDate = ''
+      let endTime = ''
+      if (props.activity.fecha_fin) {
+        const parts = props.activity.fecha_fin.split(' ')
+        if (parts.length > 1) {
+          endDate = parts[0]
+          endTime = parts[1].substring(0,5)
+        } else if (props.activity.fecha_fin.includes('T')) {
+           const tParts = props.activity.fecha_fin.split('T')
+           endDate = tParts[0]
+           endTime = tParts[1].substring(0,5)
+        } else {
+          endDate = props.activity.fecha_fin
+        }
+      }
+
+      form.value = { 
+        ...defaultForm, 
+        ...props.activity,
+        startDate,
+        startTime,
+        endDate,
+        endTime
+      }
     } else {
       isEditing.value = false
       form.value = { ...defaultForm }
@@ -150,7 +190,7 @@ const save = async () => {
     }
     
     if (isEditing.value) {
-      await api.put(`/api/v1/agenda/${props.activity.db_id}`, payload);
+      await api.put(`/api/v1/agenda/${props.activity.id}`, payload);
     } else {
       await api.post('/api/v1/agenda', payload);
     }

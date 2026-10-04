@@ -41,7 +41,7 @@
       />
     </div>
 
-    <AgendaActivityModal v-model="isModalOpen" :anioLectivoId="selectedAnioLectivoId" @created="loadEvents()" />
+    <AgendaActivityModal v-model="isModalOpen" :activity="selectedActivity" :anioLectivoId="selectedAnioLectivoId" @created="loadEvents()" />
   </div>
 </template>
 
@@ -98,15 +98,33 @@ const loadEvents = async () => {
   }
 }
 
+const selectedActivity = ref(null)
+
 const openModal = () => {
   isModalOpen.value = true
 }
 
 const handleDateSelect = (selectInfo) => {
+  selectedActivity.value = null
   openModal()
 }
 
-const handleEventClick = (clickInfo) => {
+const handleEventClick = (payload) => {
+  const activity = payload.event || payload
+  selectedActivity.value = {
+    id: activity.id,
+    titulo: activity.title || activity.titulo,
+    descripcion: activity.descripcion || '',
+    fecha_inicio: activity.start || activity.fecha_inicio,
+    fecha_fin: activity.end || activity.fecha_fin || '',
+    tipo_actividad: activity.tipo_actividad || 'general',
+    color: activity.color || '#2563eb',
+    es_privada: Boolean(activity.es_privada),
+    visible_para_estudiantes: Boolean(activity.visible_para_estudiantes),
+    alerta_1: activity.alerta_1_minutos_antes || null,
+    alerta_2: activity.alerta_2_minutos_antes || null,
+  }
   openModal()
 }
 </script>
+
