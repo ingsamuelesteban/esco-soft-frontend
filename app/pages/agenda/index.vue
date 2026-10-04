@@ -1,14 +1,17 @@
 ﻿<template>
   <div class="h-full flex flex-col p-4 sm:p-6 lg:p-8">
-    <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <!-- Header -->
+    <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
         <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Agenda Escolar</h1>
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">Gestiona las actividades y eventos institucionales.</p>
+        <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">Gestiona las actividades institucionales y personales.</p>
       </div>
       
       <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        <!-- Selector AÃ±o Lectivo -->
-        <select v-model="selectedAnioLectivoId" class="block w-full sm:w-auto rounded-md bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"><option v-for="anio in aniosLectivos" :key="anio.id" :value="anio.id">{{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}</option></select>
+        <!-- Selector Año Lectivo -->
+        <select v-model="selectedAnioLectivoId" class="block w-full sm:w-auto rounded-md bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+          <option v-for="anio in aniosLectivos" :key="anio.id" :value="anio.id">{{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}</option>
+        </select>
         
         <!-- Leyendas -->
         <div class="flex items-center gap-3 text-sm">
@@ -32,19 +35,27 @@
     <div class="flex-grow bg-white dark:bg-gray-800 shadow rounded-lg p-4 sm:p-6 border border-gray-200 dark:border-gray-700 overflow-hidden">
       <!-- Added a wrapper to ensure FullCalendar handles height correctly -->
       <div class="h-full min-h-[600px]">
-        <ClientOnly>
-          <FullCalendar ref="fullCalendar" :options="calendarOptions" />
-        </ClientOnly>
+        <AgendaCalendar
+          ref="agendaCalendar"
+          :fetch-events="fetchEvents"
+          :editable="true"
+          :selectable="true"
+          @date-select="handleDateSelect"
+          @event-click="handleEventClick"
+        />
       </div>
     </div>
 
-    <AgendaActivityModal v-model="isModalOpen" :anioLectivoId="selectedAnioLectivoId" @created="fullCalendar.getApi().refetchEvents()" />
+    <AgendaActivityModal v-model="isModalOpen" :anioLectivoId="selectedAnioLectivoId" @created="agendaCalendar.refetchEvents()" />
   </div>
 </template>
 
 <script setup>
-import { ref, watch, onMounted, computed, shallowRef } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 import { useAuthStore } from '~/stores/auth'
+import { api } from '~/utils/api'
+import AgendaCalendar from '~/components/AgendaCalendar.client.vue'
+import AgendaActivityModal from '~/components/AgendaActivityModal.vue'
 
 definePageMeta({
   middleware: ['auth']
@@ -54,21 +65,12 @@ const authStore = useAuthStore()
 if (authStore.user?.role === 'Estudiante') {
   navigateTo('/student/agenda')
 }
-import FullCalendar from '@fullcalendar/vue3'
-import dayGridPlugin from '@fullcalendar/daygrid'
-import timeGridPlugin from '@fullcalendar/timegrid'
-import listPlugin from '@fullcalendar/list'
-import interactionPlugin from '@fullcalendar/interaction'
 
-// Check breakpoints for responsive view
-import { useMediaQuery } from '@vueuse/core'
-const isDesktop = useMediaQuery('(min-width: 768px)')
-
-const fullCalendar = ref(null)
+const agendaCalendar = ref(null)
 const isModalOpen = ref(false)
 const selectedAnioLectivoId = ref(null)
 const aniosLectivos = ref([])
-import { api } from '~/utils/api'
+
 onMounted(async () => {
   try {
     const response = await api.get('/api/anios-lectivos')
@@ -79,7 +81,11 @@ onMounted(async () => {
   } catch(e) { console.error('Error fetching anios lectivos', e) }
 })
 
-watch(selectedAnioLectivoId, () => { if (fullCalendar.value) { fullCalendar.value.getApi().refetchEvents() } })
+watch(selectedAnioLectivoId, () => { 
+  if (agendaCalendar.value) { 
+    agendaCalendar.value.refetchEvents() 
+  } 
+})
 
 const fetchEvents = async (fetchInfo, successCallback, failureCallback) => {
   if (!selectedAnioLectivoId.value) {
@@ -104,134 +110,15 @@ const fetchEvents = async (fetchInfo, successCallback, failureCallback) => {
   }
 }
 
-const calendarOptions = computed(() => ({
-  plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
-  initialView: isDesktop.value ? 'dayGridMonth' : 'listMonth',
-  headerToolbar: {
-    left: 'prev,next today',
-    center: 'title',
-    right: isDesktop.value ? 'dayGridMonth,timeGridWeek,timeGridDay,listMonth' : 'listMonth,listWeek'
-  },
-  events: fetchEvents,
-  editable: true,
-  selectable: true,
-    height: 'auto',
-  select: handleDateSelect,
-  eventClick: handleEventClick,
-  eventContent: (arg) => {
-    if (!arg.event.extendedProps?.es_privada) {
-      return undefined; // default rendering for non-private events
-    }
-    
-    // Only for private events
-    const content = document.createElement('div');
-    content.className = 'fc-event-main-frame w-full flex items-center overflow-hidden';
-    
-    let innerHTML = '';
-    if (arg.timeText) {
-      innerHTML += `<div class="fc-event-time mr-1 font-semibold text-xs whitespace-nowrap">${arg.timeText}</div>`;
-    }
-    innerHTML += `<div class="fc-event-title-container truncate text-xs flex items-center"><span class="mr-1" title="Privado">ðŸ”’</span><span class="truncate">${arg.event.title}</span></div>`;
-    
-    content.innerHTML = innerHTML;
-    return { domNodes: [content] };
-  },
-  height: '100%',
-  locale: 'es',
-  buttonText: {
-    today: 'Hoy',
-    month: 'Mes',
-    week: 'Semana',
-    day: 'DÃ­a',
-    list: 'Agenda'
-  }
-}))
-
-// Re-render when view changes based on breakpoint
-watch(isDesktop, (newVal) => {
-  const calendarApi = fullCalendar.value?.getApi()
-  if (calendarApi) {
-    if (newVal) {
-      calendarApi.changeView('dayGridMonth')
-      calendarApi.setOption('headerToolbar', {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
-      })
-    } else {
-      calendarApi.changeView('listMonth')
-      calendarApi.setOption('headerToolbar', {
-        left: 'prev,next today',
-        center: 'title',
-        right: 'listMonth,listWeek'
-      })
-    }
-  }
-})
-
 const openModal = () => {
   isModalOpen.value = true
 }
 
 const handleDateSelect = (selectInfo) => {
-  // Could pre-fill modal with dates
   openModal()
 }
 
 const handleEventClick = (clickInfo) => {
-  // Could open modal for editing
-  // clickInfo.event
   openModal()
 }
-
-const saveActivity = (activity) => {
-  // Save activity logic
-  const isPrivate = activity.es_privada;
-  events.value.push({
-    id: String(Date.now()),
-    title: activity.title || 'Nueva Actividad',
-    start: activity.startDate,
-    backgroundColor: isPrivate ? '#8b5cf6' : '#3b82f6',
-    borderColor: isPrivate ? '#7c3aed' : '#2563eb',
-    classNames: isPrivate ? ['private-event'] : [],
-    extendedProps: {
-      es_privada: isPrivate
-    }
-  })
-}
 </script>
-
-<style>
-/* Fullcalendar text color for buttons and titles to ensure they look good in dark mode */
-.fc-theme-standard .fc-toolbar-title {
-  @apply text-gray-900 dark:text-gray-100;
-}
-.fc-theme-standard .fc-button {
-  @apply bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 capitalize;
-}
-.fc-theme-standard .fc-button:hover {
-  @apply bg-gray-200 dark:bg-gray-600;
-}
-.fc-theme-standard .fc-button-primary:not(:disabled).fc-button-active, 
-.fc-theme-standard .fc-button-primary:not(:disabled):active {
-  @apply bg-blue-600 border-blue-600 text-white dark:bg-blue-600 dark:border-blue-600;
-}
-.fc-theme-standard .fc-col-header-cell-cushion {
-  @apply text-gray-900 dark:text-gray-200;
-}
-.fc-theme-standard .fc-daygrid-day-number {
-  @apply text-gray-900 dark:text-gray-300;
-}
-.fc-theme-standard td, .fc-theme-standard th {
-  @apply border-gray-200 dark:border-gray-700;
-}
-.private-event {
-  @apply border-dashed !bg-purple-100 !border-purple-400 !text-purple-800 dark:!bg-purple-950/40 dark:!border-purple-800 dark:!text-purple-200;
-}
-</style>
-
-
-
-
-
-
