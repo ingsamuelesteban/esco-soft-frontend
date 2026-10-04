@@ -1,13 +1,17 @@
-<template>
-  <FullCalendar ref="fullCalendar" :options="calendarOptions" />
+﻿<template>
+  <div v-if="!isLoaded" class="flex justify-center items-center h-[600px] text-gray-500">
+    Cargando agenda escolar...
+  </div>
+  <component 
+    v-else
+    :is="FullCalendarComponent"
+    ref="fullCalendar"
+    :options="calendarOptions"
+  />
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
-import dayGridPlugin from '@fullcalendar/daygrid'
-import timeGridPlugin from '@fullcalendar/timegrid'
-import listPlugin from '@fullcalendar/list'
-import interactionPlugin from '@fullcalendar/interaction'
+import { ref, watch, onMounted, shallowRef } from 'vue'
 import { useMediaQuery } from '@vueuse/core'
 
 const props = defineProps({
@@ -20,39 +24,46 @@ const emit = defineEmits(['date-select', 'event-click'])
 
 const isDesktop = useMediaQuery('(min-width: 768px)')
 const fullCalendar = ref(null)
+const FullCalendarComponent = shallowRef(null)
+const isLoaded = ref(false)
+const calendarOptions = ref({})
 
-const calendarOptions = computed(() => ({
-  plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
-  initialView: isDesktop.value ? 'dayGridMonth' : 'listMonth',
-  headerToolbar: {
-    left: 'prev,next today',
-    center: 'title',
-    right: isDesktop.value ? 'dayGridMonth,timeGridWeek,timeGriDíay,listMonth' : 'listMonth,listWeek'
-  },
-  events: props.fetchEvents,
-  editable: props.editable,
-  selectable: props.selectable,
-  height: 'auto',
-  locale: 'es',
-  buttonText: {
-    today: 'Hoy',
-    month: 'Mes',
-    week: 'Semana',
-    day: 'Día',
-    list: 'Agenda'
-  },
-  select: (info) => emit('date-select', info),
-  eventClick: (info) => emit('event-click', info),
-  eventContent: (arg) => {
-    if (!arg.event.extendedProps?.es_privada) {
-      return undefined; // default rendering for non-private events
-    }
-    
-    // Only for private events
-    const content = document.createElement('div');
-    content.className = 'fc-event-main-frame w-full flex items-center overflow-hidden';
-    
-    let innerHTML = '';
+onMounted(async () => {
+  const { default: FullCalendar } = await import('@fullcalendar/vue3')
+  const { default: dayGridPlugin } = await import('@fullcalendar/daygrid')
+  const { default: timeGridPlugin } = await import('@fullcalendar/timegrid')
+  const { default: listPlugin } = await import('@fullcalendar/list')
+  const { default: interactionPlugin } = await import('@fullcalendar/interaction')
+
+  FullCalendarComponent.value = FullCalendar
+  
+  calendarOptions.value = {
+    plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
+    initialView: isDesktop.value ? 'dayGridMonth' : 'listMonth',
+    headerToolbar: {
+      left: 'prev,next today',
+      center: 'title',
+      right: isDesktop.value ? 'dayGridMonth,timeGridWeek,timeGridDay,listMonth' : 'listMonth,listWeek'
+    },
+    events: props.fetchEvents,
+    editable: props.editable,
+    selectable: props.selectable,
+    height: 'auto',
+    locale: 'es',
+    buttonText: {
+      today: 'Hoy',
+      month: 'Mes',
+      week: 'Semana',
+      day: 'Día',
+      list: 'Agenda'
+    },
+    select: (info) => emit('date-select', info),
+    eventClick: (info) => emit('event-click', info),
+    eventContent: (arg) => {
+      if (!arg.event.extendedProps?.es_privada) return undefined;
+      const content = document.createElement('div');
+      content.className = 'fc-event-main-frame w-full flex items-center overflow-hidden';
+      let innerHTML = '';
     if (arg.timeText) {
       innerHTML += `<div class="fc-event-time mr-1 font-semibold text-xs whitespace-nowrap">${arg.timeText}</div>`;
     }
@@ -60,10 +71,14 @@ const calendarOptions = computed(() => ({
     
     content.innerHTML = innerHTML;
     return { domNodes: [content] };
+    }
   }
-}))
+
+  isLoaded.value = true
+})
 
 watch(isDesktop, (newVal) => {
+  if (!isLoaded.value) return;
   const calendarApi = fullCalendar.value?.getApi()
   if (calendarApi) {
     if (newVal) {
@@ -71,7 +86,7 @@ watch(isDesktop, (newVal) => {
       calendarApi.setOption('headerToolbar', {
         left: 'prev,next today',
         center: 'title',
-        right: 'dayGridMonth,timeGridWeek,timeGriDíay,listMonth'
+        right: 'dayGridMonth,timeGridWeek,timeGridDay,listMonth'
       })
     } else {
       calendarApi.changeView('listMonth')
@@ -124,9 +139,4 @@ defineExpose({
   @apply border-dashed !bg-purple-100 !border-purple-400 !text-purple-800 dark:!bg-purple-950/40 dark:!border-purple-800 dark:!text-purple-200;
 }
 </style>
-
-
-
-
-
 
