@@ -69,7 +69,14 @@ export default defineNuxtConfig({
   },
 
   build: {
-    transpile: []
+    transpile: [
+      '@fullcalendar/vue3',
+      '@fullcalendar/core',
+      '@fullcalendar/daygrid',
+      '@fullcalendar/timegrid',
+      '@fullcalendar/list',
+      '@fullcalendar/interaction'
+    ]
   },
 
   // SSR configuration for SPA mode with cookie-based auth

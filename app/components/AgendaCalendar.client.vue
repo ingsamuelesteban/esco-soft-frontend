@@ -1,10 +1,9 @@
-﻿<template>
+<template>
   <FullCalendar ref="fullCalendar" :options="calendarOptions" />
 </template>
 
 <script setup>
 import { ref, computed, watch, onMounted } from 'vue'
-import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import listPlugin from '@fullcalendar/list'
