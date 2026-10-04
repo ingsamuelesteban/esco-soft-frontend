@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="h-full flex flex-col p-4 sm:p-6 lg:p-8">
     <div class="mb-6 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
       <div>
@@ -7,11 +7,8 @@
       </div>
       
       <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-        <!-- Selector Año Lectivo -->
-        <select v-model="academicYear" class="block w-full sm:w-auto rounded-md bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
-          <option value="2024-2025">Año Lectivo 2024-2025</option>
-          <option value="2023-2024">Año Lectivo 2023-2024</option>
-        </select>
+        <!-- Selector AÃ±o Lectivo -->
+        <select v-model="selectedAnioLectivoId" class="block w-full sm:w-auto rounded-md bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm"><option v-for="anio in aniosLectivos" :key="anio.id" :value="anio.id">{{ anio.nombre }} {{ anio.activo ? '(Activo)' : '' }}</option></select>
         
         <!-- Leyendas -->
         <div class="flex items-center gap-3 text-sm">
@@ -35,7 +32,9 @@
     <div class="flex-grow bg-white dark:bg-gray-800 shadow rounded-lg p-4 sm:p-6 border border-gray-200 dark:border-gray-700 overflow-hidden">
       <!-- Added a wrapper to ensure FullCalendar handles height correctly -->
       <div class="h-full min-h-[600px]">
-        <FullCalendar ref="fullCalendar" :options="calendarOptions" />
+        <ClientOnly>
+          <FullCalendar ref="fullCalendar" :options="calendarOptions" />
+        </ClientOnly>
       </div>
     </div>
 
@@ -67,12 +66,43 @@ const isDesktop = useMediaQuery('(min-width: 768px)')
 
 const fullCalendar = ref(null)
 const isModalOpen = ref(false)
-const academicYear = ref('2024-2025')
+const selectedAnioLectivoId = ref(null)
+const aniosLectivos = ref([])
+import { api } from '~/utils/api'
+onMounted(async () => {
+  try {
+    const response = await api.get('/api/anios-lectivos')
+    aniosLectivos.value = Array.isArray(response) ? response : (response?.data || [])
+    const activeYear = aniosLectivos.value.find(a => a.activo)
+    if (activeYear) selectedAnioLectivoId.value = activeYear.id
+    else if (aniosLectivos.value.length > 0) selectedAnioLectivoId.value = aniosLectivos.value[0].id
+  } catch(e) { console.error('Error fetching anios lectivos', e) }
+})
 
-const events = ref([
-  { id: '1', title: 'Inicio de Clases', start: '2024-09-01', backgroundColor: '#3b82f6', borderColor: '#2563eb' },
-  { id: '2', title: 'Día de la Independencia', start: '2024-10-09', backgroundColor: '#f59e0b', borderColor: '#d97706', allDay: true }
-])
+watch(selectedAnioLectivoId, () => { if (fullCalendar.value) { fullCalendar.value.getApi().refetchEvents() } })
+
+const fetchEvents = async (fetchInfo, successCallback, failureCallback) => {
+  if (!selectedAnioLectivoId.value) {
+    successCallback([]);
+    return;
+  }
+  try {
+    const start = fetchInfo.startStr;
+    const end = fetchInfo.endStr;
+    const response = await api.get('/api/v1/agenda', {
+      params: {
+        anio_lectivo_id: selectedAnioLectivoId.value,
+        start,
+        end
+      }
+    });
+    const fetchedEvents = Array.isArray(response) ? response : (response?.data || []);
+    successCallback(fetchedEvents);
+  } catch (e) {
+    console.error(e);
+    failureCallback(e);
+  }
+}
 
 const calendarOptions = computed(() => ({
   plugins: [dayGridPlugin, timeGridPlugin, listPlugin, interactionPlugin],
@@ -82,7 +112,7 @@ const calendarOptions = computed(() => ({
     center: 'title',
     right: isDesktop.value ? 'dayGridMonth,timeGridWeek,timeGridDay,listMonth' : 'listMonth,listWeek'
   },
-  events: events.value,
+  events: fetchEvents,
   editable: true,
   selectable: true,
   select: handleDateSelect,
@@ -100,7 +130,7 @@ const calendarOptions = computed(() => ({
     if (arg.timeText) {
       innerHTML += `<div class="fc-event-time mr-1 font-semibold text-xs whitespace-nowrap">${arg.timeText}</div>`;
     }
-    innerHTML += `<div class="fc-event-title-container truncate text-xs flex items-center"><span class="mr-1" title="Privado">🔒</span><span class="truncate">${arg.event.title}</span></div>`;
+    innerHTML += `<div class="fc-event-title-container truncate text-xs flex items-center"><span class="mr-1" title="Privado">ðŸ”’</span><span class="truncate">${arg.event.title}</span></div>`;
     
     content.innerHTML = innerHTML;
     return { domNodes: [content] };
@@ -111,7 +141,7 @@ const calendarOptions = computed(() => ({
     today: 'Hoy',
     month: 'Mes',
     week: 'Semana',
-    day: 'Día',
+    day: 'DÃ­a',
     list: 'Agenda'
   }
 }))
@@ -198,3 +228,7 @@ const saveActivity = (activity) => {
   @apply border-dashed !bg-purple-100 !border-purple-400 !text-purple-800 dark:!bg-purple-950/40 dark:!border-purple-800 dark:!text-purple-200;
 }
 </style>
+
+
+
+
