@@ -1,5 +1,5 @@
-<template>
-  <div class="h-full">
+﻿<template>
+  <div class="h-full agenda-calendar-wrapper">
     <div v-if="!isLoaded" class="flex justify-center items-center h-[600px] text-gray-500">
       <svg class="animate-spin -ml-1 mr-3 h-8 w-8 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -54,7 +54,7 @@ onMounted(async () => {
         today: 'Hoy',
         month: 'Mes',
         week: 'Semana',
-        day: 'Día',
+        day: 'DÃ­a',
         list: 'Agenda'
       },
       select: (info) => emit('date-select', info),
@@ -67,7 +67,7 @@ onMounted(async () => {
         if (arg.timeText) {
           innerHTML += `<div class="fc-event-time mr-1 font-semibold text-xs whitespace-nowrap">${arg.timeText}</div>`;
         }
-        innerHTML += `<div class="fc-event-title-container truncate text-xs flex items-center"><span class="mr-1" title="Privado">🔒</span><span class="truncate">${arg.event.title}</span></div>`;
+        innerHTML += `<div class="fc-event-title-container truncate text-xs flex items-center"><span class="mr-1" title="Privado">ðŸ”’</span><span class="truncate">${arg.event.title}</span></div>`;
         content.innerHTML = innerHTML;
         return { domNodes: [content] };
       }
@@ -113,33 +113,62 @@ defineExpose({
 </script>
 
 <style>
-.fc { width: 100%; }
-.fc-theme-standard td, .fc-theme-standard th { border-color: #e5e7eb; }
-.dark .fc-theme-standard td, .dark .fc-theme-standard th { border-color: #374151; }
+.agenda-calendar-wrapper {
+  /* Neutralizar el reset de tailwind para tablas dentro del calendario */
+}
+.agenda-calendar-wrapper .fc {
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 100% !important;
+  min-height: 600px !important;
+}
+.agenda-calendar-wrapper .fc-view-harness {
+  height: auto !important;
+  min-height: 600px !important;
+}
+.agenda-calendar-wrapper .fc-theme-standard td, 
+.agenda-calendar-wrapper .fc-theme-standard th {
+  border-color: #e5e7eb;
+}
+.dark .agenda-calendar-wrapper .fc-theme-standard td, 
+.dark .agenda-calendar-wrapper .fc-theme-standard th {
+  border-color: #374151;
+}
 
-.fc-theme-standard .fc-toolbar-title {
+.agenda-calendar-wrapper .fc-theme-standard .fc-toolbar-title {
   @apply text-gray-900 dark:text-gray-100;
 }
-.fc-theme-standard .fc-button {
+.agenda-calendar-wrapper .fc-theme-standard .fc-button {
   @apply bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-200 capitalize;
 }
-.fc-theme-standard .fc-button:hover {
+.agenda-calendar-wrapper .fc-theme-standard .fc-button:hover {
   @apply bg-gray-200 dark:bg-gray-600;
 }
-.fc-theme-standard .fc-button-primary:not(:disabled).fc-button-active, 
-.fc-theme-standard .fc-button-primary:not(:disabled):active {
+.agenda-calendar-wrapper .fc-theme-standard .fc-button-primary:not(:disabled).fc-button-active, 
+.agenda-calendar-wrapper .fc-theme-standard .fc-button-primary:not(:disabled):active {
   @apply bg-blue-600 border-blue-600 text-white dark:bg-blue-600 dark:border-blue-600;
 }
-.fc-theme-standard .fc-col-header-cell-cushion {
+.agenda-calendar-wrapper .fc-theme-standard .fc-col-header-cell-cushion {
   @apply text-gray-900 dark:text-gray-200;
 }
-.fc-theme-standard .fc-daygrid-day-number {
+.agenda-calendar-wrapper .fc-theme-standard .fc-daygrid-day-number {
   @apply text-gray-900 dark:text-gray-300;
 }
-.fc-theme-standard td, .fc-theme-standard th {
+.agenda-calendar-wrapper .fc-theme-standard td, .agenda-calendar-wrapper .fc-theme-standard th {
   @apply border-gray-200 dark:border-gray-700;
 }
-.private-event {
+.agenda-calendar-wrapper .private-event {
   @apply border-dashed !bg-purple-100 !border-purple-400 !text-purple-800 dark:!bg-purple-950/40 dark:!border-purple-800 dark:!text-purple-200;
 }
+
+/* Fix Tailwind table reset collapse */
+.agenda-calendar-wrapper table {
+  border-collapse: collapse !important;
+  border-spacing: 0 !important;
+  width: 100% !important;
+}
+.agenda-calendar-wrapper th {
+  text-align: center !important;
+}
 </style>
+
