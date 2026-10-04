@@ -1,4 +1,4 @@
-@tailwind base;
+﻿@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -177,3 +177,4 @@ html.dark {
   cursor: pointer !important;
   border: none !important;
 }
+
