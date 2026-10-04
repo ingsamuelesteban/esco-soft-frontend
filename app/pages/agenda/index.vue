@@ -45,6 +45,16 @@
 
 <script setup>
 import { ref, watch, onMounted, computed, shallowRef } from 'vue'
+import { useAuthStore } from '~/stores/auth'
+
+definePageMeta({
+  middleware: ['auth']
+})
+
+const authStore = useAuthStore()
+if (authStore.user?.role === 'Estudiante') {
+  navigateTo('/student/agenda')
+}
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'

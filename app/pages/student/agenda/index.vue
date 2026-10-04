@@ -39,6 +39,11 @@
 
 <script setup>
 import { ref, watch, computed } from 'vue'
+
+definePageMeta({
+  layout: 'student',
+  middleware: ['auth']
+})
 import FullCalendar from '@fullcalendar/vue3'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
