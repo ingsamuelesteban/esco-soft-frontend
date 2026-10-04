@@ -103,7 +103,8 @@ const calendarOptions = computed(() => ({
   },
   events: fetchEvents,
   editable: false, // Solo lectura
-  selectable: false, // Solo lectura
+  selectable: false,
+    height: 'auto', // Solo lectura
   height: '100%',
   locale: 'es',
   buttonText: {
@@ -163,6 +164,7 @@ watch(isDesktop, (newVal) => {
   @apply border-gray-200 dark:border-gray-700;
 }
 </style>
+
 
 
 

@@ -115,6 +115,7 @@ const calendarOptions = computed(() => ({
   events: fetchEvents,
   editable: true,
   selectable: true,
+    height: 'auto',
   select: handleDateSelect,
   eventClick: handleEventClick,
   eventContent: (arg) => {
@@ -228,6 +229,7 @@ const saveActivity = (activity) => {
   @apply border-dashed !bg-purple-100 !border-purple-400 !text-purple-800 dark:!bg-purple-950/40 dark:!border-purple-800 dark:!text-purple-200;
 }
 </style>
+
 
 
 
