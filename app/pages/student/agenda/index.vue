@@ -21,15 +21,11 @@
         </div>
       </div>
     </div>
-    <div class="flex-grow bg-white dark:bg-gray-800 shadow rounded-lg p-4 sm:p-6 border border-gray-200 dark:border-gray-700 overflow-hidden">
-      <div class="h-full min-h-[600px]">
-        <AgendaCalendar
-          ref="agendaCalendar"
-          :fetch-events="fetchEvents"
-          :editable="false"
-          :selectable="false"
-        />
-      </div>
+    <div class="flex-grow overflow-hidden">
+      <AgendaCalendar
+        ref="agendaCalendar"
+        :events="events"
+      />
     </div>
   </div>
 </template>
@@ -47,6 +43,7 @@ definePageMeta({
 const agendaCalendar = ref(null)
 const selectedAnioLectivoId = ref(null)
 const aniosLectivos = ref([])
+const events = ref([])
 
 onMounted(async () => {
   try {
@@ -59,32 +56,22 @@ onMounted(async () => {
 })
 
 watch(selectedAnioLectivoId, () => { 
-  if (agendaCalendar.value) { 
-    agendaCalendar.value.refetchEvents() 
-  } 
+  loadEvents()
 })
 
-const fetchEvents = async (fetchInfo, successCallback, failureCallback) => {
-  if (!selectedAnioLectivoId.value) {
-    successCallback([]);
-    return;
-  }
+const loadEvents = async () => {
+  if (!selectedAnioLectivoId.value) return;
   try {
-    const start = fetchInfo.startStr;
-    const end = fetchInfo.endStr;
     const response = await api.get('/api/v1/agenda', {
       params: {
         anio_lectivo_id: selectedAnioLectivoId.value,
-        start,
-        end
+        start: '2000-01-01',
+        end: '2050-12-31'
       }
     });
-    const fetchedEvents = Array.isArray(response) ? response : (response?.data || []);
-    successCallback(fetchedEvents);
+    events.value = Array.isArray(response) ? response : (response?.data || []);
   } catch (e) {
     console.error(e);
-    failureCallback(e);
   }
 }
 </script>
-
