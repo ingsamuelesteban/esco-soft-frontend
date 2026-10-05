@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div v-if="isPublicSite">
     <PublicLanding />
   </div>
@@ -6,7 +6,7 @@
     <div class="mb-6">
       <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white transition-colors">Panel de Control</h1>
       <p class="mt-1 text-sm text-gray-500 dark:text-gray-400 transition-colors">
-        Bienvenido, {{ authStore.user?.name }}. Aquí tienes un resumen de tu actividad.
+        Bienvenido, {{ authStore.user?.name }}. AquÃ­ tienes un resumen de tu actividad.
       </p>
     </div>
 
@@ -62,7 +62,6 @@ import PublicLanding from '~/components/public/PublicLanding.vue'
 import DashboardAdmin from '~/components/dashboard/DashboardAdmin.vue'
 import DashboardTeacher from '~/components/dashboard/DashboardTeacher.vue'
 import DashboardPsychology from '~/components/dashboard/DashboardPsychology.vue'
-import AgendaCalendar from '~/components/AgendaCalendar.client.vue'
 import AgendaCalendar from '~/components/AgendaCalendar.client.vue'
 
 definePageMeta({
@@ -121,7 +120,7 @@ const loadDashboard = async (silent = false) => {
   } catch (e: any) {
     console.error('Dashboard load error', e)
     // Don't show error on silent refresh to avoid flickering / annoyance
-    if (!silent) error.value = e.message || 'Error de conexión'
+    if (!silent) error.value = e.message || 'Error de conexiÃ³n'
   } finally {
     loading.value = false
   }
@@ -142,3 +141,4 @@ onUnmounted(() => {
     if (refreshInterval) clearInterval(refreshInterval)
 })
 </script>
+
