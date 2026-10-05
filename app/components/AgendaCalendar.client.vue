@@ -49,11 +49,12 @@
           v-for="(day, index) in calendarDays"
           :key="index"
           @click="onDayClick(day)"
-          class="min-h-[110px] p-2 transition relative flex flex-col justify-between cursor-pointer hover:bg-gray-800/60"
-          :class="{
-            'bg-gray-950/60 text-gray-600': !day.isCurrentMonth,
-            'bg-blue-950/20': day.isToday
-          }"
+          class="transition relative flex flex-col justify-between cursor-pointer hover:bg-gray-800/60"
+          :class="[
+            compact ? 'min-h-[75px] p-1' : 'min-h-[110px] p-2',
+            !day.isCurrentMonth ? 'bg-gray-950/60 text-gray-600' : '',
+            day.isToday ? 'bg-blue-950/20' : ''
+          ]"
         >
           <div class="flex justify-between items-center mb-1">
             <span 
@@ -91,6 +92,7 @@ import { ref, computed } from 'vue'
 
 const props = defineProps<{
   events: Array<any>
+  compact?: boolean
 }>()
 
 const emit = defineEmits(['event-click', 'date-select'])

@@ -31,8 +31,18 @@
       <!-- Fallback or Student View -->
       <div v-else class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-transparent dark:border-gray-700 transition-colors">
         <p class="text-gray-900 dark:text-gray-100">Bienvenido al sistema EscoSoft.</p>
-        <!-- Student dashboard is usually a separate route /student/dashboard, 
-             but if they land here we can redirect or show basic info -->
+      </div>
+      
+      <!-- Agenda Escolar en Dashboard (Admins & Profesores) -->
+      <div v-if="!isPublicSite && (isAdminOrMaster || isTeacher)" class="mt-8">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-bold text-gray-900 dark:text-gray-100 flex items-center">
+            <svg class="h-5 w-5 mr-2 text-primary-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" /></svg>
+            Agenda Escolar
+          </h3>
+          <router-link to="/agenda" class="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium">Ver agenda completa &rarr;</router-link>
+        </div>
+        <AgendaCalendar :events="agendaEvents" :compact="true" />
       </div>
     </div>
   </section>
@@ -52,6 +62,8 @@ import PublicLanding from '~/components/public/PublicLanding.vue'
 import DashboardAdmin from '~/components/dashboard/DashboardAdmin.vue'
 import DashboardTeacher from '~/components/dashboard/DashboardTeacher.vue'
 import DashboardPsychology from '~/components/dashboard/DashboardPsychology.vue'
+import AgendaCalendar from '~/components/AgendaCalendar.client.vue'
+import AgendaCalendar from '~/components/AgendaCalendar.client.vue'
 
 definePageMeta({
   middleware: 'auth'
@@ -62,6 +74,8 @@ const authStore = useAuthStore()
 const loading = ref(true)
 const error = ref<string | null>(null)
 const dashboardData = ref<any>(null)
+const agendaEvents = ref<any[]>([])
+const agendaEvents = ref<any[]>([])
 let refreshInterval: any = null
 
 // Role Helpers

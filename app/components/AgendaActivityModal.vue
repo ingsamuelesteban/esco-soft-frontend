@@ -74,14 +74,19 @@
               </div>
             </div>
           </div>
-          <div class="bg-gray-50 dark:bg-gray-700/50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse border-t border-gray-200 dark:border-gray-700">
-            <button type="submit" :disabled="loading" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 sm:ml-3 sm:w-auto sm:text-sm">
-              {{ loading ? 'Guardando...' : 'Guardar' }}
-            </button>
-            <button type="button" @click="close" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
-              Cancelar
-            </button>
-          </div>
+          <div class="bg-gray-50 dark:bg-gray-700/50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse sm:justify-between border-t border-gray-200 dark:border-gray-700">
+              <div class="flex flex-col sm:flex-row-reverse gap-2 sm:gap-0 w-full sm:w-auto">
+                <button type="submit" :disabled="loading" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-primary-600 text-base font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 sm:ml-3 sm:w-auto sm:text-sm">
+                  {{ loading ? 'Guardando...' : 'Guardar' }}
+                </button>
+                <button type="button" @click="close" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm">
+                  Cancelar
+                </button>
+              </div>
+              <button v-if="isEditing" type="button" @click="eliminar" :disabled="loading" class="mt-3 w-full inline-flex justify-center rounded-md border border-red-300 dark:border-red-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-700 text-base font-medium text-red-700 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 sm:mt-0 sm:w-auto sm:text-sm">
+                Eliminar
+              </button>
+            </div>
         </form>
       </div>
     </div>
@@ -172,6 +177,49 @@ watch(() => props.modelValue, (newVal) => {
 
 const close = () => {
   emit('update:modelValue', false)
+}
+
+
+const eliminar = async () => {
+  if (!props.activity || !props.activity.id) return;
+  
+  const result = await Swal.fire({
+    title: '¿Eliminar actividad?',
+    text: 'Esta acción no se puede deshacer.',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonColor: '#ef4444',
+    cancelButtonColor: '#6b7280',
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar'
+  });
+
+  if (result.isConfirmed) {
+    loading.value = true;
+    try {
+      await api.delete(`/api/v1/agenda/${props.activity.id}`);
+      
+      Swal.fire({
+        icon: 'success',
+        title: 'Eliminada',
+        text: 'Actividad eliminada correctamente',
+        timer: 1500,
+        showConfirmButton: false
+      });
+      
+      emit('created');
+      close();
+    } catch (e) {
+      console.error(e);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: e.response?.data?.message || 'Error al eliminar la actividad'
+      });
+    } finally {
+      loading.value = false;
+    }
+  }
 }
 
 const save = async () => {
