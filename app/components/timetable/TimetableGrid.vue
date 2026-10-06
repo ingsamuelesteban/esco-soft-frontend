@@ -28,6 +28,34 @@
         </select>
       </div>
       <div class="ml-auto flex items-center gap-2">
+        <button
+          @click="printAula"
+          :disabled="isPrintingAula || !aulaId"
+          class="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          title="Imprimir Aula"
+        >
+          <svg v-if="isPrintingAula" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+          <span>Imprimir Aula</span>
+        </button>
+
+        <button
+          @click="printAllAulas"
+          :disabled="isPrintingAll"
+          class="inline-flex items-center gap-1 px-3 py-1.5 text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+          title="Imprimir Todas las Aulas"
+        >
+          <svg v-if="isPrintingAll" class="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <svg v-else class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"></path></svg>
+          <span>Imprimir Todas las Aulas</span>
+        </button>
+
         <button @click="reload"
           class="inline-flex items-center justify-center p-1.5 rounded-md text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:bg-gray-800 transition-colors"
           title="Refrescar">
@@ -112,6 +140,8 @@ import { useClassAssignmentsStore, type ClassAssignment } from '~/stores/class_a
 import { useTimetableEntriesStore } from '~/stores/timetable_entries'
 import { useAniosLectivosStore } from '~/stores/anios_lectivos'
 import { formatTime12h } from '~/utils/timeFormat'
+import { handlePrintPdfResponse } from '~/utils/pdfPrint'
+import { useNuxtApp } from '#app'
 import Swal from 'sweetalert2'
 
 // Opcional: hacer que el grid se ajuste a la altura de la pantalla en pantallas grandes
@@ -131,6 +161,35 @@ const aniosLectivosStore = useAniosLectivosStore()
 const anioId = ref<number | undefined>(undefined)
 const aulaId = ref<number | undefined>(undefined)
 const selectedAssignmentId = ref<number | undefined>(undefined)
+
+const isPrintingAula = ref(false)
+const isPrintingAll = ref(false)
+const { $api } = useNuxtApp()
+
+const printAula = async () => {
+  if (!aulaId.value) return
+  try {
+    isPrintingAula.value = true
+    const response = await $api.getBlob(`/v1/horarios/imprimir/aula/${aulaId.value}`)
+    handlePrintPdfResponse(response as Blob, `horario_aula_${aulaId.value}.pdf`)
+  } catch (error) {
+    Swal.fire('Error', 'No se pudo generar el horario del aula.', 'error')
+  } finally {
+    isPrintingAula.value = false
+  }
+}
+
+const printAllAulas = async () => {
+  try {
+    isPrintingAll.value = true
+    const response = await $api.getBlob(`/v1/horarios/imprimir/todas-las-aulas`)
+    handlePrintPdfResponse(response as Blob, `horarios_todas_aulas.pdf`)
+  } catch (error) {
+    Swal.fire('Error', 'No se pudo generar el horario de las aulas.', 'error')
+  } finally {
+    isPrintingAll.value = false
+  }
+}
 
 const days = [
   { value: 1, label: 'Lun' },
