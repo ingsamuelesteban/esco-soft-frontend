@@ -74,7 +74,6 @@ const loading = ref(true)
 const error = ref<string | null>(null)
 const dashboardData = ref<any>(null)
 const agendaEvents = ref<any[]>([])
-const agendaEvents = ref<any[]>([])
 let refreshInterval: any = null
 
 // Role Helpers
@@ -114,8 +113,17 @@ const loadDashboard = async (silent = false) => {
     }
 
     const res: any = await api.get(url)
-    dashboardData.value = res.data || res // Some endpoints return { success: true, data: ... } others just data
-    if (res.data && res.success) dashboardData.value = res.data // Standards
+    dashboardData.value = res.data || res
+    if (res.data && res.success) dashboardData.value = res.data
+
+    if (isAdminOrMaster.value || isTeacher.value) {
+      try {
+        const agendaRes = await api.get('/api/v1/agenda', { params: { start: '2020-01-01', end: '2050-12-31' } });
+        agendaEvents.value = Array.isArray(agendaRes) ? agendaRes : (agendaRes?.data || []);
+      } catch (err) {
+        console.error('Error loading agenda on dashboard', err);
+      }
+    }
 
   } catch (e: any) {
     console.error('Dashboard load error', e)
@@ -141,4 +149,6 @@ onUnmounted(() => {
     if (refreshInterval) clearInterval(refreshInterval)
 })
 </script>
+
+
 
