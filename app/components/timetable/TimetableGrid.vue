@@ -2,7 +2,7 @@
   <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg overflow-hidden">
     <div class="p-4 flex items-center gap-3 flex-wrap">
       <div class="flex items-center gap-2">
-        <label class="text-sm text-gray-600 dark:text-gray-400">Año lectivo</label>
+        <label class="text-sm text-gray-600 dark:text-gray-400">AÃƒÂ±o lectivo</label>
         <select v-model.number="anioId" class="border dark:border-gray-600 rounded px-2 py-1 text-sm h-8 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
           <option :value="undefined">Seleccionar...</option>
           <option v-for="a in aniosLectivosStore.items" :key="a.id" :value="a.id">
@@ -13,17 +13,17 @@
       <div class="flex items-center gap-2">
         <label class="text-sm text-gray-600 dark:text-gray-400">Aula</label>
         <select v-model.number="aulaId" class="border dark:border-gray-600 rounded px-2 py-1 text-sm h-8 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
-          <option :value="undefined">Seleccionar…</option>
+          <option :value="undefined">SeleccionarÃ¢â‚¬Â¦</option>
           <option v-for="a in aulas" :key="a.id" :value="a.id">{{ aulaName(a) }}</option>
         </select>
       </div>
       <div class="flex items-center gap-2" v-if="!readOnly">
-        <label class="text-sm text-gray-600 dark:text-gray-400">Asignación</label>
+        <label class="text-sm text-gray-600 dark:text-gray-400">AsignaciÃƒÂ³n</label>
         <select v-model.number="selectedAssignmentId" class="border dark:border-gray-600 rounded px-2 py-1 text-sm h-8 min-w-[220px] bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
           :disabled="!aulaId || !anioId">
-          <option :value="undefined">Seleccionar asignación…</option>
+          <option :value="undefined">Seleccionar asignaciÃƒÂ³nÃ¢â‚¬Â¦</option>
           <option v-for="a in assignmentsForAula" :key="a.id" :value="a.id">
-            {{ a.materia?.nombre }} — {{ teacherName(a) }} ({{ getAssignmentHours(a) }})
+            {{ a.materia?.nombre }} Ã¢â‚¬â€ {{ teacherName(a) }} ({{ getAssignmentHours(a) }})
           </option>
         </select>
       </div>
@@ -71,7 +71,7 @@
       <table class="min-w-full table-fixed divide-y divide-gray-200 dark:divide-gray-700">
         <thead class="bg-gray-50 dark:bg-gray-900/50">
           <tr>
-            <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-44">Período
+            <th class="px-2 py-2 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider w-44">PerÃƒÂ­odo
             </th>
             <th v-for="d in days" :key="d.value"
               class="px-2 py-2 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">{{ d.label }}
@@ -111,7 +111,7 @@
                 <template v-else>
                   <button v-if="!readOnly" @click="assignHere(d.value, p.id)"
                     class="w-full h-full flex items-center justify-center text-gray-400 hover:text-gray-600 dark:text-gray-400"
-                    :disabled="!selectedAssignmentId || !aulaId" title="Asignar aquí">
+                    :disabled="!selectedAssignmentId || !aulaId" title="Asignar aquÃƒÂ­">
                     <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                     </svg>
@@ -194,7 +194,7 @@ const printAllAulas = async () => {
 const days = [
   { value: 1, label: 'Lun' },
   { value: 2, label: 'Mar' },
-  { value: 3, label: 'Mié' },
+  { value: 3, label: 'MiÃƒÂ©' },
   { value: 4, label: 'Jue' },
   { value: 5, label: 'Vie' },
 ]
@@ -236,9 +236,9 @@ const entryMap = computed(() => entries.byKey)
 
 const entryAt = (dia: number, periodId: number) => entryMap.value.get(keyOf(dia, periodId, aulaId.value))
 
-const teacherName = (a?: ClassAssignment) => a?.profesor ? `${a.profesor.nombre} ${a.profesor.apellido}` : '—'
+const teacherName = (a?: ClassAssignment) => a?.profesor ? `${a.profesor.nombre} ${a.profesor.apellido}` : 'Ã¢â‚¬â€'
 const aulaName = (a: Aula) => {
-  const grado = a.grado_cardinal ? `${a.grado_cardinal}º` : ''
+  const grado = a.grado_cardinal ? `${a.grado_cardinal}Ã‚Âº` : ''
   const seccion = a.seccion || ''
   const titulo = a.titulo?.nombre ? ` - ${a.titulo.nombre}` : ''
   return `${grado}${seccion}${titulo}`.trim() || `Aula ${a.id}`
@@ -263,10 +263,10 @@ const assignHere = async (dia: number, periodId: number) => {
   try {
     await entries.create({ assignment_id: selectedAssignmentId.value, dia, period_id: periodId })
 
-    // Actualizar las asignaciones para reflejar los nuevos períodos programados
+    // Actualizar las asignaciones para reflejar los nuevos perÃƒÂ­odos programados
     await assignments.fetchAll({ aula_id: aulaId.value, anio_lectivo_id: anioId.value })
 
-    // Mantener la selección actual si la asignación aún existe
+    // Mantener la selecciÃƒÂ³n actual si la asignaciÃƒÂ³n aÃƒÂºn existe
     const stillExists = assignmentsForAula.value.find(a => a.id === currentSelectedId)
     if (stillExists) {
       selectedAssignmentId.value = currentSelectedId
@@ -274,9 +274,9 @@ const assignHere = async (dia: number, periodId: number) => {
   } catch (e: any) {
     console.error('Error al asignar horario:', e)
 
-    // Mostrar mensaje de error más específico
+    // Mostrar mensaje de error mÃƒÂ¡s especÃƒÂ­fico
     let title = 'Error al Asignar Horario'
-    let message = 'No se pudo completar la asignación'
+    let message = 'No se pudo completar la asignaciÃƒÂ³n'
     let icon: 'error' | 'warning' = 'error'
 
     const status = e.statusCode || e.status
@@ -286,13 +286,13 @@ const assignHere = async (dia: number, periodId: number) => {
         icon = 'warning'
         title = 'Conflicto de Horario'
       } else {
-        message = 'Conflicto de horario: el profesor o el aula ya están ocupados en este período'
+        message = 'Conflicto de horario: el profesor o el aula ya estÃƒÂ¡n ocupados en este perÃƒÂ­odo'
         icon = 'warning'
         title = 'Conflicto de Horario'
       }
     }
 
-    // Mostrar SweetAlert con información detallada
+    // Mostrar SweetAlert con informaciÃƒÂ³n detallada
     await Swal.fire({
       title,
       text: message,
@@ -308,11 +308,11 @@ const remove = async (id: number) => {
 
   await entries.remove(id)
 
-  // Actualizar las asignaciones para reflejar los cambios en períodos programados
+  // Actualizar las asignaciones para reflejar los cambios en perÃƒÂ­odos programados
   if (aulaId.value && anioId.value) {
     await assignments.fetchAll({ aula_id: aulaId.value, anio_lectivo_id: anioId.value })
 
-    // Mantener la selección actual si la asignación aún existe
+    // Mantener la selecciÃƒÂ³n actual si la asignaciÃƒÂ³n aÃƒÂºn existe
     const stillExists = assignmentsForAula.value.find(a => a.id === currentSelectedId)
     if (stillExists) {
       selectedAssignmentId.value = currentSelectedId
@@ -320,7 +320,7 @@ const remove = async (id: number) => {
   }
 }
 
-// Calcula un alto máximo para el contenedor con scroll vertical cuando se desea ajustar al viewport
+// Calcula un alto mÃƒÂ¡ximo para el contenedor con scroll vertical cuando se desea ajustar al viewport
 const wrapperStyle = computed(() => {
   if (!props.fitViewport) return {}
   const offset = typeof props.viewportOffset === 'number' ? props.viewportOffset : 260
