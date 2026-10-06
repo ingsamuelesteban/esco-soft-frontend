@@ -112,7 +112,7 @@ const handleDateSelect = (selectInfo) => {
 const handleEventClick = (payload) => {
   const activity = payload.event || payload
   selectedActivity.value = {
-    id: activity.id,
+    id: activity.db_id || (activity.id ? activity.id.toString().replace('act_', '').replace('hol_', '') : null),
     titulo: activity.title || activity.titulo,
     descripcion: activity.descripcion || '',
     fecha_inicio: activity.start || activity.fecha_inicio,
@@ -127,4 +127,5 @@ const handleEventClick = (payload) => {
   openModal()
 }
 </script>
+
 
