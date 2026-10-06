@@ -131,17 +131,17 @@
                     </div>
 
                     <!-- Timeline -->
-                    <div class="flow-root">
+                    <div class="flow-root" v-if="isPsychologist || (currentCase.referral && currentCase.referral.reported_by_id === authStore.user?.id) || currentCase.entries.length > 0">
                         <ul role="list" class="-mb-8">
                             <li v-for="(entry, entryIdx) in currentCase.entries" :key="entry.id">
                                 <div class="relative pb-8">
                                     <span v-if="entryIdx !== currentCase.entries.length - 1"
-                                        class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200"
+                                        class="absolute top-4 left-4 -ml-px h-full w-0.5 bg-gray-200 dark:bg-gray-700"
                                         aria-hidden="true"></span>
                                     <div class="relative flex space-x-3">
                                         <div>
                                             <span
-                                                class="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white"
+                                                class="h-8 w-8 rounded-full flex items-center justify-center ring-8 ring-white dark:ring-gray-800"
                                                 :class="getEntryIconClass(entry.type)">
                                                 <svg class="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24"
                                                     stroke="currentColor">
@@ -161,21 +161,21 @@
                                             </span>
                                         </div>
                                         <div class="min-w-0 flex-1 pt-1.5 flex justify-between space-x-4">
-                                            <div>
+                                            <div class="w-full">
                                                 <p class="text-sm text-gray-500 dark:text-gray-400">
                                                     <span class="font-medium text-gray-900 dark:text-gray-100">{{ getTypeLabel(entry.type)
                                                         }}</span>
                                                     por <span class="font-medium text-gray-900 dark:text-gray-100">{{ entry.author?.name ||
                                                         'Usuario' }}</span>
                                                 </p>
-                                                <div class="mt-2 text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap">{{
+                                                <div class="mt-2 p-3 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-700 dark:text-gray-200 whitespace-pre-wrap">{{
                                                     entry.content }}</div>
                                             </div>
                                             <div
-                                                class="text-right text-sm whitespace-nowrap text-gray-500 dark:text-gray-400 flex flex-col items-end">
-                                                <time :datetime="entry.date_of_event">{{ formatDate(entry.date_of_event)
+                                                class="text-right text-sm whitespace-nowrap flex flex-col items-end">
+                                                <time class="text-gray-500 dark:text-gray-400" :datetime="entry.date_of_event">{{ formatDate(entry.date_of_event)
                                                     }}</time>
-                                                <button @click="openEditEntry(entry)"
+                                                <button @click="openEditEntry(entry)" v-if="isPsychologist"
                                                     class="mt-2 p-1.5 rounded-md text-indigo-600 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 transition-colors shadow-sm"
                                                     title="Editar entrada">
                                                     <PencilSquareIcon class="h-4 w-4" />
