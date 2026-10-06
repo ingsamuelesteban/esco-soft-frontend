@@ -117,13 +117,25 @@ const loadDashboard = async (silent = false) => {
     if (res.data && res.success) dashboardData.value = res.data
 
     if (isAdminOrMaster.value || isTeacher.value) {
-      try {
-        const agendaRes = await api.get('/api/v1/agenda', { params: { start: '2020-01-01', end: '2050-12-31' } });
-        agendaEvents.value = Array.isArray(agendaRes) ? agendaRes : (agendaRes?.data || []);
-      } catch (err) {
-        console.error('Error loading agenda on dashboard', err);
+        try {
+          const aniosRes = await api.get('/api/anios-lectivos');
+          const anios = Array.isArray(aniosRes) ? aniosRes : (aniosRes?.data || []);
+          const activeYear = anios.find((a) => a.activo) || anios[0];
+          
+          if (activeYear) {
+            const agendaRes = await api.get('/api/v1/agenda', { 
+              params: { 
+                anio_lectivo_id: activeYear.id,
+                start: '2020-01-01', 
+                end: '2050-12-31' 
+              } 
+            });
+            agendaEvents.value = Array.isArray(agendaRes) ? agendaRes : (agendaRes?.data || []);
+          }
+        } catch (err) {
+          console.error('Error loading agenda on dashboard', err);
+        }
       }
-    }
 
   } catch (e: any) {
     console.error('Dashboard load error', e)
@@ -149,6 +161,7 @@ onUnmounted(() => {
     if (refreshInterval) clearInterval(refreshInterval)
 })
 </script>
+
 
 
 
