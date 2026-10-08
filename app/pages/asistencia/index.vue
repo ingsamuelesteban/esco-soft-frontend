@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
     <!-- Header -->
-    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
+    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-sm">
       <div class="flex items-center justify-between">
         <div>
           <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Control de Asistencia</h1>
@@ -31,13 +31,13 @@
     </div>
 
     <!-- Filtros -->
-    <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+    <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-sm">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <!-- Selector de fecha -->
         <div>
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fecha</label>
           <input v-model="selectedDate" type="date"
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500" />
+            class="w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-primary-500 rounded-lg p-2.5 text-sm shadow-sm focus:border-primary-500" />
         </div>
 
         <!-- Selector de asignación/aula -->
@@ -51,7 +51,7 @@
           <!-- Para Administradores/Masters/Psicólogos/Coordinadores: Selector directo de Aulas -->
           <select v-if="authStore.isAdmin || authStore.isMaster || isPsychologist || authStore.isCoordinator"
             v-model="selectedAulaId" @change="selectedAssignmentId = null"
-            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
+            class="w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-primary-500 rounded-lg p-2.5 text-sm shadow-sm focus:border-primary-500"
             :disabled="aulasStore.loading">
             <option :value="null">Seleccionar aula...</option>
             <option v-for="option in aulasStore.paraSelect" :key="option.value" :value="option.value">
@@ -65,7 +65,7 @@
             class="mt-4">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Clase / Asignatura</label>
             <select v-model="selectedAssignmentId" @change="loadAttendance"
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
+              class="w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-primary-500 rounded-lg p-2.5 text-sm shadow-sm focus:border-primary-500"
               :disabled="attendanceStore.loadingDailyClasses">
               <option :value="null">
                 {{ attendanceStore.loadingDailyClasses ? 'Cargando horario...' : (attendanceStore.dailyClasses.length ?
@@ -76,7 +76,7 @@
                 {{ entry.assignment?.materia?.nombre }}
                 <span v-if="entry.assignment?.profesor">({{ entry.assignment.profesor.nombres }} {{
                   entry.assignment.profesor.apellidos }})</span>
-                <span v-if="entry.attendance_summary?.attendance_taken" class="ml-2 text-green-600 font-bold">✓</span>
+                <span v-if="entry.attendance_summary?.attendance_taken" class="ml-2 text-green-600 font-bold">�S</span>
               </option>
             </select>
           </div>
@@ -84,7 +84,7 @@
           <!-- Para Profesores: Selector de Asignaciones (Filtrado por día) -->
           <div v-else-if="!(authStore.isAdmin || authStore.isMaster || isPsychologist || authStore.isCoordinator)">
             <select v-model="selectedAssignmentId" @change="onAssignmentChange"
-              class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500"
+              class="w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-primary-500 rounded-lg p-2.5 text-sm shadow-sm focus:border-primary-500"
               :disabled="attendanceStore.loadingDailyClasses">
               <option :value="null">
                 {{ attendanceStore.loadingDailyClasses ? 'Cargando horario...' : (attendanceStore.dailyClasses.length ?
@@ -94,7 +94,7 @@
                 {{ entry.period?.start_time?.slice(0, 5) }} - {{ entry.period?.end_time?.slice(0, 5) }} |
                 {{ entry.assignment?.materia?.nombre }} - {{ entry.assignment?.aula?.grado_cardinal }}-{{
                   entry.assignment?.aula?.seccion }}
-                <span v-if="entry.attendance_summary?.attendance_taken" class="ml-2 text-green-600 font-bold">✓</span>
+                <span v-if="entry.attendance_summary?.attendance_taken" class="ml-2 text-green-600 font-bold">�S</span>
               </option>
             </select>
           </div>
@@ -145,32 +145,32 @@
 
     <!-- Panel de estadísticas (Ocultar si es feriado) -->
     <div v-if="showStatistics && hasData && !attendanceStore.holiday"
-      class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6 sticky top-20 z-30 transition-all duration-300 border-b border-gray-200 dark:border-gray-700">
+      class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-sm sticky top-20 z-30 transition-all duration-300 border-b border-gray-200 dark:border-gray-700">
       <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Resumen del Día</h3>
       <div class="grid grid-cols-2 md:grid-cols-6 gap-4">
-        <div class="text-center">
-          <div class="text-2xl font-bold text-gray-900 dark:text-gray-100">{{ attendanceStore.totalStudents }}</div>
-          <div class="text-sm text-gray-600 dark:text-gray-400">Total</div>
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 text-center">
+          <div class="text-gray-500 dark:text-gray-400 text-xs uppercase">Total</div>
+          <div class="text-gray-900 dark:text-white text-2xl font-bold">{{ attendanceStore.totalStudents }}</div>
         </div>
-        <div class="text-center">
-          <div class="text-2xl font-bold text-green-600">{{ attendanceStore.presentCount }}</div>
-          <div class="text-sm text-gray-600 dark:text-gray-400">Presentes</div>
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 text-center">
+          <div class="text-gray-500 dark:text-gray-400 text-xs uppercase">Presentes</div>
+          <div class="text-green-600 text-2xl font-bold">{{ attendanceStore.presentCount }}</div>
         </div>
-        <div class="text-center">
-          <div class="text-2xl font-bold text-red-600">{{ attendanceStore.absentCount }}</div>
-          <div class="text-sm text-gray-600 dark:text-gray-400">Ausentes</div>
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 text-center">
+          <div class="text-gray-500 dark:text-gray-400 text-xs uppercase">Ausentes</div>
+          <div class="text-red-600 text-2xl font-bold">{{ attendanceStore.absentCount }}</div>
         </div>
-        <div class="text-center">
-          <div class="text-2xl font-bold text-yellow-600">{{ attendanceStore.excusedCount }}</div>
-          <div class="text-sm text-gray-600 dark:text-gray-400">Excusas</div>
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 text-center">
+          <div class="text-gray-500 dark:text-gray-400 text-xs uppercase">Excusas</div>
+          <div class="text-yellow-600 text-2xl font-bold">{{ attendanceStore.excusedCount }}</div>
         </div>
-        <div class="text-center">
-          <div class="text-2xl font-bold text-orange-600">{{ attendanceStore.lateCount }}</div>
-          <div class="text-sm text-gray-600 dark:text-gray-400">Tardanzas</div>
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 text-center">
+          <div class="text-gray-500 dark:text-gray-400 text-xs uppercase">Tardanzas</div>
+          <div class="text-orange-600 text-2xl font-bold">{{ attendanceStore.lateCount }}</div>
         </div>
-        <div class="text-center">
-          <div class="text-2xl font-bold text-gray-500 dark:text-gray-400">{{ attendanceStore.withdrawnCount }}</div>
-          <div class="text-sm text-gray-600 dark:text-gray-400">Retirados</div>
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 text-center">
+          <div class="text-gray-500 dark:text-gray-400 text-xs uppercase">Retirados</div>
+          <div class="text-gray-500 dark:text-gray-400 text-2xl font-bold">{{ attendanceStore.withdrawnCount }}</div>
         </div>
       </div>
 
@@ -333,13 +333,26 @@ const isToday = computed(() => {
 })
 
 // Métodos
+const activeYear = computed(() => aniosStore.activos[0]);
+
+watch(activeYear, async (newVal, oldVal) => {
+  if (newVal?.id !== oldVal?.id) {
+    selectedAulaId.value = null;
+    attendanceStore.resetRecords();
+    if (newVal?.id) {
+      await aulasStore.fetchAll({ anioLectivoId: newVal.id });
+    }
+  }
+});
+
 const loadAttendance = async () => {
   if (!selectedDate.value || !selectedAulaId.value) return
 
   await attendanceStore.fetchAttendance(
     selectedDate.value,
     selectedAulaId.value,
-    selectedAssignmentId.value ?? 0 // Siempre pasar un número
+    selectedAssignmentId.value ?? 0,
+    activeYear.value?.id
   )
 }
 
@@ -560,3 +573,8 @@ onMounted(async () => {
   await aulasStore.fetchAll({ anioLectivoId: activeYear?.id })
 })
 </script>
+
+
+
+
+

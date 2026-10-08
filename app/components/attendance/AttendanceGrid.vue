@@ -210,13 +210,13 @@ const getButtonClass = (estado: string, estadoActual?: string, forcedTardiness?:
   if (isActive) {
     switch (estadoConfig?.color) {
       case 'green':
-        return `${baseClass} bg-green-100 text-green-800 border-green-200`
+        return `${baseClass} bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20`
       case 'red':
-        return `${baseClass} bg-red-100 text-red-800 border-red-200`
+        return `${baseClass} bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20`
       case 'yellow':
-        return `${baseClass} bg-yellow-100 text-yellow-800 border-yellow-200`
+        return `${baseClass} bg-yellow-500/10 text-yellow-600 dark:text-yellow-400 border-yellow-500/20`
       case 'orange':
-        return `${baseClass} bg-orange-100 text-orange-800 border-orange-200`
+        return `${baseClass} bg-orange-500/10 text-orange-600 dark:text-orange-400 border-orange-500/20`
       default:
         return `${baseClass} bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-700`
     }
@@ -234,3 +234,4 @@ const formatFecha = (fecha: string) => {
   })
 }
 </script>
+

@@ -109,7 +109,7 @@ export const useAttendanceStore = defineStore('attendance', {
   },
 
   actions: {
-    async fetchAttendance(fecha: string, aulaId: number, assignmentId: number) {
+    async fetchAttendance(fecha: string, aulaId: number, assignmentId: number, anioLectivoId?: number) {
       this.loading = true
       this.error = null
       this.currentDate = fecha
@@ -120,7 +120,7 @@ export const useAttendanceStore = defineStore('attendance', {
 
       try {
         const response = await api.get<{ data: AttendanceRecord[], fecha: string, aula_id: number, assignment_id: number, holiday?: { name: string } }>('/api/attendance', {
-          params: { fecha, aula_id: aulaId, assignment_id: assignmentId }
+          params: { fecha, aula_id: aulaId, assignment_id: assignmentId, anio_lectivo_id: anioLectivoId }
         })
 
         this.records = response.data || []
@@ -377,3 +377,4 @@ export const useAttendanceStore = defineStore('attendance', {
     }
   }
 })
+

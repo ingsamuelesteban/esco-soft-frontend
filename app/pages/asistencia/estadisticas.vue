@@ -1,7 +1,7 @@
 <template>
     <div class="space-y-8">
         <!-- Header & Filters -->
-        <div class="bg-white dark:bg-gray-800 shadow-sm rounded-lg p-6">
+        <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-sm">
             <div class="flex flex-col gap-6">
                 <!-- Top Header -->
                 <div class="flex items-center justify-between">
@@ -15,7 +15,7 @@
                         <div>
                             <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Estadísticas de Asistencia</h1>
                             <p class="text-sm text-gray-600 dark:text-gray-400 mt-0.5">
-                                {{ selectedAulaName }} <span v-if="selectedAulaName">•</span> {{ viewModeLabel }}
+                                {{ selectedAulaName }} <span v-if="selectedAulaName">⬢</span> {{ viewModeLabel }}
                             </p>
                         </div>
                     </div>
@@ -53,7 +53,7 @@
                     <div v-if="viewMode === 'daily'" class="w-full sm:w-48">
                         <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Fecha</label>
                         <input v-model="filters.date" type="date"
-                            class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
+                            class="w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-primary-500 rounded-lg p-2.5 text-sm shadow-sm focus:border-primary-500 sm:text-sm" />
                     </div>
 
                     <!-- Monthly Filters -->
@@ -61,14 +61,14 @@
                         <div class="w-full sm:w-40">
                             <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Mes</label>
                             <select v-model="filters.month"
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm">
+                                class="w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-primary-500 rounded-lg p-2.5 text-sm shadow-sm focus:border-primary-500 sm:text-sm">
                                 <option v-for="(m, i) in months" :key="i" :value="i + 1">{{ m }}</option>
                             </select>
                         </div>
                         <div class="w-24">
                             <label class="block text-xs font-bold text-gray-700 dark:text-gray-300 mb-1">Año</label>
                             <input v-model="filters.year" type="number" min="2020" max="2100"
-                                class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm focus:ring-primary-500 focus:border-primary-500 sm:text-sm" />
+                                class="w-full bg-white dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 focus:ring-primary-500 rounded-lg p-2.5 text-sm shadow-sm focus:border-primary-500 sm:text-sm" />
                         </div>
 
                         <!-- Assignment Filter (Available for both Admin and Teacher) -->
@@ -90,9 +90,9 @@
                         <!-- Print/Export Buttons (Disabled contextually) -->
                         <button v-if="viewMode === 'daily'" @click="printGlobal"
                             :disabled="!canPrintDaily || isPrintingGlobal"
-                            class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 flex items-center gap-2">
-                            <PrinterIcon v-if="!isPrintingGlobal" class="h-5 w-5 text-gray-500 dark:text-gray-400" />
-                            <svg v-else class="animate-spin h-5 w-5 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg"
+                            class="px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md shadow-sm text-sm font-medium flex items-center justify-center gap-2">
+                            <PrinterIcon v-if="!isPrintingGlobal" class="h-5 w-5 text-white" />
+                            <svg v-else class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
                                 fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
                                     stroke-width="4"></circle>
@@ -104,9 +104,9 @@
 
                         <button v-if="viewMode === 'monthly'" @click="printMonthly"
                             :disabled="isPrintingMonthly || !monthlyStats || !monthlyStats.students || monthlyStats.students.length === 0"
-                            class="px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 flex items-center gap-2">
-                            <PrinterIcon v-if="!isPrintingMonthly" class="h-5 w-5 text-gray-500 dark:text-gray-400" />
-                            <svg v-else class="animate-spin h-5 w-5 text-gray-500 dark:text-gray-400" xmlns="http://www.w3.org/2000/svg"
+                            class="px-3 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-md shadow-sm text-sm font-medium flex items-center justify-center gap-2">
+                            <PrinterIcon v-if="!isPrintingMonthly" class="h-5 w-5 text-white" />
+                            <svg v-else class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg"
                                 fill="none" viewBox="0 0 24 24">
                                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor"
                                     stroke-width="4"></circle>
@@ -171,7 +171,7 @@
                 <div v-for="subject in stats.asignaturas" :key="subject.assignment_id">
                     <StatsBoard
                         :title="subject.aula_nombre ? `${subject.aula_nombre} - ${subject.materia}` : subject.materia"
-                        :subtitle="`${subject.horario} • Prof. ${subject.profesor}`" :stats="subject.stats"
+                        :subtitle="`${subject.horario} ⬢ Prof. ${subject.profesor}`" :stats="subject.stats"
                         :attendanceTaken="subject.attendance_taken" :assignmentId="subject.assignment_id"
                         :date="filters.date" />
                 </div>
@@ -329,6 +329,7 @@ const { printPdfBlob } = usePrint()
 const aulasStore = useAulasStore()
 const authStore = useAuthStore()
 const aniosStore = useAniosLectivosStore()
+const activeYear = computed(() => aniosStore.activos[0])
 
 // State
 const loading = ref(false)
@@ -482,6 +483,7 @@ const fetchStats = async () => {
                 params: {
                     fecha: filters.date,
                     aula_id: filters.aulaId,
+                    anio_lectivo_id: activeYear.value?.id,
                     // If filtering by specific assignment in daily view?
                     // The backend `statistics` endpoint accepts `assignment_id`?
                     // Let's check backend. Yes, but logic implies it returns array of subjects.
@@ -515,7 +517,8 @@ const fetchStats = async () => {
                     aula_id: filters.aulaId,
                     month: filters.month,
                     year: filters.year,
-                    assignment_id: targetAssignment
+                    assignment_id: targetAssignment,
+                    anio_lectivo_id: activeYear.value?.id
                 }
             })
             monthlyStats.value = response
@@ -532,7 +535,6 @@ const printGlobal = async () => {
     if (!filters.date || !filters.aulaId) return
     isPrintingGlobal.value = true
     try {
-        // Force full report from main button
         let aulaParam = filters.aulaId
         if (aulaParam === 'all_summary') {
             aulaParam = 'all'
@@ -541,7 +543,8 @@ const printGlobal = async () => {
         const blob = await api.getBlob('/api/attendance/report/daily', {
             params: {
                 fecha: filters.date,
-                aula_id: aulaParam
+                aula_id: aulaParam,
+                anio_lectivo_id: activeYear.value?.id
             }
         })
 
@@ -549,7 +552,7 @@ const printGlobal = async () => {
         printPdfBlob(blob, filename, 'Generando reporte diario...')
         
     } catch (e: any) {
-        console.error('Error printing global:', e)
+        Swal.fire('Error', e.message || 'No se pudo generar el reporte diario.', 'error')
     } finally {
         isPrintingGlobal.value = false
     }
@@ -565,7 +568,8 @@ const printMonthly = async () => {
                 aula_id: filters.aulaId,
                 assignment_id: filters.assignmentId,
                 month: filters.month,
-                year: filters.year
+                year: filters.year,
+                anio_lectivo_id: activeYear.value?.id
             }
         })
 
@@ -580,12 +584,11 @@ const printMonthly = async () => {
             return
         }
 
-        const filename = `asistencia_mensual_${months[filters.month - 1]}_${filters.year}.pdf`
+        const filename = `asistencia_mensual_${filters.month}_${filters.year}.pdf`
         printPdfBlob(blob, filename, 'Generando reporte mensual...')
         
     } catch (e: any) {
-        console.error("Error printing monthly report", e)
-        alert('Error al generar reporte')
+        Swal.fire('Error', e.message || 'No se pudo generar el reporte mensual.', 'error')
     } finally {
         isPrintingMonthly.value = false
     }
@@ -703,3 +706,10 @@ onMounted(async () => {
     background: #9ca3af;
 }
 </style>
+
+
+
+
+
+
+

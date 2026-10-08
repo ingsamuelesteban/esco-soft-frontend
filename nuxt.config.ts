@@ -12,6 +12,9 @@ export default defineNuxtConfig({
   // App metadata
   app: {
     head: {
+      htmlAttrs: {
+        lang: 'es'
+      },
       title: 'EscoSoft - Sistema de Gestión Escolar',
       meta: [
         { charset: 'utf-8' },
@@ -80,7 +83,9 @@ export default defineNuxtConfig({
       const versionPath = path.resolve(__dirname, 'public/version.json')
       const versionData = { version: Date.now().toString() }
       fs.writeFileSync(versionPath, JSON.stringify(versionData, null, 2))
-      console.log('\x1b[32m%s\x1b[0m', '✔ Generated public/version.json with version:', versionData.version)
+      console.log('\x1b[32m%s\x1b[0m', '�S Generated public/version.json with version:', versionData.version)
     }
   }
 })
+
+
