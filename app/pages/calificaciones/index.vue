@@ -70,7 +70,7 @@
       <!-- Selector de curso -->
       <div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-6 mb-6">
         <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100 mb-4">Seleccionar Curso</h3>
-        <div :class="['grid grid-cols-1 gap-4', canChangeAnioLectivo ? 'md:grid-cols-4' : 'md:grid-cols-3']">
+        <div :class="['grid grid-cols-1 sm:grid-cols-2 gap-4', canChangeAnioLectivo ? 'lg:grid-cols-4' : 'lg:grid-cols-3']">
           <div v-if="canChangeAnioLectivo">
             <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Año Lectivo</label>
             <div class="relative">
@@ -207,17 +207,17 @@
           <div v-else class="overflow-x-auto">
             <!-- Calificaciones para módulos académicos -->
             <div v-if="moduloData?.tipo === 'Academico'">
-              <div class="overflow-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg max-h-[70vh]">
+              <div class="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600 shadow ring-1 ring-black ring-opacity-5 md:rounded-lg max-h-[70vh]">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                   <thead class="bg-gray-50 dark:bg-gray-900/50">
                     <tr>
                       <th
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky left-0 top-0 bg-gray-50 dark:bg-gray-900/50 z-30 shadow-sm">
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider sticky left-0 top-0 bg-gray-50 dark:bg-gray-900/50 z-30 shadow-sm">
                         Estudiante
                       </th>
                       <!-- Bloques 1-4 -->
                       <th v-for="bloque in 4" :key="bloque"
-                        class="px-3 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-l border-gray-200 dark:border-gray-700 sticky top-0 bg-gray-50 dark:bg-gray-900/50 z-20 shadow-sm">
+                        class="px-3 py-3 text-center text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider border-l border-gray-200 dark:border-gray-700 sticky top-0 bg-gray-50 dark:bg-gray-900/50 z-20 shadow-sm">
                         <div class="flex justify-center space-x-4">
                           <div v-for="comp in getCompetenciasPorBloque(bloque)" :key="comp" class="flex flex-col">
                             <span class="text-[10px] text-gray-500 dark:text-gray-400">{{ comp }}</span>
@@ -226,7 +226,7 @@
                       </th>
                       <!-- Promedios PC1-PC4 -->
                       <th
-                        class="px-3 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-l-2 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 sticky top-0 z-20 shadow-sm">
+                        class="px-3 py-3 text-center text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider border-l-2 border-gray-300 dark:border-gray-600 bg-gray-100 dark:bg-gray-800 sticky top-0 z-20 shadow-sm">
                         <div class="flex flex-col items-center">
                           <span>Promedio Competencias</span>
                           <div class="flex space-x-4 mt-1">
@@ -236,14 +236,14 @@
                       </th>
                       <!-- Calificación Final -->
                       <th
-                        class="px-3 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider border-l border-gray-300 dark:border-gray-600 bg-gray-200 sticky right-0 top-0 z-30 shadow-sm">
+                        class="px-3 py-3 text-center text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider border-l border-gray-300 dark:border-gray-600 bg-gray-200 sticky right-0 top-0 z-30 shadow-sm">
                         Final
                       </th>
                     </tr>
                   </thead>
                   <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    <tr v-for="estudiante in estudiantes" :key="estudiante.id" class="hover:bg-gray-50 dark:bg-gray-900/50">
-                      <td class="px-6 py-4 whitespace-nowrap sticky left-0 bg-white dark:bg-gray-800 z-10">
+                    <tr v-for="estudiante in estudiantes" :key="estudiante.id" class="hover:bg-gray-50/75 dark:hover:bg-gray-800/50 transition-colors">
+                      <td class="px-6 py-4 whitespace-nowrap sticky left-0 bg-white dark:bg-gray-800 z-10 min-w-[220px]">
                         <div class="flex items-center space-x-3">
                           <div class="flex-shrink-0">
                             <div class="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
@@ -358,16 +358,16 @@
 
             <!-- Calificaciones para módulos técnicos (RA) -->
             <div v-if="moduloData?.tipo === 'Tecnico'">
-              <div class="overflow-auto shadow ring-1 ring-black ring-opacity-5 md:rounded-lg max-h-[70vh]">
+              <div class="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-400 dark:scrollbar-thumb-gray-600 shadow ring-1 ring-black ring-opacity-5 md:rounded-lg max-h-[70vh]">
                 <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
                   <thead class="bg-gray-50 dark:bg-gray-900/50">
                     <tr>
                       <th
-                        class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky left-0 top-0 bg-gray-50 dark:bg-gray-900/50 z-30 shadow-sm">
+                        class="px-6 py-3 text-left text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider sticky left-0 top-0 bg-gray-50 dark:bg-gray-900/50 z-30 shadow-sm">
                         Estudiante
                       </th>
                       <th v-for="ra in Array.from({ length: moduloData.cantidad_ra }, (_, i) => i + 1)" :key="ra"
-                        class="px-3 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky top-0 bg-gray-50 dark:bg-gray-900/50 z-20 shadow-sm">
+                        class="px-3 py-3 text-center text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider sticky top-0 bg-gray-50 dark:bg-gray-900/50 z-20 shadow-sm">
                         <div class="flex flex-col items-center space-y-1">
                           <span>RA {{ ra }}</span>
                           <div v-if="moduloData?.valores_ra && moduloData.valores_ra[`ra_${ra}`]"
@@ -393,20 +393,20 @@
                       </th>
                       <!-- FCT Columns -->
                       <th v-if="moduloData?.calculation_mode === 'fct'"
-                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky right-0 top-0 bg-gray-50 dark:bg-gray-900/50 border-l border-gray-200 dark:border-gray-700 z-30 shadow-sm">
+                        class="px-6 py-3 text-center text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider sticky right-0 top-0 bg-gray-50 dark:bg-gray-900/50 border-l border-gray-200 dark:border-gray-700 z-30 shadow-sm">
                         Total
                       </th>
                       <th v-if="moduloData?.calculation_mode === 'fct'"
-                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky right-0 top-0 bg-gray-50 dark:bg-gray-900/50 border-l border-gray-200 dark:border-gray-700 z-30 shadow-sm">
+                        class="px-6 py-3 text-center text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider sticky right-0 top-0 bg-gray-50 dark:bg-gray-900/50 border-l border-gray-200 dark:border-gray-700 z-30 shadow-sm">
                         Promedio
                       </th>
                       <th v-if="moduloData?.calculation_mode === 'fct'"
-                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky right-0 top-0 bg-gray-50 dark:bg-gray-900/50 border-l border-gray-200 dark:border-gray-700 z-30 shadow-sm">
+                        class="px-6 py-3 text-center text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider sticky right-0 top-0 bg-gray-50 dark:bg-gray-900/50 border-l border-gray-200 dark:border-gray-700 z-30 shadow-sm">
                         Situación
                       </th>
                       <!-- Standard Technical Column -->
                       <th v-if="moduloData?.calculation_mode !== 'fct'"
-                        class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider sticky right-0 top-0 bg-gray-50 dark:bg-gray-900/50 border-l border-gray-200 dark:border-gray-700 z-30 shadow-sm">
+                        class="px-6 py-3 text-center text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider sticky right-0 top-0 bg-gray-50 dark:bg-gray-900/50 border-l border-gray-200 dark:border-gray-700 z-30 shadow-sm">
                         <div class="flex flex-col items-center space-y-1">
                           <span>Total</span>
                           <span class="inline-flex items-center px-2 py-1 rounded text-xs font-medium"
@@ -418,8 +418,8 @@
                     </tr>
                   </thead>
                   <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                    <tr v-for="estudiante in estudiantes" :key="estudiante.id" class="hover:bg-gray-50 dark:bg-gray-900/50">
-                      <td class="px-6 py-4 whitespace-nowrap sticky left-0 bg-white dark:bg-gray-800">
+                    <tr v-for="estudiante in estudiantes" :key="estudiante.id" class="hover:bg-gray-50/75 dark:hover:bg-gray-800/50 transition-colors">
+                      <td class="px-6 py-4 whitespace-nowrap sticky left-0 bg-white dark:bg-gray-800 min-w-[220px]">
                         <div class="flex items-center space-x-3">
                           <div class="flex-shrink-0">
                             <div class="h-8 w-8 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
@@ -549,7 +549,7 @@
 
     <!-- Modal para configurar valor del RA -->
     <div v-if="mostrarModalValorRA" class="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full z-50">
-      <div class="relative top-20 mx-auto p-5 border w-96 shadow-lg rounded-md bg-white dark:bg-gray-800">
+      <div class="relative top-20 mx-auto p-5 border border-gray-200 dark:border-gray-700 w-96 shadow-xl rounded-xl bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
         <div class="mt-3">
           <div class="flex items-center justify-between mb-4">
             <h3 class="text-lg font-medium text-gray-900 dark:text-gray-100">
@@ -609,16 +609,38 @@
               </div>
               <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">Definir el periodo de publicación para este RA.</p>
             </div>
+
+            <!-- FECHAS INFORMATIVAS -->
+            <div class="mt-4 grid grid-cols-2 gap-4 border-t border-gray-200 dark:border-gray-700 pt-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fecha de Inicio</label>
+                <input v-model="fechaInicioRA" type="date" :disabled="guardandoValorRA"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 disabled:dark:bg-gray-800 disabled:cursor-not-allowed" />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Fecha de Fin</label>
+                <input v-model="fechaFinRA" type="date" :disabled="guardandoValorRA"
+                  class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 disabled:bg-gray-100 disabled:dark:bg-gray-800 disabled:cursor-not-allowed" />
+              </div>
+              <div class="col-span-2">
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 flex items-start">
+                  <svg class="w-4 h-4 text-gray-400 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  Fechas de vigencia de carácter informativo. La nota se publicará en el período seleccionado arriba.
+                </p>
+              </div>
+            </div>
           </div>
 
-          <div class="flex justify-end space-x-3">
+          <div class="flex justify-end space-x-3 mt-4">
             <button @click="cerrarModalValorRA" :disabled="guardandoValorRA"
-              class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-800 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed">
+              class="px-4 py-2 text-sm font-medium text-gray-700 dark:text-gray-200 bg-gray-100 hover:bg-gray-200 dark:bg-gray-700 dark:hover:bg-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500 disabled:opacity-50 disabled:cursor-not-allowed">
               Cancelar
             </button>
             <button @click="guardarValorRA(valorRAActual)"
               :disabled="guardandoValorRA || !valorRAActual || valorRAActual <= 0 || parseFloat(valorRAActual) > porcentajeDisponible || !periodoRA"
-              class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center">
+              class="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-300 disabled:cursor-not-allowed flex items-center">
               <svg v-if="guardandoValorRA" class="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                 <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
@@ -713,6 +735,8 @@ const mostrarModalValorRA = ref(false)
 const raParaConfigurar = ref(null)
 const valorRAActual = ref('')
 const periodoRA = ref(null)
+const fechaInicioRA = ref('')
+const fechaFinRA = ref('')
 const guardandoValorRA = ref(false)
 
 // Modal Calificar Oportunidad (RA)
@@ -933,6 +957,8 @@ const cerrarModalValorRA = () => {
   raParaConfigurar.value = null
   valorRAActual.value = ''
   periodoRA.value = null
+  fechaInicioRA.value = ''
+  fechaFinRA.value = ''
   guardandoValorRA.value = false
 }
 
@@ -944,10 +970,16 @@ const cargarValorRAActual = async (raNumero) => {
 
     // Cargar periodo si existe
     periodoRA.value = response.periodos_ra?.[`ra_${raNumero}`] || null
+
+    // Cargar fechas si existen
+    fechaInicioRA.value = response.fechas_ra?.[`ra_${raNumero}`]?.start || ''
+    fechaFinRA.value = response.fechas_ra?.[`ra_${raNumero}`]?.end || ''
   } catch (error) {
     console.error('Error al cargar valor del RA:', error)
     valorRAActual.value = ''
     periodoRA.value = null
+    fechaInicioRA.value = ''
+    fechaFinRA.value = ''
   }
 }
 
@@ -964,7 +996,9 @@ const guardarValorRA = async (valor) => {
     await api.post(`/api/class-assignments/${moduloSeleccionado.value}/ra-values`, {
       ra_numero: raNumero,
       valor: valor,
-      periodo: periodoRA.value
+      periodo: periodoRA.value,
+      fecha_inicio: fechaInicioRA.value || null,
+      fecha_fin: fechaFinRA.value || null
     })
 
     // Actualizar los datos del módulo con el nuevo valor
@@ -978,6 +1012,11 @@ const guardarValorRA = async (valor) => {
         moduloData.value.periodos_ra = {}
       }
       moduloData.value.periodos_ra[`ra_${raNumero}`] = periodoRA.value
+
+      if (!moduloData.value.fechas_ra) {
+        moduloData.value.fechas_ra = {}
+      }
+      moduloData.value.fechas_ra[`ra_${raNumero}`] = { start: fechaInicioRA.value, end: fechaFinRA.value }
     }
 
     // Actualizar también en modulosDisponibles para mantener consistencia
@@ -992,6 +1031,11 @@ const guardarValorRA = async (valor) => {
         modulo.periodos_ra = {}
       }
       modulo.periodos_ra[`ra_${raNumero}`] = periodoRA.value
+
+      if (!modulo.fechas_ra) {
+        modulo.fechas_ra = {}
+      }
+      modulo.fechas_ra[`ra_${raNumero}`] = { start: fechaInicioRA.value, end: fechaFinRA.value }
     }
 
     cerrarModalValorRA()
@@ -1402,7 +1446,7 @@ const getCasillaOportunidadClass = (estudianteId, raNumero, oportunidad) => {
       return 'bg-red-100 text-red-800 dark:text-red-400 border-red-300 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:border-red-800/50 dark:hover:bg-red-800/50'
     }
   } else {
-    return 'bg-gray-50 dark:bg-gray-900/50 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-600 hover:bg-blue-50 hover:border-blue-300 dark:hover:bg-blue-900/30 dark:hover:border-blue-700/50'
+    return 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-center font-semibold text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-900/50 focus:bg-blue-50 dark:focus:bg-gray-700'
   }
 }
 
@@ -1511,7 +1555,7 @@ const getCompetenciaButtonClass = (estudianteId, competencia, bloque, tipo) => {
   const nota = getNotaCompetencia(estudianteId, competencia, bloque, tipo)
 
   if (nota === null || nota === undefined) {
-    return 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-400 hover:bg-gray-50 dark:bg-gray-900/50'
+    return 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-center font-semibold text-gray-900 dark:text-gray-100 hover:bg-blue-50 dark:hover:bg-gray-900/50 focus:bg-blue-50 dark:focus:bg-gray-700'
   }
 
   const notaNum = parseFloat(nota)
