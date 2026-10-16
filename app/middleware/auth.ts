@@ -10,7 +10,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
   const isTokenValid = Boolean(
     activeToken &&
     typeof activeToken === 'string' &&
-    activeToken.trim().length > 10 &&
+    activeToken.trim().length > 5 &&
     activeToken !== 'null' &&
     activeToken !== 'undefined'
   )
@@ -18,7 +18,6 @@ export default defineNuxtRouteMiddleware((to, from) => {
   const hasValidSession = Boolean(
     authStore.isAuthenticated &&
     authStore.user &&
-    authStore.user.id &&
     isTokenValid
   )
 
@@ -34,12 +33,12 @@ export default defineNuxtRouteMiddleware((to, from) => {
       return
     }
     if (authStore.user?.role === 'display_horario') {
-      return navigateTo('/display/horario')
+      return navigateTo('/display/horario', { replace: true })
     }
     if (authStore.user?.role === 'estudiante') {
-      return navigateTo('/student/dashboard')
+      return navigateTo('/student/dashboard', { replace: true })
     }
-    return navigateTo('/')
+    return navigateTo('/', { replace: true })
   }
 
   // Kiosk isolation

@@ -165,7 +165,8 @@ export const useAuthStore = defineStore('auth', {
             }
           }
 
-          await this.loadUserMenu()
+          // Cargar menú en segundo plano sin bloquear la redirección del login
+          this.loadUserMenu().catch(() => {})
           return { success: true }
         }
 
@@ -499,7 +500,7 @@ export const useAuthStore = defineStore('auth', {
           // If requires_tenant_selection is true, we should probably handle that, 
           // but for now let's fix the missing tenant case.
 
-          await this.loadUserMenu()
+          this.loadUserMenu().catch(() => {})
           return { success: true, message: response.message || 'Contraseña cambiada exitosamente' }
         }
 
@@ -533,15 +534,13 @@ export const useAuthStore = defineStore('auth', {
 
     async selectTenant(tenant: Tenant) {
       this.tenant = tenant
-      // Guardar preferencia si es necesario, o simplemente establecer el estado
-      // El header X-Tenant-ID se debe configurar en api.ts o interceptor
-      // Pero como api.ts lee de localStorage, tal vez necesitemos guardar el tenant ID
       if (process.client) {
         localStorage.setItem('selected_tenant_id', tenant.id.toString())
+        localStorage.setItem('cached_tenant', JSON.stringify(tenant))
       }
 
-      await this.loadUserMenu()
-      return navigateTo('/')
+      this.loadUserMenu().catch(() => {})
+      return navigateTo('/', { replace: true, external: true })
     },
 
     async updateProfileInformation(profileData: any) {

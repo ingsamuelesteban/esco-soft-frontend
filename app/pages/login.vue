@@ -570,6 +570,27 @@ const getErrorMessage = (error) => {
   return 'Error al iniciar sesión. Si el problema persiste, contacta al administrador.'
 }
 
+// Determinar ruta destino según el rol del usuario
+const resolvePostLoginRoute = () => {
+  const role = authStore.user?.role?.toLowerCase() || ''
+  if (role === 'display_horario') return '/display/horario'
+  if (role === 'estudiante') return '/student/dashboard'
+  if (['sec4', 'sec5', 'sec6'].includes(role)) return '/calificaciones'
+  return '/'
+}
+
+// Forzar navegación limpia para cargar sesión y layout sin bloqueos del router en memoria
+const redirectAfterAuth = async (targetRoute) => {
+  try {
+    await navigateTo(targetRoute, { replace: true, external: true })
+  } catch (navError) {
+    console.error('Error en navegación:', navError)
+  }
+  if (process.client && window.location.pathname === '/login') {
+    window.location.href = targetRoute
+  }
+}
+
 // Manejar el login
 const handleLogin = async () => {
   error.value = ''
@@ -585,28 +606,16 @@ const handleLogin = async () => {
 
     if (result.success) {
       isSuccess.value = true
-      // Pequeña pausa para mostrar el mensaje de éxito
-      await new Promise(resolve => setTimeout(resolve, 800))
+      // Pausa breve para mostrar el mensaje de éxito antes de redirigir (< 1s)
+      await new Promise(resolve => setTimeout(resolve, 400))
 
       if (result.requiresTenantSelection) {
         await navigateTo('/select-tenant', { replace: true })
         return
       }
 
-      try {
-        // Redirigir según el rol del usuario
-        const role = authStore.user?.role?.toLowerCase() || ''
-        const targetRoute = role === 'display_horario' ? '/display/horario' : (['sec4', 'sec5', 'sec6'].includes(role) ? '/calificaciones' : '/')
-        await navigateTo(targetRoute, { replace: true })
-      } catch (navError) {
-        console.error('Error en navegación:', navError)
-        // Fallback: usar window.location
-        if (process.client) {
-          const role = authStore.user?.role?.toLowerCase() || ''
-          const targetRoute = role === 'display_horario' ? '/display/horario' : (['sec4', 'sec5', 'sec6'].includes(role) ? '/calificaciones' : '/')
-          window.location.href = targetRoute
-        }
-      }
+      const targetRoute = resolvePostLoginRoute()
+      await redirectAfterAuth(targetRoute)
     } else if (result.requiresPasswordChange) {
       // Usuario necesita cambiar contraseña
       showPasswordChange.value = true
@@ -728,22 +737,11 @@ const handlePasswordChange = async () => {
       isSuccess.value = true
       showPasswordChange.value = false
 
-      // Pequeña pausa para mostrar el mensaje de éxito
-      await new Promise(resolve => setTimeout(resolve, 800))
+      // Pausa breve para mostrar el mensaje de éxito (< 1s)
+      await new Promise(resolve => setTimeout(resolve, 400))
 
-      try {
-        // Redirigir según el rol del usuario
-        const role = authStore.user?.role?.toLowerCase() || ''
-        const targetRoute = role === 'display_horario' ? '/display/horario' : (['sec4', 'sec5', 'sec6'].includes(role) ? '/calificaciones' : '/')
-        await navigateTo(targetRoute, { replace: true })
-      } catch (navError) {
-        console.error('Error en navegación:', navError)
-        if (process.client) {
-          const role = authStore.user?.role?.toLowerCase() || ''
-          const targetRoute = role === 'display_horario' ? '/display/horario' : (['sec4', 'sec5', 'sec6'].includes(role) ? '/calificaciones' : '/')
-          window.location.href = targetRoute
-        }
-      }
+      const targetRoute = resolvePostLoginRoute()
+      await redirectAfterAuth(targetRoute)
     } else {
       // Manejar errores de validación específicos
       if (result.errors) {
@@ -808,7 +806,7 @@ onMounted(async () => {
     const isTokenValid = Boolean(
       activeToken &&
       typeof activeToken === 'string' &&
-      activeToken.trim().length > 10 &&
+      activeToken.trim().length > 5 &&
       activeToken !== 'null' &&
       activeToken !== 'undefined'
     )
@@ -816,19 +814,12 @@ onMounted(async () => {
     const hasValidSession = Boolean(
       authStore.isAuthenticated &&
       authStore.user &&
-      authStore.user.id &&
       isTokenValid
     )
 
     if (hasValidSession) {
-      const role = authStore.user?.role?.toLowerCase() || ''
-      if (role === 'display_horario') {
-        await navigateTo('/display/horario', { replace: true })
-      } else if (role === 'estudiante') {
-        await navigateTo('/student/dashboard', { replace: true })
-      } else {
-        await navigateTo('/', { replace: true })
-      }
+      const targetRoute = resolvePostLoginRoute()
+      await redirectAfterAuth(targetRoute)
     } else {
       if (authStore.isAuthenticated || authStore.token || savedToken) {
         authStore.clearTokens()

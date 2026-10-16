@@ -1,6 +1,11 @@
 import { useAuthStore } from '../stores/auth'
 
 export default defineNuxtRouteMiddleware((to, from) => {
+  // Este middleware solo aplica a la vista de login; nunca detener navegaciones salientes
+  if (to.path !== '/login') {
+    return
+  }
+
   const authStore = useAuthStore()
 
   const savedToken = process.client ? localStorage.getItem('auth_token') : null
@@ -8,7 +13,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
   const isTokenValid = Boolean(
     activeToken &&
     typeof activeToken === 'string' &&
-    activeToken.trim().length > 10 &&
+    activeToken.trim().length > 5 &&
     activeToken !== 'null' &&
     activeToken !== 'undefined'
   )
@@ -16,7 +21,6 @@ export default defineNuxtRouteMiddleware((to, from) => {
   const hasValidSession = Boolean(
     authStore.isAuthenticated &&
     authStore.user &&
-    authStore.user.id &&
     isTokenValid
   )
 
@@ -39,9 +43,11 @@ export default defineNuxtRouteMiddleware((to, from) => {
     targetPath = '/display/horario'
   } else if (role === 'estudiante') {
     targetPath = '/student/dashboard'
+  } else if (['sec4', 'sec5', 'sec6'].includes(role)) {
+    targetPath = '/calificaciones'
   }
 
   if (to.path !== targetPath) {
-    return navigateTo(targetPath)
+    return navigateTo(targetPath, { replace: true })
   }
 })
