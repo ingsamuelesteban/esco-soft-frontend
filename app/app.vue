@@ -26,8 +26,11 @@ const publicStore = usePublicStore()
 const { isPublicSite, subdomain } = useDomain()
 
 const currentLayout = computed(() => {
-  if (route.meta.layout !== undefined) {
+  if (route.meta.layout === false) {
     return undefined
+  }
+  if (route.meta.layout === 'empty') {
+    return 'empty'
   }
   return isPublicSite.value ? 'public' : 'default'
 })

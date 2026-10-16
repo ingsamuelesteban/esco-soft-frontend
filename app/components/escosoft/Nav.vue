@@ -235,6 +235,7 @@ const userRole = computed(() => {
   if (!process.client) return 'Usuario'
   if (authStore.isAdmin) return 'Administrador'
   if (authStore.isProfesor) return 'Profesor'
+  if (authStore.user?.role === 'estudiante') return 'Estudiante'
   return 'Usuario'
 })
 const userInitials = computed(() => {

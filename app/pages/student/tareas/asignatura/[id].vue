@@ -98,7 +98,7 @@ import 'dayjs/locale/es'
 dayjs.locale('es')
 
 definePageMeta({
-    layout: 'student',
+    layout: 'default',
     middleware: ['auth', 'role', 'student-active'],
     roles: ['estudiante']
 })

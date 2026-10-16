@@ -282,7 +282,7 @@ import Swal from 'sweetalert2'
 import DropZone from '~/components/ui/DropZone.vue'
 
 definePageMeta({
-    layout: 'student',
+    layout: 'default',
     middleware: ['auth', 'role', 'student-active'],
     roles: ['estudiante']
 })

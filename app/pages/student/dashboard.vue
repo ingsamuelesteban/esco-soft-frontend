@@ -695,7 +695,7 @@ import {
 } from '@heroicons/vue/24/outline'
 
 definePageMeta({
-  layout: 'student',
+  layout: 'default',
   middleware: ['auth']
 })
 

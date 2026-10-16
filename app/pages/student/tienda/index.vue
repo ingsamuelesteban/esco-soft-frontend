@@ -208,7 +208,7 @@ import { useAuthStore } from '~/stores/auth'
 import Swal from 'sweetalert2'
 import { usePrint } from '~/composables/usePrint'
 
-definePageMeta({ layout: 'student', middleware: ['auth'] })
+definePageMeta({ layout: 'default', middleware: ['auth'] })
 
 const auth = useAuthStore()
 const { $api } = useNuxtApp()

@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="h-full flex flex-col p-4 sm:p-6 lg:p-8">
     <div class="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
       <div>
@@ -37,7 +37,7 @@ import AgendaCalendar from '~/components/AgendaCalendar.client.vue'
 
 definePageMeta({
   middleware: ['auth'],
-  layout: 'student'
+  layout: 'default'
 })
 
 const agendaCalendar = ref(null)
