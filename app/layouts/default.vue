@@ -52,9 +52,11 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useChatStore } from '~/stores/chat'
+import { useAuthStore } from '~/stores/auth'
 
 const isSidebarOpen = ref(false)
 const chatStore = useChatStore()
+const authStore = useAuthStore()
 
 const toggleSidebar = () => {
   isSidebarOpen.value = !isSidebarOpen.value
@@ -65,7 +67,9 @@ const closeSidebar = () => {
 }
 
 onMounted(() => {
-  // Initialize chat listeners
-  chatStore.initChat()
+  // Initialize chat listeners solo si hay sesión activa
+  if (authStore.isAuthenticated && authStore.token) {
+    chatStore.initChat()
+  }
 })
 </script>

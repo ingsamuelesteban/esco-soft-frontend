@@ -800,22 +800,48 @@ const handleEmailVerification = async () => {
   }
 }
 
-// Si ya está autenticado, redirigir al dashboard
-onMounted(() => {
-  if (authStore.isAuthenticated) {
-    const role = authStore.user?.role?.toLowerCase() || ''
-    if (role === 'display_horario') {
-      navigateTo('/display/horario')
+// Si ya está autenticado con sesión válida, redirigir al dashboard; de lo contrario limpiar residuos
+onMounted(async () => {
+  try {
+    const savedToken = process.client ? localStorage.getItem('auth_token') : null
+    const activeToken = authStore.token || savedToken
+    const isTokenValid = Boolean(
+      activeToken &&
+      typeof activeToken === 'string' &&
+      activeToken.trim().length > 10 &&
+      activeToken !== 'null' &&
+      activeToken !== 'undefined'
+    )
+
+    const hasValidSession = Boolean(
+      authStore.isAuthenticated &&
+      authStore.user &&
+      authStore.user.id &&
+      isTokenValid
+    )
+
+    if (hasValidSession) {
+      const role = authStore.user?.role?.toLowerCase() || ''
+      if (role === 'display_horario') {
+        await navigateTo('/display/horario', { replace: true })
+      } else if (role === 'estudiante') {
+        await navigateTo('/student/dashboard', { replace: true })
+      } else {
+        await navigateTo('/', { replace: true })
+      }
     } else {
-      navigateTo('/')
+      if (authStore.isAuthenticated || authStore.token || savedToken) {
+        authStore.clearTokens()
+      }
+      // Cargar datos recordados si existen
+      const remembered = authStore.getRememberedCredentials()
+      if (remembered.remember && remembered.username) {
+        form.username = remembered.username
+        form.remember = true
+      }
     }
-  } else {
-    // Cargar datos recordados si existen
-    const remembered = authStore.getRememberedCredentials()
-    if (remembered.remember && remembered.username) {
-      form.username = remembered.username
-      form.remember = true
-    }
+  } catch (err) {
+    console.warn('Error silencioso inicializando vista de login:', err)
   }
 })
 </script>

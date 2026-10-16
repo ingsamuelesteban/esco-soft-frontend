@@ -110,22 +110,43 @@ export async function apiCall<T = any>(url: string, options: Parameters<typeof $
       }
     },
     async onResponseError({ response }) {
-      // Manejo global de 401: Redirigir al login si la sesión expiró
+      // Manejo global de 401: Limpiar credenciales y redirigir a /login solo si NO estamos ya en /login
       if (response.status === 401) {
         if (process.client) {
           localStorage.removeItem('auth_token')
           localStorage.removeItem('selected_tenant_id')
-          window.location.href = '/login'
+          localStorage.removeItem('cached_tenant')
+
+          try {
+            const { useAuthStore } = await import('../stores/auth')
+            const authStore = useAuthStore()
+            authStore.clearTokens()
+          } catch (_) {
+            // Ignorar si Pinia aún no está disponible
+          }
+
+          let currentPath = window.location.pathname
+          try {
+            const route = useRoute()
+            if (route?.path) {
+              currentPath = route.path
+            }
+          } catch (_) {
+            // Fallback a window.location.pathname
+          }
+
+          if (currentPath !== '/login' && window.location.pathname !== '/login') {
+            await navigateTo('/login')
+          }
         }
       }
 
-      // Manejo global de 403 (Bloqueo de usuario): Redirigir al login
+      // Manejo global de 403 (Bloqueo de usuario)
       if (response.status === 403) {
         const msg = response._data?.message || '';
         if (msg.includes('Acceso bloqueado temporalmente')) {
-          // Redirigir a página de bloqueo sin cerrar sesión
-          if (window.location.pathname !== '/blocked') {
-            window.location.href = '/blocked'
+          if (process.client && window.location.pathname !== '/blocked') {
+            await navigateTo('/blocked')
           }
         }
       }

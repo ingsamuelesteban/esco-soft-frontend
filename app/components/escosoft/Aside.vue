@@ -160,9 +160,11 @@ const emit = defineEmits(['close-sidebar'])
 const openGroups = ref({})
 const isClient = ref(false)
 
-// Cargar menú al montar el componente
+// Cargar menú al montar el componente solo si el usuario está autenticado
 onMounted(async () => {
-  await loadMenu()
+  if (authStore.isAuthenticated && authStore.token) {
+    await loadMenu()
+  }
 
   // Cargar estado de grupos desde localStorage
   isClient.value = true

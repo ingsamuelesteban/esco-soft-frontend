@@ -5,7 +5,34 @@ export default defineNuxtRouteMiddleware((to, from) => {
   const authStore = useAuthStore()
   const { isPublicSite } = useDomain()
 
-  if (to.path === '/login' && authStore.isAuthenticated) {
+  const savedToken = process.client ? localStorage.getItem('auth_token') : null
+  const activeToken = authStore.token || savedToken
+  const isTokenValid = Boolean(
+    activeToken &&
+    typeof activeToken === 'string' &&
+    activeToken.trim().length > 10 &&
+    activeToken !== 'null' &&
+    activeToken !== 'undefined'
+  )
+
+  const hasValidSession = Boolean(
+    authStore.isAuthenticated &&
+    authStore.user &&
+    authStore.user.id &&
+    isTokenValid
+  )
+
+  if (!hasValidSession && (authStore.isAuthenticated || authStore.token || savedToken)) {
+    authStore.clearTokens()
+  }
+
+  if (to.path === '/login') {
+    if (!hasValidSession) {
+      return
+    }
+    if (from?.matched?.length && to.path === from.path) {
+      return
+    }
     if (authStore.user?.role === 'display_horario') {
       return navigateTo('/display/horario')
     }
@@ -25,7 +52,7 @@ export default defineNuxtRouteMiddleware((to, from) => {
   // Si es un sitio público (subdominio) y vamos a la raíz o a una página de noticias pública, NO redirigir a login
   const isPublicRoute = to.path === '/' || to.path.startsWith('/noticias/')
   
-  if (to.path !== '/login' && !authStore.isAuthenticated) {
+  if (to.path !== '/login' && !hasValidSession) {
     if (isPublicSite.value && isPublicRoute) {
       return // Permitir acceso
     }

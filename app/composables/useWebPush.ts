@@ -57,16 +57,19 @@ export const useWebPush = () => {
    */
   const checkSubscription = async () => {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
-    const registration = await navigator.serviceWorker.ready;
-    const existingSubscription = await registration.pushManager.getSubscription();
-    isSubscribed.value = !!existingSubscription;
+    try {
+      const registration = await navigator.serviceWorker.ready;
+      const existingSubscription = await registration.pushManager.getSubscription();
+      isSubscribed.value = !!existingSubscription;
 
-    if (existingSubscription && Notification.permission === 'granted') {
-      try {
+      const hasToken = process.client && Boolean(localStorage.getItem('auth_token'));
+      const isLoginPage = process.client && window.location.pathname === '/login';
+
+      if (existingSubscription && Notification.permission === 'granted' && hasToken && !isLoginPage) {
         await syncSubscription(existingSubscription);
-      } catch (e) {
-        console.warn('[useWebPush] No se pudo sincronizar la suscripción existente', e);
       }
+    } catch (e) {
+      console.warn('[useWebPush] No se pudo sincronizar la suscripción existente', e);
     }
   };
 

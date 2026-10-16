@@ -5,8 +5,8 @@
   <!-- Global API loading bar -->
   <GlobalLoadingBar />
 
-  <div :class="[isPublicSite ? 'font-inter text-gray-900 bg-white min-h-screen' : '']">
-    <NuxtLayout :name="isPublicSite ? 'public' : 'default'">
+  <div :class="[isPublicSite && currentLayout === 'public' ? 'font-inter text-gray-900 bg-white min-h-screen' : '']">
+    <NuxtLayout :name="currentLayout">
       <NuxtPage />
     </NuxtLayout>
   </div>
@@ -19,17 +19,31 @@
 import { useAuthStore } from '~/stores/auth'
 import { useDomain } from '~/composables/useDomain'
 import { usePublicStore } from '~/stores/public'
-import PublicLanding from '~/components/public/PublicLanding.vue'
 
+const route = useRoute()
 const authStore = useAuthStore()
 const publicStore = usePublicStore()
 const { isPublicSite, subdomain } = useDomain()
-const layout_name = 'public'
 
-// Si estamos en un sitio público, cargar los datos inmediatamente
-const loadPublicInfo = () => {
+const currentLayout = computed(() => {
+  if (route.meta.layout === false || route.path === '/login') {
+    return false
+  }
+  if (typeof route.meta.layout === 'string') {
+    return route.meta.layout as any
+  }
+  return isPublicSite.value ? 'public' : 'default'
+})
+
+// Si estamos en un sitio público, cargar los datos inmediatamente (excepto en /login)
+const loadPublicInfo = async () => {
+  if (route.path === '/login') return
   if (isPublicSite.value && subdomain.value) {
-    publicStore.fetchPublicData(subdomain.value)
+    try {
+      await publicStore.fetchPublicData(subdomain.value)
+    } catch (err) {
+      console.warn('Error silencioso cargando datos públicos:', err)
+    }
   }
 }
 

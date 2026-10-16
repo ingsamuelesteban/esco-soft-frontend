@@ -252,20 +252,16 @@ export const useAuthStore = defineStore('auth', {
     },
 
     async logout() {
-      this.user = null
-      this.token = null
-      this.tenant = null
-      this.tenantFeatures = []
-      this.director = null
-      this.isAuthenticated = false
+      this.clearTokens()
 
       if (process.client) {
-        localStorage.removeItem('auth_token')
-        localStorage.removeItem('cached_tenant')   // Limpiar cache de tenant
         this.stopActivityTracker()
       }
 
-      await navigateTo('/login')
+      const route = useRoute()
+      if (route?.path !== '/login') {
+        await navigateTo('/login')
+      }
     },
 
     initActivityTracker() {
@@ -415,9 +411,7 @@ export const useAuthStore = defineStore('auth', {
             }
           } catch (error: any) {
             console.error('Error in initializeAuth:', error)
-            if (error.status === 401 || error.statusCode === 401) {
-              this.clearTokens()
-            }
+            this.clearTokens()
           }
         }
       }
@@ -426,9 +420,13 @@ export const useAuthStore = defineStore('auth', {
     clearTokens() {
       if (process.client) {
         localStorage.removeItem('auth_token')
+        localStorage.removeItem('selected_tenant_id')
+        localStorage.removeItem('cached_tenant')
       }
       this.token = null
       this.user = null
+      this.tenant = null
+      this.tenantFeatures = []
       this.director = null
       this.isAuthenticated = false
     },

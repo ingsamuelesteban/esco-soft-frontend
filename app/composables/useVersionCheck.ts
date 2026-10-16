@@ -5,13 +5,17 @@ export const useVersionCheck = () => {
 
   /** Consulta version.json saltando caché del navegador, del SW y de proxies/CDN. */
   const fetchRemoteVersion = async (): Promise<string | null> => {
-    const res = await fetch(`/version.json?_t=${Date.now()}`, {
-      cache: 'no-store',
-      headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' }
-    })
-    if (!res.ok) return null
-    const data = await res.json()
-    return data?.version ? String(data.version) : null
+    try {
+      const res = await fetch(`/version.json?_t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' }
+      })
+      if (!res.ok) return null
+      const data = await res.json()
+      return data?.version ? String(data.version) : null
+    } catch {
+      return null
+    }
   }
 
   /**
