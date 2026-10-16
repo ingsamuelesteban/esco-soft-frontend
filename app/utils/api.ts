@@ -40,6 +40,7 @@ export async function apiCall<T = any>(url: string, options: Parameters<typeof $
       '/sanctum/csrf-cookie',
       '/tenants',
       '/api/tenants',
+      '/api/push-subscriptions',
       '/storage'
     ]
 
