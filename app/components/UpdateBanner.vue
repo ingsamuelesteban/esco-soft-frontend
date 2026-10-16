@@ -38,23 +38,10 @@
 </template>
 
 <script setup lang="ts">
-const { needsUpdate } = useVersionCheck()
+const { needsUpdate, applyUpdate } = useVersionCheck()
 
-const reloadApp = async () => {
-  try {
-    // Consultar la versión más reciente del servidor antes de recargar para no mostrar el banner de nuevo
-    const response = await fetch(`/version.json?t=${Date.now()}`)
-    if (response.ok) {
-      const data = await response.json()
-      localStorage.setItem('escosoft_version', data.version)
-    }
-  } catch (error) {
-    console.error('Error al actualizar localStorage antes de recarga:', error)
-  }
-
-  // Recarga forzada de página
-  window.location.reload()
-}
+// La recarga solo ocurre por clic deliberado en "Actualizar ahora"
+const reloadApp = () => applyUpdate()
 
 const dismissBanner = () => {
   // Ocultar temporalmente en el estado actual sin actualizar la versión para permitir que sigan operando

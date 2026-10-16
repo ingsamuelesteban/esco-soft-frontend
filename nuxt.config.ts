@@ -55,6 +55,12 @@ export default defineNuxtConfig({
     preset: 'node-server'
   },
 
+  // version.json y sw.js nunca deben cachearse (detección fiable de nuevas versiones)
+  routeRules: {
+    '/version.json': { headers: { 'cache-control': 'no-store, no-cache, must-revalidate, max-age=0' } },
+    '/sw.js': { headers: { 'cache-control': 'no-cache, no-store, must-revalidate' } }
+  },
+
   // Public runtime config
   runtimeConfig: {
     public: {
