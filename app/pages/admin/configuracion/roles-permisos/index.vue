@@ -49,6 +49,8 @@ const formatModuleName = (name: string) => {
     estudiantes: 'Estudiantes',
     profesores: 'Profesores',
     personal: 'Personal',
+    materiales: 'Entrega de Materiales',
+    agenda: 'Agenda Escolar',
     calificaciones: 'Calificaciones',
     tareas: 'Tareas',
     asistencia: 'Asistencia',

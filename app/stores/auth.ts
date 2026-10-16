@@ -95,6 +95,32 @@ export const useAuthStore = defineStore('auth', {
     isMaster: (state) => state.user?.role === 'master',
     isCoordinator: (state) => state.user?.role === 'coordinador',
     isSecre: (state) => (state.user?.role || '').toLowerCase().includes('sec'),
+    can: (state) => (permission: string): boolean => {
+      const user = state.user
+      if (!user) return false
+      if (user.role === 'master') return true
+      if (user.role === 'admin' && !permission.startsWith('master.')) return true
+
+      if (Array.isArray(user.permissions_list)) {
+        if (user.permissions_list.includes('*') || user.permissions_list.includes(permission)) {
+          return true
+        }
+      }
+
+      if (Array.isArray(user.permissions) && user.permissions.some((p: any) => (typeof p === 'string' ? p === permission : p?.name === permission))) {
+        return true
+      }
+
+      if (Array.isArray(user.roles)) {
+        for (const r of user.roles) {
+          if (Array.isArray(r?.permissions) && r.permissions.some((p: any) => (typeof p === 'string' ? p === permission : p?.name === permission))) {
+            return true
+          }
+        }
+      }
+
+      return false
+    },
   },
 
   actions: {

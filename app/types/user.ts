@@ -3,7 +3,7 @@ export interface User {
     name: string
     username: string
     email: string
-    role: 'admin' | 'profesor' | 'master' | 'estudiante' | 'coordinador'
+    role: 'admin' | 'profesor' | 'master' | 'estudiante' | 'coordinador' | string
     personal_id?: number
     active: boolean
     profile_photo_path?: string
@@ -11,4 +11,7 @@ export interface User {
     initials?: string
     digital_signature_path?: string
     is_preadmitted?: boolean
+    permissions_list?: string[]
+    roles?: Array<{ id: number; name: string; permissions?: Array<{ name: string }> }>
+    permissions?: Array<{ name: string }>
 }
