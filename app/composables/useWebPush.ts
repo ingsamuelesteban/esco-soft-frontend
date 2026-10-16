@@ -1,16 +1,20 @@
 import { ref } from 'vue';
 import { useRuntimeConfig } from '#app';
 import { api } from '~/utils/api';
-import Swal from 'sweetalert2'; // Fix API import
+import Swal from 'sweetalert2';
+
+const PUSH_ENDPOINT = '/api/push-subscriptions';
 
 export const useWebPush = () => {
   const config = useRuntimeConfig();
   const isSubscribed = ref(false);
   const isSupported = ref(false);
 
+  /** Convierte una clave VAPID base64url (o base64) a Uint8Array de forma segura. */
   const urlB64ToUint8Array = (base64String: string) => {
-    const padding = '='.repeat((4 - (base64String.length % 4)) % 4);
-    const base64 = (base64String + padding).replace(/\-/g, '+').replace(/_/g, '/');
+    const clean = base64String.trim().replace(/^["']|["']$/g, '');
+    const padding = '='.repeat((4 - (clean.length % 4)) % 4);
+    const base64 = (clean + padding).replace(/-/g, '+').replace(/_/g, '/');
     const rawData = window.atob(base64);
     const outputArray = new Uint8Array(rawData.length);
     for (let i = 0; i < rawData.length; ++i) {
@@ -19,23 +23,51 @@ export const useWebPush = () => {
     return outputArray;
   };
 
+  const getVapidKey = (): string => {
+    const key = (config.public.vapidPublicKey as string) || '';
+    if (!key) {
+      console.error(
+        '[useWebPush] runtimeConfig.public.vapidPublicKey está vacío. ' +
+        'Define NUXT_PUBLIC_VAPID_PUBLIC_KEY (o VAPID_PUBLIC_KEY) en el entorno donde se ejecuta el build/servidor del frontend y vuelve a compilar.'
+      );
+    }
+    return key;
+  };
+
+  /** Envía la suscripción al backend (idempotente: updatePushSubscription). */
+  const syncSubscription = async (subscription: PushSubscription) => {
+    await api.post(PUSH_ENDPOINT, subscription.toJSON());
+  };
+
   const registerServiceWorker = async () => {
     if ('serviceWorker' in navigator) {
-      isSupported.value = true;
+      isSupported.value = 'PushManager' in window;
       try {
         await navigator.serviceWorker.register('/sw.js');
-        checkSubscription();
+        await checkSubscription();
       } catch (error) {
         console.error('SW Registration failed', error);
       }
     }
   };
 
+  /**
+   * Verifica la suscripción del navegador y, si existe, la re-sincroniza con el
+   * backend para reparar suscripciones huérfanas (BD purgada o fallo previo).
+   */
   const checkSubscription = async () => {
     if (!('serviceWorker' in navigator) || !('PushManager' in window)) return;
     const registration = await navigator.serviceWorker.ready;
     const existingSubscription = await registration.pushManager.getSubscription();
     isSubscribed.value = !!existingSubscription;
+
+    if (existingSubscription && Notification.permission === 'granted') {
+      try {
+        await syncSubscription(existingSubscription);
+      } catch (e) {
+        console.warn('[useWebPush] No se pudo sincronizar la suscripción existente', e);
+      }
+    }
   };
 
   const subscribeUser = async () => {
@@ -47,15 +79,18 @@ export const useWebPush = () => {
       const registration = await navigator.serviceWorker.ready;
       const existingSubscription = await registration.pushManager.getSubscription();
       if (existingSubscription) {
+        await syncSubscription(existingSubscription);
         isSubscribed.value = true;
-        try { await api.post('/api/push-subscriptions', existingSubscription.toJSON()); } catch(e) {}
         return;
       }
 
-      const vapidKey = config.public.vapidPublicKey;
+      const vapidKey = getVapidKey();
       if (!vapidKey) {
-        console.error('No VAPID key configured');
-        Swal.fire({ icon: 'error', title: 'Error de Configuración', text: 'Falta la VAPID_PUBLIC_KEY en el .env del frontend.' });
+        Swal.fire({
+          icon: 'error',
+          title: 'Error de Configuración',
+          text: 'Falta la VAPID_PUBLIC_KEY (NUXT_PUBLIC_VAPID_PUBLIC_KEY) en el entorno del frontend.'
+        });
         return;
       }
 
@@ -64,12 +99,15 @@ export const useWebPush = () => {
         applicationServerKey: urlB64ToUint8Array(vapidKey)
       });
 
-      // Assuming api wrapper handles Sanctum CSRF and headers properly
-      await api.post('/api/push-subscriptions', subscription.toJSON());
+      await syncSubscription(subscription);
       isSubscribed.value = true;
-    } catch (e) {
+    } catch (e: any) {
       console.error('Failed to subscribe the user: ', e);
-      Swal.fire({ icon: 'error', title: 'Error de Suscripción', text: e.response?.data?.message || e.message || 'Error desconocido al suscribir.' });
+      Swal.fire({
+        icon: 'error',
+        title: 'Error de Suscripción',
+        text: e?.response?.data?.message || e?.message || 'Error desconocido al suscribir.'
+      });
     }
   };
 
@@ -79,12 +117,9 @@ export const useWebPush = () => {
       const registration = await navigator.serviceWorker.ready;
       const subscription = await registration.pushManager.getSubscription();
       if (subscription) {
-        // Unsubscribe from browser
-        await subscription.unsubscribe();
-        
-        // Notify backend to remove the endpoint
         const endpoint = subscription.endpoint;
-        await api.delete('/api/push-subscriptions', { data: { endpoint } });
+        await subscription.unsubscribe();
+        await api.delete(PUSH_ENDPOINT, { data: { endpoint } });
       }
       isSubscribed.value = false;
     } catch (e) {
