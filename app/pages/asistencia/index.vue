@@ -2,12 +2,29 @@
   <div class="space-y-6">
     <!-- Header -->
     <div class="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl p-4 shadow-sm">
-      <div class="flex items-center justify-between">
+      <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 class="text-2xl font-bold text-gray-900 dark:text-gray-100">Control de Asistencia</h1>
           <p class="text-sm text-gray-600 dark:text-gray-400 mt-1">Registro diario de asistencia de estudiantes</p>
         </div>
-        <div class="flex items-center space-x-3">
+        <div class="flex flex-wrap items-center gap-3">
+          <!-- Botón Usar clase actual -->
+          <button
+            v-if="authStore.user?.personal_id"
+            type="button"
+            @click="handleUseCurrentClass(true)"
+            :disabled="attendanceStore.loadingCurrentClass"
+            class="inline-flex items-center px-4 py-2 border border-emerald-600 rounded-md shadow-sm text-sm font-medium text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-colors">
+            <svg v-if="attendanceStore.loadingCurrentClass" class="animate-spin h-4 w-4 mr-2 text-white" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <svg v-else class="h-4 w-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Usar clase actual
+          </button>
+
           <!-- Botón de Asistencia Baja -->
           <button v-if="authStore.isAdmin || authStore.isMaster" @click="navigateTo('/asistencia/alertas')"
             class="inline-flex items-center px-4 py-2 border border-red-300 rounded-md shadow-sm text-sm font-medium text-red-700 bg-red-50 hover:bg-red-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
@@ -41,8 +58,7 @@
         </div>
 
         <!-- Selector de asignación/aula -->
-        <!-- Selector de asignación/aula -->
-        <div>
+        <div class="sm:col-span-1 lg:col-span-2">
           <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             {{ (authStore.isAdmin || authStore.isMaster || isPsychologist || authStore.isCoordinator) ? 'Aula' :
               'Materia y Aula' }}
@@ -55,7 +71,7 @@
             :disabled="aulasStore.loading">
             <option :value="null">Seleccionar aula...</option>
             <option v-for="option in aulasStore.paraSelect" :key="option.value" :value="option.value">
-              {{ option.label }}
+              {{ formatText(option.label) }}
             </option>
           </select>
 
@@ -73,10 +89,7 @@
               </option>
               <option v-for="entry in attendanceStore.dailyClasses" :key="entry.id" :value="entry.assignment_id">
                 {{ entry.period?.start_time?.slice(0, 5) }} - {{ entry.period?.end_time?.slice(0, 5) }} |
-                {{ entry.assignment?.materia?.nombre }}
-                <span v-if="entry.assignment?.profesor">({{ entry.assignment.profesor.nombres }} {{
-                  entry.assignment.profesor.apellidos }})</span>
-                <span v-if="entry.attendance_summary?.attendance_taken" class="ml-2 text-green-600 font-bold">�S</span>
+                {{ formatText(entry.assignment?.materia?.nombre) }}{{ entry.assignment?.profesor ? ` (${formatText(entry.assignment.profesor.nombres)} ${formatText(entry.assignment.profesor.apellidos)})` : '' }}{{ entry.attendance_summary?.attendance_taken ? ' ✓' : '' }}
               </option>
             </select>
           </div>
@@ -92,16 +105,12 @@
               </option>
               <option v-for="entry in attendanceStore.dailyClasses" :key="entry.id" :value="entry.assignment_id">
                 {{ entry.period?.start_time?.slice(0, 5) }} - {{ entry.period?.end_time?.slice(0, 5) }} |
-                {{ entry.assignment?.materia?.nombre }} - {{ entry.assignment?.aula?.grado_cardinal }}-{{
-                  entry.assignment?.aula?.seccion }}
-                <span v-if="entry.attendance_summary?.attendance_taken" class="ml-2 text-green-600 font-bold">�S</span>
+                {{ formatText(entry.assignment?.materia?.nombre) }} - {{ entry.assignment?.aula?.grado_cardinal }}-{{
+                  entry.assignment?.aula?.seccion }}{{ entry.attendance_summary?.attendance_taken ? ' ✓' : '' }}
               </option>
             </select>
           </div>
         </div>
-
-
-
       </div>
     </div>
 
@@ -115,17 +124,30 @@
         <div class="flex-1">
           <h3 class="text-sm font-medium text-green-800">Clase Activa</h3>
           <p class="text-sm text-green-700 mt-1">
-            <span class="font-medium">{{ attendanceStore.currentClass.materia }}</span> en
-            <span class="font-medium">{{ attendanceStore.currentClass.aula_nombre }}</span>
+            <span class="font-medium">{{ formatText(attendanceStore.currentClass.materia) }}</span> en
+            <span class="font-medium">{{ formatText(attendanceStore.currentClass.aula_nombre) }}</span>
             ({{ attendanceStore.currentClass.period }}: {{ attendanceStore.currentClass.hora_inicio }} - {{
               attendanceStore.currentClass.hora_fin }})
           </p>
         </div>
         <button @click="useCurrentClass"
           class="ml-4 px-3 py-1 bg-green-600 text-white text-sm rounded-md hover:bg-green-700">
-          Usar Esta Clase
+          Usar clase actual
         </button>
       </div>
+    </div>
+
+    <!-- Alerta de Error si ocurre al obtener datos -->
+    <div v-if="attendanceStore.error" class="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center justify-between">
+      <div class="flex items-center">
+        <svg class="h-5 w-5 text-red-600 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+        <span class="text-sm text-red-800 font-medium">{{ attendanceStore.error }}</span>
+      </div>
+      <button @click="loadAttendance" class="px-3 py-1 bg-red-600 text-white text-xs rounded-md hover:bg-red-700">
+        Reintentar
+      </button>
     </div>
 
     <!-- Alerta de Feriado -->
@@ -216,7 +238,7 @@
 
     <!-- Componente de lista de asistencia (Ocultar si es feriado) -->
     <AttendanceGrid
-      v-else-if="!attendanceStore.holiday && hasData && selectedDate && selectedAulaId && selectedAssignmentId"
+      v-else-if="!attendanceStore.holiday && selectedDate && selectedAulaId && selectedAssignmentId"
       :fecha="selectedDate" :aula-id="selectedAulaId" :aula-name="selectedAulaName"
       :assignment-id="selectedAssignmentId" :read-only="isReadOnly" />
 
@@ -236,7 +258,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { useAttendanceStore } from '~/stores/attendance'
+import { useAttendanceStore, sanitizeSubjectText } from '~/stores/attendance'
 import { useAulasStore } from '~/stores/aulas'
 import { useAniosLectivosStore } from '~/stores/anios_lectivos'
 import { useAuthStore } from '~/stores/auth' // Import auth store
@@ -264,6 +286,8 @@ const aniosStore = useAniosLectivosStore()
 // Composable de horario en vivo
 const { isInPeriod } = useLiveSchedule()
 
+const formatText = (val?: string | null) => sanitizeSubjectText(val)
+
 // Estado reactivo
 const selectedDate = ref((() => {
   const d = new Date()
@@ -275,6 +299,7 @@ const selectedDate = ref((() => {
 const selectedAulaId = ref<number | null>(null)
 const selectedAssignmentId = ref<number | null>(null)
 const showStatistics = ref(true)
+const isApplyingCurrentClass = ref(false)
 
 const isPsychologist = computed(() => {
   const role = authStore.user?.role?.toLowerCase() || ''
@@ -292,8 +317,10 @@ const isReadOnly = computed(() => {
       if (entry && entry.assignment) {
         return entry.assignment.profesor_id !== authStore.user.personal_id
       }
-      // If we can't find it (maybe loading), default to readonly to be safe?
-      // Or if loadingDailyClasses is true?
+      // If currentClass matches the selectedAssignmentId, allow editing for own currentClass
+      if (attendanceStore.currentClass?.assignment_id === selectedAssignmentId.value) {
+        return false
+      }
       return true
     }
     return true
@@ -312,7 +339,11 @@ const hasData = computed(() =>
 const selectedAulaName = computed(() => {
   if (!selectedAulaId.value) return ''
   const aula = aulasStore.items.find((a: any) => a.id === selectedAulaId.value)
-  return aula ? aulaName(aula) : ''
+  if (aula) return aulaName(aula)
+  if (attendanceStore.currentClass?.aula_id === selectedAulaId.value) {
+    return formatText(attendanceStore.currentClass.aula_nombre)
+  }
+  return ''
 })
 
 const attendancePercentage = computed(() => {
@@ -328,7 +359,7 @@ const assignmentSelectLabel = computed(() =>
 )
 
 const isToday = computed(() => {
-  const today = new Date().toISOString().split('T')[0]
+  const today = new Date().toLocaleDateString('en-CA')
   return selectedDate.value === today
 })
 
@@ -356,52 +387,111 @@ const loadAttendance = async () => {
   )
 }
 
-const loadCurrentClass = async () => {
-  try {
-    await attendanceStore.getCurrentClass()
+const useCurrentClass = async () => {
+  const current = attendanceStore.currentClass
+  if (!current) return
 
-    // Si se encontró una clase actual, usarla automáticamente
-    if (attendanceStore.currentClass) {
-      useCurrentClass()
+  isApplyingCurrentClass.value = true
+  try {
+    const todayStr = new Date().toLocaleDateString('en-CA')
+    if (!isWeekend(todayStr) && selectedDate.value !== todayStr) {
+      selectedDate.value = todayStr
     }
-  } catch (error) {
-    console.error('Error al cargar clase actual:', error)
+
+    const isElevatedRole = authStore.isAdmin || authStore.isMaster || isPsychologist.value || authStore.isCoordinator
+
+    if (isElevatedRole && current.aula_id) {
+      selectedAulaId.value = current.aula_id
+      await attendanceStore.fetchDailyClasses({ aulaId: current.aula_id, date: selectedDate.value })
+    } else if (authStore.user?.personal_id && attendanceStore.dailyClasses.length === 0) {
+      await attendanceStore.fetchDailyClasses({ professorId: authStore.user.personal_id, date: selectedDate.value })
+    }
+
+    // Ensure the current class is present in dailyClasses so the dropdown shows it selected
+    const existsInDaily = attendanceStore.dailyClasses.some(
+      (e: any) => Number(e.assignment_id) === Number(current.assignment_id)
+    )
+    if (!existsInDaily && current.assignment_id) {
+      const [grado, seccion] = (current.aula_nombre || '').split('-')
+      attendanceStore.dailyClasses.push({
+        id: `current-${current.assignment_id}`,
+        assignment_id: current.assignment_id,
+        period: {
+          start_time: current.hora_inicio,
+          end_time: current.hora_fin,
+          nombre: current.period
+        },
+        assignment: {
+          id: current.assignment_id,
+          aula_id: current.aula_id,
+          profesor_id: authStore.user?.personal_id,
+          materia: {
+            id: current.asignatura_id ?? current.materia_id,
+            nombre: formatText(current.materia)
+          },
+          aula: {
+            id: current.aula_id,
+            grado_cardinal: grado || current.aula_nombre,
+            seccion: seccion || ''
+          }
+        }
+      })
+    }
+
+    selectedAulaId.value = current.aula_id
+    selectedAssignmentId.value = current.assignment_id
+
+    await loadAttendance()
+  } finally {
+    isApplyingCurrentClass.value = false
   }
 }
 
-const useCurrentClass = () => {
-  if (attendanceStore.currentClass) {
-    // Buscar la asignación correspondiente en dailyClasses
-    // Esto funciona porque `loadAttendance` usa la misma lista para llenar el select
-    const currentAssignmentId = attendanceStore.currentClass?.assignment_id
+const handleUseCurrentClass = async (showToastIfEmpty = true) => {
+  try {
+    await attendanceStore.getCurrentClass()
 
-    const entry = attendanceStore.dailyClasses.find(
-      e => e.assignment_id === currentAssignmentId
-    )
-
-    if (entry && entry.assignment) {
-      selectedAssignmentId.value = entry.assignment_id
-      selectedAulaId.value = entry.assignment.aula_id
-      loadAttendance()
-    } else {
-      // Fallback: si no está en dailyClasses (ej: horario cambió), intentar cargar solo con los IDs básicos
-      if (currentAssignmentId) {
-        selectedAssignmentId.value = currentAssignmentId
-        selectedAulaId.value = attendanceStore.currentClass.aula_id
-        loadAttendance()
-      }
+    if (attendanceStore.currentClass) {
+      await useCurrentClass()
+    } else if (showToastIfEmpty) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Sin clase activa',
+        text: 'No se encontró ninguna clase en curso según tu horario actual',
+        timer: 3500,
+        showConfirmButton: false,
+        toast: true,
+        position: 'top-end'
+      })
+    }
+  } catch (error) {
+    console.error('Error al cargar clase actual:', error)
+    if (showToastIfEmpty) {
+      Swal.fire({
+        icon: 'info',
+        title: 'Sin clase activa',
+        text: 'No se encontró ninguna clase en curso según tu horario actual',
+        timer: 3500,
+        showConfirmButton: false,
+        toast: true,
+        position: 'top-end'
+      })
     }
   }
+}
+
+const loadCurrentClass = async () => {
+  await handleUseCurrentClass(false)
 }
 
 const onAssignmentChange = () => {
   if (selectedAssignmentId.value) {
     // Buscar la entrada en dailyClasses en lugar de teacherAssignments
     const entry = attendanceStore.dailyClasses.find(
-      e => e.assignment_id === selectedAssignmentId.value
+      e => Number(e.assignment_id) === Number(selectedAssignmentId.value)
     )
     if (entry && entry.assignment) {
-      selectedAulaId.value = entry.assignment.aula_id
+      selectedAulaId.value = entry.assignment.aula_id ?? entry.aula_id
       // Cargar lista automáticamente
       loadAttendance()
     }
@@ -414,7 +504,7 @@ const aulaName = (aula: any) => {
   const grado = aula.grado_cardinal ? `${aula.grado_cardinal}º` : ''
   const seccion = aula.seccion || ''
   const titulo = aula.titulo?.nombre ? ` - ${aula.titulo.nombre}` : ''
-  return `${grado}${seccion}${titulo}`.trim() || `Aula ${aula.id}`
+  return formatText(`${grado}${seccion}${titulo}`.trim() || `Aula ${aula.id}`)
 }
 
 const saveChanges = async () => {
@@ -437,22 +527,8 @@ const saveChanges = async () => {
       if (result.isConfirmed) {
         attendanceStore.markRemainingAsPresent()
       } else if (result.dismiss === Swal.DismissReason.cancel) {
-        // User clicked "No", proceed to save only what's changed
         shouldSave = true
       } else {
-        // User clicked outside or closed modal (DismissReason.backdrop, etc)
-        // Check if we should abort or save? Usually cancel means abort action.
-        // But here the button text is "No, guardar solo cambios". 
-        // Let's assume standard Cancel button behavior often means "Cancel whole action" 
-        // BUT my text says "No, save only changes".
-        // Let's refine:
-        // Confirm -> Mark present + Save
-        // Deny/Cancel -> Save only changes? Or Abort?
-        // User request: "el sistema pregunte si desea autocompletar... si guarda paricales".
-        // It implies the action IS saving, the question is just "Complete others?".
-        // So clicking "No" (Cancel button) should probably continue saving.
-        // HOWEVER, standard UX 'Cancel' usually aborts. 
-        // Let's stick to the prompt text. I'll treat "Cancel" as "Save without autocomeplete".
         shouldSave = true
       }
     }
@@ -483,6 +559,8 @@ const saveChanges = async () => {
 
 // Watchers
 watch(selectedDate, (newDate, oldDate) => {
+  if (isApplyingCurrentClass.value) return
+
   if (newDate && isWeekend(newDate)) {
     Swal.fire({
       icon: 'warning',
@@ -516,6 +594,8 @@ watch(selectedDate, (newDate, oldDate) => {
 })
 
 watch(selectedAulaId, (newAulaId) => {
+  if (isApplyingCurrentClass.value) return
+
   // Solo reaccionar a cambios de aula si es Admin/Master/Psicologo/Coordinador
   // Para profesores, el cambio de aula es consecuencia del cambio de asignación, así que no reseteamos
   if (authStore.isAdmin || authStore.isMaster || isPsychologist.value || authStore.isCoordinator) {
@@ -526,8 +606,6 @@ watch(selectedAulaId, (newAulaId) => {
       attendanceStore.fetchDailyClasses({ aulaId: newAulaId, date: selectedDate.value })
     }
   } else {
-    // Para profesores, solo reseteamos si el aula pasa a null (ej: limpieza manual)
-    // Pero si tiene valor, es porque se seleccionó una asignación. No hacemos nada.
     if (!newAulaId) {
       attendanceStore.resetRecords()
     }
@@ -538,8 +616,12 @@ watch(selectedAulaId, (newAulaId) => {
 onMounted(async () => {
   const route = useRoute()
 
-  // Cargar asignaciones del profesor (ya no es prioritario, usamos fetchDailyClasses)
-  // await attendanceStore.getTeacherAssignments() // Comentado o eliminado si ya no se usa
+  // Cargar aulas al montar el componente (para administradores y nombres de aula)
+  if (aniosStore.items.length === 0) {
+    await aniosStore.fetchAll()
+  }
+  const activeYear = aniosStore.activos[0]
+  await aulasStore.fetchAll({ anioLectivoId: activeYear?.id })
 
   // Si es profesor (y no admin/master/psicologo/coordinador), cargar horario inicial
   if (!(authStore.isAdmin || authStore.isMaster || isPsychologist.value || authStore.isCoordinator) && authStore.user?.personal_id) {
@@ -548,33 +630,16 @@ onMounted(async () => {
     // Check query param first
     if (route.query.assignment_id) {
       const queryId = Number(route.query.assignment_id)
-      const entry = attendanceStore.dailyClasses.find(e => e.assignment_id === queryId)
+      const entry = attendanceStore.dailyClasses.find(e => Number(e.assignment_id) === queryId)
       if (entry) {
         selectedAssignmentId.value = queryId
-        // Trigger selection logic manually since v-model updates won't trigger @change immediately usually or logic is in watcher?
-        // Correct, logic is in 'onAssignmentChange' or just setting it causes watcher? 
-        // Wait, for professors, 'onAssignmentChange' sets aula_id. 'selectedAssignmentId' does NOT have a watcher for logic, only 'selectedAulaId' does for admins.
-        // Professors rely on 'onAssignmentChange' or manual setting.
-        // Let's call the logic:
-        selectedAulaId.value = entry.assignment.aula_id
-        loadAttendance()
+        selectedAulaId.value = entry.assignment?.aula_id ?? entry.aula_id
+        await loadAttendance()
       }
     } else {
       // Auto-load clase actual para profesores only if no query param
       await loadCurrentClass()
     }
   }
-
-  // Cargar aulas al montar el componente (para administradores)
-  if (aniosStore.items.length === 0) {
-    await aniosStore.fetchAll()
-  }
-  const activeYear = aniosStore.activos[0]
-  await aulasStore.fetchAll({ anioLectivoId: activeYear?.id })
 })
 </script>
-
-
-
-
-

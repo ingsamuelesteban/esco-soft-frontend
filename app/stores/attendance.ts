@@ -48,10 +48,56 @@ export interface CurrentClass {
   assignment_id: number
   aula_id: number
   aula_nombre: string
+  asignatura_id?: number
+  materia_id?: number
   materia: string
   period: string
   hora_inicio: string
   hora_fin: string
+}
+
+export function sanitizeSubjectText(value?: string | null): string {
+  if (!value) return ''
+  let text = String(value)
+
+  // Decode HTML entities if any (&ntilde;, &aacute;, etc.)
+  const entityMap: Record<string, string> = {
+    '&aacute;': 'á', '&eacute;': 'é', '&iacute;': 'í', '&oacute;': 'ó', '&uacute;': 'ú',
+    '&Aacute;': 'Á', '&Eacute;': 'É', '&Iacute;': 'Í', '&Oacute;': 'Ó', '&Uacute;': 'Ú',
+    '&ntilde;': 'ñ', '&Ntilde;': 'Ñ', '&uuml;': 'ü', '&Uuml;': 'Ü', '&deg;': '°', '&amp;': '&'
+  }
+  text = text.replace(/&[a-zA-Z]+;/g, (match) => entityMap[match] ?? match)
+
+  // Repair known corrupted Spanish subject words (missing or replacement characters)
+  const patterns: Array<[RegExp, string]> = [
+    [/Lengua\s+Espa(?:\uFFFD|\?|A)?ol(a)?/gi, 'Lengua Español$1'],
+    [/Espa(?:\uFFFD|\?|A)?ol(a)?/gi, 'Español$1'],
+    [/Matem(?:\uFFFD|\?|A)?tica(s)?/gi, 'Matemática$1'],
+    [/Educaci(?:\uFFFD|\?|A3)?n\s+F(?:\uFFFD|\?|A-)?sica/gi, 'Educación Física'],
+    [/Educaci(?:\uFFFD|\?|A3)?n\s+Art(?:\uFFFD|\?|A-)?stica/gi, 'Educación Artística'],
+    [/Educaci(?:\uFFFD|\?|A3)?n/gi, 'Educación'],
+    [/Formaci(?:\uFFFD|\?|A3)?n/gi, 'Formación'],
+    [/Ingl(?:\uFFFD|\?|Ac)?s/gi, 'Inglés'],
+    [/Franc(?:\uFFFD|\?|Ac)?s/gi, 'Francés'],
+    [/C(?:\uFFFD|\?)?vica/gi, 'Cívica'],
+    [/F(?:\uFFFD|\?)?sica/gi, 'Física'],
+    [/Qu(?:\uFFFD|\?)?mica/gi, 'Química'],
+    [/Biolog(?:\uFFFD|\?)?a/gi, 'Biología'],
+    [/Geograf(?:\uFFFD|\?)?a/gi, 'Geografía'],
+    [/Filosof(?:\uFFFD|\?)?a/gi, 'Filosofía'],
+    [/Tecnolog(?:\uFFFD|\?)?a/gi, 'Tecnología'],
+    [/Inform(?:\uFFFD|\?)?tica/gi, 'Informática'],
+    [/Ofim(?:\uFFFD|\?)?tica/gi, 'Ofimática'],
+    [/Programaci(?:\uFFFD|\?)?n/gi, 'Programación'],
+    [/Administraci(?:\uFFFD|\?)?n/gi, 'Administración'],
+    [/Dise(?:\uFFFD|\?)?o/gi, 'Diseño'],
+    [/B(?:\uFFFD|\?)?sica(s)?/gi, 'Básica$1']
+  ]
+  for (const [regex, replacement] of patterns) {
+    text = text.replace(regex, replacement)
+  }
+
+  return text.replace(/\uFFFD/g, '').trim()
 }
 
 export const useAttendanceStore = defineStore('attendance', {
@@ -135,6 +181,7 @@ export const useAttendanceStore = defineStore('attendance', {
 
       } catch (error: any) {
         this.error = error.message || 'Error al cargar la asistencia'
+        this.records = []
         console.error('Error fetching attendance:', error)
       } finally {
         this.loading = false
@@ -286,17 +333,21 @@ export const useAttendanceStore = defineStore('attendance', {
 
     async getCurrentClass(simulatedTime?: string) {
       this.loadingCurrentClass = true
-      this.error = null
 
       try {
         const params: any = {}
         if (simulatedTime) params.simulated_time = simulatedTime
 
-        const response = await api.get<{ current_class: CurrentClass | null, message: string }>('/api/attendance/current-class', { params })
-        this.currentClass = response.current_class
+        const response = await api.get<{ current_class?: CurrentClass | null, clase?: CurrentClass | null, message: string }>('/api/attendance/current-class', { params })
+        const detectedClass = response.current_class ?? response.clase ?? null
+        if (detectedClass) {
+          detectedClass.materia = sanitizeSubjectText(detectedClass.materia)
+          detectedClass.aula_nombre = sanitizeSubjectText(detectedClass.aula_nombre)
+        }
+        this.currentClass = detectedClass
         return response
       } catch (error: any) {
-        this.error = error.response?.data?.message || 'Error al obtener la clase actual'
+        this.currentClass = null
         throw error
       } finally {
         this.loadingCurrentClass = false
@@ -309,7 +360,11 @@ export const useAttendanceStore = defineStore('attendance', {
 
       try {
         const response = await api.get<{ assignments: TeacherAssignment[] }>('/api/attendance/teacher-assignments')
-        this.teacherAssignments = response.assignments
+        this.teacherAssignments = (response.assignments || []).map(a => ({
+          ...a,
+          materia: sanitizeSubjectText(a.materia),
+          aula_nombre: sanitizeSubjectText(a.aula_nombre)
+        }))
         return response
       } catch (error: any) {
         this.error = error.response?.data?.message || 'Error al obtener las asignaciones'
@@ -333,7 +388,8 @@ export const useAttendanceStore = defineStore('attendance', {
         const month = parts[1]!
         const day = parts[2]!
         const dateObj = new Date(year, month - 1, day)
-        const dia = dateObj.getDay()
+        const rawDay = dateObj.getDay()
+        const dia = rawDay === 0 ? 7 : rawDay // ISO-8601: 1 = Lunes, ..., 7 = Domingo
 
         const params: any = {
           dia: dia,
@@ -347,7 +403,12 @@ export const useAttendanceStore = defineStore('attendance', {
         const response = await api.get<any[]>('/api/timetable-entries', {
           params
         })
-        this.dailyClasses = response || []
+        this.dailyClasses = (response || []).map((entry: any) => {
+          if (entry?.assignment?.materia?.nombre) {
+            entry.assignment.materia.nombre = sanitizeSubjectText(entry.assignment.materia.nombre)
+          }
+          return entry
+        })
       } catch (error) {
         console.error('Error fetching daily classes:', error)
         // No blocking error, just empty list
@@ -377,4 +438,3 @@ export const useAttendanceStore = defineStore('attendance', {
     }
   }
 })
-

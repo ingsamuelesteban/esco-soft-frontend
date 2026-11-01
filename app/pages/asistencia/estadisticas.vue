@@ -315,6 +315,7 @@
 <script setup lang="ts">
 import { ref, reactive, watch, onMounted, computed } from 'vue'
 import { useAulasStore } from '~/stores/aulas'
+import { sanitizeSubjectText } from '~/stores/attendance'
 import { useAniosLectivosStore } from '~/stores/anios_lectivos'
 import { useAuthStore } from '~/stores/auth'
 import { api } from '~/utils/api'
@@ -405,7 +406,7 @@ const aulaOptions = computed(() => {
 const assignmentOptions = computed(() => {
     return assignments.value.map(a => ({
         value: a.id,
-        label: a.materia?.nombre || 'Sin Nombre'
+        label: sanitizeSubjectText(a.materia?.nombre) || 'Sin Nombre'
     }))
 })
 

@@ -59,7 +59,7 @@
             :disabled="loadingAssignments || !selectedAula">
             <option :value="null">{{ selectedAula ? 'Todas las asignaturas' : 'Seleccione un aula primero' }}</option>
             <option v-for="assignment in assignments" :key="assignment.id" :value="assignment.id">
-              {{ assignment.materia?.nombre || 'Materia Desconocida' }}
+              {{ sanitizeSubjectText(assignment.materia?.nombre) || 'Materia Desconocida' }}
             </option>
           </select>
         </div>
@@ -216,6 +216,7 @@
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
 import { useAuthStore } from '~/stores/auth'
+import { sanitizeSubjectText } from '~/stores/attendance'
 import { useNuxtApp } from '#app'
 import Swal from 'sweetalert2'
 import { api } from '~/utils/api'
