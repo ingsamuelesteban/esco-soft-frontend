@@ -42,7 +42,7 @@
 
                 <!-- Lista -->
                 <div class="space-y-3">
-                    <NuxtLink v-for="h in filtered" :key="h.id" :to="`/student/tareas/${h.id}`"
+                    <NuxtLink v-for="h in tareasOrdenadas" :key="h.id" :to="`/student/tareas/${h.id}`"
                         @click="homeworkStore.marcarComoVista(h.id)"
                         class="block bg-white dark:bg-gray-800 rounded-2xl shadow-sm hover:shadow-md transition border border-gray-100 dark:border-gray-700 p-4">
                         <div class="flex items-start justify-between gap-3">
@@ -53,8 +53,9 @@
                                         class="px-2 py-0.5 text-[11px] font-bold rounded-full bg-red-500 text-white">NUEVA</span>
                                 </div>
                                 <div class="mt-1 flex flex-wrap gap-x-3 gap-y-1 text-xs text-gray-500 dark:text-gray-400">
-                                    <span v-if="h.due_date">📅 {{ formatDate(h.due_date) }}</span>
-                                    <span v-else>📅 Sin fecha límite</span>
+                                    <span v-if="h.created_at || h.fecha_asignacion">📅 Asignada: {{ formatDate(h.created_at || h.fecha_asignacion) }}</span>
+                                    <span v-if="h.due_date">⏳ Vence: {{ formatDate(h.due_date) }}</span>
+                                    <span v-else>⏳ Sin fecha límite</span>
                                     <span v-if="h.max_score">⭐ {{ h.max_score }} pts</span>
                                 </div>
                             </div>
@@ -79,7 +80,7 @@
                         </div>
                     </NuxtLink>
 
-                    <div v-if="!filtered.length" class="text-center py-12 text-gray-500 dark:text-gray-400 text-sm">
+                    <div v-if="!tareasOrdenadas.length" class="text-center py-12 text-gray-500 dark:text-gray-400 text-sm">
                         No hay tareas en esta categoría.
                     </div>
                 </div>
@@ -103,7 +104,7 @@ definePageMeta({
     roles: ['estudiante']
 })
 
-type Tab = 'pendiente' | 'entregada' | 'calificada'
+type Tab = 'pendiente' | 'entregada' | 'calificada' | 'todas'
 
 const route = useRoute()
 const homeworkStore = useHomeworkStore()
@@ -113,7 +114,8 @@ const tab = ref<Tab>('pendiente')
 const tabs: { label: string; value: Tab }[] = [
     { label: 'Pendientes', value: 'pendiente' },
     { label: 'Entregadas', value: 'entregada' },
-    { label: 'Calificadas', value: 'calificada' }
+    { label: 'Calificadas', value: 'calificada' },
+    { label: 'Todas', value: 'todas' }
 ]
 
 const subject = computed(() =>
@@ -125,13 +127,26 @@ const counts = computed(() => {
     return {
         pendiente: list.filter(h => h.estado === 'pendiente').length,
         entregada: list.filter(h => h.estado === 'entregada').length,
-        calificada: list.filter(h => h.estado === 'calificada').length
+        calificada: list.filter(h => h.estado === 'calificada').length,
+        todas: list.length
     }
 })
 
-const filtered = computed(() =>
-    (subject.value?.tareas || []).filter((h: any) => h.estado === tab.value)
-)
+const tareas = computed(() => {
+    const list: any[] = subject.value?.tareas || []
+    if (tab.value === 'todas') return list
+    return list.filter((h: any) => h.estado === tab.value)
+})
+
+const tareasOrdenadas = computed(() => {
+    return [...tareas.value].sort((a, b) => {
+        const dateA = new Date(a.created_at || a.fecha_asignacion || 0).getTime()
+        const dateB = new Date(b.created_at || b.fecha_asignacion || 0).getTime()
+        return dateB - dateA // Más reciente primero
+    })
+})
+
+const filtered = tareasOrdenadas
 
 function formatDate(date: string) {
     return dayjs(date).format('DD MMM YYYY, HH:mm')
@@ -140,7 +155,7 @@ function formatDate(date: string) {
 onMounted(async () => {
     if (!homeworkStore.subjects.length) await homeworkStore.fetchSubjects()
     if (subject.value && counts.value.pendiente === 0) {
-        tab.value = counts.value.entregada ? 'entregada' : 'calificada'
+        tab.value = counts.value.entregada ? 'entregada' : (counts.value.calificada ? 'calificada' : 'todas')
     }
 })
 </script>

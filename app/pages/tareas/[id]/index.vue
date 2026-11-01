@@ -216,16 +216,20 @@ const filters = [
 ]
 
 const filteredHomeworks = computed(() => {
-    if (currentFilter.value === 'all') return homeworks.value
-    if (currentFilter.value === 'active') return homeworks.value.filter(h => !h.is_overdue)
-    if (currentFilter.value === 'overdue') return homeworks.value.filter(h => h.is_overdue)
-    if (currentFilter.value === 'upcoming') {
-        return homeworks.value.filter(h => {
+    let list: Homework[] = homeworks.value
+    if (currentFilter.value === 'active') list = homeworks.value.filter(h => !h.is_overdue)
+    else if (currentFilter.value === 'overdue') list = homeworks.value.filter(h => h.is_overdue)
+    else if (currentFilter.value === 'upcoming') {
+        list = homeworks.value.filter(h => {
             if (!h.due_date) return false
             return dayjs(h.due_date).isAfter(dayjs())
         })
     }
-    return homeworks.value
+    return [...list].sort((a, b) => {
+        const dateA = new Date((a as any).created_at || (a as any).fecha_asignacion || 0).getTime()
+        const dateB = new Date((b as any).created_at || (b as any).fecha_asignacion || 0).getTime()
+        return dateB - dateA
+    })
 })
 
 onMounted(async () => {
