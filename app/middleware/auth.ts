@@ -65,8 +65,11 @@ export default defineNuxtRouteMiddleware((to, from) => {
 
   const hasAdminOverride = () => {
     if (!authStore.user) return false;
+    if (authStore.hasRole('master') || authStore.hasRole('admin') || authStore.hasRole('soporte_tecnico') || authStore.hasRole('soporte')) {
+      return true;
+    }
     const roles = authStore.user.roles || [];
-    return roles.some(r => ['master', 'admin', 'soporte_tecnico'].includes(r.name));
+    return roles.some((r: any) => ['master', 'admin', 'soporte_tecnico', 'soporte'].includes(typeof r === 'string' ? r : r?.name));
   };
 
   // Protect admin routes from students

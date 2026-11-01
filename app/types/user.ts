@@ -12,6 +12,6 @@ export interface User {
     digital_signature_path?: string
     is_preadmitted?: boolean
     permissions_list?: string[]
-    roles?: Array<{ id: number; name: string; permissions?: Array<{ name: string }> }>
-    permissions?: Array<{ name: string }>
+    roles?: Array<{ id: number; name: string; permissions?: Array<{ name: string }> }> | string[]
+    permissions?: Array<{ name: string }> | string[]
 }

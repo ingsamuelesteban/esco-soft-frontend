@@ -59,9 +59,9 @@ function checkAdminAccess(path: string, userRole: string, roles: any[] = []) {
   // Verificar si la ruta requiere permisos de admin
   const requiresAdmin = adminOnlyRoutes.some(route => path.startsWith(route))
 
-  const hasRole = (role) => {
+  const hasRole = (role: string) => {
     if (userRole === role) return true;
-    return roles.some(r => r.name === role);
+    return roles.some((r: any) => (typeof r === 'string' ? r : r?.name) === role);
   };
 
   // Excepción: Permitir acceso a Horarios por Profesor para profesores

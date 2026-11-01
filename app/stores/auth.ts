@@ -95,6 +95,15 @@ export const useAuthStore = defineStore('auth', {
     isMaster: (state) => state.user?.role === 'master',
     isCoordinator: (state) => state.user?.role === 'coordinador',
     isSecre: (state) => (state.user?.role || '').toLowerCase().includes('sec'),
+    hasRole: (state) => (roleName: string): boolean => {
+      const user = state.user
+      if (!user) return false
+      if (user.role === roleName) return true
+      if (Array.isArray(user.roles)) {
+        return user.roles.some((r: any) => (typeof r === 'string' ? r : r?.name) === roleName)
+      }
+      return false
+    },
     can: (state) => (permission: string): boolean => {
       const user = state.user
       if (!user) return false

@@ -5,6 +5,10 @@ export const usePermissions = () => {
   const authStore = useAuthStore()
   const { hasMenuItem } = useMenu()
 
+  const hasRole = (roleName: string): boolean => {
+    return authStore.hasRole(roleName)
+  }
+
   const can = (permission: string): boolean => {
     if (authStore.can(permission)) {
       return true
@@ -19,6 +23,7 @@ export const usePermissions = () => {
   }
 
   return {
-    can
+    can,
+    hasRole
   }
 }

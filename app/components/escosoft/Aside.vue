@@ -205,7 +205,7 @@ const route = useRoute()
 const { menuItems, isMenuLoaded, loadMenu } = useMenu()
 const authStore = useAuthStore()
 const { filterMenu } = useMenuFilter()
-const { can } = usePermissions()
+const { can, hasRole } = usePermissions()
 
 const emit = defineEmits(['close-sidebar'])
 
@@ -272,13 +272,23 @@ const hasActiveChild = (group: any): boolean => {
 // Obtener menú ordenado y filtrado por permisos y features del tenant
 const sortedMenuItems = computed(() => {
   const activeFeatures = authStore.tenantFeatures || []
-  const userRole = authStore.user?.role || ''
+  const user = authStore.user
+  const userRoles: string[] = []
+  if (user?.role) userRoles.push(user.role)
+  if (Array.isArray(user?.roles)) {
+    for (const r of user.roles) {
+      const name = typeof r === 'string' ? r : r?.name
+      if (name && !userRoles.includes(name)) {
+        userRoles.push(name)
+      }
+    }
+  }
 
   const sorted = [...menuItems.value].sort((a, b) => (a.order || 0) - (b.order || 0))
-  const filtered = filterMenu(sorted as any, activeFeatures, userRole) as any[]
+  const filtered = filterMenu(sorted as any, activeFeatures, userRoles.length > 0 ? userRoles : (user?.role || '')) as any[]
 
   // Validar con can('materiales.index') la visibilidad de Entrega de Materiales
-  return filtered
+  const processed = filtered
     .map((item) => {
       if (Array.isArray(item.children)) {
         const children = item.children.filter((child: any) => {
@@ -295,6 +305,27 @@ const sortedMenuItems = computed(() => {
       return item
     })
     .filter((item) => item && (!item.children || item.children.length > 0))
+
+  // Asegurar acceso directo al módulo de soporte si el usuario posee rol o permiso de soporte
+  const hasSupportAccess = hasRole('soporte') || hasRole('soporte_tecnico') || can('soporte.acceder')
+  if (hasSupportAccess) {
+    const alreadyHasSupport = processed.some((item) => 
+      item.route === '/admin/soporte' || item.id === 'soporte' || item.id === 'soporte_direct' ||
+      (Array.isArray(item.children) && item.children.some((c: any) => c.route === '/admin/soporte' || c.id === 'soporte'))
+    )
+
+    if (!alreadyHasSupport) {
+      processed.push({
+        id: 'soporte_direct',
+        label: 'Soporte Técnico',
+        icon: 'wrench',
+        route: '/admin/soporte',
+        order: 99
+      })
+    }
+  }
+
+  return processed
 })
 
 const saveOpenGroupsToStorage = () => {
