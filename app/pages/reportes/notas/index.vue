@@ -425,17 +425,25 @@
                      class="min-w-full text-xs border-collapse border border-gray-400">
                      <thead class="bg-gray-200 dark:bg-gray-700">
                         <tr>
-                           <th class="border border-gray-400 p-1 text-left sticky left-0 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10 w-12 min-w-[48px] max-w-[48px]">No.</th>
-                           <th class="border border-gray-400 p-1 text-left sticky left-12 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10">Estudiante
-                           </th>
-                           <th v-for="i in subjectPreview.assignment?.cantidad_ra" :key="i"
-                              class="border border-gray-400 p-1 text-center dark:text-gray-100">
+                           <th rowspan="2" class="border border-gray-400 p-1 text-left sticky left-0 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10 w-12 min-w-[48px] max-w-[48px]">No.</th>
+                           <th rowspan="2" class="border border-gray-400 p-1 text-left sticky left-12 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10 min-w-[140px]">Estudiante</th>
+                           <th v-for="i in subjectPreview.assignment?.cantidad_ra" :key="'ra-th-' + i"
+                              :colspan="previewOportunidadesRa"
+                              class="border border-gray-400 p-1 text-center dark:text-gray-100 font-bold">
                               RA{{ i }}
                            </th>
-                           <th class="border border-gray-400 p-1 text-center bg-yellow-100 dark:bg-yellow-900/30 dark:text-yellow-200 font-bold">Total</th>
+                           <th rowspan="2" class="border border-gray-400 p-1 text-center bg-yellow-100 dark:bg-yellow-900/30 dark:text-yellow-200 font-bold">Total</th>
                            <template v-if="subjectPreview.data?.[0]?.is_fct">
-                              <th class="border border-gray-400 p-1 text-center bg-gray-200 dark:bg-gray-700 dark:text-gray-100 font-bold">Promedio</th>
-                              <th class="border border-gray-400 p-1 text-center bg-gray-200 dark:bg-gray-700 dark:text-gray-100 font-bold">Situación</th>
+                              <th rowspan="2" class="border border-gray-400 p-1 text-center bg-gray-200 dark:bg-gray-700 dark:text-gray-100 font-bold">Promedio</th>
+                              <th rowspan="2" class="border border-gray-400 p-1 text-center bg-gray-200 dark:bg-gray-700 dark:text-gray-100 font-bold">Situación</th>
+                           </template>
+                        </tr>
+                        <tr>
+                           <template v-for="i in subjectPreview.assignment?.cantidad_ra" :key="'op-header-' + i">
+                              <th v-for="op in previewOportunidadesRa" :key="'op-' + i + '-' + op"
+                                 class="border border-gray-400 p-0.5 text-center text-[10px] bg-gray-100 dark:bg-gray-800 dark:text-gray-200 font-semibold">
+                                 Op.{{ op }}
+                              </th>
                            </template>
                         </tr>
                      </thead>
@@ -447,10 +455,12 @@
                            <td class="border border-gray-400 p-1 sticky left-12 bg-white dark:bg-gray-800 z-10">{{
                               row.estudiante.apellidos }} {{
                                  row.estudiante.nombres }}</td>
-                           <td v-for="i in subjectPreview.assignment?.cantidad_ra" :key="i"
-                              class="border border-gray-400 p-1 text-center font-bold dark:text-gray-100">
-                              {{ row.is_fct ? (parseFloat(row.ras?.[i] ?? 0).toFixed(1)) : (row.ras?.[i] ?? 0) }}
-                           </td>
+                           <template v-for="i in subjectPreview.assignment?.cantidad_ra" :key="'r-ra-' + i">
+                              <td v-for="op in previewOportunidadesRa" :key="'r-op-' + i + '-' + op"
+                                 class="border border-gray-400 p-1 text-center font-medium dark:text-gray-100">
+                                 {{ row.ra_intentos?.[i]?.[op] !== null && row.ra_intentos?.[i]?.[op] !== undefined ? (row.is_fct ? (parseFloat(row.ra_intentos[i][op]).toFixed(1)) : row.ra_intentos[i][op]) : (op === 1 && !row.ra_intentos ? (row.is_fct ? (parseFloat(row.ras?.[i] ?? 0).toFixed(1)) : (row.ras?.[i] ?? '–')) : '–') }}
+                              </td>
+                           </template>
                            <td class="border border-gray-400 p-1 text-center font-bold bg-yellow-50 dark:bg-yellow-900/20 dark:text-yellow-200">{{ row.total }}
                            </td>
                            <template v-if="row.is_fct">
@@ -1260,6 +1270,13 @@ onMounted(async () => {
 const reportPreview = ref<ReportPreview | null>(null)
 const classroomPreview = ref<any | null>(null)
 const subjectPreview = ref<any | null>(null)
+const previewOportunidadesRa = computed(() => {
+   if (subjectPreview.value?.oportunidades_ra) {
+      return subjectPreview.value.oportunidades_ra
+   }
+   const anio = aniosLectivos.value.find((a: any) => a.id === selectedAnioLectivoId.value)
+   return anio?.oportunidades_ra || 3
+})
 const meritPreview = ref<any | null>(null)
 const aplazadosPreview = ref<any | null>(null)
 const finalPreview = ref<any | null>(null)

@@ -183,8 +183,185 @@ export const printClientReceipt = (
   setTimeout(() => window.URL.revokeObjectURL(url), 1000 * 60)
 }
 
+/**
+ * Imprime la planilla o sábana de notas de módulos técnicos en orientación horizontal (landscape)
+ * asegurando márgenes adecuados y saltos de página controlados según las oportunidades por RA (3 o 4).
+ */
+export const printTechnicalGradesReport = (
+  elementId: string = 'technical-grades-print-area',
+  options: { title?: string; oportunidades_ra?: number; filename?: string } = {}
+) => {
+  if (typeof window === 'undefined') return
+
+  const title = options.title || 'Planilla_Calificaciones_Tecnicas'
+  const filename = options.filename || `${title.replace(/\s+/g, '_')}.html`
+  const oportunidades = options.oportunidades_ra || 3
+  const printEl = document.getElementById(elementId)
+
+  if (!isSmallOrMobileScreen()) {
+    const prevTitle = document.title
+    document.title = title
+
+    // Inyectar o actualizar estilos para formato horizontal
+    let styleEl = document.getElementById('technical-print-style') as HTMLStyleElement | null
+    if (!styleEl) {
+      styleEl = document.createElement('style')
+      styleEl.id = 'technical-print-style'
+      document.head.appendChild(styleEl)
+    }
+    styleEl.textContent = `
+      @media print {
+        @page {
+          size: landscape;
+          margin: 8mm 6mm;
+        }
+        body {
+          -webkit-print-color-adjust: exact;
+          print-color-adjust: exact;
+        }
+        table {
+          width: 100% !important;
+          page-break-inside: auto;
+        }
+        tr {
+          page-break-inside: avoid;
+          page-break-after: auto;
+        }
+        thead {
+          display: table-header-group;
+        }
+        tfoot {
+          display: table-footer-group;
+        }
+        .no-print {
+          display: none !important;
+        }
+      }
+    `
+    setTimeout(() => {
+      window.print()
+      setTimeout(() => {
+        document.title = prevTitle
+      }, 500)
+    }, 150)
+    return
+  }
+
+  // Móvil / tablet: crear vista autónoma optimizada para descarga o impresión
+  if (!printEl) {
+    window.print()
+    return
+  }
+
+  const standaloneHtml = `<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${title}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @page {
+      size: landscape;
+      margin: 8mm 6mm;
+    }
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+      margin: 0;
+      padding: 12px;
+    }
+    .mobile-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #1e293b;
+      color: #fff;
+      padding: 10px 16px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+    .mobile-toolbar button {
+      background: #2563eb;
+      color: #fff;
+      border: none;
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .report-sheet {
+      background: #ffffff;
+      padding: 16px;
+      border-radius: 8px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+      width: 100%;
+      overflow-x: auto;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      page-break-inside: auto;
+    }
+    tr {
+      page-break-inside: avoid;
+    }
+    thead {
+      display: table-header-group;
+    }
+    @media print {
+      body {
+        background: #ffffff !important;
+        padding: 0 !important;
+      }
+      .mobile-toolbar {
+        display: none !important;
+      }
+      .report-sheet {
+        box-shadow: none !important;
+        padding: 0 !important;
+        max-width: 100% !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="mobile-toolbar">
+    <span style="font-size: 13px; font-weight: 600;">${title} (${oportunidades} Oportunidades RA)</span>
+    <button onclick="window.print()">Imprimir / Guardar PDF</button>
+  </div>
+  <div class="report-sheet">
+    ${printEl.innerHTML}
+  </div>
+  <script>
+    window.addEventListener('load', function() {
+      setTimeout(function() { window.print(); }, 500);
+    });
+  </script>
+</body>
+</html>`
+
+  const blob = new Blob([standaloneHtml], { type: 'text/html;charset=utf-8' })
+  const url = window.URL.createObjectURL(blob)
+  const newWin = window.open(url, '_blank')
+
+  if (!newWin) {
+    const link = document.createElement('a')
+    link.href = url
+    link.download = filename
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+  }
+
+  setTimeout(() => window.URL.revokeObjectURL(url), 1000 * 60)
+}
+
 export default {
   handlePrintPdfResponse,
   printClientReceipt,
+  printTechnicalGradesReport,
   isSmallOrMobileScreen,
 }

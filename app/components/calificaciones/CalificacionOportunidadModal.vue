@@ -106,6 +106,10 @@ const props = defineProps({
     estudiante: Object,
     raNumero: Number,
     oportunidad: Number,
+    maxOportunidades: {
+        type: Number,
+        default: 3
+    },
     valorRa: {
         type: Number,
         default: 0

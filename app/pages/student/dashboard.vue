@@ -1,18 +1,29 @@
 <template>
   <div class="space-y-6">
-    <!-- Bienvenida -->
-    <div class="glass-card p-6 rounded-xl flex justify-between items-center">
+    <!-- Bienvenida con selector de Año Lectivo -->
+    <div class="glass-card p-6 rounded-xl flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
       <div>
         <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white">Hola, {{ dashboardData?.student?.nombres }}</h2>
         <p class="text-gray-600 dark:text-gray-400 mt-1">
           Estudiante de {{ dashboardData?.student?.aula_grado }} "{{ dashboardData?.student?.aula_seccion }}" <span
-            v-if="dashboardData?.student?.numero_orden">| #{{ dashboardData?.student?.numero_orden }}</span> | Año
-          Lectivo: {{ dashboardData?.academic_year }}
+            v-if="dashboardData?.student?.numero_orden">| #{{ dashboardData?.student?.numero_orden }}</span>
         </p>
       </div>
-      <div class="hidden sm:block">
-        <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium"
-          :class="dashboardData?.is_preadmitted ? 'bg-amber-100 text-amber-800' : 'bg-blue-100 text-blue-800'">
+      <div class="flex flex-wrap items-center gap-3">
+        <!-- Selector Histórico de Año Lectivo -->
+        <div class="flex items-center gap-2">
+          <label for="anio-select-student" class="text-xs font-semibold text-gray-500 dark:text-gray-400 whitespace-nowrap">
+            Año Lectivo:
+          </label>
+          <select id="anio-select-student" v-model="selectedAnioLectivoId" @change="cambiarAnioLectivo"
+            class="text-xs font-medium rounded-lg bg-white dark:bg-slate-800 border-gray-300 dark:border-slate-700 text-gray-900 dark:text-gray-100 shadow-sm focus:ring-blue-500 focus:border-blue-500 py-1.5 px-2.5">
+            <option v-for="anio in aniosLectivos" :key="anio.id" :value="anio.id">
+              {{ anio.nombre }} {{ anio.activo ? '(Vigente)' : '(Histórico)' }}
+            </option>
+          </select>
+        </div>
+        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold"
+          :class="dashboardData?.is_preadmitted ? 'bg-amber-100 text-amber-800 dark:bg-amber-900/30 dark:text-amber-300' : 'bg-blue-100 text-blue-800 dark:bg-blue-900/30 dark:text-blue-300'">
           {{ dashboardData?.is_preadmitted ? 'Estudiante-Preadmitido' : 'Estudiante Activo' }}
         </span>
       </div>
@@ -586,22 +597,66 @@
                     </div>
                   </div>
 
-                  <!-- Detalle de notas (RAs) -->
+                  <!-- Detalle de notas (RAs) - Stepper / Badges dinámicos según oportunidades_ra -->
                   <div v-if="!subject.is_fct && subject.notas_ra && subject.notas_ra.length > 0">
-                    <h5 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-2">Resultados de
-                      Aprendizaje</h5>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+                    <div class="flex items-center justify-between mb-3">
+                      <h5 class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Resultados de Aprendizaje ({{ maxOportunidadesStudent }} Oportunidades)
+                      </h5>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
                       <div v-for="raItem in subject.notas_ra" :key="raItem.ra"
-                        class="bg-gray-50 dark:bg-gray-900/50 rounded p-2 text-center border border-gray-100 dark:border-gray-700 flex flex-col items-center">
-                        <div class="text-xs text-gray-500 dark:text-gray-400 mb-1">RA {{ raItem.ra }}</div>
-                        <div class="flex flex-wrap justify-center gap-1">
-                          <span v-for="intento in raItem.intentos" :key="intento.id"
-                            class="text-xs font-bold px-1.5 py-0.5 rounded border"
-                            :class="intento.is_nc ? 'bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800' : 'bg-white dark:bg-gray-800 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-700 dark:border-gray-600'">
-                            {{ intento.nota }}
+                        class="bg-gray-50/70 dark:bg-slate-800/80 rounded-xl p-3 border border-gray-200 dark:border-slate-700 flex flex-col justify-between shadow-xs">
+                        
+                        <!-- Header del RA -->
+                        <div class="flex items-center justify-between mb-2">
+                          <span class="text-xs font-bold text-gray-800 dark:text-slate-200">
+                            Resultado de Aprendizaje {{ raItem.ra }}
+                          </span>
+                          <span class="text-[11px] font-semibold text-gray-500 dark:text-slate-400 bg-white dark:bg-slate-900 px-2 py-0.5 rounded border border-gray-200 dark:border-slate-700">
+                            Valor: {{ raItem.valor_max }} pts
                           </span>
                         </div>
-                        <div class="text-[10px] text-gray-400 mt-1">/{{ raItem.valor_max }}</div>
+
+                        <!-- Stepper / Bloques de intentos por oportunidad -->
+                        <div class="grid gap-1.5" :style="{ gridTemplateColumns: `repeat(${maxOportunidadesStudent}, minmax(0, 1fr))` }">
+                          <div v-for="op in maxOportunidadesStudent" :key="op"
+                            class="flex flex-col items-center justify-center p-2 rounded-lg border text-center transition-all"
+                            :class="[
+                              getIntentoPorOportunidad(raItem, op)
+                                ? (getIntentoPorOportunidad(raItem, op).is_nc
+                                    ? 'bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-400 border-red-200 dark:border-red-900/50'
+                                    : 'bg-emerald-50 dark:bg-emerald-950/40 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-900/50')
+                                : 'bg-gray-100/50 dark:bg-slate-900/50 text-gray-400 dark:text-slate-500 border-gray-200/60 dark:border-slate-800 border-dashed'
+                            ]">
+                            <!-- Etiqueta de la oportunidad -->
+                            <span class="text-[9px] font-semibold uppercase tracking-wider mb-1 line-clamp-1">
+                              {{ getOportunidadLabel(op) }}
+                            </span>
+                            <!-- Nota obtenida o guión si no se evaluó -->
+                            <span class="text-sm font-bold">
+                              {{ getIntentoPorOportunidad(raItem, op) ? getIntentoPorOportunidad(raItem, op).nota : '–' }}
+                            </span>
+                            <!-- Estado Badge -->
+                            <span v-if="getIntentoPorOportunidad(raItem, op)" class="text-[9px] font-bold mt-1 px-1 rounded"
+                              :class="getIntentoPorOportunidad(raItem, op).is_nc ? 'bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-300' : 'bg-emerald-100 dark:bg-emerald-900/50 text-emerald-800 dark:text-emerald-300'">
+                              {{ getIntentoPorOportunidad(raItem, op).is_nc ? 'NC' : 'Logrado' }}
+                            </span>
+                            <span v-else class="text-[9px] text-gray-400 dark:text-slate-600 mt-1">
+                              Sin evaluar
+                            </span>
+                          </div>
+                        </div>
+
+                        <!-- Nota final del RA -->
+                        <div class="mt-2.5 pt-2 border-t border-gray-200/60 dark:border-slate-700/60 flex items-center justify-between text-xs">
+                          <span class="text-gray-500 dark:text-slate-400 font-medium">Nota final obtenida:</span>
+                          <span class="font-bold px-2 py-0.5 rounded text-xs"
+                            :class="raItem.is_nc_final ? 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30' : 'text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/30'">
+                            {{ raItem.nota_final }} / {{ raItem.valor_max }}
+                          </span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -701,8 +756,44 @@ definePageMeta({
 
 const loading = ref(true)
 const dashboardData = ref<any>(null)
+const aniosLectivos = ref<any[]>([])
+const selectedAnioLectivoId = ref<number | null>(null)
 const selectedDay = ref<number>(new Date().getDay() || 1) // Default to today (or Mon if Sun)
 const uploadingId = ref<number | null>(null)
+
+const maxOportunidadesStudent = computed(() => {
+  return dashboardData.value?.oportunidades_ra || 3
+})
+
+const getOportunidadLabel = (op: number): string => {
+  switch (op) {
+    case 1: return 'Ordinaria'
+    case 2: return 'Recuperación 1'
+    case 3: return 'Recuperación 2'
+    case 4: return 'Recuperación 3'
+    default: return `Op. ${op}`
+  }
+}
+
+const getIntentoPorOportunidad = (raItem: any, op: number) => {
+  if (!raItem || !raItem.intentos) return null
+  return raItem.intentos.find((it: any) => it.oportunidad === op) || null
+}
+
+const cambiarAnioLectivo = async () => {
+  loading.value = true
+  try {
+    const url = selectedAnioLectivoId.value
+      ? `/api/student/dashboard?anio_lectivo_id=${selectedAnioLectivoId.value}`
+      : '/api/student/dashboard'
+    const response = await api.get(url)
+    dashboardData.value = response.data
+  } catch (e) {
+    console.error("Dashboard error:", e)
+  } finally {
+    loading.value = false
+  }
+}
 
 const days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes']
 
@@ -783,8 +874,21 @@ const uploadFile = async (event: Event, uploadId: number) => {
 
 onMounted(async () => {
   try {
+    try {
+      const aniosRes = await api.get('/api/anios-lectivos')
+      aniosLectivos.value = Array.isArray(aniosRes) ? aniosRes : (aniosRes?.data || [])
+    } catch (err) {
+      console.warn('No se pudieron cargar años lectivos', err)
+    }
+
     const response = await api.get('/api/student/dashboard')
     dashboardData.value = response.data
+    if (dashboardData.value?.anio_lectivo_id) {
+      selectedAnioLectivoId.value = dashboardData.value.anio_lectivo_id
+    } else {
+      const active = aniosLectivos.value.find((a: any) => a.activo)
+      if (active) selectedAnioLectivoId.value = active.id
+    }
   } catch (e) {
     console.error("Dashboard error:", e)
   } finally {

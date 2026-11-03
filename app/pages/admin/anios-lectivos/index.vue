@@ -27,7 +27,12 @@
                     <li v-for="anio in items" :key="anio.id"
                         class="px-6 py-4 hover:bg-gray-50 dark:bg-gray-900/50 flex items-center justify-between">
                         <div>
-                            <div class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ anio.nombre }}</div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-sm font-medium text-gray-900 dark:text-gray-100">{{ anio.nombre }}</span>
+                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-300">
+                                    {{ anio.oportunidades_ra ?? 3 }} Op. RA
+                                </span>
+                            </div>
                             <div class="text-sm text-gray-500 dark:text-gray-400">{{ anio.descripcion || 'Sin descripción' }}</div>
                         </div>
                         <div class="flex items-center gap-4">
@@ -110,6 +115,16 @@
                             <input v-model="form.fecha_fin" type="date"
                                 class="mt-1 block w-full border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                         </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Oportunidades por RA (Módulos Técnicos)
+                            </label>
+                            <input v-model.number="form.oportunidades_ra" type="number" min="1" max="5" required
+                                class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                Define la cantidad máxima de oportunidades/recuperaciones permitidas para resultados de aprendizaje en este año escolar
+                            </p>
+                        </div>
                         <div class="flex items-center space-x-6 mt-4">
                             <div class="flex items-center">
                                 <input id="activo" v-model="form.activo" type="checkbox"
@@ -187,6 +202,17 @@
                             </div>
                         </div>
 
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                                Oportunidades por RA (Módulos Técnicos)
+                            </label>
+                            <input v-model.number="clonarForm.oportunidades_ra" type="number" min="1" max="5" required
+                                class="mt-1 block w-full border border-gray-300 dark:border-gray-600 dark:bg-gray-700 dark:text-gray-100 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm">
+                            <p class="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                Define la cantidad máxima de oportunidades/recuperaciones permitidas para resultados de aprendizaje en este año escolar
+                            </p>
+                        </div>
+
                         <div v-if="clonarError" class="text-red-600 text-sm">{{ clonarError }}</div>
                     </div>
                     <div class="px-6 py-4 bg-gray-50 dark:bg-gray-900/50 flex justify-end gap-3">
@@ -260,7 +286,8 @@ const clonarForm = reactive({
     nombre: '',
     descripcion: '',
     fecha_inicio: '',
-    fecha_fin: ''
+    fecha_fin: '',
+    oportunidades_ra: 3
 })
 
 const form = reactive({
@@ -269,7 +296,8 @@ const form = reactive({
     fecha_inicio: null as string | null,
     fecha_fin: null as string | null,
     activo: true,
-    en_vacaciones: false
+    en_vacaciones: false,
+    oportunidades_ra: 3
 })
 
 function openConfigModal(anio: AnioLectivo) {
@@ -293,6 +321,7 @@ function openModal(item?: AnioLectivo) {
         form.fecha_fin = item.fecha_fin || null
         form.activo = item.activo
         form.en_vacaciones = !!(item as any).en_vacaciones
+        form.oportunidades_ra = item.oportunidades_ra ?? 3
     } else {
         isEdit.value = false
         editingId.value = null
@@ -302,6 +331,7 @@ function openModal(item?: AnioLectivo) {
         form.fecha_fin = null
         form.activo = true
         form.en_vacaciones = false
+        form.oportunidades_ra = 3
     }
     showModal.value = true
 }
@@ -318,6 +348,7 @@ function openClonarModal(anio: AnioLectivo) {
     clonarForm.descripcion = anio.descripcion || ''
     clonarForm.fecha_inicio = ''
     clonarForm.fecha_fin = ''
+    clonarForm.oportunidades_ra = anio.oportunidades_ra ?? 3
     showClonarModal.value = true
 }
 

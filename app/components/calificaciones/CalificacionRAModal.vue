@@ -113,7 +113,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
-              {{ estadoFinal === 'Logrado' ? 'RA ya está logrado' : 'Se han agotado las 4 oportunidades' }}
+              {{ estadoFinal === 'Logrado' ? 'RA ya está logrado' : ('Se han agotado las ' + limiteOportunidades + ' oportunidades') }}
             </div>
           </div>
         </div>
@@ -142,7 +142,11 @@ const props = defineProps({
   estudiante: Object,
   modulo: Object,
   raNumero: Number,
-  calificacionesExistentes: Array
+  calificacionesExistentes: Array,
+  maxOportunidades: {
+    type: Number,
+    default: 4
+  }
 })
 
 const emit = defineEmits(['close', 'save'])
@@ -173,8 +177,10 @@ const proximaOportunidad = computed(() => {
   return Math.max(...props.calificacionesExistentes.map(cal => cal.oportunidad)) + 1
 })
 
+const limiteOportunidades = computed(() => props.maxOportunidades || 4)
+
 const puedeAgregarOportunidad = computed(() => {
-  return estadoFinal.value !== 'Logrado' && proximaOportunidad.value <= 4
+  return estadoFinal.value !== 'Logrado' && proximaOportunidad.value <= limiteOportunidades.value
 })
 
 // Methods

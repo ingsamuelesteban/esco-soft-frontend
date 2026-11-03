@@ -134,7 +134,7 @@
                 RAs en este módulo: {{ moduloData.cantidad_ra }}
               </div>
               <div class="text-xs text-blue-600 dark:text-blue-300">
-                Cada RA tiene hasta 4 oportunidades
+                Cada RA tiene hasta {{ maxOportunidades }} oportunidades
               </div>
             </div>
           </div>
@@ -367,7 +367,8 @@
                         Estudiante
                       </th>
                       <th v-for="ra in Array.from({ length: moduloData.cantidad_ra }, (_, i) => i + 1)" :key="ra"
-                        class="px-3 py-3 text-center text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider sticky top-0 bg-gray-50 dark:bg-gray-900/50 z-20 shadow-sm">
+                        class="px-3 py-3 text-center text-xs font-medium text-gray-600 dark:text-gray-300 uppercase tracking-wider sticky top-0 bg-gray-50 dark:bg-gray-900/50 z-20 shadow-sm"
+                        :style="{ minWidth: `${maxOportunidades * 32 + 20}px` }">
                         <div class="flex flex-col items-center space-y-1">
                           <span>RA {{ ra }}</span>
                           <div v-if="moduloData?.valores_ra && moduloData.valores_ra[`ra_${ra}`]"
@@ -444,8 +445,8 @@
                         class="px-2 py-4 text-center">
 
                         <!-- Header interno de oportunidades con Importar y Eliminar -->
-                        <div class="flex justify-center space-x-1 mb-2 border-b pb-1">
-                          <div v-for="op in 4" :key="op" class="flex flex-col items-center">
+                        <div class="flex justify-center space-x-1 mb-2 border-b border-gray-200 dark:border-gray-700 pb-1">
+                          <div v-for="op in maxOportunidades" :key="op" class="flex flex-col items-center">
                             <span class="text-[9px] text-gray-400 font-bold mb-1">{{ op }}</span>
                             <!-- Contenedor horizontal para botones -->
                             <div v-if="!isReadOnly && moduloData?.valores_ra?.[`ra_${ra}`]" 
@@ -478,10 +479,12 @@
                         </div>
 
                         <div class="flex justify-center space-x-1">
-                          <button v-for="oportunidad in 4" :key="`${estudiante.id}-ra${ra}-op${oportunidad}`"
+                          <button v-for="oportunidad in maxOportunidades" :key="`${estudiante.id}-ra${ra}-op${oportunidad}`"
+                            :ref="el => registerCellRef(estudiante.id, ra, oportunidad, el)"
                             :disabled="isRefreshing || !moduloData?.valores_ra?.[`ra_${ra}`] || estudiante.estado === 'retirado' || isReadOnly"
                             @click="abrirModalCalificarOportunidad(estudiante, ra, oportunidad)"
-                            class="w-5 h-5 border border-gray-300 dark:border-gray-600 rounded-sm flex items-center justify-center text-xs font-bold hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none"
+                            @keydown="handleCellKeydown($event, estudiante.id, ra, oportunidad)"
+                            class="w-6 h-6 border border-gray-300 dark:border-gray-600 rounded-sm flex items-center justify-center text-xs font-bold hover:shadow-md transition-all disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:z-10"
                             :class="getCasillaOportunidadClass(estudiante.id, ra, oportunidad)"
                             :title="!moduloData?.valores_ra?.[`ra_${ra}`] ? 'RA no configurado' : getTitleCasilla(estudiante.id, ra, oportunidad)">
                             <span v-if="tieneCalificacionEnOportunidad(estudiante.id, ra, oportunidad)">
@@ -656,7 +659,7 @@
 
     <!-- Modal para calificar oportunidad (NUEVO COMPONENTE) -->
     <CalificacionOportunidadModal v-if="mostrarModalCalificarOportunidad" :estudiante="estudianteParaCalificar"
-      :ra-numero="raParaCalificar" :oportunidad="oportunidadParaCalificar"
+      :ra-numero="raParaCalificar" :oportunidad="oportunidadParaCalificar" :max-oportunidades="maxOportunidades"
       :valor-ra="moduloData?.calculation_mode === 'fct' ? 10 : (moduloData?.valores_ra?.[`ra_${raParaCalificar}`] || 0)" :nota-actual="calificacionActual"
       :observaciones-actuales="observacionesActual" :loading="guardandoCalificacion"
       @close="cerrarModalCalificarOportunidad" @save="guardarCalificacion" @delete="eliminarCalificacionRA" />
@@ -709,6 +712,71 @@ const calificacionesCompetencias = ref([])
 // Selecciones
 const aniosLectivos = ref([])
 const anioLectivoSeleccionado = ref('')
+const backendMaxOportunidades = ref(null)
+
+const maxOportunidades = computed(() => {
+  if (backendMaxOportunidades.value) {
+    return backendMaxOportunidades.value
+  }
+  const anio = aniosLectivos.value.find(a => a.id === anioLectivoSeleccionado.value)
+  if (anio && anio.oportunidades_ra) {
+    return anio.oportunidades_ra
+  }
+  return isHistoricalMode.value ? 4 : 3
+})
+
+const cellRefs = ref({})
+const registerCellRef = (estudianteId, ra, op, el) => {
+  if (el) {
+    cellRefs.value[`${estudianteId}-${ra}-${op}`] = el
+  }
+}
+
+const handleCellKeydown = (event, estudianteId, ra, op) => {
+  const currentEstIndex = estudiantes.value.findIndex(e => e.id === estudianteId)
+  const totalRAs = moduloData.value?.cantidad_ra || 1
+  const maxOp = maxOportunidades.value
+
+  let targetKey = null
+
+  if (event.key === 'ArrowRight' || (event.key === 'Tab' && !event.shiftKey)) {
+    if (op < maxOp) {
+      targetKey = `${estudianteId}-${ra}-${op + 1}`
+    } else if (ra < totalRAs) {
+      targetKey = `${estudianteId}-${ra + 1}-1`
+    } else if (currentEstIndex < estudiantes.value.length - 1) {
+      targetKey = `${estudiantes.value[currentEstIndex + 1].id}-1-1`
+    }
+  } else if (event.key === 'ArrowLeft' || (event.key === 'Tab' && event.shiftKey)) {
+    if (op > 1) {
+      targetKey = `${estudianteId}-${ra}-${op - 1}`
+    } else if (ra > 1) {
+      targetKey = `${estudianteId}-${ra - 1}-${maxOp}`
+    } else if (currentEstIndex > 0) {
+      targetKey = `${estudiantes.value[currentEstIndex - 1].id}-${totalRAs}-${maxOp}`
+    }
+  } else if (event.key === 'ArrowDown') {
+    if (currentEstIndex < estudiantes.value.length - 1) {
+      targetKey = `${estudiantes.value[currentEstIndex + 1].id}-${ra}-${op}`
+    }
+  } else if (event.key === 'ArrowUp') {
+    if (currentEstIndex > 0) {
+      targetKey = `${estudiantes.value[currentEstIndex - 1].id}-${ra}-${op}`
+    }
+  } else if (event.key === 'Enter') {
+    event.preventDefault()
+    const est = estudiantes.value.find(e => e.id === estudianteId)
+    if (est) {
+      abrirModalCalificarOportunidad(est, ra, op)
+    }
+    return
+  }
+
+  if (targetKey && cellRefs.value[targetKey]) {
+    event.preventDefault()
+    cellRefs.value[targetKey].focus()
+  }
+}
 const activeAnioLectivoId = ref(null)
 
 const canChangeAnioLectivo = computed(() => {
@@ -919,6 +987,9 @@ const cargarCalificaciones = async (background = false) => {
       if (anioLectivoSeleccionado.value) url += `&anio_lectivo_id=${anioLectivoSeleccionado.value}`
       const response = await api.get(url)
       calificacionesRA.value = response.data || []
+      if (response.max_oportunidades) {
+        backendMaxOportunidades.value = response.max_oportunidades
+      }
     } else if (moduloData.value?.tipo === 'Academico') {
       // Cargar calificaciones de competencias para módulos académicos
       let url = `/api/calificaciones-competencias?aula_id=${aulaSeleccionada.value}&materia_id=${moduloData.value.materia_id}`
