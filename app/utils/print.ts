@@ -57,6 +57,18 @@ export interface ClientPrintOptions {
   filename?: string
 }
 
+export interface TechnicalGradesPrintOptions {
+  title?: string
+  tituloTecnico?: string
+  institucion?: string
+  aulaLabel?: string
+  profesor?: string
+  materia?: string
+  year?: string | number
+  oportunidades_ra?: number
+  filename?: string
+}
+
 /**
  * Imprime un comprobante renderizado 100% en el cliente (Frontend).
  * - En escritorio (>= 1024px): ejecuta window.print() aprovechando las reglas @media print.
@@ -189,7 +201,7 @@ export const printClientReceipt = (
  */
 export const printTechnicalGradesReport = (
   elementId: string = 'technical-grades-print-area',
-  options: { title?: string; oportunidades_ra?: number; filename?: string } = {}
+  options: TechnicalGradesPrintOptions = {}
 ) => {
   if (typeof window === 'undefined') return
 
@@ -329,7 +341,7 @@ export const printTechnicalGradesReport = (
 </head>
 <body>
   <div class="mobile-toolbar">
-    <span style="font-size: 13px; font-weight: 600;">${title} (${oportunidades} Oportunidades RA)</span>
+    <span style="font-size: 13px; font-weight: 600;">${title}${options.tituloTecnico ? ' — ' + options.tituloTecnico : ''} (${oportunidades} Oportunidades RA)</span>
     <button onclick="window.print()">Imprimir / Guardar PDF</button>
   </div>
   <div class="report-sheet">

@@ -123,6 +123,10 @@
                   <div class="text-center border-b border-gray-300 dark:border-gray-600 pb-4 mb-4">
                      <p class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase">Ministerio de Educación (MINERD)</p>
                      <h2 class="text-base font-bold text-gray-900 dark:text-gray-100 mt-1">{{ reportPreview.tenant?.name }}</h2>
+                     <h4 v-if="reportPreview.aula?.titulo_oficial || reportPreview.aula?.titulo?.nombre"
+                         class="text-sm font-bold text-blue-700 dark:text-blue-400 mt-1">
+                        Título: {{ reportPreview.aula?.titulo_oficial || reportPreview.aula?.titulo?.nombre }}
+                     </h4>
                      <h3 class="font-bold mt-2 text-sm">BOLETÍN DE CALIFICACIONES</h3>
                      <p class="text-xs text-gray-500 dark:text-gray-400">Año Lectivo: {{ reportPreview.year }}</p>
                   </div>
@@ -136,7 +140,7 @@
                      <div>
                         <span class="font-bold">Grado/Aula:</span>
                         {{ reportPreview.aula?.grado_cardinal }}° {{ reportPreview.aula?.seccion }}
-                        <span v-if="reportPreview.aula?.titulo"> — {{ reportPreview.aula.titulo.nombre }}</span><br>
+                        <span v-if="reportPreview.aula?.titulo_oficial || reportPreview.aula?.titulo"> — {{ reportPreview.aula.titulo_oficial || reportPreview.aula.titulo.nombre }}</span><br>
                         <span class="font-bold">No. Orden:</span> {{ reportPreview.estudiante?.numero_orden }}
                      </div>
                   </div>
@@ -258,7 +262,7 @@
                         class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                         <option value="">Seleccionar Aula...</option>
                         <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
-                           {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo ? aula.titulo.nombre : '' }}
+                           {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo_oficial || aula.titulo?.nombre || aula.nombre }}
                         </option>
                      </select>
                   </div>
@@ -299,6 +303,10 @@
                   class="border border-gray-300 dark:border-gray-600 rounded-lg p-6 bg-gray-50 dark:bg-gray-900/50 mt-6 overflow-x-auto">
                   <div class="text-center border-b border-gray-300 dark:border-gray-600 pb-4 mb-4">
                      <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ classroomPreview.tenant?.nombre }}</h2>
+                     <h4 v-if="classroomPreview.aula?.titulo_oficial || classroomPreview.aula?.titulo?.nombre"
+                         class="text-sm font-bold text-blue-700 dark:text-blue-400 mt-1">
+                        Título: {{ classroomPreview.aula?.titulo_oficial || classroomPreview.aula?.titulo?.nombre }}
+                     </h4>
                      <h3 class="font-bold mt-2">SÁBANA DE CALIFICACIONES - {{ classroomPreview.aula?.grado_cardinal }}°
                         {{
                            classroomPreview.aula?.seccion }}</h3>
@@ -348,7 +356,7 @@
                         class="w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500 sm:text-sm p-2 border bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                         <option value="">Seleccionar Aula...</option>
                         <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
-                           {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo ? aula.titulo.nombre : '' }}
+                           {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo_oficial || aula.titulo?.nombre || aula.nombre }}
                         </option>
                      </select>
                   </div>
@@ -409,12 +417,16 @@
                </div>
 
                <!-- Subject Report Preview -->
-               <div v-if="subjectPreview" class="border border-gray-300 dark:border-gray-600 rounded-lg p-6 bg-gray-50 dark:bg-gray-900/50 mt-6 overflow-x-auto">
+               <div v-if="subjectPreview" id="technical-grades-print-area" class="border border-gray-300 dark:border-gray-600 rounded-lg p-6 bg-gray-50 dark:bg-gray-900/50 mt-6 overflow-x-auto">
                   <div class="text-center border-b border-gray-300 dark:border-gray-600 pb-4 mb-4">
                      <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ subjectPreview.tenant?.nombre }}</h2>
                      <h3 class="font-bold mt-2 dark:text-gray-100">PLANILLA DE CALIFICACIONES</h3>
                      <p class="text-sm font-bold mt-1 dark:text-gray-200">{{ subjectPreview.materia?.nombre }} ({{
                         subjectPreview.materia?.tipo }})</p>
+                     <h4 v-if="getTituloOficialSubjectPreview"
+                         class="text-sm font-bold text-blue-700 dark:text-blue-400 mt-1">
+                        Título: {{ getTituloOficialSubjectPreview }}
+                     </h4>
                      <p class="text-xs text-gray-500 dark:text-gray-400">{{ subjectPreview.assignment?.aula?.grado_cardinal }}° {{
                         subjectPreview.assignment?.aula?.seccion }} - Profesor: {{
                            subjectPreview.assignment?.profesor?.nombre_completo }}</p>
@@ -428,7 +440,7 @@
                            <th rowspan="2" class="border border-gray-400 p-1 text-left sticky left-0 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10 w-12 min-w-[48px] max-w-[48px]">No.</th>
                            <th rowspan="2" class="border border-gray-400 p-1 text-left sticky left-12 bg-gray-200 dark:bg-gray-700 dark:text-gray-100 z-10 min-w-[140px]">Estudiante</th>
                            <th v-for="i in subjectPreview.assignment?.cantidad_ra" :key="'ra-th-' + i"
-                              :colspan="previewOportunidadesRa"
+                              :colspan="maxOportunidades"
                               class="border border-gray-400 p-1 text-center dark:text-gray-100 font-bold">
                               RA{{ i }}
                            </th>
@@ -440,9 +452,9 @@
                         </tr>
                         <tr>
                            <template v-for="i in subjectPreview.assignment?.cantidad_ra" :key="'op-header-' + i">
-                              <th v-for="op in previewOportunidadesRa" :key="'op-' + i + '-' + op"
+                              <th v-for="op in maxOportunidades" :key="'op-' + i + '-' + op"
                                  class="border border-gray-400 p-0.5 text-center text-[10px] bg-gray-100 dark:bg-gray-800 dark:text-gray-200 font-semibold">
-                                 Op.{{ op }}
+                                 {{ getTituloOportunidad(op, maxOportunidades) }}
                               </th>
                            </template>
                         </tr>
@@ -456,7 +468,7 @@
                               row.estudiante.apellidos }} {{
                                  row.estudiante.nombres }}</td>
                            <template v-for="i in subjectPreview.assignment?.cantidad_ra" :key="'r-ra-' + i">
-                              <td v-for="op in previewOportunidadesRa" :key="'r-op-' + i + '-' + op"
+                              <td v-for="op in maxOportunidades" :key="'r-op-' + i + '-' + op"
                                  class="border border-gray-400 p-1 text-center font-medium dark:text-gray-100">
                                  {{ row.ra_intentos?.[i]?.[op] !== null && row.ra_intentos?.[i]?.[op] !== undefined ? (row.is_fct ? (parseFloat(row.ra_intentos[i][op]).toFixed(1)) : row.ra_intentos[i][op]) : (op === 1 && !row.ra_intentos ? (row.is_fct ? (parseFloat(row.ras?.[i] ?? 0).toFixed(1)) : (row.ras?.[i] ?? '–')) : '–') }}
                               </td>
@@ -473,6 +485,19 @@
                         </tr>
                      </tbody>
                   </table>
+
+                  <!-- Glosario de Oportunidades para Módulos Técnicos -->
+                  <div v-if="subjectPreview.materia?.tipo === 'Tecnico'"
+                     class="mt-3 p-2 bg-gray-100 dark:bg-gray-800 rounded text-xs text-gray-600 dark:text-gray-300">
+                     <span class="font-bold">Glosario de Oportunidades:</span>
+                     Op. 1 (Ordinaria) | Op. 2 (Recup. 1)
+                     <template v-if="maxOportunidades === 3">
+                        | Op. 3 (Recup. Final)
+                     </template>
+                     <template v-else>
+                        | Op. 3 (Recup. 2) | Op. 4 (Extraordinaria)
+                     </template>
+                  </div>
 
                   <!-- Academic Subject Table -->
                   <table v-else class="min-w-full text-xs border-collapse border border-gray-400">
@@ -529,8 +554,16 @@
                      </tbody>
                   </table>
 
-                  <div class="mt-4 text-[10px] text-center text-gray-500 dark:text-gray-400">
-                     Vista previa generada para consulta.
+                  <div class="mt-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] text-gray-500 dark:text-gray-400">
+                     <span>Vista previa generada para consulta.</span>
+                     <button v-if="subjectPreview.materia?.tipo === 'Tecnico'" @click="printSubjectPreviewDirect"
+                        type="button"
+                        class="inline-flex items-center px-3 py-1.5 border border-purple-600 shadow-sm text-xs font-medium rounded-md text-purple-700 bg-white hover:bg-purple-50 dark:bg-gray-800 dark:text-purple-300 dark:hover:bg-gray-700">
+                        <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                        </svg>
+                        Imprimir Planilla (Frontend)
+                     </button>
                   </div>
                </div>
             </div>
@@ -545,7 +578,7 @@
                         <option value="">Seleccionar Aula...</option>
                         <option value="all">Todas las Aulas</option>
                         <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
-                           {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo ? aula.titulo.nombre : '' }}
+                           {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo_oficial || aula.titulo?.nombre || aula.nombre }}
                         </option>
                      </select>
                      <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
@@ -629,6 +662,9 @@
                      <div class="text-center border-b border-gray-300 dark:border-gray-600 pb-4 mb-4">
                         <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ report.tenant?.nombre ||
                            meritPreview.tenant?.nombre }}</h2>
+                        <h4 v-if="report.aula?.titulo_oficial || report.aula?.titulo?.nombre" class="text-xs font-semibold text-indigo-700 dark:text-indigo-400 uppercase tracking-wider mt-0.5">
+                           Título: {{ report.aula?.titulo_oficial || report.aula?.titulo?.nombre }}
+                        </h4>
                         <h3 class="font-bold mt-2 text-yellow-700 dark:text-yellow-400">LISTADO DE HONOR - MERITORIOS</h3>
                         <p class="text-sm font-medium dark:text-gray-300">{{ report.aula?.grado_cardinal }}° {{
                            report.aula?.seccion }}</p>
@@ -694,7 +730,7 @@
                         <option value="">Seleccionar Aula...</option>
                         <option value="all">Todas las Aulas</option>
                         <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
-                           {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo ? aula.titulo.nombre : '' }}
+                           {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo_oficial || aula.titulo?.nombre || aula.nombre }}
                         </option>
                      </select>
                      <p class="text-xs text-gray-500 dark:text-gray-400 mt-2">
@@ -739,6 +775,9 @@
                      <div class="text-center border-b border-gray-300 dark:border-gray-600 pb-4 mb-4">
                         <h2 class="text-lg font-bold text-gray-900 dark:text-gray-100">{{ report.tenant?.nombre ||
                            aplazadosPreview.tenant?.nombre }}</h2>
+                        <h4 v-if="report.aula?.titulo_oficial || report.aula?.titulo?.nombre" class="text-xs font-semibold text-indigo-700 dark:text-indigo-400 uppercase tracking-wider mt-0.5">
+                           Título: {{ report.aula?.titulo_oficial || report.aula?.titulo?.nombre }}
+                        </h4>
                         <h3 class="font-bold mt-2 text-red-700 dark:text-red-400">REPORTE DE ESTUDIANTES APLAZADOS</h3>
                         <p class="text-sm font-medium dark:text-gray-300">{{ report.aula?.grado_cardinal }}° {{
                            report.aula?.seccion }}</p>
@@ -789,8 +828,7 @@
                            class="block w-full pl-3 pr-10 py-2 text-sm border-gray-300 dark:border-gray-600 rounded-lg shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:ring-indigo-500 focus:border-indigo-500">
                            <option :value="null">-- Elige un aula --</option>
                            <option v-for="a in aulas" :key="a.id" :value="a.id">
-                              {{ a.grado_cardinal }}° {{ a.seccion }}
-                              <template v-if="a.titulo"> — {{ a.titulo.nombre }}</template>
+                              {{ a.grado_cardinal }}° {{ a.seccion }} — {{ a.titulo_oficial || a.titulo?.nombre || a.nombre }}
                            </option>
                         </select>
                      </div>
@@ -873,6 +911,9 @@
                   <div class="text-center border-b border-gray-300 dark:border-gray-600 pb-4 mb-4">
                      <p class="text-xs text-gray-500 dark:text-gray-400 font-medium uppercase">Ministerio de Educación (MINERD)</p>
                      <h2 class="text-base font-bold text-gray-900 dark:text-gray-100 mt-1">{{ finalPreview.tenant?.name }}</h2>
+                     <h4 v-if="finalPreview.aula?.titulo_oficial || finalPreview.aula?.titulo?.nombre" class="text-xs font-semibold text-indigo-700 dark:text-indigo-400 uppercase tracking-wider mt-0.5">
+                        Título: {{ finalPreview.aula?.titulo_oficial || finalPreview.aula?.titulo?.nombre }}
+                     </h4>
                      <h3 class="font-bold mt-2 text-sm">BOLETÍN FINAL DE CALIFICACIONES</h3>
                      <p class="text-xs text-gray-500 dark:text-gray-400">Año Lectivo: {{ finalPreview.year }}</p>
                   </div>
@@ -886,7 +927,7 @@
                      <div>
                         <span class="font-bold">Grado/Aula:</span>
                         {{ finalPreview.aula?.grado_cardinal }}° {{ finalPreview.aula?.seccion }}
-                        <span v-if="finalPreview.aula?.titulo"> — {{ finalPreview.aula.titulo.nombre }}</span><br>
+                        <span v-if="finalPreview.aula?.titulo_oficial || finalPreview.aula?.titulo?.nombre"> — {{ finalPreview.aula?.titulo_oficial || finalPreview.aula?.titulo?.nombre }}</span><br>
                         <span class="font-bold">No. Orden:</span> {{ finalPreview.estudiante?.numero_orden }}
                      </div>
                   </div>
@@ -1070,6 +1111,7 @@ import Swal from 'sweetalert2'
 
 const config = useRuntimeConfig()
 import { usePrint } from '~/composables/usePrint'
+import { printTechnicalGradesReport } from '~/utils/print'
 import { useAuthStore } from '~/stores/auth'
 
 const { printPdfBlob } = usePrint()
@@ -1231,7 +1273,11 @@ const studentJsonResults = ref<any[]>([])
 
 const fetchAulas = async () => {
    try {
-      const res = await api.get('/api/aulas')
+      let url = '/api/aulas'
+      if (selectedAnioId.value) {
+         url += `?anio_lectivo_id=${selectedAnioId.value}`
+      }
+      const res = await api.get(url)
       aulas.value = res.data || res || []
    } catch (e) {
       console.error('Error fetching aulas', e)
@@ -1249,10 +1295,7 @@ onMounted(async () => {
          currentTab.value = 'final'
       }
 
-      await Promise.all([
-         aniosStore.fetchAll(),
-         fetchAulas()
-      ])
+      await aniosStore.fetchAll()
 
       // Set default active year
       if (aniosStore.activos.length > 0) {
@@ -1260,6 +1303,8 @@ onMounted(async () => {
       } else if (aniosStore.items.length > 0) {
          selectedAnioId.value = aniosStore.items[0]?.id ?? null
       }
+
+      await fetchAulas()
    } catch (e) {
       console.error(e)
    } finally {
@@ -1270,13 +1315,54 @@ onMounted(async () => {
 const reportPreview = ref<ReportPreview | null>(null)
 const classroomPreview = ref<any | null>(null)
 const subjectPreview = ref<any | null>(null)
-const previewOportunidadesRa = computed(() => {
-   if (subjectPreview.value?.oportunidades_ra) {
-      return subjectPreview.value.oportunidades_ra
+
+// Total de oportunidades dinámico según el año lectivo consultado
+const maxOportunidades = computed(() => {
+   if (subjectPreview.value?.anio_lectivo?.oportunidades_ra) {
+      return Number(subjectPreview.value.anio_lectivo.oportunidades_ra)
    }
-   const anio = aniosLectivos.value.find((a: any) => a.id === selectedAnioLectivoId.value)
-   return anio?.oportunidades_ra || 3
+   if (subjectPreview.value?.oportunidades_ra) {
+      return Number(subjectPreview.value.oportunidades_ra)
+   }
+   const anio = aniosStore.items.find((a: any) => a.id === selectedAnioId.value)
+   return Number(anio?.oportunidades_ra || 3)
 })
+
+// Alias para compatibilidad de plantillas
+const previewOportunidadesRa = maxOportunidades
+
+const getTituloOportunidad = (numero: number, total: number) => {
+   if (numero === 1) return 'Op. 1 (Ordinaria)'
+   if (numero === 2) return 'Op. 2 (Recup. 1)'
+   if (numero === 3 && total === 3) return 'Op. 3 (Recup. Final)'
+   if (numero === 3) return 'Op. 3 (Recup. 2)'
+   if (numero === 4) return 'Op. 4 (Extraordinaria)'
+   return `Op. ${numero}`
+}
+
+const getTituloOficialSubjectPreview = computed(() => {
+   return subjectPreview.value?.aula?.titulo_oficial
+      || subjectPreview.value?.assignment?.aula?.titulo_oficial
+      || subjectPreview.value?.assignment?.aula?.titulo?.nombre
+      || subjectPreview.value?.aula?.nombre
+      || ''
+})
+
+const printSubjectPreviewDirect = () => {
+   if (!subjectPreview.value) return
+   const tituloTecnico = getTituloOficialSubjectPreview.value
+   const aulaLabel = `${subjectPreview.value.assignment?.aula?.grado_cardinal || ''}° ${subjectPreview.value.assignment?.aula?.seccion || ''}`
+   printTechnicalGradesReport('technical-grades-print-area', {
+      title: `Planilla_${subjectPreview.value.materia?.nombre || 'Tecnico'}_${aulaLabel}`,
+      tituloTecnico: tituloTecnico,
+      institucion: subjectPreview.value.tenant?.nombre || subjectPreview.value.tenant?.name,
+      oportunidades_ra: maxOportunidades.value,
+      year: subjectPreview.value.year,
+      aulaLabel: aulaLabel,
+      profesor: subjectPreview.value.assignment?.profesor?.nombre_completo,
+      materia: subjectPreview.value.materia?.nombre
+   })
+}
 const meritPreview = ref<any | null>(null)
 const aplazadosPreview = ref<any | null>(null)
 const finalPreview = ref<any | null>(null)
@@ -1483,8 +1569,9 @@ const refreshActiveReport = () => {
    }
 }
 
-watch(selectedAnioId, (newYear, oldYear) => {
+watch(selectedAnioId, async (newYear, oldYear) => {
    if (newYear !== oldYear) {
+      await fetchAulas();
       refreshActiveReport();
    }
 })
