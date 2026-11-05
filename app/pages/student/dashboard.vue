@@ -5,8 +5,11 @@
       <div>
         <h2 class="text-2xl font-bold text-gray-900 dark:text-gray-100 dark:text-white">Hola, {{ dashboardData?.student?.nombres }}</h2>
         <p class="text-gray-600 dark:text-gray-400 mt-1">
-          Estudiante de {{ dashboardData?.student?.aula_grado }} "{{ dashboardData?.student?.aula_seccion }}" <span
-            v-if="dashboardData?.student?.numero_orden">| #{{ dashboardData?.student?.numero_orden }}</span>
+          Estudiante de {{ dashboardData?.student?.aula_grado }} "{{ dashboardData?.student?.aula_seccion }}"
+          <span v-if="dashboardData?.student?.aula?.titulo_oficial || (dashboardData?.student?.aula_label && dashboardData.student.aula_label !== 'Sin aula')">
+            - {{ dashboardData?.student?.aula?.titulo_oficial || dashboardData?.student?.aula_label }}
+          </span>
+          <span v-if="dashboardData?.student?.numero_orden"> | #{{ dashboardData?.student?.numero_orden }}</span>
         </p>
       </div>
       <div class="flex flex-wrap items-center gap-3">
@@ -881,12 +884,16 @@ onMounted(async () => {
       console.warn('No se pudieron cargar años lectivos', err)
     }
 
+    // Al montar, siempre solicitar el dashboard por defecto sin anio_lectivo_id forzado ni desfasado en localStorage
     const response = await api.get('/api/student/dashboard')
     dashboardData.value = response.data
-    if (dashboardData.value?.anio_lectivo_id) {
-      selectedAnioLectivoId.value = dashboardData.value.anio_lectivo_id
+
+    // Inicializar preseleccionando el año lectivo del dashboard o el marcado con activo / es_actual
+    const currentYearId = dashboardData.value?.anio_lectivo_id || dashboardData.value?.academic_year_id
+    if (currentYearId) {
+      selectedAnioLectivoId.value = currentYearId
     } else {
-      const active = aniosLectivos.value.find((a: any) => a.activo)
+      const active = aniosLectivos.value.find((a: any) => a.activo || a.es_actual)
       if (active) selectedAnioLectivoId.value = active.id
     }
   } catch (e) {

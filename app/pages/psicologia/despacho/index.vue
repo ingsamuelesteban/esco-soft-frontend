@@ -34,7 +34,7 @@
                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                     <option value="">-- Seleccione un aula --</option>
                     <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
-                        {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo?.nombre }}
+                        {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo_oficial || aula.titulo?.nombre || aula.nombre }}
                     </option>
                 </select>
             </div>
@@ -124,7 +124,6 @@
         <!-- Tab: Historial -->
         <div v-else>
             <!-- Filtros -->
-            <!-- Filtros -->
             <div class="bg-gray-50 dark:bg-gray-900/50 p-4 rounded-lg shadow-sm mb-6 flex flex-wrap gap-4 items-end">
                 <div>
                     <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Filtrar por Fecha</label>
@@ -185,8 +184,11 @@
                                 class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                                 Despachado Por
                             </th>
+                            <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                                Acciones
+                            </th>
                             <th scope="col" class="relative px-6 py-3">
-                                <span class="sr-only">Evidencia</span>
+                                <span class="sr-only">Detalle</span>
                             </th>
                         </tr>
                     </thead>
@@ -200,7 +202,7 @@
                                     {{ item.student.apellidos }}, {{ item.student.nombres }}
                                 </div>
                                 <div class="text-sm text-gray-500 dark:text-gray-400" v-if="item.student.aula">
-                                    {{ item.student.aula.grado_cardinal }}° {{ item.student.aula.seccion }}
+                                    {{ item.student.aula.grado_cardinal || item.student.aula.grado }}° {{ item.student.aula.seccion }} - {{ item.student.aula.titulo_oficial || item.student.aula.nombre }}
                                 </div>
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-500 dark:text-gray-400 max-w-xs truncate" :title="item.reason">
@@ -209,11 +211,17 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                                 {{ item.reporter?.name || 'Sistema' }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium">
+                            <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-2">
                                 <button v-if="item.evidence_path" @click.stop="printFile('/api/psychology/dismissals/' + item.id + '/download')" 
-                                    class="text-gray-400 hover:text-indigo-600 transition-colors" title="Ver Evidencia">
+                                    class="text-gray-400 hover:text-indigo-600 transition-colors inline-block" title="Ver Evidencia">
                                     <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                    </svg>
+                                </button>
+                                <button @click.stop="handlePrintReceipt(item)"
+                                    class="text-gray-400 hover:text-blue-600 transition-colors inline-block" title="Imprimir Comprobante de Despacho">
+                                    <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                                     </svg>
                                 </button>
                             </td>
@@ -336,6 +344,12 @@
                                                 selectedDispatch?.student?.nombres }} {{
                                                     selectedDispatch?.student?.apellidos }}</dd>
                                         </div>
+                                        <div v-if="selectedDispatch?.student?.aula">
+                                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Aula / Carrera Técnica</dt>
+                                            <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">
+                                                {{ selectedDispatch.student.aula.grado_cardinal || selectedDispatch.student.aula.grado }}° {{ selectedDispatch.student.aula.seccion }} - {{ selectedDispatch.student.aula.titulo_oficial || selectedDispatch.student.aula.nombre }}
+                                            </dd>
+                                        </div>
                                         <div>
                                             <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Fecha y Hora</dt>
                                             <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{
@@ -347,6 +361,7 @@
                                                 selectedDispatch?.reason }}</dd>
                                         </div>
                                         <div>
+                                            <dt class="text-sm font-medium text-gray-500 dark:text-gray-400">Despachado Por</dt>
                                             <dd class="mt-1 text-sm text-gray-900 dark:text-gray-100">{{ selectedDispatch?.reporter?.name
                                                 || 'Sistema' }}</dd>
                                         </div>
@@ -367,11 +382,64 @@
                             </div>
                         </div>
                     </div>
-                    <div class="bg-gray-50 dark:bg-gray-900/50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                    <div class="bg-gray-50 dark:bg-gray-900/50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse gap-2">
+                        <button type="button" @click="handlePrintReceipt(selectedDispatch)"
+                            class="w-full inline-flex justify-center items-center gap-2 rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                            <svg class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                            </svg>
+                            Imprimir Comprobante
+                        </button>
                         <button type="button" @click="closeDetailModal"
-                            class="w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
+                            class="mt-3 sm:mt-0 w-full inline-flex justify-center rounded-md border border-gray-300 dark:border-gray-600 shadow-sm px-4 py-2 bg-white dark:bg-gray-800 text-base font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:bg-gray-900/50 focus:outline-none sm:ml-3 sm:w-auto sm:text-sm">
                             Cerrar
                         </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================================= -->
+        <!-- ÁREA DE IMPRESIÓN DEL COMPROBANTE DE DESPACHO              -->
+        <!-- ========================================================= -->
+        <div id="despacho-print-area" class="hidden print:block bg-white text-black p-6 font-sans">
+            <div class="text-center border-b-2 border-gray-800 pb-4 mb-4">
+                <h2 class="text-xl font-bold uppercase tracking-wider text-black">COMPROBANTE DE DESPACHO DE ESTUDIANTE</h2>
+                <p class="text-xs text-gray-600 mt-1">Departamento de Psicología y Orientación / Dirección</p>
+            </div>
+
+            <div class="space-y-4 text-sm text-black">
+                <div class="flex justify-between border-b pb-2">
+                    <span><strong>No. de Comprobante:</strong> #{{ String(selectedDispatchForPrint?.id || '').padStart(6, '0') }}</span>
+                    <span><strong>Fecha y Hora:</strong> {{ formatDate(selectedDispatchForPrint?.dismissed_at) }}</span>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 border-b pb-3">
+                    <div>
+                        <p><strong>Estudiante:</strong> {{ selectedDispatchForPrint?.student?.apellidos }}, {{ selectedDispatchForPrint?.student?.nombres }}</p>
+                        <p v-if="selectedDispatchForPrint?.student?.rne"><strong>RNE:</strong> {{ selectedDispatchForPrint?.student?.rne }}</p>
+                    </div>
+                    <div>
+                        <p><strong>Aula:</strong> {{ selectedDispatchForPrint?.student?.aula?.grado_cardinal || selectedDispatchForPrint?.student?.aula?.grado }}° {{ selectedDispatchForPrint?.student?.aula?.seccion }}</p>
+                        <p><strong>Carrera / Titulación Oficial:</strong> {{ selectedDispatchForPrint?.student?.aula?.titulo_oficial || selectedDispatchForPrint?.student?.aula?.nombre }}</p>
+                    </div>
+                </div>
+
+                <div class="border-b pb-3">
+                    <p><strong>Motivo del Despacho:</strong></p>
+                    <p class="mt-1 p-3 bg-gray-50 border rounded text-xs">{{ selectedDispatchForPrint?.reason }}</p>
+                </div>
+
+                <div class="border-b pb-3">
+                    <p><strong>Despachado y Autorizado Por:</strong> {{ selectedDispatchForPrint?.reporter?.name || 'Personal Autorizado' }}</p>
+                </div>
+
+                <div class="pt-8 grid grid-cols-2 gap-12 text-center text-xs">
+                    <div>
+                        <div class="border-t border-gray-400 pt-1">Firma / Sello Psicología u Orientación</div>
+                    </div>
+                    <div>
+                        <div class="border-t border-gray-400 pt-1">Firma de Padre, Madre o Tutor</div>
                     </div>
                 </div>
             </div>
@@ -380,13 +448,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useAulasStore } from '~/stores/aulas'
 import { useEstudiantesStore } from '~/stores/estudiantes'
 import { usePsychologyStore } from '~/stores/psychology'
 import Swal from 'sweetalert2'
 import DropZone from '~/components/ui/DropZone.vue'
 import { usePrint } from '~/composables/usePrint'
+import { printClientReceipt } from '~/utils/print'
 
 const { printFile } = usePrint()
 
@@ -405,6 +474,7 @@ const submitting = ref(false)
 // Detail Modal State
 const showDetailModal = ref(false)
 const selectedDispatch = ref<any>(null)
+const selectedDispatchForPrint = ref<any>(null)
 
 const openDetailModal = (dispatch: any) => {
     selectedDispatch.value = dispatch
@@ -414,6 +484,17 @@ const openDetailModal = (dispatch: any) => {
 const closeDetailModal = () => {
     showDetailModal.value = false
     selectedDispatch.value = null
+}
+
+const handlePrintReceipt = async (item: any) => {
+    if (!item) return
+    selectedDispatchForPrint.value = item
+    await nextTick()
+    const code = `Comprobante_Despacho_${String(item.id || '').padStart(6, '0')}`
+    printClientReceipt('despacho-print-area', {
+        title: code,
+        filename: `${code}.html`
+    })
 }
 
 // History Filter
@@ -448,7 +529,6 @@ onMounted(async () => {
 onUnmounted(() => {
     estudiantesStore.items = []
 })
-
 
 // Watch for tab change tab to load history
 watch(currentTab, async (newTab) => {
@@ -537,12 +617,23 @@ const confirmDismiss = async () => {
         const result = await psychologyStore.createDismissal(formData)
 
         if (result.success) {
+            const createdDismissal = (result as any).data?.dismissal || (result as any).dismissal
             Swal.fire({
                 icon: 'success',
                 title: 'Estudiante Despachado',
                 text: 'El despacho se ha registrado y se han generado las excusas correspondientes.',
-                timer: 2000,
-                showConfirmButton: false
+                showCancelButton: true,
+                confirmButtonText: 'Imprimir Comprobante',
+                cancelButtonText: 'Cerrar',
+                confirmButtonColor: '#2563eb'
+            }).then((alertResult) => {
+                if (alertResult.isConfirmed && createdDismissal) {
+                    const printPayload = {
+                        ...createdDismissal,
+                        student: selectedStudent.value
+                    }
+                    handlePrintReceipt(printPayload)
+                }
             })
             await fetchTodaysDismissals()
             closeModal()
@@ -585,3 +676,22 @@ const formatDate = (dateString: string) => {
     }).format(date)
 }
 </script>
+
+<style scoped>
+@media print {
+  .no-print,
+  aside,
+  nav,
+  header,
+  footer {
+    display: none !important;
+  }
+
+  #despacho-print-area {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+</style>
