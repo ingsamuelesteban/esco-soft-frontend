@@ -34,7 +34,7 @@
                     class="mt-1 block w-full rounded-md border-gray-300 dark:border-gray-600 py-2 pl-3 pr-10 text-base focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                     <option value="">-- Seleccione un aula --</option>
                     <option v-for="aula in aulas" :key="aula.id" :value="aula.id">
-                        {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo_oficial || aula.titulo?.nombre || aula.nombre }}
+                        {{ aula.grado_cardinal }}° {{ aula.seccion }} - {{ aula.titulo_oficial || aula.nombre }}
                     </option>
                 </select>
             </div>
@@ -520,7 +520,18 @@ const aulas = computed(() => aulasStore.items)
 const estudiantes = computed(() => estudiantesStore.items)
 
 onMounted(async () => {
-    await aulasStore.fetchAll()
+    try {
+        const aniosRes = await api.get('/api/anios-lectivos')
+        const aniosList = Array.isArray(aniosRes) ? aniosRes : (aniosRes?.data || [])
+        const active = aniosList.find((a: any) => a.activo || a.es_actual)
+        if (active) {
+            await aulasStore.fetchAll({ anioLectivoId: active.id })
+        } else {
+            await aulasStore.fetchAll()
+        }
+    } catch {
+        await aulasStore.fetchAll()
+    }
     // Initialize filter with today's date
     filters.value.date = new Date().toISOString().split('T')[0] || ''
     await fetchTodaysDismissals()
