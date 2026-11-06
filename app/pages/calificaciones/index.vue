@@ -1182,6 +1182,7 @@ const handleBulkSave = async (grades) => {
   try {
     const payload = {
       materia_id: moduloData.value.materia_id,
+      class_assignment_id: moduloData.value?.id,
       aula_id: aulaSeleccionada.value,
       anio_lectivo_id: anioLectivoSeleccionado.value,
       grades,
@@ -1287,6 +1288,7 @@ const eliminarCalificacionesPorLote = async (type, context) => {
     
     const payload = {
       materia_id: moduloData.value.materia_id,
+      class_assignment_id: moduloData.value?.id,
       aula_id: aulaSeleccionada.value,
       anio_lectivo_id: anioLectivoSeleccionado.value,
       estudiante_ids: estudianteIds,
@@ -1367,6 +1369,8 @@ const guardarCalificacion = async (payload) => {
     const response = await api.post('/api/calificaciones-ra', {
       estudiante_id: estudianteParaCalificar.value.id,
       materia_id: moduloData.value.materia_id,
+      class_assignment_id: moduloData.value?.id,
+      aula_id: aulaSeleccionada.value,
       anio_lectivo_id: anioLectivoSeleccionado.value,
       ra_numero: raParaCalificar.value,
       oportunidad: oportunidadParaCalificar.value,
