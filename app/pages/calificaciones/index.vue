@@ -1547,11 +1547,14 @@ const getObservacionesOportunidad = (estudianteId, raNumero, oportunidad) => {
 
 // Función para obtener la nota mínima (70% del valor del RA)
 const getValorMaximoRA = (raNumero) => {
-  const val = moduloData.value?.valores_ra?.[`ra_${raNumero}`]
-  if (val !== undefined && val !== null && val !== '' && parseFloat(val) > 0) {
-    return parseFloat(val)
+  const valores = moduloData.value?.valores_ra
+  if (valores) {
+    const val = valores[`ra_${raNumero}`] ?? valores[raNumero] ?? valores[`ra${raNumero}`] ?? valores[`RA_${raNumero}`]
+    if (val !== undefined && val !== null && val !== '' && parseFloat(val) > 0) {
+      return parseFloat(val)
+    }
   }
-  return moduloData.value?.calculation_mode === 'fct' ? 10 : 100
+  return 100
 }
 
 const getNotaMinima = (raNumero) => {
