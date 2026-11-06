@@ -32,11 +32,11 @@
                         <div class="text-sm">
                             <div class="flex justify-between items-center mb-1">
                                 <span class="text-blue-700 dark:text-blue-400 font-medium">Valor del RA:</span>
-                                <span class="font-bold text-blue-900 dark:text-blue-100">{{ valorRa }} puntos</span>
+                                <span class="font-bold text-blue-900 dark:text-blue-100">{{ maxValor }} puntos</span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-blue-700 dark:text-blue-400 font-medium">Nota mínima {{ valorRa === 10 ? '(6.0)' : '(70%)' }}:</span>
-                                <span class="font-bold text-blue-900 dark:text-blue-100">{{ valorRa === 10 ? '6.0' : (valorRa * 0.7).toFixed(1) }}</span>
+                                <span class="text-blue-700 dark:text-blue-400 font-medium">Nota mínima {{ maxValor === 10 ? '(6.0)' : '(70%)' }}:</span>
+                                <span class="font-bold text-blue-900 dark:text-blue-100">{{ maxValor === 10 ? '6.0' : (maxValor * 0.7).toFixed(1) }}</span>
                             </div>
                         </div>
                     </div>
@@ -47,12 +47,12 @@
                                 <label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                                     Calificación obtenida
                                 </label>
-                                <input ref="notaInput" v-model="form.nota" type="number" min="0" :max="valorRa"
+                                <input ref="notaInput" v-model="form.nota" type="number" min="0" :max="maxValor"
                                     step="0.1"
                                     class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 disabled:bg-gray-100 dark:bg-gray-700 dark:text-gray-100 disabled:cursor-not-allowed"
                                     placeholder="Ingresa la calificación" />
                                 <p class="text-xs text-gray-500 dark:text-gray-400 mt-1">
-                                    Ingresa un valor entre 0 y {{ valorRa }}
+                                    Ingresa un valor entre 0 y {{ maxValor }}
                                 </p>
                             </div>
 
@@ -130,11 +130,13 @@ const notaInput = ref(null)
 
 const error = ref('')
 
+const maxValor = computed(() => (props.valorRa && props.valorRa > 0) ? props.valorRa : 100)
+
 // Computed validation
 const isValid = computed(() => {
     if (form.value.nota === '' || form.value.nota === null) return false;
     const nota = parseFloat(form.value.nota);
-    return !isNaN(nota) && nota >= 0 && nota <= props.valorRa;
+    return !isNaN(nota) && nota >= 0 && nota <= maxValor.value;
 })
 
 onMounted(() => {
@@ -158,8 +160,8 @@ watch(() => form.value.nota, (newVal) => {
     if (error.value) error.value = '';
 
     // Live validation check (optional, could just rely on button disabled)
-    if (newVal !== '' && parseFloat(newVal) > props.valorRa) {
-        error.value = `La nota no puede ser mayor a ${props.valorRa}`;
+    if (newVal !== '' && parseFloat(newVal) > maxValor.value) {
+        error.value = `La nota no puede ser mayor a ${maxValor.value}`;
     }
 })
 

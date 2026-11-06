@@ -660,7 +660,7 @@
     <!-- Modal para calificar oportunidad (NUEVO COMPONENTE) -->
     <CalificacionOportunidadModal v-if="mostrarModalCalificarOportunidad" :estudiante="estudianteParaCalificar"
       :ra-numero="raParaCalificar" :oportunidad="oportunidadParaCalificar" :max-oportunidades="maxOportunidades"
-      :valor-ra="moduloData?.calculation_mode === 'fct' ? 10 : (moduloData?.valores_ra?.[`ra_${raParaCalificar}`] || 0)" :nota-actual="calificacionActual"
+      :valor-ra="getValorMaximoRA(raParaCalificar)" :nota-actual="calificacionActual"
       :observaciones-actuales="observacionesActual" :loading="guardandoCalificacion"
       @close="cerrarModalCalificarOportunidad" @save="guardarCalificacion" @delete="eliminarCalificacionRA" />
 
@@ -1161,11 +1161,15 @@ const openImportModal = (type, context) => {
     const raKey = `ra_${context.ra}`
     const raValue = moduloData.value?.valores_ra?.[raKey]
 
-    if (!raValue) {
+    if (!raValue && moduloData.value?.calculation_mode === 'fct') {
+      importMaxNota.value = 10
+    } else if (!raValue) {
       mostrarMensajeError(`Primero debes configurar el valor del RA ${context.ra}`)
       return
     }
-    importMaxNota.value = parseFloat(raValue)
+    else {
+      importMaxNota.value = parseFloat(raValue)
+    }
   }
 
   showImportModal.value = true
@@ -1542,9 +1546,20 @@ const getObservacionesOportunidad = (estudianteId, raNumero, oportunidad) => {
 }
 
 // Función para obtener la nota mínima (70% del valor del RA)
+const getValorMaximoRA = (raNumero) => {
+  const val = moduloData.value?.valores_ra?.[`ra_${raNumero}`]
+  if (val !== undefined && val !== null && val !== '' && parseFloat(val) > 0) {
+    return parseFloat(val)
+  }
+  return moduloData.value?.calculation_mode === 'fct' ? 10 : 100
+}
+
 const getNotaMinima = (raNumero) => {
-  const valorRA = moduloData.value?.valores_ra?.[`ra_${raNumero}`] || 20
-  return (valorRA * 0.7) // 70% del valor del RA
+  const isFCT = moduloData.value?.calculation_mode === 'fct'
+  const maxRA = getValorMaximoRA(raNumero)
+  return isFCT && (!moduloData.value?.valores_ra?.[`ra_${raNumero}`] || parseFloat(moduloData.value?.valores_ra?.[`ra_${raNumero}`]) <= 0)
+    ? 6
+    : (maxRA * 0.7)
 }
 
 // Función para mostrar la calificación en la casilla
