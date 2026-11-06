@@ -225,6 +225,10 @@ const isActive = (path?: string) => {
     return true
   }
 
+  if (path === '/mis-casos' && (route.path === '/mis-casos' || route.path.startsWith('/docente/psicologia/mis-casos'))) {
+    return true
+  }
+
   if (path === '/horarios' && route.path.startsWith('/horarios/')) {
     return false
   }
@@ -321,6 +325,38 @@ const sortedMenuItems = computed(() => {
         icon: 'wrench',
         route: '/admin/soporte',
         order: 99
+      })
+    }
+  }
+
+  // Restaurar acceso a "Mis Casos" de Psicología para profesores
+  const canSeeMisCasos = can('psicologia.mis_casos') || hasRole('profesor') || hasRole('docente')
+  if (canSeeMisCasos) {
+    const psychSection = processed.find((item) => item.id === 'psicologia')
+    if (psychSection && Array.isArray(psychSection.children)) {
+      const alreadyHas = psychSection.children.some((c: any) => c.route === '/mis-casos' || c.id === 'psicologia-mis-casos' || c.id === 'mis-casos')
+      if (!alreadyHas) {
+        psychSection.children.unshift({
+          id: 'psicologia-mis-casos',
+          label: 'Mis Casos',
+          route: '/mis-casos',
+          icon: 'clipboard-list'
+        })
+      }
+    } else if (!psychSection) {
+      processed.push({
+        id: 'psicologia',
+        label: 'Orientación y Psicología',
+        icon: 'users',
+        order: 7,
+        children: [
+          {
+            id: 'psicologia-mis-casos',
+            label: 'Mis Casos',
+            route: '/mis-casos',
+            icon: 'clipboard-list'
+          }
+        ]
       })
     }
   }

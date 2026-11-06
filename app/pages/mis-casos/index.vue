@@ -134,7 +134,8 @@ useHead({
 
 definePageMeta({
     layout: 'default',
-    middleware: 'auth'
+    middleware: 'auth',
+    alias: ['/docente/psicologia/mis-casos']
 })
 
 const warningsStore = useStudentWarningsStore()

@@ -41,11 +41,11 @@
                                         class="mt-1 block w-full border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100">
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-bold text-red-600 uppercase">Fecha Publicación
+                                    <label class="block text-xs font-bold text-red-600 uppercase">Fecha y Hora Publicación
                                         Boletín</label>
-                                    <input type="date" v-model="period.fecha_publicacion" required
+                                    <input type="datetime-local" v-model="period.fecha_publicacion" required
                                         class="mt-1 block w-full border-red-300 dark:border-red-700 rounded-md shadow-sm text-sm focus:ring-red-500 focus:border-red-500 bg-red-50 dark:bg-red-900/20 text-gray-900 dark:text-gray-100">
-                                    <p class="text-xs text-red-500 mt-1">Fecha en que se muestran notas y activan
+                                    <p class="text-xs text-red-500 mt-1">Fecha y hora exacta en que se muestran notas y activan
                                         bloqueos.</p>
                                 </div>
                             </div>
@@ -87,12 +87,22 @@ const periods = ref<AcademicPeriod[]>([])
 const loading = computed(() => store.loading)
 const error = computed(() => store.error)
 
+const formatForDatetimeLocal = (val: string | null | undefined): string => {
+    if (!val) return ''
+    const d = new Date(val)
+    if (isNaN(d.getTime())) {
+        return val.length >= 16 ? val.substring(0, 16).replace(' ', 'T') : (val.length === 10 ? `${val}T00:00` : val)
+    }
+    const pad = (n: number) => String(n).padStart(2, '0')
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`
+}
+
 onMounted(async () => {
     await store.fetchByAnio(props.anioId)
     // Clone and format dates
     periods.value = store.periods.map(p => ({
         ...p,
-        fecha_publicacion: p.fecha_publicacion ? p.fecha_publicacion.substring(0, 10) : '',
+        fecha_publicacion: formatForDatetimeLocal(p.fecha_publicacion),
         fecha_inicio: p.fecha_inicio ? p.fecha_inicio.substring(0, 10) : '',
         fecha_fin: p.fecha_fin ? p.fecha_fin.substring(0, 10) : ''
     }))
